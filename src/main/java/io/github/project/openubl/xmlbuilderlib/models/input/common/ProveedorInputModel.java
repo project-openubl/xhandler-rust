@@ -16,28 +16,22 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.input.common;
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Schema(name = "Proveedor")
 public class ProveedorInputModel {
 
     @NotNull
     @NotBlank
     @Size(min = 11, max = 11)
-    @Schema(example = "12345678912")
     private String ruc;
 
-    @Schema(example = "mi nombre comercial")
     private String nombreComercial;
 
     @NotNull
     @NotBlank
-    @Schema(example = "mi razon social")
     private String razonSocial;
 
     @Valid

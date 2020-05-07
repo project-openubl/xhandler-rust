@@ -1,13 +1,13 @@
 /**
  * Copyright 2019 Project OpenUBL, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
- * <p>
+ *
  * Licensed under the Eclipse Public License - v 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * https://www.eclipse.org/legal/epl-2.0/
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInput
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.DocumentInputModel_PuedeCrearComprobanteConSerieFConstraint;
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.DocumentInputModel_PuedeCrearComprobanteConSerieFGroupValidation;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -34,16 +34,13 @@ public abstract class DocumentInputModel {
     @NotBlank
     @Pattern(regexp = "^[F|f|B|b].*$")
     @Size(min = 4, max = 4)
-    @Schema(example = "F001")
     protected String serie;
 
     @NotNull
     @Min(1)
     @Max(99999999)
-    @Schema(example = "1")
     private Integer numero;
 
-    @Schema(example = "1585398109198", description = "Fecha expresada en milliseconds")
     private Long fechaEmision;
 
     @NotNull
@@ -55,7 +52,6 @@ public abstract class DocumentInputModel {
     private ProveedorInputModel proveedor;
 
     @Valid
-    @Schema(description = "Si 'firmante' es NULL se usa datos del proveedor")
     private FirmanteInputModel firmante;
 
     @NotNull

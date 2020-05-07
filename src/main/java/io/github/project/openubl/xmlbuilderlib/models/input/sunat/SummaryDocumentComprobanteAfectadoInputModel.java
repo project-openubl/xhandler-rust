@@ -18,7 +18,7 @@ package io.github.project.openubl.xmlbuilderlib.models.input.sunat;
 
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -28,18 +28,11 @@ public class SummaryDocumentComprobanteAfectadoInputModel {
 
     @NotNull
     @CatalogConstraint(value = Catalog1.class)
-    @Schema(example = "BOLETA", description = "Catalog 01", enumeration = {
-            "FACTURA", "01",
-            "BOLETA", "03",
-            "NOTA_CREDITO", "07",
-            "NOTA_DEBITO", "08"
-    })
     private String tipo;
 
     @NotNull
     @NotBlank
     @Pattern(regexp = "^([A-Z]{1,3}[0-9]{1,3})[\\-]([0-9]{1,8})$")
-    @Schema(example = "B001-1", description = "Serie y número del coprobante afectado por Nota de Crédito/Débito")
     private String serieNumero;
 
     public String getTipo() {

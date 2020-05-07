@@ -19,7 +19,7 @@ package io.github.project.openubl.xmlbuilderlib.models.input.sunat;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -33,13 +33,10 @@ public abstract class PerceptionRetentionInputModel {
     @NotNull
     @Min(1)
     @Max(99999999)
-    @Schema(example = "1")
     private Integer numero;
 
-    @Schema(example = "1585398109198", description = "Fecha expresada en milliseconds")
     private Long fechaEmision;
 
-    @Schema(example = "mi observación")
     private String observacion;
 
     @NotNull
@@ -51,7 +48,6 @@ public abstract class PerceptionRetentionInputModel {
     private ClienteInputModel cliente;
 
     @Valid
-    @Schema(description = "Si 'firmante' es NULL se usa datos del proveedor")
     private FirmanteInputModel firmante;
 
     @NotNull

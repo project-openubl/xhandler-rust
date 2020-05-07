@@ -16,36 +16,25 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.input.common;
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
 import javax.validation.constraints.Size;
 
-@Schema(name = "Direccion")
 public class DireccionInputModel {
 
     @Size(min = 6, max = 6)
-    @Schema(example = "050101")
     private String ubigeo;
 
-    @Schema(example = "123456")
     private String codigoLocal;
 
-    @Schema(example = "Las Flores")
     private String urbanizacion;
 
-    @Schema(example = "Huamanga")
     private String provincia;
 
-    @Schema(example = "Ayacucho")
     private String departamento;
 
-    @Schema(example = "Mariscal Caceres")
     private String distrito;
 
-    @Schema(example = "Jr. Las rocas 123")
     private String direccion;
 
-    @Schema(example = "PE")
     private String codigoPais;
 
     public String getUbigeo() {

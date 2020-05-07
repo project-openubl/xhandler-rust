@@ -18,7 +18,7 @@ package io.github.project.openubl.xmlbuilderlib.models.input.sunat;
 
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
@@ -27,33 +27,23 @@ public class PerceptionRetentionComprobanteInputModel {
 
     @NotNull
     @Size(min = 3, max = 3)
-    @Schema(example = "PEN", description = "Moneda en la que se emitió el comprobante a Retener o Percibir")
     private String moneda;
 
     @NotNull
     @CatalogConstraint(value = Catalog1.class)
-    @Schema(example = "FACTURA", description = "Catalog 01", enumeration = {
-            "FACTURA", "01",
-            "BOLETA", "03",
-            "NOTA_CREDITO", "07",
-            "NOTA_DEBITO", "08"
-    })
     private String tipo;
 
     @NotNull
     @NotBlank
     @Pattern(regexp = "^[F|B|0-9].*$")
-    @Schema(example = "F001-1", description = "Serie y número del comprobante")
     private String serieNumero;
 
     @NotNull
-    @Schema(example = "1585398109198", description = "Fecha expresada en milliseconds")
     private Long fechaEmision;
 
     @NotNull
     @Positive
     @Digits(integer = 100, fraction = 2)
-    @Schema(example = "100", description = "Importe total del comprobante")
     private BigDecimal importeTotal;
 
     public String getMoneda() {

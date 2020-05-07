@@ -16,22 +16,17 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.input.common;
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Schema(name = "Firmante", description = "Entidad que firma electrónicamente el archivo XML.")
 public class FirmanteInputModel {
 
     @NotNull
     @NotBlank
-    @Schema(example = "12312312312")
     private String ruc;
 
     @NotNull
     @NotBlank
-    @Schema(example = "Project OpenUBL S.A.C.")
     private String razonSocial;
 
     public String getRuc() {

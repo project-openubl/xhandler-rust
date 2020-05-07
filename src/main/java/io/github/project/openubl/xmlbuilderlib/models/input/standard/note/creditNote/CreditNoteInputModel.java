@@ -23,26 +23,13 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInput
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.NoteInputModel;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 
 import java.util.List;
 
-@Schema(name = "CreditNote")
 public class CreditNoteInputModel extends NoteInputModel {
 
     @CatalogConstraint(value = Catalog9.class)
-    @Schema(example = "ANULACION_DE_LA_OPERACION", description = "Catalogo 09", enumeration = {
-            "ANULACION_DE_LA_OPERACION", "01",
-            "ANULACION_POR_ERROR_EN_EL_RUC", "02",
-            "CORRECCION_POR_ERROR_EN_LA_DESCRIPCION", "03",
-            "DESCUENTO_GLOBAL", "04",
-            "DESCUENTO_POR_ITEM", "05",
-            "DEVOLUCION_TOTAL", "06",
-            "DEVOLUCION_POR_ITEM", "07",
-            "BONIFICACION", "08",
-            "DISMINUCION_EN_EL_VALOR", "09",
-            "OTROS_CONCEPTOS", "10",
-    })
     private String tipoNota;
 
     public String getTipoNota() {

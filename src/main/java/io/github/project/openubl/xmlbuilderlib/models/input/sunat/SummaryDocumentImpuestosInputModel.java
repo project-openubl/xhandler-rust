@@ -16,25 +16,20 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.input.sunat;
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-@Schema(name = "SummaryDocumentLineComprobanteImpuestos")
 public class SummaryDocumentImpuestosInputModel {
 
     @NotNull
     @Min(0)
     @Digits(integer = 100, fraction = 2)
-    @Schema(example = "18", description = "Importe total de IGV")
     private BigDecimal igv;
 
     @Min(0)
     @Digits(integer = 100, fraction = 2)
-    @Schema(example = "0", description = "Importe total de ICB_PE")
     private BigDecimal icb;
 
     public BigDecimal getIgv() {

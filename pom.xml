@@ -98,11 +98,6 @@
             <artifactId>jakarta.el</artifactId>
             <version>3.0.3</version>
         </dependency>
-        <dependency>
-            <groupId>io.smallrye</groupId>
-            <artifactId>smallrye-open-api</artifactId>
-            <version>1.2.1</version>
-        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -131,7 +126,7 @@
         <dependency>
             <groupId>io.github.project-openubl</groupId>
             <artifactId>xml-sender-ws</artifactId>
-            <version>2.1.0-SNAPSHOT</version>
+            <version>2.1.0.Final</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

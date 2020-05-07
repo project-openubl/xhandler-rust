@@ -16,38 +16,29 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.input.sunat;
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-@Schema(name = "SummaryDocumentLineComprobanteValorVenta")
 public class SummaryDocumentComprobanteValorVentaInputModel {
 
     @NotNull
     @Min(0)
-    @Schema(example = "100", description = "Importe total de la venta. Incluye impuestos, cargos, descuentos")
     private BigDecimal importeTotal;
 
     @Min(0)
-    @Schema(example = "0", description = "Total 'otros cargos' aplicados al comprobante")
     private BigDecimal otrosCargos;
 
     @Min(0)
-    @Schema(example = "0")
     private BigDecimal gravado;
 
     @Min(0)
-    @Schema(example = "0")
     private BigDecimal exonerado;
 
     @Min(0)
-    @Schema(example = "0")
     private BigDecimal inafecto;
 
     @Min(0)
-    @Schema(example = "0")
     private BigDecimal gratuito;
 
     public BigDecimal getImporteTotal() {

@@ -16,8 +16,6 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.input.sunat;
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -27,14 +25,11 @@ import java.math.BigDecimal;
 public class PerceptionRetentionLineInputModel {
 
     @Min(1)
-    @Schema(example = "1")
     private Integer numeroCobroPago;
 
-    @Schema(example = "1585398109198", description = "Fecha expresada en milliseconds")
     private Long fechaCobroPago;
 
     @Positive
-    @Schema(example = "1", description = "importe de cobro o pago de la percepcion")
     private BigDecimal importeCobroPago;
 
     @NotNull

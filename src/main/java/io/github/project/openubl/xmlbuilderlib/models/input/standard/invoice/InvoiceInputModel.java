@@ -21,11 +21,10 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInput
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 
 import java.util.List;
 
-@Schema(name = "Invoice")
 public class InvoiceInputModel extends DocumentInputModel {
 
     public static final class Builder {

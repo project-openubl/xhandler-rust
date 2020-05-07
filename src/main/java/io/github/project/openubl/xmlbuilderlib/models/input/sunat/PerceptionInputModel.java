@@ -21,7 +21,7 @@ import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.Catal
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -38,11 +38,6 @@ public class PerceptionInputModel extends PerceptionRetentionInputModel {
     private String serie;
 
     @CatalogConstraint(value = Catalog22.class)
-    @Schema(example = "VENTA_INTERNA", description = "Catalogo 22", enumeration = {
-            "VENTA_INTERNA", "01",
-            "ADQUISICION_DE_COMBUSTIBLE", "02",
-            "AGENTE_DE_PERCEPCION_CON_TASA_ESPECIAL", "03"
-    })
     private String regimen;
 
     public String getSerie() {

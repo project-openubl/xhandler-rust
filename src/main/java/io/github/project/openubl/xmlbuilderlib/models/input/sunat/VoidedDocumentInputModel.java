@@ -18,7 +18,7 @@ package io.github.project.openubl.xmlbuilderlib.models.input.sunat;
 
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -26,16 +26,13 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Schema(name = "VoidedDocument")
 public class VoidedDocumentInputModel {
 
     @NotNull
     @Min(1)
     @Max(99999999)
-    @Schema(example = "1", description = "Número de Comprobante de Baja emitida durante el día")
     private Integer numero;
 
-    @Schema(example = "1585398109198", description = "Fecha en la que se emite el comprobante de Baja. Fecha expresada en milliseconds")
     private Long fechaEmision;
 
     @Valid
@@ -47,7 +44,6 @@ public class VoidedDocumentInputModel {
 
     @NotNull
     @NotBlank
-    @Schema(example = "mi razón", description = "Razón por la que se da de baja el comprobante")
     private String descripcionSustento;
 
     @NotNull

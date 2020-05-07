@@ -19,7 +19,7 @@ package io.github.project.openubl.xmlbuilderlib.models.input.standard.note;
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.NoteInputModel_SerieComprobanteAfectadoConstraint;
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.NoteInputModel_SerieComprobanteAfectadoGroupValidation;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentInputModel;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -31,12 +31,10 @@ public abstract class NoteInputModel extends DocumentInputModel {
     @NotNull
     @NotBlank
     @Pattern(regexp = "^([F|B][A-Z]?[0-9]{0,3})[\\-]([0-9]{1,8})$")
-    @Schema(example = "F001-1", description = "Serie y número del comprobante afectado por la nota")
     private String serieNumeroComprobanteAfectado;
 
     @NotNull
     @NotBlank
-    @Schema(example = "Nota creada por error", description = "Razón por la que se crea la nota")
     private String descripcionSustentoDeNota;
 
     public String getSerieNumeroComprobanteAfectado() {

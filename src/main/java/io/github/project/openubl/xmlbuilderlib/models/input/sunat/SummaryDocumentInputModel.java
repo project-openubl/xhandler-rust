@@ -18,7 +18,7 @@ package io.github.project.openubl.xmlbuilderlib.models.input.sunat;
 
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -26,19 +26,15 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Schema(name = "SummaryDocument")
 public class SummaryDocumentInputModel {
 
     @Min(1)
     @NotNull
-    @Schema(example = "1", description = "Número de Resumen Diario emitido en el día")
     private Integer numero;
 
-    @Schema(example = "1585398109198", description = "Fecha en la que se emite el comprobante de Resumen Diario. Fecha expresada en milliseconds")
     private Long fechaEmision;
 
     @NotNull
-    @Schema(example = "1585398109198", description = "Fecha en la que todos los comprobantes, dentro del resumen, fueron emitidos. Fecha expresada en milliseconds")
     private Long fechaEmisionDeComprobantesAsociados;
 
     @Valid
