@@ -17,19 +17,18 @@
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.invoice;
 
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentFacade;
+import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
+import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog6;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.*;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice.InvoiceInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.invoice.InvoiceOutputModel;
-import io.github.project.openubl.xmlbuilderlib.utils.InputToOutput;
 import org.junit.jupiter.api.Test;
-import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Calendar;
-
 
 public class InvoiceTest extends AbstractUBLTest {
 
@@ -70,8 +69,9 @@ public class InvoiceTest extends AbstractUBLTest {
                 .build();
 
         // When
-        InvoiceOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        InvoiceOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -116,8 +116,9 @@ public class InvoiceTest extends AbstractUBLTest {
                 .build();
 
         // When
-        InvoiceOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        InvoiceOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -171,8 +172,9 @@ public class InvoiceTest extends AbstractUBLTest {
                 .build();
 
         // When
-        InvoiceOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        InvoiceOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -226,8 +228,9 @@ public class InvoiceTest extends AbstractUBLTest {
                 .build();
 
         // When
-        InvoiceOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        InvoiceOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -274,8 +277,9 @@ public class InvoiceTest extends AbstractUBLTest {
 
 
         // When
-        InvoiceOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        InvoiceOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -322,8 +326,9 @@ public class InvoiceTest extends AbstractUBLTest {
                 .build();
 
         // When
-        InvoiceOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        InvoiceOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -370,8 +375,9 @@ public class InvoiceTest extends AbstractUBLTest {
                 .build();
 
         // When
-        InvoiceOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        InvoiceOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);

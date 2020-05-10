@@ -17,6 +17,7 @@
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.debitnote.tiponota;
 
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentFacade;
+import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
 import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog10;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog6;
@@ -25,7 +26,6 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInpu
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.debitNote.DebitNoteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.debitNote.DebitNoteOutputModel;
-import io.github.project.openubl.xmlbuilderlib.utils.InputToOutput;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -72,8 +72,9 @@ public class DebitNoteTipoNotaTest extends AbstractUBLTest {
 
 
         // When
-        DebitNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DebitNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
