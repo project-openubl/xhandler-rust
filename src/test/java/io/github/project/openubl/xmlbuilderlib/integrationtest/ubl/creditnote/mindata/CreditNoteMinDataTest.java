@@ -17,6 +17,7 @@
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.creditnote.mindata;
 
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentFacade;
+import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
 import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog6;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
@@ -24,7 +25,6 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInpu
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.creditNote.CreditNoteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.creditNote.CreditNoteOutputModel;
-import io.github.project.openubl.xmlbuilderlib.utils.InputToOutput;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -69,8 +69,9 @@ public class CreditNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        CreditNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -112,8 +113,9 @@ public class CreditNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        CreditNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -155,8 +157,9 @@ public class CreditNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        CreditNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -198,8 +201,9 @@ public class CreditNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        CreditNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -241,8 +245,9 @@ public class CreditNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        CreditNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -284,8 +289,9 @@ public class CreditNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        CreditNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -327,8 +333,9 @@ public class CreditNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        CreditNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -370,8 +377,9 @@ public class CreditNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        CreditNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -413,8 +421,9 @@ public class CreditNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        CreditNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -456,8 +465,9 @@ public class CreditNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        CreditNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);

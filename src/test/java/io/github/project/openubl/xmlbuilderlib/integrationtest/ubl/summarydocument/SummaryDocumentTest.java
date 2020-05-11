@@ -17,6 +17,8 @@
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.summarydocument;
 
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentFacade;
+import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
+import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog19;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog6;
@@ -24,9 +26,7 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputM
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.sunat.*;
 import io.github.project.openubl.xmlbuilderlib.models.output.sunat.SummaryDocumentOutputModel;
-import io.github.project.openubl.xmlbuilderlib.utils.InputToOutput;
 import org.junit.jupiter.api.Test;
-import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -80,8 +80,9 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        SummaryDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        SummaryDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -137,8 +138,9 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        SummaryDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        SummaryDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -189,8 +191,9 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        SummaryDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        SummaryDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -246,8 +249,9 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        SummaryDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        SummaryDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -298,8 +302,9 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        SummaryDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        SummaryDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -355,8 +360,9 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        SummaryDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        SummaryDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -408,8 +414,9 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        SummaryDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        SummaryDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);

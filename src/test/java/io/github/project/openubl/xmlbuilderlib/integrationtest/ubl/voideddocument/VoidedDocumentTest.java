@@ -17,13 +17,13 @@
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.voideddocument;
 
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentFacade;
+import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
 import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.sunat.VoidedDocumentInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.sunat.VoidedDocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.sunat.VoidedDocumentOutputModel;
-import io.github.project.openubl.xmlbuilderlib.utils.InputToOutput;
 import org.junit.jupiter.api.Test;
 
 import java.util.Calendar;
@@ -58,8 +58,9 @@ public class VoidedDocumentTest extends AbstractUBLTest {
 
 
         // When
-        VoidedDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        VoidedDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -92,8 +93,9 @@ public class VoidedDocumentTest extends AbstractUBLTest {
 
 
         // When
-        VoidedDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        VoidedDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -124,8 +126,9 @@ public class VoidedDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        VoidedDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        VoidedDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -188,8 +191,9 @@ public class VoidedDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        VoidedDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        VoidedDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
@@ -220,8 +224,9 @@ public class VoidedDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        VoidedDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
-        String xml = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        VoidedDocumentOutputModel output = result.getOutput();
+        String xml = result.getXml();
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
