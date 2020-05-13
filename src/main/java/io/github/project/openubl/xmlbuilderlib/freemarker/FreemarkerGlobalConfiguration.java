@@ -25,7 +25,7 @@ public class FreemarkerGlobalConfiguration {
     private Configuration configuration;
 
     private FreemarkerGlobalConfiguration() {
-        configuration = new Configuration(Configuration.VERSION_2_3_30);
+        configuration = new Configuration(Configuration.VERSION_2_3_28);
         configuration.setClassForTemplateLoading(FreemarkerGlobalConfiguration.class, "/");
     }
 
