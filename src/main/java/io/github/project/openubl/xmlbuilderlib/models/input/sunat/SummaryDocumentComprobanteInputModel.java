@@ -20,7 +20,6 @@ import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
 
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

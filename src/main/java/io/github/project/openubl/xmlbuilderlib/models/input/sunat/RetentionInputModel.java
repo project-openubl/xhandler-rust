@@ -22,7 +22,6 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputM
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

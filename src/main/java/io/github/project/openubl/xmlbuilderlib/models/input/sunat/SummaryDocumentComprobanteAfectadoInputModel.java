@@ -19,7 +19,6 @@ package io.github.project.openubl.xmlbuilderlib.models.input.sunat;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
 
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

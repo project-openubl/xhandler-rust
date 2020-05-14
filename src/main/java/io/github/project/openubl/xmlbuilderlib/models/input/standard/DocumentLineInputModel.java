@@ -23,7 +23,6 @@ import io.github.project.openubl.xmlbuilderlib.models.input.constraints.Document
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.DocumentLineInputModel_PrecioConstraint;
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.HighLevelGroupValidation;
 
-
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

@@ -22,7 +22,6 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInpu
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.DocumentInputModel_PuedeCrearComprobanteConSerieFConstraint;
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.DocumentInputModel_PuedeCrearComprobanteConSerieFGroupValidation;
 
-
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.util.List;

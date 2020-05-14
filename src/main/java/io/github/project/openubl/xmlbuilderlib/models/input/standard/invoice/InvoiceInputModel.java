@@ -22,7 +22,6 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInpu
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 
-
 import java.util.List;
 
 public class InvoiceInputModel extends DocumentInputModel {

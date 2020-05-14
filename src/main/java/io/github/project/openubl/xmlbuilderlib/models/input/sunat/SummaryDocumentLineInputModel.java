@@ -21,7 +21,6 @@ import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.Catal
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.SummaryDocumentLineInputModel_ComprobanteAfectadoRequeridoConstraint;
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.SummaryDocumentLineInputModel_ComprobanteAfectadoRequeridoGroupValidation;
 
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

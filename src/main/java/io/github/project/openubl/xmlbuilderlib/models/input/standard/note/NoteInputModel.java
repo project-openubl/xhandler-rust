@@ -20,7 +20,6 @@ import io.github.project.openubl.xmlbuilderlib.models.input.constraints.NoteInpu
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.NoteInputModel_SerieComprobanteAfectadoGroupValidation;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentInputModel;
 
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

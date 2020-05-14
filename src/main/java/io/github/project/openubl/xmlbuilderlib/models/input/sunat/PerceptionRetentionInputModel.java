@@ -20,7 +20,6 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputM
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 
-
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;

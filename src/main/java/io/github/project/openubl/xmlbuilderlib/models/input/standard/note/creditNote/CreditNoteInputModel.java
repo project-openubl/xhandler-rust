@@ -24,7 +24,6 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInpu
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.NoteInputModel;
 
-
 import java.util.List;
 
 public class CreditNoteInputModel extends NoteInputModel {
