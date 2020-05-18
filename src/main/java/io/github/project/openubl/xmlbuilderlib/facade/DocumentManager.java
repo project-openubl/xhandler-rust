@@ -16,8 +16,10 @@
  */
 package io.github.project.openubl.xmlbuilderlib.facade;
 
-import io.github.project.openubl.xmlbuilderlib.config.XMLBuilderConfig;
+import io.github.project.openubl.xmlbuilderlib.clock.SystemClockSingleton;
+import io.github.project.openubl.xmlbuilderlib.config.Config;
 import io.github.project.openubl.xmlbuilderlib.freemarker.FreemarkerExecutor;
+import io.github.project.openubl.xmlbuilderlib.hibernate.validator.ValidatorSingleton;
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.CompleteValidation;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice.InvoiceInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.creditNote.CreditNoteInputModel;
@@ -34,133 +36,120 @@ import io.github.project.openubl.xmlbuilderlib.models.output.sunat.RetentionOutp
 import io.github.project.openubl.xmlbuilderlib.models.output.sunat.SummaryDocumentOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.sunat.VoidedDocumentOutputModel;
 import io.github.project.openubl.xmlbuilderlib.utils.InputToOutput;
-import io.github.project.openubl.xmlbuilderlib.utils.SystemClock;
+import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
 
 import javax.validation.*;
-import java.util.Calendar;
 import java.util.Set;
-import java.util.TimeZone;
 
-public class DocumentFacade {
+public class DocumentManager {
 
-    private DocumentFacade() {
+    private DocumentManager() {
         // Only static methods
     }
 
     private static SystemClock getDefaultSystemClock() {
-        return new SystemClock() {
-            @Override
-            public TimeZone getTimeZone() {
-                return TimeZone.getTimeZone("America/Lima");
-            }
-
-            @Override
-            public Calendar getCalendarInstance() {
-                return Calendar.getInstance();
-            }
-        };
+        return SystemClockSingleton.getInstance().getClock();
     }
 
     private static void validateInput(Object input) {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
+        Validator validator = ValidatorSingleton.getInstance().getValidator();
         Set<ConstraintViolation<Object>> violations = validator.validate(input, CompleteValidation.class);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
     }
 
-    public static DocumentWrapper<InvoiceOutputModel> createXML(InvoiceInputModel input, XMLBuilderConfig config) {
+    public static DocumentWrapper<InvoiceOutputModel> createXML(InvoiceInputModel input, Config config) {
         validateInput(input);
         InvoiceOutputModel output = InputToOutput.toOutput(input, config, getDefaultSystemClock());
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<InvoiceOutputModel> createXML(InvoiceInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static DocumentWrapper<InvoiceOutputModel> createXML(InvoiceInputModel input, Config config, SystemClock systemClock) {
         validateInput(input);
         InvoiceOutputModel output = InputToOutput.toOutput(input, config, systemClock);
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<CreditNoteOutputModel> createXML(CreditNoteInputModel input, XMLBuilderConfig config) {
+    public static DocumentWrapper<CreditNoteOutputModel> createXML(CreditNoteInputModel input, Config config) {
         validateInput(input);
         CreditNoteOutputModel output = InputToOutput.toOutput(input, config, getDefaultSystemClock());
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<CreditNoteOutputModel> createXML(CreditNoteInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static DocumentWrapper<CreditNoteOutputModel> createXML(CreditNoteInputModel input, Config config, SystemClock systemClock) {
         validateInput(input);
         CreditNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<DebitNoteOutputModel> createXML(DebitNoteInputModel input, XMLBuilderConfig config) {
+    public static DocumentWrapper<DebitNoteOutputModel> createXML(DebitNoteInputModel input, Config config) {
         validateInput(input);
         DebitNoteOutputModel output = InputToOutput.toOutput(input, config, getDefaultSystemClock());
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<DebitNoteOutputModel> createXML(DebitNoteInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static DocumentWrapper<DebitNoteOutputModel> createXML(DebitNoteInputModel input, Config config, SystemClock systemClock) {
         DebitNoteOutputModel output = InputToOutput.toOutput(input, config, systemClock);
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<VoidedDocumentOutputModel> createXML(VoidedDocumentInputModel input, XMLBuilderConfig config) {
+    public static DocumentWrapper<VoidedDocumentOutputModel> createXML(VoidedDocumentInputModel input, Config config) {
         validateInput(input);
         VoidedDocumentOutputModel output = InputToOutput.toOutput(input, config, getDefaultSystemClock());
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<VoidedDocumentOutputModel> createXML(VoidedDocumentInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static DocumentWrapper<VoidedDocumentOutputModel> createXML(VoidedDocumentInputModel input, Config config, SystemClock systemClock) {
         validateInput(input);
         VoidedDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<SummaryDocumentOutputModel> createXML(SummaryDocumentInputModel input, XMLBuilderConfig config) {
+    public static DocumentWrapper<SummaryDocumentOutputModel> createXML(SummaryDocumentInputModel input, Config config) {
         validateInput(input);
         SummaryDocumentOutputModel output = InputToOutput.toOutput(input, config, getDefaultSystemClock());
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<SummaryDocumentOutputModel> createXML(SummaryDocumentInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static DocumentWrapper<SummaryDocumentOutputModel> createXML(SummaryDocumentInputModel input, Config config, SystemClock systemClock) {
         validateInput(input);
         SummaryDocumentOutputModel output = InputToOutput.toOutput(input, config, systemClock);
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<PerceptionOutputModel> createXML(PerceptionInputModel input, XMLBuilderConfig config) {
+    public static DocumentWrapper<PerceptionOutputModel> createXML(PerceptionInputModel input, Config config) {
         validateInput(input);
         PerceptionOutputModel output = InputToOutput.toOutput(input, config, getDefaultSystemClock());
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<PerceptionOutputModel> createXML(PerceptionInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static DocumentWrapper<PerceptionOutputModel> createXML(PerceptionInputModel input, Config config, SystemClock systemClock) {
         validateInput(input);
         PerceptionOutputModel output = InputToOutput.toOutput(input, config, systemClock);
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<RetentionOutputModel> createXML(RetentionInputModel input, XMLBuilderConfig config) {
+    public static DocumentWrapper<RetentionOutputModel> createXML(RetentionInputModel input, Config config) {
         validateInput(input);
         RetentionOutputModel output = InputToOutput.toOutput(input, config, getDefaultSystemClock());
         String xml = FreemarkerExecutor.createXML(output);
         return new DocumentWrapper<>(xml, output);
     }
 
-    public static DocumentWrapper<RetentionOutputModel> createXML(RetentionInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static DocumentWrapper<RetentionOutputModel> createXML(RetentionInputModel input, Config config, SystemClock systemClock) {
         validateInput(input);
         RetentionOutputModel output = InputToOutput.toOutput(input, config, systemClock);
         String xml = FreemarkerExecutor.createXML(output);

@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.debitnote.mindata;
 
-import io.github.project.openubl.xmlbuilderlib.facade.DocumentFacade;
+import io.github.project.openubl.xmlbuilderlib.facade.DocumentManager;
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
 import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog6;
@@ -69,7 +69,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         DebitNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -115,7 +115,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
 
 
         // When
-        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         DebitNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -159,7 +159,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         DebitNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -205,7 +205,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
 
 
         // When
-        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         DebitNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -251,7 +251,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
 
 
         // When
-        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         DebitNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -295,7 +295,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         DebitNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -339,7 +339,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         DebitNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -383,7 +383,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         DebitNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -427,7 +427,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         DebitNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -473,7 +473,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
 
 
         // When
-        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         DebitNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 

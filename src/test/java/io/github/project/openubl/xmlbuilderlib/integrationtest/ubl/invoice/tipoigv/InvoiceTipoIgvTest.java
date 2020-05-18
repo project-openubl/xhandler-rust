@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.invoice.tipoigv;
 
-import io.github.project.openubl.xmlbuilderlib.facade.DocumentFacade;
+import io.github.project.openubl.xmlbuilderlib.facade.DocumentManager;
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
 import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog6;
@@ -72,7 +72,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
 
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -116,7 +116,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -162,7 +162,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
 
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -206,7 +206,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -250,7 +250,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -294,7 +294,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -338,7 +338,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -382,7 +382,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -426,7 +426,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -470,7 +470,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -514,7 +514,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -558,7 +558,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -602,7 +602,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -648,7 +648,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
 
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -692,7 +692,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -736,7 +736,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -780,7 +780,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -824,7 +824,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -868,7 +868,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -912,7 +912,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -956,7 +956,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1000,7 +1000,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1044,7 +1044,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1088,7 +1088,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1132,7 +1132,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1176,7 +1176,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1220,7 +1220,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1264,7 +1264,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1308,7 +1308,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1352,7 +1352,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1396,7 +1396,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1440,7 +1440,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1484,7 +1484,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -1528,7 +1528,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         InvoiceOutputModel output = result.getOutput();
         String xml = result.getXml();
 

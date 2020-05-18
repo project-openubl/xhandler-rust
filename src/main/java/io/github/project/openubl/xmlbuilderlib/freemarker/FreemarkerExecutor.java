@@ -1,13 +1,13 @@
 /**
  * Copyright 2019 Project OpenUBL, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
- *
+ * <p>
  * Licensed under the Eclipse Public License - v 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * https://www.eclipse.org/legal/epl-2.0/
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,6 +29,7 @@ import io.github.project.openubl.xmlbuilderlib.models.output.sunat.VoidedDocumen
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 
 public class FreemarkerExecutor {
 
@@ -36,123 +37,94 @@ public class FreemarkerExecutor {
         // Only static methods
     }
 
+
     public static String createXML(InvoiceOutputModel output) {
-        StringWriter buffer;
-        try {
-            Template template = FreemarkerGlobalConfiguration.getInstance().getConfiguration().getTemplate(FreemarkerConstants.INVOICE_TEMPLATE_2_1);
-
-            buffer = new StringWriter();
-            template.process(output, buffer);
-            buffer.flush();
-        } catch (IOException | TemplateException e) {
-            throw new IllegalStateException(e);
-        }
-
-        return buffer.toString();
+        return processTemplate(FreemarkerConstants.INVOICE_TEMPLATE_2_1, output);
     }
+
+    public static void createXML(InvoiceOutputModel output, Writer writer) {
+        processTemplate(FreemarkerConstants.INVOICE_TEMPLATE_2_1, output, writer);
+    }
+
 
     public static String createXML(CreditNoteOutputModel output) {
-        StringWriter buffer;
-        try {
-            Template template = FreemarkerGlobalConfiguration.getInstance().getConfiguration().getTemplate(FreemarkerConstants.CREDIT_NOTE_TEMPLATE_2_1);
-
-            buffer = new StringWriter();
-            template.process(output, buffer);
-            buffer.flush();
-        } catch (IOException | TemplateException e) {
-            throw new IllegalStateException(e);
-        }
-
-        return buffer.toString();
+        return processTemplate(FreemarkerConstants.CREDIT_NOTE_TEMPLATE_2_1, output);
     }
+
+    public static void createXML(CreditNoteOutputModel output, Writer writer) {
+        processTemplate(FreemarkerConstants.CREDIT_NOTE_TEMPLATE_2_1, output, writer);
+    }
+
 
     public static String createXML(DebitNoteOutputModel output) {
-        StringWriter buffer;
-        try {
-            Template template = FreemarkerGlobalConfiguration.getInstance().getConfiguration().getTemplate(FreemarkerConstants.DEBIT_NOTE_TEMPLATE_2_1);
-
-            buffer = new StringWriter();
-            template.process(output, buffer);
-            buffer.flush();
-        } catch (IOException | TemplateException e) {
-            throw new IllegalStateException(e);
-        }
-
-        return buffer.toString();
+        return processTemplate(FreemarkerConstants.DEBIT_NOTE_TEMPLATE_2_1, output);
     }
+
+    public static void createXML(DebitNoteOutputModel output, Writer writer) {
+        processTemplate(FreemarkerConstants.DEBIT_NOTE_TEMPLATE_2_1, output, writer);
+    }
+
 
     public static String createXML(VoidedDocumentOutputModel output) {
-        StringWriter buffer;
-        try {
-            Template template = FreemarkerGlobalConfiguration.getInstance().getConfiguration().getTemplate(FreemarkerConstants.VOIDED_DOCUMENT_TEMPLATE_2_0);
-
-            buffer = new StringWriter();
-            template.process(output, buffer);
-            buffer.flush();
-        } catch (IOException | TemplateException e) {
-            throw new IllegalStateException(e);
-        }
-
-        return buffer.toString();
+        return processTemplate(FreemarkerConstants.VOIDED_DOCUMENT_TEMPLATE_2_0, output);
     }
+
+    public static void createXML(VoidedDocumentOutputModel output, Writer writer) {
+        processTemplate(FreemarkerConstants.VOIDED_DOCUMENT_TEMPLATE_2_0, output, writer);
+    }
+
 
     public static String createXML(SummaryDocumentOutputModel output) {
-        StringWriter buffer;
-        try {
-            Template template = FreemarkerGlobalConfiguration.getInstance().getConfiguration().getTemplate(FreemarkerConstants.SUMMARY_DOCUMENT_TEMPLATE_2_0);
-
-            buffer = new StringWriter();
-            template.process(output, buffer);
-            buffer.flush();
-        } catch (IOException | TemplateException e) {
-            throw new IllegalStateException(e);
-        }
-
-        return buffer.toString();
+        return processTemplate(FreemarkerConstants.SUMMARY_DOCUMENT_TEMPLATE_2_0, output);
     }
+
+    public static void createXML(SummaryDocumentOutputModel output, Writer writer) {
+        processTemplate(FreemarkerConstants.SUMMARY_DOCUMENT_TEMPLATE_2_0, output, writer);
+    }
+
 
     public static String createXML(PerceptionOutputModel output) {
-        StringWriter buffer;
-        try {
-            Template template = FreemarkerGlobalConfiguration.getInstance().getConfiguration().getTemplate(FreemarkerConstants.PERCEPTION_TEMPLATE_2_0);
-
-            buffer = new StringWriter();
-            template.process(output, buffer);
-            buffer.flush();
-        } catch (IOException | TemplateException e) {
-            throw new IllegalStateException(e);
-        }
-
-        return buffer.toString();
+        return processTemplate(FreemarkerConstants.PERCEPTION_TEMPLATE_2_0, output);
     }
+
+    public static void createXML(PerceptionOutputModel output, Writer writer) {
+        processTemplate(FreemarkerConstants.PERCEPTION_TEMPLATE_2_0, output, writer);
+    }
+
 
     public static String createXML(RetentionOutputModel output) {
-        StringWriter buffer;
-        try {
-            Template template = FreemarkerGlobalConfiguration.getInstance().getConfiguration().getTemplate(FreemarkerConstants.RETENTION_TEMPLATE_2_0);
-
-            buffer = new StringWriter();
-            template.process(output, buffer);
-            buffer.flush();
-        } catch (IOException | TemplateException e) {
-            throw new IllegalStateException(e);
-        }
-
-        return buffer.toString();
+        return processTemplate(FreemarkerConstants.RETENTION_TEMPLATE_2_0, output);
     }
 
-    public static String createXML(DespatchAdviceOutputModel output) {
-        StringWriter buffer;
-        try {
-            Template template = FreemarkerGlobalConfiguration.getInstance().getConfiguration().getTemplate(FreemarkerConstants.DESPATCH_ADVICE_TEMPLATE_2_1);
+    public static void createXML(RetentionOutputModel output, Writer writer) {
+        processTemplate(FreemarkerConstants.RETENTION_TEMPLATE_2_0, output, writer);
+    }
 
-            buffer = new StringWriter();
-            template.process(output, buffer);
-            buffer.flush();
+
+    public static String createXML(DespatchAdviceOutputModel output) {
+        return processTemplate(FreemarkerConstants.DESPATCH_ADVICE_TEMPLATE_2_1, output);
+    }
+
+    public static void createXML(DespatchAdviceOutputModel output, Writer writer) {
+        processTemplate(FreemarkerConstants.DESPATCH_ADVICE_TEMPLATE_2_1, output, writer);
+    }
+
+
+    private static String processTemplate(String templateName, Object dataModel) {
+        StringWriter writer = new StringWriter();
+        processTemplate(templateName, dataModel, writer);
+        return writer.toString();
+    }
+
+    private static void processTemplate(String templateName, Object dataModel, Writer writer) {
+        try {
+            Template template = FreemarkerGlobalConfiguration.getInstance().getConfiguration().getTemplate(templateName);
+
+            template.process(dataModel, writer);
+            writer.flush();
+            writer.close();
         } catch (IOException | TemplateException e) {
             throw new IllegalStateException(e);
         }
-
-        return buffer.toString();
     }
 }

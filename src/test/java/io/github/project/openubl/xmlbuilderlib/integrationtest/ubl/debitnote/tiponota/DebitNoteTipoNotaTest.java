@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.debitnote.tiponota;
 
-import io.github.project.openubl.xmlbuilderlib.facade.DocumentFacade;
+import io.github.project.openubl.xmlbuilderlib.facade.DocumentManager;
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
 import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog10;
@@ -72,7 +72,7 @@ public class DebitNoteTipoNotaTest extends AbstractUBLTest {
 
 
         // When
-        DocumentWrapper<DebitNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<DebitNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         DebitNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 

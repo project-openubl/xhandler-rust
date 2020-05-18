@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.summarydocument;
 
-import io.github.project.openubl.xmlbuilderlib.facade.DocumentFacade;
+import io.github.project.openubl.xmlbuilderlib.facade.DocumentManager;
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
 import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
@@ -80,7 +80,7 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         SummaryDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -138,7 +138,7 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         SummaryDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -191,7 +191,7 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         SummaryDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -249,7 +249,7 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         SummaryDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -302,7 +302,7 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         SummaryDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -360,7 +360,7 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         SummaryDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -414,7 +414,7 @@ public class SummaryDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<SummaryDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         SummaryDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 

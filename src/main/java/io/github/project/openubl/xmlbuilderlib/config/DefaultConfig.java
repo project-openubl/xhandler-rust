@@ -22,7 +22,7 @@ import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog9;
 
 import java.math.BigDecimal;
 
-public class DefaultXMLBuilderConfig implements XMLBuilderConfig {
+public class DefaultConfig implements Config {
 
     private BigDecimal igv;
     private BigDecimal ivap;
@@ -33,7 +33,7 @@ public class DefaultXMLBuilderConfig implements XMLBuilderConfig {
     private BigDecimal defaultIcb;
     private Catalog7 defaultTipoIgv;
 
-    public DefaultXMLBuilderConfig() {
+    public DefaultConfig() {
         this.defaultMoneda = "PEN";
         this.defaultUnidadMedida = "NIU";
         this.igv = new BigDecimal("0.18");
