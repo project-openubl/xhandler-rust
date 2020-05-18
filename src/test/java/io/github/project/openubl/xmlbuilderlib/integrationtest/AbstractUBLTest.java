@@ -135,7 +135,7 @@ public abstract class AbstractUBLTest {
     public void assertSendSunat(String xmlWithoutSignature) throws Exception {
         String skipSunat = System.getProperty("skipSunat", "false");
         if (skipSunat != null && skipSunat.equals("false")) {
-            Document signedXML = XMLSigner.firmarXML(xmlWithoutSignature, SIGN_REFERENCE_ID, CERTIFICATE.getX509Certificate(), CERTIFICATE.getPrivateKey());
+            Document signedXML = XMLSigner.signXML(xmlWithoutSignature, SIGN_REFERENCE_ID, CERTIFICATE.getX509Certificate(), CERTIFICATE.getPrivateKey());
             sendFileToSunat(signedXML, xmlWithoutSignature);
         }
     }
