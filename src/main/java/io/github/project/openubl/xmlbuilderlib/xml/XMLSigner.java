@@ -43,17 +43,17 @@ import java.util.List;
 
 public class XMLSigner {
 
-    public static Document firmarXML(
+    public static Document signXML(
             String text,
             String referenceID,
             X509Certificate certificate,
             PrivateKey privateKey
     ) throws ParserConfigurationException, NoSuchAlgorithmException, XMLSignatureException, InvalidAlgorithmParameterException, MarshalException, IOException, SAXException {
         Document document = XmlSignatureHelper.convertStringToXMLDocument(text);
-        return firmarXML(document, referenceID, certificate, privateKey);
+        return signXML(document, referenceID, certificate, privateKey);
     }
 
-    public static Document firmarXML(
+    public static Document signXML(
             Document copyDocument,
             String referenceID,
             X509Certificate certificate,
