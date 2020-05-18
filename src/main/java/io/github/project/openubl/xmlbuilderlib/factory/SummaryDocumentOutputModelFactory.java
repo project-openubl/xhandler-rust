@@ -16,14 +16,14 @@
  */
 package io.github.project.openubl.xmlbuilderlib.factory;
 
-import io.github.project.openubl.xmlbuilderlib.config.XMLBuilderConfig;
+import io.github.project.openubl.xmlbuilderlib.config.Config;
 import io.github.project.openubl.xmlbuilderlib.factory.common.ClienteOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.factory.common.FirmanteOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.factory.common.ProveedorOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.*;
 import io.github.project.openubl.xmlbuilderlib.models.input.sunat.*;
 import io.github.project.openubl.xmlbuilderlib.models.output.sunat.*;
-import io.github.project.openubl.xmlbuilderlib.utils.SystemClock;
+import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
 
 import java.text.MessageFormat;
 import java.util.function.Function;
@@ -37,92 +37,7 @@ public class SummaryDocumentOutputModelFactory {
         // Only static methods
     }
 
-    public static SummaryDocumentOutputModel getSummaryDocument(SummaryDocumentInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
-        Function<SummaryDocumentImpuestosInputModel, SummaryDocumentImpuestosOutputModel> summaryLineComprobanteImpuestosFn = inputImpuestos -> {
-            SummaryDocumentImpuestosOutputModel.Builder builder = SummaryDocumentImpuestosOutputModel.Builder.aSummaryDocumentImpuestosOutputModel()
-                    .withIgv(ImpuestoTotalResumenDiarioOutputModel.Builder.anImpuestoTotalResumenDiarioOutputModel()
-                            .withImporte(inputImpuestos.getIgv())
-                            .withCategoria(Catalog5.IGV)
-                            .build()
-                    );
-            if (inputImpuestos.getIcb() != null) {
-                builder.withIcb(ImpuestoTotalResumenDiarioOutputModel.Builder.anImpuestoTotalResumenDiarioOutputModel()
-                        .withImporte(inputImpuestos.getIcb())
-                        .withCategoria(Catalog5.ICBPER)
-                        .build()
-                );
-            }
-            return builder.build();
-        };
-
-        Function<SummaryDocumentComprobanteValorVentaInputModel, SummaryDocumentComprobanteValorVentaOutputModel> summaryLineComprobanteValorVentaFn = inputValorVenta -> {
-            SummaryDocumentComprobanteValorVentaOutputModel.Builder builder = SummaryDocumentComprobanteValorVentaOutputModel.Builder.aSummaryDocumentComprobanteValorVentaOutputModel()
-                    .withImporteTotal(inputValorVenta.getImporteTotal())
-                    .withOtrosCargos(inputValorVenta.getOtrosCargos());
-            if (inputValorVenta.getGravado() != null) {
-                builder.withGravado(TotalValorVentaOutputModel.Builder.aTotalValorVentaOutputModel()
-                        .withTipo(Catalog7_1.GRAVADO)
-                        .withImporte(inputValorVenta.getGravado())
-                        .build()
-                );
-            }
-            if (inputValorVenta.getExonerado() != null) {
-                builder.withExonerado(TotalValorVentaOutputModel.Builder.aTotalValorVentaOutputModel()
-                        .withTipo(Catalog7_1.EXONERADO)
-                        .withImporte(inputValorVenta.getExonerado())
-                        .build()
-                );
-            }
-            if (inputValorVenta.getInafecto() != null) {
-                builder.withInafecto(TotalValorVentaOutputModel.Builder.aTotalValorVentaOutputModel()
-                        .withTipo(Catalog7_1.INAFECTO)
-                        .withImporte(inputValorVenta.getInafecto())
-                        .build()
-                );
-            }
-            if (inputValorVenta.getGratuito() != null) {
-                builder.withGratuito(TotalValorVentaOutputModel.Builder.aTotalValorVentaOutputModel()
-                        .withTipo(Catalog7_1.GRATUITA)
-                        .withImporte(inputValorVenta.getGratuito())
-                        .build()
-                );
-            }
-            return builder.build();
-        };
-
-        Function<SummaryDocumentComprobanteInputModel, SummaryDocumentComprobanteOutputModel> summaryLineComprobanteFn = inputComprobante -> SummaryDocumentComprobanteOutputModel.Builder.aSummaryDocumentComprobanteOutputModel()
-                .withTipo(
-                        Catalog.valueOfCode(Catalog1.class, inputComprobante.getTipo()).orElseThrow(Catalog.invalidCatalogValue)
-                )
-                .withSerieNumero(inputComprobante.getSerieNumero())
-                .withCliente(ClienteOutputModelFactory.getCliente(inputComprobante.getCliente()))
-                .withImpuestos(summaryLineComprobanteImpuestosFn.apply(inputComprobante.getImpuestos()))
-                .withValorVenta(summaryLineComprobanteValorVentaFn.apply(inputComprobante.getValorVenta()))
-                .build();
-
-        Function<SummaryDocumentLineInputModel, SummaryDocumentLineOutputModel> summaryLineFn = inputLineFn -> {
-            SummaryDocumentLineOutputModel.Builder builder = SummaryDocumentLineOutputModel.Builder.aSummaryDocumentLineOutputModel()
-                    .withTipoOperacion(
-                            Catalog.valueOfCode(Catalog19.class, inputLineFn.getTipoOperacion()).orElseThrow(Catalog.invalidCatalogValue)
-                    )
-                    .withComprobante(summaryLineComprobanteFn.apply(inputLineFn.getComprobante()));
-            if (inputLineFn.getComprobanteAfectado() != null) {
-                builder.withComprobanteAfectado(SummaryDocumentComprobanteAfectadoOutputModel.Builder.aSummaryDocumentComprobanteAfectadoOutputModel()
-                        .withSerieNumero(inputLineFn.getComprobanteAfectado().getSerieNumero())
-                        .withTipo(
-                                Catalog.valueOfCode(Catalog1.class, inputLineFn.getComprobanteAfectado().getTipo()).orElseThrow(Catalog.invalidCatalogValue)
-                        )
-                        .build()
-                );
-            }
-
-            return builder.build();
-        };
-
-
-        //
-
-
+    public static SummaryDocumentOutputModel getSummaryDocument(SummaryDocumentInputModel input, Config config, SystemClock systemClock) {
         String fechaEmision = input.getFechaEmision() != null
                 ? toGregorianCalendarDate(input.getFechaEmision(), systemClock.getTimeZone())
                 : toGregorianCalendarDate(systemClock.getCalendarInstance().getTimeInMillis(), systemClock.getTimeZone());
@@ -142,9 +57,92 @@ public class SummaryDocumentOutputModelFactory {
                                 : FirmanteOutputModelFactory.getFirmante(input.getProveedor())
                 )
                 .withDetalle(input.getDetalle().stream()
-                        .map(summaryLineFn)
+                        .map(SummaryDocumentOutputModelFactory::getDocumentLine)
                         .collect(Collectors.toList())
                 )
                 .build();
+    }
+
+    public static SummaryDocumentLineOutputModel getDocumentLine(SummaryDocumentLineInputModel documentLineInputModel) {
+        SummaryDocumentLineOutputModel.Builder builder = SummaryDocumentLineOutputModel.Builder.aSummaryDocumentLineOutputModel()
+                .withTipoOperacion(
+                        Catalog.valueOfCode(Catalog19.class, documentLineInputModel.getTipoOperacion()).orElseThrow(Catalog.invalidCatalogValue)
+                )
+                .withComprobante(getComprobante(documentLineInputModel.getComprobante()));
+        if (documentLineInputModel.getComprobanteAfectado() != null) {
+            builder.withComprobanteAfectado(SummaryDocumentComprobanteAfectadoOutputModel.Builder.aSummaryDocumentComprobanteAfectadoOutputModel()
+                    .withSerieNumero(documentLineInputModel.getComprobanteAfectado().getSerieNumero())
+                    .withTipo(
+                            Catalog.valueOfCode(Catalog1.class, documentLineInputModel.getComprobanteAfectado().getTipo()).orElseThrow(Catalog.invalidCatalogValue)
+                    )
+                    .build()
+            );
+        }
+
+        return builder.build();
+    }
+
+    public static SummaryDocumentComprobanteOutputModel getComprobante(SummaryDocumentComprobanteInputModel inputComprobante) {
+        return SummaryDocumentComprobanteOutputModel.Builder.aSummaryDocumentComprobanteOutputModel()
+                .withTipo(
+                        Catalog.valueOfCode(Catalog1.class, inputComprobante.getTipo()).orElseThrow(Catalog.invalidCatalogValue)
+                )
+                .withSerieNumero(inputComprobante.getSerieNumero())
+                .withCliente(ClienteOutputModelFactory.getCliente(inputComprobante.getCliente()))
+                .withImpuestos(getImpuestos(inputComprobante.getImpuestos()))
+                .withValorVenta(getValorVenta(inputComprobante.getValorVenta()))
+                .build();
+    }
+
+    public static SummaryDocumentComprobanteValorVentaOutputModel getValorVenta(SummaryDocumentComprobanteValorVentaInputModel inputValorVenta) {
+        SummaryDocumentComprobanteValorVentaOutputModel.Builder builder = SummaryDocumentComprobanteValorVentaOutputModel.Builder.aSummaryDocumentComprobanteValorVentaOutputModel()
+                .withImporteTotal(inputValorVenta.getImporteTotal())
+                .withOtrosCargos(inputValorVenta.getOtrosCargos());
+        if (inputValorVenta.getGravado() != null) {
+            builder.withGravado(TotalValorVentaOutputModel.Builder.aTotalValorVentaOutputModel()
+                    .withTipo(Catalog7_1.GRAVADO)
+                    .withImporte(inputValorVenta.getGravado())
+                    .build()
+            );
+        }
+        if (inputValorVenta.getExonerado() != null) {
+            builder.withExonerado(TotalValorVentaOutputModel.Builder.aTotalValorVentaOutputModel()
+                    .withTipo(Catalog7_1.EXONERADO)
+                    .withImporte(inputValorVenta.getExonerado())
+                    .build()
+            );
+        }
+        if (inputValorVenta.getInafecto() != null) {
+            builder.withInafecto(TotalValorVentaOutputModel.Builder.aTotalValorVentaOutputModel()
+                    .withTipo(Catalog7_1.INAFECTO)
+                    .withImporte(inputValorVenta.getInafecto())
+                    .build()
+            );
+        }
+        if (inputValorVenta.getGratuito() != null) {
+            builder.withGratuito(TotalValorVentaOutputModel.Builder.aTotalValorVentaOutputModel()
+                    .withTipo(Catalog7_1.GRATUITA)
+                    .withImporte(inputValorVenta.getGratuito())
+                    .build()
+            );
+        }
+        return builder.build();
+    }
+
+    private static SummaryDocumentImpuestosOutputModel getImpuestos(SummaryDocumentImpuestosInputModel inputImpuestos) {
+        SummaryDocumentImpuestosOutputModel.Builder builder = SummaryDocumentImpuestosOutputModel.Builder.aSummaryDocumentImpuestosOutputModel()
+                .withIgv(ImpuestoTotalResumenDiarioOutputModel.Builder.anImpuestoTotalResumenDiarioOutputModel()
+                        .withImporte(inputImpuestos.getIgv())
+                        .withCategoria(Catalog5.IGV)
+                        .build()
+                );
+        if (inputImpuestos.getIcb() != null) {
+            builder.withIcb(ImpuestoTotalResumenDiarioOutputModel.Builder.anImpuestoTotalResumenDiarioOutputModel()
+                    .withImporte(inputImpuestos.getIcb())
+                    .withCategoria(Catalog5.ICBPER)
+                    .build()
+            );
+        }
+        return builder.build();
     }
 }

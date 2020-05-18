@@ -16,7 +16,8 @@
  */
 package io.github.project.openubl.xmlbuilderlib.utils;
 
-import io.github.project.openubl.xmlbuilderlib.config.XMLBuilderConfig;
+import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
+import io.github.project.openubl.xmlbuilderlib.config.Config;
 import io.github.project.openubl.xmlbuilderlib.factory.InvoiceAndNoteOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.factory.PerceptionRetentionOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.factory.SummaryDocumentOutputModelFactory;
@@ -42,31 +43,31 @@ public class InputToOutput {
         // Only static methods
     }
 
-    public static InvoiceOutputModel toOutput(InvoiceInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static InvoiceOutputModel toOutput(InvoiceInputModel input, Config config, SystemClock systemClock) {
         return InvoiceAndNoteOutputModelFactory.getInvoiceOutput(input, config, systemClock);
     }
 
-    public static CreditNoteOutputModel toOutput(CreditNoteInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static CreditNoteOutputModel toOutput(CreditNoteInputModel input, Config config, SystemClock systemClock) {
         return InvoiceAndNoteOutputModelFactory.getCreditNoteOutput(input, config, systemClock);
     }
 
-    public static DebitNoteOutputModel toOutput(DebitNoteInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static DebitNoteOutputModel toOutput(DebitNoteInputModel input, Config config, SystemClock systemClock) {
         return InvoiceAndNoteOutputModelFactory.getDebitNoteOutput(input, config, systemClock);
     }
 
-    public static VoidedDocumentOutputModel toOutput(VoidedDocumentInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static VoidedDocumentOutputModel toOutput(VoidedDocumentInputModel input, Config config, SystemClock systemClock) {
         return VoidedDocumentOutputModelFactory.getVoidedDocument(input, config, systemClock);
     }
 
-    public static SummaryDocumentOutputModel toOutput(SummaryDocumentInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static SummaryDocumentOutputModel toOutput(SummaryDocumentInputModel input, Config config, SystemClock systemClock) {
         return SummaryDocumentOutputModelFactory.getSummaryDocument(input, config, systemClock);
     }
 
-    public static PerceptionOutputModel toOutput(PerceptionInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static PerceptionOutputModel toOutput(PerceptionInputModel input, Config config, SystemClock systemClock) {
         return PerceptionRetentionOutputModelFactory.getPerception(input, config, systemClock);
     }
 
-    public static RetentionOutputModel toOutput(RetentionInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static RetentionOutputModel toOutput(RetentionInputModel input, Config config, SystemClock systemClock) {
         return PerceptionRetentionOutputModelFactory.getRetention(input, config, systemClock);
     }
 }

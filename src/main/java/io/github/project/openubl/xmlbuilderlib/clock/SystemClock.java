@@ -14,30 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xmlbuilderlib.config;
+package io.github.project.openubl.xmlbuilderlib.clock;
 
-import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog10;
-import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog7;
-import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog9;
+import java.util.Calendar;
+import java.util.TimeZone;
 
-import java.math.BigDecimal;
+public interface SystemClock {
 
-public interface XMLBuilderConfig {
-
-    BigDecimal getIgv();
-
-    BigDecimal getIvap();
-
-    String getDefaultMoneda();
-
-    String getDefaultUnidadMedida();
-
-    Catalog9 getDefaultTipoNotaCredito();
-
-    Catalog10 getDefaultTipoNotaDebito();
-
-    BigDecimal getDefaultIcb();
-
-    Catalog7 getDefaultTipoIgv();
+    TimeZone getTimeZone();
+    Calendar getCalendarInstance();
 
 }

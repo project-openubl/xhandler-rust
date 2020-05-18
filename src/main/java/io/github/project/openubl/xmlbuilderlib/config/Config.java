@@ -14,18 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xmlbuilderlib.utils;
+package io.github.project.openubl.xmlbuilderlib.config;
+
+import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog10;
+import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog7;
+import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog9;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
-public class NumberUtils {
+public interface Config {
 
-    private NumberUtils() {
-        // Just static methods
-    }
+    BigDecimal getIgv();
 
-    public static BigDecimal format2Digists(BigDecimal number) {
-        return number.setScale(2, RoundingMode.HALF_EVEN);
-    }
+    BigDecimal getIvap();
+
+    String getDefaultMoneda();
+
+    String getDefaultUnidadMedida();
+
+    Catalog9 getDefaultTipoNotaCredito();
+
+    Catalog10 getDefaultTipoNotaDebito();
+
+    BigDecimal getDefaultIcb();
+
+    Catalog7 getDefaultTipoIgv();
+
 }

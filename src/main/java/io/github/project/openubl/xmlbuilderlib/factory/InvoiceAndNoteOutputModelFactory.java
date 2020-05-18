@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.factory;
 
-import io.github.project.openubl.xmlbuilderlib.config.XMLBuilderConfig;
+import io.github.project.openubl.xmlbuilderlib.config.Config;
 import io.github.project.openubl.xmlbuilderlib.factory.common.ClienteOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.factory.common.FirmanteOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.factory.common.ProveedorOutputModelFactory;
@@ -31,7 +31,7 @@ import io.github.project.openubl.xmlbuilderlib.models.output.standard.invoice.In
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.NoteOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.creditNote.CreditNoteOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.debitNote.DebitNoteOutputModel;
-import io.github.project.openubl.xmlbuilderlib.utils.SystemClock;
+import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -48,7 +48,7 @@ public class InvoiceAndNoteOutputModelFactory {
         // Only static methods
     }
 
-    public static InvoiceOutputModel getInvoiceOutput(InvoiceInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static InvoiceOutputModel getInvoiceOutput(InvoiceInputModel input, Config config, SystemClock systemClock) {
         InvoiceOutputModel.Builder builder = InvoiceOutputModel.Builder.anInvoiceOutputModel();
 
         if (input.getSerie().matches("^[F|b].*$")) {
@@ -63,7 +63,7 @@ public class InvoiceAndNoteOutputModelFactory {
         return builder.build();
     }
 
-    public static CreditNoteOutputModel getCreditNoteOutput(CreditNoteInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static CreditNoteOutputModel getCreditNoteOutput(CreditNoteInputModel input, Config config, SystemClock systemClock) {
         CreditNoteOutputModel.Builder builder = CreditNoteOutputModel.Builder.aCreditNoteOutputModel()
                 .withTipoNota(
                         input.getTipoNota() != null
@@ -76,7 +76,7 @@ public class InvoiceAndNoteOutputModelFactory {
         return builder.build();
     }
 
-    public static DebitNoteOutputModel getDebitNoteOutput(DebitNoteInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static DebitNoteOutputModel getDebitNoteOutput(DebitNoteInputModel input, Config config, SystemClock systemClock) {
         DebitNoteOutputModel.Builder builder = DebitNoteOutputModel.Builder.aDebitNoteOutputModel()
                 .withTipoNota(
                         input.getTipoNota() != null
@@ -91,7 +91,7 @@ public class InvoiceAndNoteOutputModelFactory {
 
     // Enrich
 
-    private static void enrichDocument(DocumentInputModel input, DocumentOutputModel.Builder builder, XMLBuilderConfig config, SystemClock systemClock) {
+    private static void enrichDocument(DocumentInputModel input, DocumentOutputModel.Builder builder, Config config, SystemClock systemClock) {
         builder.withMoneda(config.getDefaultMoneda())
                 .withSerieNumero(input.getSerie().toUpperCase() + "-" + input.getNumero());
 

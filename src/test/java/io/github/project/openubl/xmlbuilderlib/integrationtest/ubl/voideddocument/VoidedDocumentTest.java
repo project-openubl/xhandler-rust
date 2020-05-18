@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.voideddocument;
 
-import io.github.project.openubl.xmlbuilderlib.facade.DocumentFacade;
+import io.github.project.openubl.xmlbuilderlib.facade.DocumentManager;
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
 import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
@@ -58,7 +58,7 @@ public class VoidedDocumentTest extends AbstractUBLTest {
 
 
         // When
-        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         VoidedDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -93,7 +93,7 @@ public class VoidedDocumentTest extends AbstractUBLTest {
 
 
         // When
-        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         VoidedDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -126,7 +126,7 @@ public class VoidedDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         VoidedDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -191,7 +191,7 @@ public class VoidedDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         VoidedDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 
@@ -224,7 +224,7 @@ public class VoidedDocumentTest extends AbstractUBLTest {
                 .build();
 
         // When
-        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<VoidedDocumentOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         VoidedDocumentOutputModel output = result.getOutput();
         String xml = result.getXml();
 

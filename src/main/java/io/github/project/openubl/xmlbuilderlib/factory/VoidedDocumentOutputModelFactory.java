@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.factory;
 
-import io.github.project.openubl.xmlbuilderlib.config.XMLBuilderConfig;
+import io.github.project.openubl.xmlbuilderlib.config.Config;
 import io.github.project.openubl.xmlbuilderlib.factory.common.FirmanteOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.factory.common.ProveedorOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog;
@@ -25,7 +25,7 @@ import io.github.project.openubl.xmlbuilderlib.models.input.sunat.VoidedDocument
 import io.github.project.openubl.xmlbuilderlib.models.input.sunat.VoidedDocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.sunat.VoidedDocumentLineOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.sunat.VoidedDocumentOutputModel;
-import io.github.project.openubl.xmlbuilderlib.utils.SystemClock;
+import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
 
 import java.text.MessageFormat;
 
@@ -37,7 +37,7 @@ public class VoidedDocumentOutputModelFactory {
         // Only static methods
     }
 
-    public static VoidedDocumentOutputModel getVoidedDocument(VoidedDocumentInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static VoidedDocumentOutputModel getVoidedDocument(VoidedDocumentInputModel input, Config config, SystemClock systemClock) {
         VoidedDocumentOutputModel.Builder builder = VoidedDocumentOutputModel.Builder.aVoidedDocumentOutputModel();
 
         // datos generales

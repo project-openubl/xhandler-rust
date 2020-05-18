@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.creditnote.tiponota;
 
-import io.github.project.openubl.xmlbuilderlib.facade.DocumentFacade;
+import io.github.project.openubl.xmlbuilderlib.facade.DocumentManager;
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
 import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog6;
@@ -73,7 +73,7 @@ public class CreditNoteTipoNotaTest extends AbstractUBLTest {
 
 
         // When
-        DocumentWrapper<CreditNoteOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
         CreditNoteOutputModel output = result.getOutput();
         String xml = result.getXml();
 

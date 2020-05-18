@@ -16,11 +16,11 @@
  */
 package io.github.project.openubl.xmlbuilderlib.factory;
 
-import io.github.project.openubl.xmlbuilderlib.config.XMLBuilderConfig;
+import io.github.project.openubl.xmlbuilderlib.config.Config;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.*;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.*;
-import io.github.project.openubl.xmlbuilderlib.utils.SystemClock;
+import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,7 +31,7 @@ public class DocumentLineOutputModelFactory {
         // Only static methods
     }
 
-    public static DocumentLineOutputModel getDocumentLineOutput(DocumentLineInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static DocumentLineOutputModel getDocumentLineOutput(DocumentLineInputModel input, Config config, SystemClock systemClock) {
         DocumentLineOutputModel.Builder builder = DocumentLineOutputModel.Builder.aDocumentLineOutputModel()
                 .withDescripcion(input.getDescripcion())
                 .withUnidadMedida(input.getUnidadMedida() != null ? input.getUnidadMedida() : config.getDefaultUnidadMedida())
@@ -97,7 +97,7 @@ public class DocumentLineOutputModelFactory {
         return builder.build();
     }
 
-    private static DocumentLineImpuestosOutputModel getDocumentLineImpuestosOutput_LeftRight(DocumentLineInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    private static DocumentLineImpuestosOutputModel getDocumentLineImpuestosOutput_LeftRight(DocumentLineInputModel input, Config config, SystemClock systemClock) {
         DocumentLineImpuestosOutputModel.Builder builder = DocumentLineImpuestosOutputModel.Builder.aDocumentLineImpuestosOutputModel();
 
 
@@ -145,7 +145,7 @@ public class DocumentLineOutputModelFactory {
         ).build();
     }
 
-    private static DocumentLineImpuestosOutputModel getDocumentLineImpuestosOutput_RightLeft(DocumentLineInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    private static DocumentLineImpuestosOutputModel getDocumentLineImpuestosOutput_RightLeft(DocumentLineInputModel input, Config config, SystemClock systemClock) {
         DocumentLineImpuestosOutputModel.Builder builder = DocumentLineImpuestosOutputModel.Builder.aDocumentLineImpuestosOutputModel();
 
 

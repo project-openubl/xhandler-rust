@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.factory;
 
-import io.github.project.openubl.xmlbuilderlib.config.XMLBuilderConfig;
+import io.github.project.openubl.xmlbuilderlib.config.Config;
 import io.github.project.openubl.xmlbuilderlib.factory.common.ClienteOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.factory.common.FirmanteOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.factory.common.ProveedorOutputModelFactory;
@@ -28,7 +28,7 @@ import io.github.project.openubl.xmlbuilderlib.models.input.sunat.PerceptionInpu
 import io.github.project.openubl.xmlbuilderlib.models.input.sunat.PerceptionRetentionInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.sunat.RetentionInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.sunat.*;
-import io.github.project.openubl.xmlbuilderlib.utils.SystemClock;
+import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -43,7 +43,7 @@ public class PerceptionRetentionOutputModelFactory {
         // Only static methods
     }
 
-    public static PerceptionOutputModel getPerception(PerceptionInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static PerceptionOutputModel getPerception(PerceptionInputModel input, Config config, SystemClock systemClock) {
         Catalog22 regimen = Catalog.valueOfCode(Catalog22.class, input.getRegimen()).orElseThrow(Catalog.invalidCatalogValue);
 
         PerceptionOutputModel.Builder builder = PerceptionOutputModel.Builder.aPerceptionOutputModel()
@@ -83,7 +83,7 @@ public class PerceptionRetentionOutputModelFactory {
         return result;
     }
 
-    public static RetentionOutputModel getRetention(RetentionInputModel input, XMLBuilderConfig config, SystemClock systemClock) {
+    public static RetentionOutputModel getRetention(RetentionInputModel input, Config config, SystemClock systemClock) {
         Catalog23 regimen = Catalog.valueOfCode(Catalog23.class, input.getRegimen()).orElseThrow(Catalog.invalidCatalogValue);
 
         RetentionOutputModel.Builder builder = RetentionOutputModel.Builder.aRetentionOutputModel()
@@ -125,7 +125,7 @@ public class PerceptionRetentionOutputModelFactory {
 
     // Enrich
 
-    private static void enrichPerceptionRetention(PerceptionRetentionInputModel input, PerceptionRetentionOutputModel.Builder builder, XMLBuilderConfig config, SystemClock systemClock) {
+    private static void enrichPerceptionRetention(PerceptionRetentionInputModel input, PerceptionRetentionOutputModel.Builder builder, Config config, SystemClock systemClock) {
         builder
                 .withMoneda(config.getDefaultMoneda())
                 .withObservacion(input.getObservacion());

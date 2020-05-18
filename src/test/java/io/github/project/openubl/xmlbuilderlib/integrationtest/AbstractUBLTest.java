@@ -16,9 +16,9 @@
  */
 package io.github.project.openubl.xmlbuilderlib.integrationtest;
 
-import io.github.project.openubl.xmlbuilderlib.config.DefaultXMLBuilderConfig;
-import io.github.project.openubl.xmlbuilderlib.config.XMLBuilderConfig;
-import io.github.project.openubl.xmlbuilderlib.utils.SystemClock;
+import io.github.project.openubl.xmlbuilderlib.config.DefaultConfig;
+import io.github.project.openubl.xmlbuilderlib.config.Config;
+import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
 import io.github.project.openubl.xmlbuilderlib.xml.XMLSigner;
 import io.github.project.openubl.xmlbuilderlib.xml.XmlSignatureHelper;
 import io.github.project.openubl.xmlsenderws.webservices.managers.smart.SmartBillServiceConfig;
@@ -74,7 +74,7 @@ public abstract class AbstractUBLTest {
     protected Validator validator;
 
 
-    protected XMLBuilderConfig config;
+    protected Config config;
     protected TimeZone timeZone;
     protected SystemClock systemClock;
 
@@ -95,7 +95,7 @@ public abstract class AbstractUBLTest {
         InputStream ksInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(KEYSTORE);
         CERTIFICATE = CertificateDetailsFactory.create(ksInputStream, KEYSTORE_PASSWORD);
 
-        config = new DefaultXMLBuilderConfig();
+        config = new DefaultConfig();
         timeZone = TimeZone.getTimeZone("America/Lima");
         systemClock = new SystemClock() {
             @Override
