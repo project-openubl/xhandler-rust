@@ -1,3 +1,4 @@
+<@compress single_line=true>
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <VoidedDocuments xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:VoidedDocuments-1"
                  xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
@@ -26,3 +27,4 @@
         <sac:VoidReasonDescription><![CDATA[${descripcionSustento}]]></sac:VoidReasonDescription>
     </sac:VoidedDocumentsLine>
 </VoidedDocuments>
+</@compress>

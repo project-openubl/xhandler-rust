@@ -1,3 +1,4 @@
+<@compress single_line=true>
 <#setting number_format="computer">
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <CreditNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2"
@@ -25,3 +26,4 @@
     </cac:CreditNoteLine>
     </#list>
 </CreditNote>
+</@compress>

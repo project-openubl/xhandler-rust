@@ -1,3 +1,4 @@
+<@compress single_line=true>
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Retention xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:Retention-1"
            xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
@@ -46,3 +47,4 @@
     </sac:SUNATRetentionDocumentReference>
     </#list>
 </Retention>
+</@compress>
