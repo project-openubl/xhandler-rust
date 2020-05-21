@@ -1,3 +1,4 @@
+<@compress single_line=true>
 <#setting number_format="computer">
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
@@ -107,3 +108,4 @@
     </cac:InvoiceLine>
     </#list>
 </Invoice>
+</@compress>
