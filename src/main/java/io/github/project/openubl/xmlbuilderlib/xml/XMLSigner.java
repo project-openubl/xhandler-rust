@@ -34,12 +34,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class XMLSigner {
 
@@ -48,35 +45,27 @@ public class XMLSigner {
             String referenceID,
             X509Certificate certificate,
             PrivateKey privateKey
-    ) throws ParserConfigurationException, NoSuchAlgorithmException, XMLSignatureException, InvalidAlgorithmParameterException, MarshalException, IOException, SAXException {
+    ) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, XMLSignatureException, MarshalException, IOException, SAXException, ParserConfigurationException {
         Document document = XmlSignatureHelper.convertStringToXMLDocument(text);
         return signXML(document, referenceID, certificate, privateKey);
     }
 
     public static Document signXML(
-            Document copyDocument,
+            Document document,
             String referenceID,
             X509Certificate certificate,
             PrivateKey privateKey
     ) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, MarshalException, XMLSignatureException, ParserConfigurationException {
-//        Document copyDocument = XMLUtils.cloneDocument(document);
+        addUBLExtensions(document);
+        addUBLExtension(document);
+        Node nodeExtensionContent = addExtensionContent(document);
 
-        addUBLExtensions(copyDocument);
-        addUBLExtension(copyDocument);
-        Node nodeExtensionContent = addExtensionContent(copyDocument);
-
-        XMLSignatureFactory signatureFactory;
-        // Try to install the Santuario Provider - fall back to the JDK provider if this does
-        // not work
-        try {
-            signatureFactory = XMLSignatureFactory.getInstance("DOM", "ApacheXMLDSig");
-        } catch (NoSuchProviderException ex) {
-            signatureFactory = XMLSignatureFactory.getInstance("DOM");
-        }
-
-        DOMSignContext signContext = new DOMSignContext(privateKey, copyDocument.getDocumentElement());
+        // Start the signing process
+        DOMSignContext signContext = new DOMSignContext(privateKey, document.getDocumentElement());
         signContext.setDefaultNamespacePrefix("ds");
         signContext.setParent(nodeExtensionContent);
+
+        XMLSignatureFactory signatureFactory = XMLSignatureFactory.getInstance("DOM");
 
         Reference reference = signatureFactory.newReference("",
                 signatureFactory.newDigestMethod(DigestMethod.SHA1, null),
@@ -86,25 +75,14 @@ public class XMLSigner {
                 signatureFactory.newCanonicalizationMethod(CanonicalizationMethod.INCLUSIVE, (C14NMethodParameterSpec) null),
                 signatureFactory.newSignatureMethod(SignatureMethod.RSA_SHA1, null), Collections.singletonList(reference));
 
-        // Certificate
-        List<X509Certificate> x509Content = new ArrayList<>();
-        x509Content.add(certificate);
-
         KeyInfoFactory keyInfoFactory = signatureFactory.getKeyInfoFactory();
-        X509Data xdata = keyInfoFactory.newX509Data(x509Content);
+        X509Data xdata = keyInfoFactory.newX509Data(Collections.singletonList(certificate));
         KeyInfo keyInfo = keyInfoFactory.newKeyInfo(Collections.singletonList(xdata));
 
-        // Sign
-        XMLSignature signature = signatureFactory.newXMLSignature(signedInfo, keyInfo);
+        XMLSignature signature = signatureFactory.newXMLSignature(signedInfo, keyInfo, null, referenceID, null);
         signature.sign(signContext);
 
-        Element elementParent = (Element) signContext.getParent();
-        if ((referenceID != null) && (elementParent.getElementsByTagName("ds:Signature") != null)) {
-            Element elementSignature = (Element) elementParent.getElementsByTagName("ds:Signature").item(0);
-            elementSignature.setAttribute("Id", referenceID);
-        }
-
-        return copyDocument;
+        return document;
     }
 
     private static void addUBLExtensions(Document document) {

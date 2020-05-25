@@ -82,7 +82,7 @@ public class XmlSignatureHelper {
 
     public static byte[] getBytesFromDocument(Document outputDoc) throws Exception {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        XmlSignatureHelper.transformNonTextNodeToOutputStream(outputDoc, outStream, false, "UTF-8");
+        XmlSignatureHelper.transformNonTextNodeToOutputStream(outputDoc, outStream, false, "ISO-8859-1");
         return outStream.toByteArray();
     }
 
