@@ -23,7 +23,7 @@
 
     <groupId>io.github.project-openubl</groupId>
     <artifactId>xml-builder-lib</artifactId>
-    <version>1.0.1.Final</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <name>XML Builder :: Lib</name>
     <description>XML Builder Library</description>
