@@ -18,9 +18,9 @@
   --ifm-code-font-size: 95%;
 }
 
-/* .hero.hero--primary {
-  --ifm-hero-background-color: #fff;
-  --ifm-hero-text-color: var(--ifm-font-color-base);
+.hero.hero--primary {
+  --ifm-hero-background-color: #fbb30f;
+  /* --ifm-hero-text-color: var(--ifm-font-color-base); */
   background-color: var(--ifm-hero-background-color);
   color: var(--ifm-hero-text-color);
 }
@@ -32,6 +32,10 @@
   color: var(--ifm-hero-text-color);
 }
 
+.hero.hero--primary .button.button--secondary {  
+  color: #fff !important;
+}
+
 .docusaurus-highlight-code-line {
   background-color: rgb(72, 77, 91);
   display: block;
@@ -41,4 +45,4 @@
 
 .footer.footer--dark {
   --ifm-footer-background-color: #000;
-} */
+}
