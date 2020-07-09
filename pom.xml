@@ -152,7 +152,7 @@
                 <artifactId>license-maven-plugin</artifactId>
                 <version>3.0</version>
                 <configuration>
-                    <header>copyright.txt</header>
+                    <header>tools/copyright.txt</header>
                     <properties>
                         <owner>Project OpenUBL</owner>
                         <email>projectopenubl+subscribe@googlegroups.com</email>
