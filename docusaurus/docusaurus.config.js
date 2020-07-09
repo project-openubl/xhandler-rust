@@ -86,13 +86,13 @@ module.exports = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           editUrl:
-            "https://github.com/project-openubl/xbuilder/edit/master/docs/",
+            "https://github.com/project-openubl/xbuilder/edit/master/docusaurus/",
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           editUrl:
-            "https://github.com/project-openubl/xbuilder/edit/master/docs/blog/",
+            "https://github.com/project-openubl/xbuilder/edit/master/docusaurus/blog/",
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),

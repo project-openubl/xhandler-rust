@@ -3,7 +3,7 @@ name: Docs
 on:
   push:
     paths:
-      - 'docs/**'
+      - 'docusaurus/**'
 
 jobs:
   gh-pages:
@@ -14,15 +14,15 @@ jobs:
       - name: Setup
         uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: --cwd docs/ install
+          cmd: --cwd docusaurus/ install
       - name: Build
         uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: --cwd docs/ build
+          cmd: --cwd docusaurus/ build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          publish_dir: docs/build
+          publish_dir: docusaurus/build
           external_repository: project-openubl/xbuilder-docs
           publish_branch: master
