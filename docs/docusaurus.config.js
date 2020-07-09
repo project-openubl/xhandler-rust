@@ -46,7 +46,7 @@ module.exports = {
         },
         {
           title: "Community",
-          items: [            
+          items: [
             {
               label: "Twitter",
               href: "https://twitter.com/openubl",
@@ -64,6 +64,12 @@ module.exports = {
         },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Project OpenUBL, Inc.`,
+    },
+    googleAnalytics: {
+      trackingID: "UA-152706512-4",
+    },
+    gtag: {
+      trackingID: 'UA-152706512-4',      
     },
   },
   stylesheets: [
@@ -91,6 +97,18 @@ module.exports = {
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
+      },
+    ],
+  ],
+  plugins: [
+    "@docusaurus/plugin-google-analytics",
+    "@docusaurus/plugin-google-gtag",
+    [
+      "@docusaurus/plugin-sitemap",
+      {
+        cacheTime: 600 * 1000, // 600 sec - cache purge period
+        changefreq: "weekly",
+        priority: 0.5,
       },
     ],
   ],
