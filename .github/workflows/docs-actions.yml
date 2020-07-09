@@ -6,8 +6,8 @@ on:
       - 'docs/**'
 
 jobs:
-  build:
-    name: "JDK 11 Build"
+  gh-pages:
+    name: "Github pages"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
