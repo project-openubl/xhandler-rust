@@ -1,11 +1,11 @@
 module.exports = {
   title: "XBuilder",
   tagline: "Java library for creating XML files based on Universal Bussiness Language (UBL)",
-  url: "https://your-docusaurus-test-site.com",
-  baseUrl: "/",
+  url: "https://project-openubl.github.io/xbuilder-docs/",
+  baseUrl: "/xbuilder-docs/",
   favicon: "img/favicon.ico",
   organizationName: "project-openubl", // Usually your GitHub org/user name.
-  projectName: "xbuilder", // Usually your repo name.
+  projectName: "xbuilder-docs", // Usually your repo name.
   themeConfig: {
     navbar: {
       title: "",
