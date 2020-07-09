@@ -1,0 +1,29 @@
+name: Docs
+
+on:
+  push:
+    paths:
+      - 'docs/**'
+
+jobs:
+  build:
+    name: "JDK 11 Build"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup
+        uses: borales/actions-yarn@v2.0.0
+        with:
+          cmd: yarn --cwd docs/ install
+      - name: Build
+        uses: borales/actions-yarn@v2.0.0
+        with:
+          cmd: yarn --cwd docs/ build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          personal_token: ${{ secrets.PERSONAL_TOKEN }}
+          publish_dir: docs/build
+          external_repository: project-openubl/xbuilder-docs
+          publish_branch: master
