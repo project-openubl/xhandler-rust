@@ -6,7 +6,7 @@
 
 # XBuilder
 
-Java library for creating XML files based on UBL standards.
+Java library for creating and signing XML files based on UBL standards.
 
 XBuilder can be found in [Maven Central](https://mvnrepository.com/artifact/io.github.project-openubl/xbuilder)
 

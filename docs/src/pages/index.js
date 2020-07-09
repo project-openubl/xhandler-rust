@@ -63,7 +63,7 @@ function Home() {
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Java library for creating XML files based on Universal Bussiness Language (UBL) <head />"
+      description="Java library for creating and signing XML files based on Universal Bussiness Language (UBL) <head />"
     >
       <header className={clsx("hero hero--primary", styles.heroBanner)}>
         <div className="container">

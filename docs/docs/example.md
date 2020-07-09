@@ -207,3 +207,18 @@ The content of the variable `xml` will be:
    </cac:InvoiceLine>
 </Invoice>
 ```
+
+## Sign XML
+
+For signing a XML you need to load your `X509Certificate` and `PrivateKey` using the method of your preference.
+
+```java
+String xml; // This is comes from the example above
+String signID = "mySignID"; // Your Signature ID
+
+// Get your certificate using the method of your preference
+X509Certificate certificate;
+PrivateKey privateKey;
+
+Document signedXML = XMLSigner.signXML(xml, signID, certificate, privateKey);
+```

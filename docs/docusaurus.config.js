@@ -1,6 +1,6 @@
 module.exports = {
   title: "XBuilder",
-  tagline: "Java library for creating XML files based on Universal Bussiness Language (UBL)",
+  tagline: "Java library for creating and signing XML files based on Universal Bussiness Language (UBL)",
   url: "https://project-openubl.github.io/xbuilder-docs/",
   baseUrl: "/xbuilder-docs/",
   favicon: "img/favicon.ico",
@@ -86,13 +86,13 @@ module.exports = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           editUrl:
-            "https://github.com/facebook/docusaurus/edit/master/website/",
+            "https://github.com/project-openubl/xbuilder/edit/master/docs/",
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           editUrl:
-            "https://github.com/facebook/docusaurus/edit/master/website/blog/",
+            "https://github.com/project-openubl/xbuilder/edit/master/docs/blog/",
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
