@@ -1,12 +1,12 @@
-![CI](https://github.com/project-openubl/xml-builder-lib/workflows/CI/badge.svg)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=project-openubl_xml-builder-lib&metric=alert_status)](https://sonarcloud.io/dashboard?id=project-openubl_xml-builder-lib)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcarlosthe19916%2Fxml-builder-lib.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcarlosthe19916%2Fxml-builder-lib?ref=badge_shield)
+![CI](https://github.com/project-openubl/xbuilder/workflows/CI/badge.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=project-openubl_xbuilder&metric=alert_status)](https://sonarcloud.io/dashboard?id=project-openubl_xbuilder)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcarlosthe19916%2Fxbuilder.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcarlosthe19916%2Fxbuilder?ref=badge_shield)
 
 # XBuilder
 
 Java library for creating XML files based on UBL standards.
 
-XBuilder can be found in [Maven Central](https://mvnrepository.com/artifact/io.github.project-openubl/xml-builder-lib)
+XBuilder can be found in [Maven Central](https://mvnrepository.com/artifact/io.github.project-openubl/xbuilder)
 
 ## Installation
 ### Maven
@@ -16,8 +16,8 @@ Open your `pom.xml` file and add:
 ```xml
 <dependency>
     <groupId>io.github.project-openubl</groupId>
-        <artifactId>xml-builder-lib</artifactId>
-    <version>1.0.1.Final</version>
+        <artifactId>xbuilder</artifactId>
+    <version>1.1.0.Final</version>
 </dependency>
 ```
 
@@ -26,7 +26,7 @@ Open your `pom.xml` file and add:
 Open your `build.gradle` file and add:
 
 ```java
-compile group: 'io.github.project-openubl', name: 'xml-builder-lib', version: '1.0.1.Final'
+compile group: 'io.github.project-openubl', name: 'xbuilder', version: '1.1.0.Final'
 ```
 
 ## Supported countries

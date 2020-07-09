@@ -22,8 +22,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.project-openubl</groupId>
-    <artifactId>xml-builder-lib</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <artifactId>xbuilder</artifactId>
+    <version>1.1.0-SNAPSHOT</version>
 
     <name>XML Builder :: Lib</name>
     <description>XML Builder Library</description>
@@ -66,9 +66,9 @@
     </developers>
 
     <scm>
-        <url>https://github.com/project-openubl/xml-builder-lib</url>
-        <connection>scm:git:git://github.com/project-openubl/xml-builder-lib.git</connection>
-        <developerConnection>scm:git:git@github.com:project-openubl/xml-builder-lib.git</developerConnection>
+        <url>https://github.com/project-openubl/xbuilder</url>
+        <connection>scm:git:git://github.com/project-openubl/xbuilder.git</connection>
+        <developerConnection>scm:git:git@github.com:project-openubl/xbuilder.git</developerConnection>
     </scm>
 
     <distributionManagement>
@@ -249,7 +249,7 @@
             <properties>
                 <sonar.host.url>https://sonarcloud.io</sonar.host.url>
                 <sonar.organization>project-openubl</sonar.organization>
-                <sonar.projectKey>project-openubl_xml-builder-lib</sonar.projectKey>
+                <sonar.projectKey>project-openubl_xbuilder</sonar.projectKey>
                 <sonar.projectName>XML Builder Lib</sonar.projectName>
             </properties>
             <build>

@@ -15,7 +15,7 @@ The [Open Source Guides](https://opensource.guide/) website has a collection of 
 There are many ways to contribute to Docusaurus, and many of them do not involve writing any code. Here's a few ideas to get started:
 
 - Start using XBuilder! Go through the Getting Started guides. Does everything work as expected? If not, we're always looking for improvements. Let us know by opening an issue.
-- Look through [the issues](https://github.com/project-openubl/xml-builder-lib/issues). If you find an issue you would like to fix, open a pull request. Issues tagged as [Good first issue](https://github.com/project-openubl/xml-builder-lib/labels/Good%20first%20issue) are a good place to get started.
+- Look through [the issues](https://github.com/project-openubl/xbuilder/issues). If you find an issue you would like to fix, open a pull request. Issues tagged as [Good first issue](https://github.com/project-openubl/xbuilder/labels/Good%20first%20issue) are a good place to get started.
 - Help us making the docs better. File an issue if you find anything that is confusing or can be improved.
 
 Contributions are very welcome. If you think you need help planning your contribution, please ping us on Twitter at [@openubl](https://twitter.com/openubl) and let us know you are looking for a bit of help.

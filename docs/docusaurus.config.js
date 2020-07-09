@@ -22,7 +22,7 @@ module.exports = {
         },
         // { to: "blog", label: "Blog", position: "left" },
         {
-          href: "https://github.com/project-openubl/xml-builder-lib",
+          href: "https://github.com/project-openubl/xbuilder",
           label: "GitHub",
           position: "right",
         },
@@ -58,7 +58,7 @@ module.exports = {
           items: [
             {
               label: "GitHub",
-              href: "https://github.com/project-openubl/xml-builder-lib",
+              href: "https://github.com/project-openubl/xbuilder",
             },
           ],
         },
@@ -69,7 +69,7 @@ module.exports = {
       trackingID: "UA-152706512-4",
     },
     gtag: {
-      trackingID: 'UA-152706512-4',      
+      trackingID: 'UA-152706512-4',
     },
   },
   stylesheets: [
