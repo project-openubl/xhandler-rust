@@ -2,9 +2,32 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=project-openubl_xml-builder-lib&metric=alert_status)](https://sonarcloud.io/dashboard?id=project-openubl_xml-builder-lib)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcarlosthe19916%2Fxml-builder-lib.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcarlosthe19916%2Fxml-builder-lib?ref=badge_shield)
 
-# XML Builder Library
+# XBuilder
 
 Java library for creating XML files based on UBL standards.
+
+XBuilder can be found in [Maven Central](https://mvnrepository.com/artifact/io.github.project-openubl/xml-builder-lib)
+
+## Installation
+### Maven
+
+Open your `pom.xml` file and add:
+
+```xml
+<dependency>
+    <groupId>io.github.project-openubl</groupId>
+        <artifactId>xml-builder-lib</artifactId>
+    <version>1.0.1.Final</version>
+</dependency>
+```
+
+### Gradle
+
+Open your `build.gradle` file and add:
+
+```java
+compile group: 'io.github.project-openubl', name: 'xml-builder-lib', version: '1.0.1.Final'
+```
 
 ## Supported countries
 
