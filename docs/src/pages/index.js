@@ -63,7 +63,7 @@ function Home() {
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />"
+      description="Java library for creating XML files based on Universal Bussiness Language (UBL) <head />"
     >
       <header className={clsx("hero hero--primary", styles.heroBanner)}>
         <div className="container">
