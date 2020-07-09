@@ -14,11 +14,11 @@ jobs:
       - name: Setup
         uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: yarn --cwd docs/ install
+          cmd: --cwd docs/ install
       - name: Build
         uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: yarn --cwd docs/ build
+          cmd: --cwd docs/ build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
