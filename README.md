@@ -15,7 +15,7 @@ Open your `pom.xml` file and add:
 ```xml
 <dependency>
     <groupId>io.github.project-openubl</groupId>
-        <artifactId>xbuilder</artifactId>
+    <artifactId>xbuilder</artifactId>
     <version>1.1.0.Final</version>
 </dependency>
 ```
