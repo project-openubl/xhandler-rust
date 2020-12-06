@@ -162,7 +162,6 @@
                         <exclude>src/test/resources/**</exclude>
                         <exclude>src/main/resources/**</exclude>
                         <exclude>.github/**</exclude>
-                        <exclude>docusaurus/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
