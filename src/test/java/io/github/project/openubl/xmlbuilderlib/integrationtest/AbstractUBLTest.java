@@ -145,6 +145,9 @@ public abstract class AbstractUBLTest {
         XmlContentModel xmlContentModel = smartBillServiceModel.getXmlContentModel();
         BillServiceModel billServiceModel = smartBillServiceModel.getBillServiceModel();
 
+        if (billServiceModel.getNotes() != null) {
+            billServiceModel.getNotes().forEach(f -> System.out.println("WARNING:" + f));
+        }
 
         // Check ticket
         if (!xmlContentModel.getDocumentType().equals(DocumentType.VOIDED_DOCUMENT.getType()) && !xmlContentModel.getDocumentType().equals(DocumentType.SUMMARY_DOCUMENT.getType())) {
