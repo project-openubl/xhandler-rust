@@ -11,6 +11,6 @@
     <cac:BillingReference>
         <cac:InvoiceDocumentReference>
             <cbc:ID>${serieNumeroComprobanteAfectado}</cbc:ID>
-            <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="SUNAT:Identificador de Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">${tipoDocumentoComprobanteAfectado.code}</cbc:DocumentTypeCode>
+            <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">${tipoDocumentoComprobanteAfectado.code}</cbc:DocumentTypeCode>
         </cac:InvoiceDocumentReference>
     </cac:BillingReference>

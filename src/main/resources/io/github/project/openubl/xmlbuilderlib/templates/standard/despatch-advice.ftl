@@ -26,13 +26,13 @@
     <#if guiaRemisionDadaDeBaja??>
     <cac:OrderReference>
         <cbc:ID>${guiaRemisionDadaDeBaja.serieNumero}</cbc:ID>
-        <cbc:OrderTypeCode listAgencyName="PE:SUNAT" listName="SUNAT:Identificador de Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">${guiaRemisionDadaDeBaja.tipoDocumento.code}</cbc:OrderTypeCode>
+        <cbc:OrderTypeCode listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">${guiaRemisionDadaDeBaja.tipoDocumento.code}</cbc:OrderTypeCode>
     </cac:OrderReference>
     </#if>
     <#if documentoAdicionalRelacionado??>
     <cac:AdditionalDocumentReference>
         <cbc:ID>${documentoAdicionalRelacionado.serieNumero}</cbc:ID>
-        <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="SUNAT:Identificador de documento relacionado" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo21">${documentoAdicionalRelacionado.tipoDocumento.code}</cbc:DocumentTypeCode>
+        <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="Documento relacionado" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo21">${documentoAdicionalRelacionado.tipoDocumento.code}</cbc:DocumentTypeCode>
     </cac:AdditionalDocumentReference>
     </#if>
     <#include "../signature.ftl">
