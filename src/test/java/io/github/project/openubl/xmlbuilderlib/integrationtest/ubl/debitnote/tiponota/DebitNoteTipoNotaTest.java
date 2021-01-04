@@ -79,7 +79,7 @@ public class DebitNoteTipoNotaTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/debitnote/tiponota/descuentoPorItem.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
 }

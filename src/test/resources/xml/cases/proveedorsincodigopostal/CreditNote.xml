@@ -26,7 +26,7 @@
   <cbc:LineCountNumeric>1</cbc:LineCountNumeric>
   <cac:DiscrepancyResponse>
     <cbc:ReferenceID>F009-9</cbc:ReferenceID>
-    <cbc:ResponseCode listAgencyName="PE:SUNAT" listName="SUNAT: Identificador de tipo de nota de debito" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo10">01</cbc:ResponseCode>
+    <cbc:ResponseCode>01</cbc:ResponseCode>
     <cbc:Description><![CDATA[Comprobante rechazado]]></cbc:Description>
   </cac:DiscrepancyResponse>
   <cac:BillingReference>

@@ -74,6 +74,6 @@ public class SpecialCharactersTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice_specialCharacters.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 }

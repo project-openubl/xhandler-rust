@@ -72,8 +72,8 @@
             <cac:TaxSubtotal>
                 <cbc:TaxAmount currencyID="${moneda}">${item.impuestos.icb.importe}</cbc:TaxAmount>
                 <cbc:BaseUnitMeasure unitCode="${item.unidadMedida}">${item.cantidad}</cbc:BaseUnitMeasure>
-                <cbc:PerUnitAmount currencyID="${moneda}">${item.impuestos.icb.icbValor}</cbc:PerUnitAmount>
                 <cac:TaxCategory>
+                    <cbc:PerUnitAmount currencyID="${moneda}">${item.impuestos.icb.icbValor}</cbc:PerUnitAmount>
                     <cac:TaxScheme>
                         <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">${item.impuestos.icb.categoria.code}</cbc:ID>
                         <cbc:Name>${item.impuestos.icb.categoria.nombre}</cbc:Name>

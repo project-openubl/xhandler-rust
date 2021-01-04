@@ -27,9 +27,7 @@
     </cbc:DocumentCurrencyCode>
     <cac:DiscrepancyResponse>
         <cbc:ReferenceID>B001-1</cbc:ReferenceID>
-        <cbc:ResponseCode listAgencyName="PE:SUNAT" listName="SUNAT: Identificador de tipo de nota de debito"
-                          listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo10">03
-        </cbc:ResponseCode>
+        <cbc:ResponseCode>03</cbc:ResponseCode>
         <cbc:Description><![CDATA[mi sustento]]></cbc:Description>
     </cac:DiscrepancyResponse>
     <cac:BillingReference>

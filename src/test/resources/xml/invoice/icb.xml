@@ -147,8 +147,8 @@
             <cac:TaxSubtotal>
                 <cbc:TaxAmount currencyID="PEN">2</cbc:TaxAmount>
                 <cbc:BaseUnitMeasure unitCode="NIU">10</cbc:BaseUnitMeasure>
-                <cbc:PerUnitAmount currencyID="PEN">0.2</cbc:PerUnitAmount>
                 <cac:TaxCategory>
+                    <cbc:PerUnitAmount currencyID="PEN">0.2</cbc:PerUnitAmount>
                     <cac:TaxScheme>
                         <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">
                             7152
@@ -206,8 +206,8 @@
             <cac:TaxSubtotal>
                 <cbc:TaxAmount currencyID="PEN">2</cbc:TaxAmount>
                 <cbc:BaseUnitMeasure unitCode="NIU">10</cbc:BaseUnitMeasure>
-                <cbc:PerUnitAmount currencyID="PEN">0.2</cbc:PerUnitAmount>
                 <cac:TaxCategory>
+                    <cbc:PerUnitAmount currencyID="PEN">0.2</cbc:PerUnitAmount>
                     <cac:TaxScheme>
                         <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">
                             7152
