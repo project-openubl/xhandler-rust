@@ -200,7 +200,7 @@ public class InvoiceTest extends AbstractUBLTest {
                                 .withDepartamento("Ayacucho")
                                 .withProvincia("Huamanga")
                                 .withDistrito("Jesus Nazareno")
-                                .withCodigoLocal("05003")
+                                .withCodigoLocal("010101")
                                 .withUrbanizacion("000000")
                                 .withDireccion("Jr. Las piedras 123")
                                 .withCodigoPais("PE")
