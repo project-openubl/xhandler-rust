@@ -54,7 +54,7 @@
                 <cbc:RegistrationName>Softgreen S.A.C.</cbc:RegistrationName>
                 <cac:RegistrationAddress>
                     <cbc:ID>050101</cbc:ID>
-                    <cbc:AddressTypeCode>010101</cbc:AddressTypeCode>
+                    <cbc:AddressTypeCode>0001</cbc:AddressTypeCode>
                     <cbc:CitySubdivisionName>000000</cbc:CitySubdivisionName>
                     <cbc:CityName>Huamanga</cbc:CityName>
                     <cbc:CountrySubentity>Ayacucho</cbc:CountrySubentity>
