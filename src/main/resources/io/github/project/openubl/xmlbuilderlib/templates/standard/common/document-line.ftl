@@ -2,7 +2,7 @@
         <cac:PricingReference>
             <cac:AlternativeConditionPrice>
                 <cbc:PriceAmount currencyID="${moneda}">${item.precioDeReferencia.precio}</cbc:PriceAmount>
-                <cbc:PriceTypeCode listAgencyName="PE:SUNAT" listName="SUNAT:Indicador de Tipo de Precio" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo16">${item.precioDeReferencia.tipoPrecio.code}</cbc:PriceTypeCode>
+                <cbc:PriceTypeCode listAgencyName="PE:SUNAT" listName="Tipo de Precio" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo16">${item.precioDeReferencia.tipoPrecio.code}</cbc:PriceTypeCode>
             </cac:AlternativeConditionPrice>
         </cac:PricingReference>
 <#--        <#list item.cargos as cargo>-->
@@ -46,7 +46,7 @@
                 <cac:TaxCategory>
                     <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifier">${item.impuestos.igv.categoria.categoria}</cbc:ID>
                     <cbc:Percent>${item.impuestos.igv.porcentaje}</cbc:Percent>
-                    <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="SUNAT:Codigo de Tipo de Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">${item.impuestos.igv.tipo.code}</cbc:TaxExemptionReasonCode>
+                    <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">${item.impuestos.igv.tipo.code}</cbc:TaxExemptionReasonCode>
                     <cac:TaxScheme>
                         <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">${item.impuestos.igv.categoria.code}</cbc:ID>
                         <cbc:Name>${item.impuestos.igv.categoria.nombre}</cbc:Name>

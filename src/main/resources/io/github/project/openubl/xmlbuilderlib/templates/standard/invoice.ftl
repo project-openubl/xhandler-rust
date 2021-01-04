@@ -7,7 +7,7 @@
     <#include "common/ubl-extensions.ftl">
     <#include "common/general-data.ftl">
 <#--    <#if fechaVencimiento??><cbc:DueDate>${fechaVencimiento}</cbc:DueDate></#if>-->
-    <cbc:InvoiceTypeCode listID="0101" listAgencyName="PE:SUNAT" listName="SUNAT:Identificador de Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">${tipoInvoice.code}</cbc:InvoiceTypeCode>
+    <cbc:InvoiceTypeCode listID="0101" listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">${tipoInvoice.code}</cbc:InvoiceTypeCode>
 <#--    <#include "./common/legends.ftl">-->
     <cbc:DocumentCurrencyCode listID="ISO 4217 Alpha" listAgencyName="United Nations Economic Commission for Europe" listName="Currency">${moneda}</cbc:DocumentCurrencyCode>
 <#--    <#if orderCompra??>-->
@@ -20,7 +20,7 @@
 <#--    <#list anticipos as item>-->
 <#--    <cac:AdditionalDocumentReference>-->
 <#--        <cbc:ID>${item.serieNumero}</cbc:ID>-->
-<#--        <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="SUNAT: Identificador de documento relacionado" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo12">${item.tipoDocumento.code}</cbc:DocumentTypeCode>-->
+<#--        <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="Documento relacionado" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo12">${item.tipoDocumento.code}</cbc:DocumentTypeCode>-->
 <#--        <cbc:DocumentStatusCode listName="Anticipo" listAgencyName="PE:SUNAT">${item?index + 1}</cbc:DocumentStatusCode>-->
 <#--        <cac:IssuerParty>-->
 <#--            <cac:PartyIdentification>-->

@@ -20,7 +20,7 @@
   <cbc:ID>F001-1</cbc:ID>
   <cbc:IssueDate>2019-02-01</cbc:IssueDate>
   <cbc:IssueTime>18:30:00</cbc:IssueTime>
-  <cbc:InvoiceTypeCode listAgencyName="PE:SUNAT" listID="0101" listName="SUNAT:Identificador de Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">01</cbc:InvoiceTypeCode>
+  <cbc:InvoiceTypeCode listAgencyName="PE:SUNAT" listID="0101" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">01</cbc:InvoiceTypeCode>
   <cbc:DocumentCurrencyCode listAgencyName="United Nations Economic Commission for Europe" listID="ISO 4217 Alpha" listName="Currency">PEN</cbc:DocumentCurrencyCode>
   <cbc:LineCountNumeric>1</cbc:LineCountNumeric>
   <cac:Signature>
@@ -42,7 +42,7 @@
   <cac:AccountingSupplierParty>
     <cac:Party>
       <cac:PartyIdentification>
-        <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="6" schemeName="SUNAT:Identificador de Documento de Identidad" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">22222222222</cbc:ID>
+        <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="6" schemeName="Documento de Identidad" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">22222222222</cbc:ID>
       </cac:PartyIdentification>
       <cac:PartyLegalEntity>
         <cbc:RegistrationName>Proveedor</cbc:RegistrationName>
@@ -52,7 +52,7 @@
   <cac:AccountingCustomerParty>
     <cac:Party>
       <cac:PartyIdentification>
-        <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="6" schemeName="SUNAT:Identificador de Documento de Identidad" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">33333333333</cbc:ID>
+        <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="6" schemeName="Documento de Identidad" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">33333333333</cbc:ID>
       </cac:PartyIdentification>
       <cac:PartyLegalEntity>
         <cbc:RegistrationName>Cliente</cbc:RegistrationName>
@@ -86,7 +86,7 @@
     <cac:PricingReference>
       <cac:AlternativeConditionPrice>
         <cbc:PriceAmount currencyID="PEN">118</cbc:PriceAmount>
-        <cbc:PriceTypeCode listAgencyName="PE:SUNAT" listName="SUNAT:Indicador de Tipo de Precio" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo16">01</cbc:PriceTypeCode>
+        <cbc:PriceTypeCode listAgencyName="PE:SUNAT" listName="Tipo de Precio" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo16">01</cbc:PriceTypeCode>
       </cac:AlternativeConditionPrice>
     </cac:PricingReference>
     <cac:TaxTotal>
@@ -97,7 +97,7 @@
         <cac:TaxCategory>
           <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifier">S</cbc:ID>
           <cbc:Percent>18</cbc:Percent>
-          <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="SUNAT:Codigo de Tipo de Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">10</cbc:TaxExemptionReasonCode>
+          <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">10</cbc:TaxExemptionReasonCode>
           <cac:TaxScheme>
             <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">1000</cbc:ID>
             <cbc:Name>IGV</cbc:Name>
