@@ -52,9 +52,8 @@ import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -78,6 +77,7 @@ public abstract class AbstractUBLTest {
     protected TimeZone timeZone;
     protected SystemClock systemClock;
 
+    protected String PROVIDER_WITHOUT_ADDRESS_NOTE = "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor";
 
     public AbstractUBLTest() throws Exception {
         xPath = XPathFactory.newInstance().newXPath();
@@ -132,21 +132,27 @@ public abstract class AbstractUBLTest {
         assertFalse(myDiff.hasDifferences(), expected + "\n" + myDiff.toString());
     }
 
-    public void assertSendSunat(String xmlWithoutSignature) throws Exception {
+    public void assertSendSunat(String xmlWithoutSignature, String... allowedNotes) throws Exception {
         String skipSunat = System.getProperty("skipSunat", "false");
         if (skipSunat != null && skipSunat.equals("false")) {
             Document signedXML = XMLSigner.signXML(xmlWithoutSignature, SIGN_REFERENCE_ID, CERTIFICATE.getX509Certificate(), CERTIFICATE.getPrivateKey());
-            sendFileToSunat(signedXML, xmlWithoutSignature);
+            sendFileToSunat(signedXML, xmlWithoutSignature, allowedNotes);
         }
     }
 
-    private void sendFileToSunat(Document document, String xmlWithoutSignature) throws Exception {
+    private void sendFileToSunat(Document document, String xmlWithoutSignature, String... allowedNotes) throws Exception {
         SmartBillServiceModel smartBillServiceModel = SmartBillServiceManager.send(XmlSignatureHelper.getBytesFromDocument(document), SUNAT_BETA_USERNAME, SUNAT_BETA_PASSWORD);
         XmlContentModel xmlContentModel = smartBillServiceModel.getXmlContentModel();
         BillServiceModel billServiceModel = smartBillServiceModel.getBillServiceModel();
 
         if (billServiceModel.getNotes() != null) {
-            billServiceModel.getNotes().forEach(f -> System.out.println("WARNING:" + f));
+            List<String> allowedNotesList = Arrays.asList(allowedNotes);
+
+            List<String> notesToCheck = billServiceModel.getNotes().stream().filter(f -> allowedNotesList.stream().noneMatch(f::startsWith)).collect(Collectors.toList());
+            notesToCheck.forEach(f -> System.out.println("WARNING:" + f));
+
+            // TODO Fix all warning messages and then apply this validation
+//            assertTrue(notesToCheck.isEmpty(), "Notes fom SUNAT:\n" + String.join("\n", notesToCheck));
         }
 
         // Check ticket

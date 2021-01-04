@@ -76,7 +76,7 @@ public class InvoiceMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/mindata/MinData_RUC.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
     }
 
     @Test
@@ -118,7 +118,7 @@ public class InvoiceMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/mindata/MinData_DNI.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
     }
 
     @Test
@@ -160,7 +160,7 @@ public class InvoiceMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/mindata/MinData_DocTribNoDomSinRuc.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
     }
 
     @Test
@@ -202,7 +202,7 @@ public class InvoiceMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/mindata/MinData_Extranjeria.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
     }
 
     @Test
@@ -244,7 +244,7 @@ public class InvoiceMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/mindata/MinData_Pasaporte.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
     }
 
     @Test
@@ -286,7 +286,7 @@ public class InvoiceMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/mindata/MinData_DecDiplomatica.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
     @Test
@@ -328,7 +328,7 @@ public class InvoiceMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/mindata/MinData_UsePrecioUnitarioOPrecioConIgv.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
     }
 
     @Test
@@ -370,7 +370,7 @@ public class InvoiceMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/mindata/MinData_UsePrecioUnitarioOPrecioConIgv.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
     }
 
     @Test
@@ -412,7 +412,7 @@ public class InvoiceMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/mindata/MinData_UsePrecioUnitarioOPrecioConIgvAndCantidadThreeDecimals.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
     }
 
     @Test
@@ -454,6 +454,6 @@ public class InvoiceMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/mindata/MinData_UsePrecioUnitarioOPrecioConIgvAndCantidadThreeDecimals.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
     }
 }

@@ -76,7 +76,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/debitnote/mindata/MinData_RUC.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/debitnote/mindata/MinData_DNI.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
     @Test
@@ -166,7 +166,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/debitnote/mindata/MinData_DocTribNoDomSinRuc.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
     @Test
@@ -212,7 +212,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/debitnote/mindata/MinData_Extranjeria.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
     @Test
@@ -258,7 +258,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/debitnote/mindata/MinData_Pasaporte.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
     @Test
@@ -302,7 +302,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/debitnote/mindata/MinData_DecDiplomatica.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
     @Test
@@ -346,7 +346,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/debitnote/mindata/MinData_UsePrecioUnitarioOPrecioConIgv.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
     @Test
@@ -390,7 +390,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/debitnote/mindata/MinData_UsePrecioUnitarioOPrecioConIgv.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
     @Test
@@ -434,7 +434,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/debitnote/mindata/MinData_UsePrecioUnitarioOPrecioConIgvAndCantidadThreeDecimals.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
     @Test
@@ -480,7 +480,7 @@ public class DebitNoteMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/debitnote/mindata/MinData_UsePrecioUnitarioOPrecioConIgvAndCantidadThreeDecimals.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
 }

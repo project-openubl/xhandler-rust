@@ -80,7 +80,7 @@ public class CreditNoteTipoNotaTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/creditnote/tiponota/descuentoPorItem.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
 }
