@@ -1,91 +1,27 @@
+![Maven Central](https://img.shields.io/maven-central/v/io.github.project-openubl/xbuilder)
+[![License](https://img.shields.io/badge/License-EPL%202.0-green.svg)](https://opensource.org/licenses/EPL-2.0)
 ![CI](https://github.com/project-openubl/xbuilder/workflows/CI/badge.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=project-openubl_xbuilder&metric=alert_status)](https://sonarcloud.io/dashboard?id=project-openubl_xbuilder)
 
+[![Project Chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg?style=for-the-badge&logo=zulip)](https://projectopenubl.zulipchat.com/)
+[![Supported JVM Versions](https://img.shields.io/badge/JVM-8--11--15-brightgreen.svg?style=for-the-badge&logo=Java)](https://github.com/quarkusio/quarkus/actions/runs/113853915/)
+
 # XBuilder
 
-Java library for creating and signing XML files based on UBL standards.
+Librería Java para crear XMLs basados en UBL y los estándares de la SUNAT respecto a la facturación electrónica.
 
-XBuilder can be found in [Maven Central](https://mvnrepository.com/artifact/io.github.project-openubl/xbuilder)
+XBuilder esta diseñado para que puedas crear XMLs fácilmente.
 
-## Installation
-### Maven
+- Crea XMLs sin que necesites conocer nada sobre manejo de archivos XMLs.
+- Hace cálculos internos por ti.
+- Requiere solamente datos mínimos.
 
-Open your `pom.xml` file and add:
+## ¿Qué puedes hacer con XBuilder?
 
-```xml
-<dependency>
-    <groupId>io.github.project-openubl</groupId>
-    <artifactId>xbuilder</artifactId>
-    <version>1.1.0.Final</version>
-</dependency>
-```
-
-### Gradle
-
-Open your `build.gradle` file and add:
-
-```java
-compile group: 'io.github.project-openubl', name: 'xbuilder', version: '1.1.0.Final'
-```
-
-## Supported countries
-
-- Perú
-
-> If you want support for your country please create an issue.
+- Crear XMLs
+- Firmar XMLs
 
 ## Getting started
 
-XML files can be created from Input Models; for instance:
-
-```java
-InvoiceInputModel input = InvoiceInputModel.Builder.anInvoiceInputModel()
-                .withSerie("F001")
-                .withNumero(1)
-                .withProveedor(ProveedorInputModel.Builder.aProveedorInputModel()
-                        .withRuc("12345678912")
-                        .withRazonSocial("Softgreen S.A.C.")
-                        .build()
-                )
-                .withCliente(ClienteInputModel.Builder.aClienteInputModel()
-                        .withNombre("Carlos Feria")
-                        .withNumeroDocumentoIdentidad("12121212121")
-                        .withTipoDocumentoIdentidad(Catalog6.RUC.toString())
-                        .build()
-                )
-                .withDetalle(Arrays.asList(
-                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
-                                .withDescripcion("Item1")
-                                .withCantidad(new BigDecimal(10))
-                                .withPrecioUnitario(new BigDecimal(100))
-                                .withUnidadMedida("KGM")
-                                .build(),
-                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
-                                .withDescripcion("Item2")
-                                .withCantidad(new BigDecimal(10))
-                                .withPrecioUnitario(new BigDecimal(100))
-                                .withUnidadMedida("KGM")
-                                .build())
-                )
-                .build();
-
-// Process Input and get XML
-DocumentWrapper<InvoiceOutputModel> result = DocumentFacade.createXML(input, config, systemClock);
-InvoiceOutputModel output = result.getOutput();
-String xml = result.getXml();
-```
-
-## Sign XMLs
-
-After you created the `xml` file you can now sign it:
-
-```java
-String xml;
-String signID = "mySignID";
-
-// Get your certificate using the method of your preference
-X509Certificate certificate;
-PrivateKey privateKey;
-
-Document signedXML = XMLSigner.signXML(xml, signID, certificate, privateKey);
-```
+- [Documentación](https://project-openubl.github.io/docs/xsender)
+- [Discusiones](https://github.com/project-openubl/xsender/discussions)
