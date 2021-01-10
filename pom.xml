@@ -42,7 +42,7 @@
         <xmlunit.version>2.6.4</xmlunit.version>
     </properties>
 
-    <url>https://project-openubl.github.io/xbuilder-docs/</url>
+    <url>https://project-openubl.github.io/</url>
 
     <licenses>
         <license>
