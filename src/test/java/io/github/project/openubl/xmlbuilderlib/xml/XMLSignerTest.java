@@ -16,8 +16,8 @@
  */
 package io.github.project.openubl.xmlbuilderlib.xml;
 
-import io.github.project.openubl.xmlbuilderlib.integrationtest.utils.CertificateDetails;
-import io.github.project.openubl.xmlbuilderlib.integrationtest.utils.CertificateDetailsFactory;
+import io.github.project.openubl.xmlbuilderlib.utils.CertificateDetails;
+import io.github.project.openubl.xmlbuilderlib.utils.CertificateDetailsFactory;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
