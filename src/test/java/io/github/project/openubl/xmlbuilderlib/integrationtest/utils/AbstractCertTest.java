@@ -16,6 +16,9 @@
  */
 package io.github.project.openubl.xmlbuilderlib.integrationtest.utils;
 
+import io.github.project.openubl.xmlbuilderlib.utils.CertificateDetails;
+import io.github.project.openubl.xmlbuilderlib.utils.CertificateDetailsFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStoreException;

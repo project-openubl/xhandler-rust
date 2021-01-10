@@ -19,6 +19,8 @@ package io.github.project.openubl.xmlbuilderlib.integrationtest;
 import io.github.project.openubl.xmlbuilderlib.config.DefaultConfig;
 import io.github.project.openubl.xmlbuilderlib.config.Config;
 import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
+import io.github.project.openubl.xmlbuilderlib.utils.CertificateDetails;
+import io.github.project.openubl.xmlbuilderlib.utils.CertificateDetailsFactory;
 import io.github.project.openubl.xmlbuilderlib.xml.XMLSigner;
 import io.github.project.openubl.xmlbuilderlib.xml.XmlSignatureHelper;
 import io.github.project.openubl.xmlsenderws.webservices.managers.smart.SmartBillServiceConfig;
@@ -32,8 +34,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.diff.Diff;
-import io.github.project.openubl.xmlbuilderlib.integrationtest.utils.CertificateDetails;
-import io.github.project.openubl.xmlbuilderlib.integrationtest.utils.CertificateDetailsFactory;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
