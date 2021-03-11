@@ -55,13 +55,13 @@ public class FormaPagoOutputModelFactory {
 
         if (cuotasDePago == null || cuotasDePago.isEmpty()) {
             builder
-                    .withTipo("Contado")
+                    .withTipo(FormaPagoOutputModel.Tipo.Contado)
                     .withCuotas(Collections.emptyList());
         } else {
             List<FormaPagoCuotaOutputModel> cuotasOutput = new ArrayList<>();
 
             builder
-                    .withTipo("Credito")
+                    .withTipo(FormaPagoOutputModel.Tipo.Credito)
                     .withCuotas(cuotasOutput);
 
             for (int i = 0; i < cuotasDePago.size(); i++) {

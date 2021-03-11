@@ -26,8 +26,13 @@ import java.util.List;
 
 public class FormaPagoOutputModel {
 
-    @NotBlank
-    private String tipo;
+    public enum Tipo {
+        Contado,
+        Credito
+    }
+
+    @NotNull
+    private Tipo tipo;
 
     @NotNull
     private BigDecimal montoTotal;
@@ -35,11 +40,11 @@ public class FormaPagoOutputModel {
     @Valid
     private List<FormaPagoCuotaOutputModel> cuotas;
 
-    public String getTipo() {
+    public Tipo getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(Tipo tipo) {
         this.tipo = tipo;
     }
 
@@ -60,7 +65,7 @@ public class FormaPagoOutputModel {
     }
 
     public static final class Builder {
-        private String tipo;
+        private Tipo tipo;
         private BigDecimal montoTotal;
         private List<FormaPagoCuotaOutputModel> cuotas;
 
@@ -71,7 +76,7 @@ public class FormaPagoOutputModel {
             return new Builder();
         }
 
-        public Builder withTipo(String tipo) {
+        public Builder withTipo(Tipo tipo) {
             this.tipo = tipo;
             return this;
         }
