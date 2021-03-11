@@ -22,15 +22,16 @@ import io.github.project.openubl.xmlbuilderlib.models.input.constraints.HighLeve
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 @CuotaDePagoInputModel_MontoPorcentajeConstraint(groups = HighLevelGroupValidation.class)
 public class CuotaDePagoInputModel {
 
-    @Min(0)
+    @Positive
     private BigDecimal monto;
 
-    @Min(0)
+    @Positive
     @Max(100)
     private BigDecimal porcentaje;
 
