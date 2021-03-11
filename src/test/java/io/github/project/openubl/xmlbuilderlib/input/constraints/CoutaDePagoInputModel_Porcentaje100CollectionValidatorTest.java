@@ -50,6 +50,14 @@ public class CoutaDePagoInputModel_Porcentaje100CollectionValidatorTest {
     }
 
     @Test
+    void nullCollectionIsValid() {
+        Bean bean = new Bean();
+
+        Set<ConstraintViolation<Bean>> violations = validator.validate(bean, HighLevelGroupValidation.class);
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
     void sumPercentaje_is100() {
         List<CuotaDePagoInputModel> cuotas = Arrays.asList(
                 CuotaDePagoInputModel.Builder.aFormaPagoCuotaInputModel()

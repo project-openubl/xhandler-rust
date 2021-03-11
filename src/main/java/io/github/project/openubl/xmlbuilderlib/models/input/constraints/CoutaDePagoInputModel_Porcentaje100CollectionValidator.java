@@ -33,6 +33,10 @@ public class CoutaDePagoInputModel_Porcentaje100CollectionValidator implements C
 
     @Override
     public boolean isValid(Collection<CuotaDePagoInputModel> value, ConstraintValidatorContext context) {
+        if (value == null) {
+            return true;
+        }
+
         BigDecimal total = value.stream()
                 .map(f -> f.getPorcentaje() != null ? f.getPorcentaje() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
