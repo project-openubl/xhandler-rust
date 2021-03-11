@@ -18,13 +18,26 @@ package io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice;
 
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 
+import javax.validation.Valid;
 import java.util.List;
 
 public class InvoiceInputModel extends DocumentInputModel {
+
+    @Valid
+    private List<CuotaDePagoInputModel> cuotasDePago;
+
+    public List<CuotaDePagoInputModel> getCuotasDePago() {
+        return cuotasDePago;
+    }
+
+    public void setCuotasDePago(List<CuotaDePagoInputModel> cuotasDePago) {
+        this.cuotasDePago = cuotasDePago;
+    }
 
     public static final class Builder {
         protected String serie;
@@ -34,6 +47,7 @@ public class InvoiceInputModel extends DocumentInputModel {
         private ProveedorInputModel proveedor;
         private FirmanteInputModel firmante;
         private List<DocumentLineInputModel> detalle;
+        private List<CuotaDePagoInputModel> cuotasDePago;
 
         private Builder() {
         }
@@ -77,6 +91,11 @@ public class InvoiceInputModel extends DocumentInputModel {
             return this;
         }
 
+        public Builder withCuotasDePago(List<CuotaDePagoInputModel> cuotasDePago) {
+            this.cuotasDePago = cuotasDePago;
+            return this;
+        }
+
         public InvoiceInputModel build() {
             InvoiceInputModel invoiceInputModel = new InvoiceInputModel();
             invoiceInputModel.setSerie(serie);
@@ -86,6 +105,7 @@ public class InvoiceInputModel extends DocumentInputModel {
             invoiceInputModel.setProveedor(proveedor);
             invoiceInputModel.setFirmante(firmante);
             invoiceInputModel.setDetalle(detalle);
+            invoiceInputModel.setCuotasDePago(cuotasDePago);
             return invoiceInputModel;
         }
     }

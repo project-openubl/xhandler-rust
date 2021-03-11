@@ -19,11 +19,13 @@ package io.github.project.openubl.xmlbuilderlib.models.input.standard.note.credi
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog9;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.NoteInputModel;
 
+import javax.validation.Valid;
 import java.util.List;
 
 public class CreditNoteInputModel extends NoteInputModel {
@@ -31,12 +33,23 @@ public class CreditNoteInputModel extends NoteInputModel {
     @CatalogConstraint(value = Catalog9.class)
     private String tipoNota;
 
+    @Valid
+    private List<CuotaDePagoInputModel> cuotasDePago;
+
     public String getTipoNota() {
         return tipoNota;
     }
 
     public void setTipoNota(String tipoNota) {
         this.tipoNota = tipoNota;
+    }
+
+    public List<CuotaDePagoInputModel> getCuotasDePago() {
+        return cuotasDePago;
+    }
+
+    public void setCuotasDePago(List<CuotaDePagoInputModel> cuotasDePago) {
+        this.cuotasDePago = cuotasDePago;
     }
 
     public static final class Builder {
@@ -50,6 +63,7 @@ public class CreditNoteInputModel extends NoteInputModel {
         private ProveedorInputModel proveedor;
         private FirmanteInputModel firmante;
         private List<DocumentLineInputModel> detalle;
+        private List<CuotaDePagoInputModel> cuotasDePago;
 
         private Builder() {
         }
@@ -108,6 +122,11 @@ public class CreditNoteInputModel extends NoteInputModel {
             return this;
         }
 
+        public Builder withCuotasDePago(List<CuotaDePagoInputModel> cuotasDePago) {
+            this.cuotasDePago = cuotasDePago;
+            return this;
+        }
+
         public CreditNoteInputModel build() {
             CreditNoteInputModel creditNoteInputModel = new CreditNoteInputModel();
             creditNoteInputModel.setSerieNumeroComprobanteAfectado(serieNumeroComprobanteAfectado);
@@ -120,6 +139,7 @@ public class CreditNoteInputModel extends NoteInputModel {
             creditNoteInputModel.setProveedor(proveedor);
             creditNoteInputModel.setFirmante(firmante);
             creditNoteInputModel.setDetalle(detalle);
+            creditNoteInputModel.setCuotasDePago(cuotasDePago);
             return creditNoteInputModel;
         }
     }

@@ -68,6 +68,11 @@
             </cac:PartyLegalEntity>
         </cac:Party>
     </cac:AccountingCustomerParty>
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>Contado</cbc:PaymentMeansID>
+        <cbc:Amount currencyID="PEN">2080</cbc:Amount>
+    </cac:PaymentTerms>
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="PEN">80</cbc:TaxAmount>
         <cac:TaxSubtotal>

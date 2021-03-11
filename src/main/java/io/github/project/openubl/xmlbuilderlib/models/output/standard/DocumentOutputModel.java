@@ -16,9 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.output.standard;
 
-import io.github.project.openubl.xmlbuilderlib.models.output.common.ClienteOutputModel;
-import io.github.project.openubl.xmlbuilderlib.models.output.common.FirmanteOutputModel;
-import io.github.project.openubl.xmlbuilderlib.models.output.common.ProveedorOutputModel;
+import io.github.project.openubl.xmlbuilderlib.models.output.common.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -65,6 +63,9 @@ public abstract class DocumentOutputModel {
     @Valid
     @NotEmpty
     protected List<DocumentLineOutputModel> detalle;
+
+    @Valid
+    protected FormaPagoOutputModel formaPago;
 
     public String getMoneda() {
         return moneda;
@@ -146,6 +147,14 @@ public abstract class DocumentOutputModel {
         this.detalle = detalle;
     }
 
+    public FormaPagoOutputModel getFormaPago() {
+        return formaPago;
+    }
+
+    public void setFormaPago(FormaPagoOutputModel formaPago) {
+        this.formaPago = formaPago;
+    }
+
     public static class Builder {
         protected String moneda;
         protected String serieNumero;
@@ -157,6 +166,7 @@ public abstract class DocumentOutputModel {
         protected DocumentMonetaryTotalOutputModel totales;
         protected DocumentImpuestosOutputModel impuestos;
         protected List<DocumentLineOutputModel> detalle;
+        protected FormaPagoOutputModel formaPago;
 
         protected Builder() {
         }
@@ -212,6 +222,11 @@ public abstract class DocumentOutputModel {
 
         public Builder withDetalle(List<DocumentLineOutputModel> detalle) {
             this.detalle = detalle;
+            return this;
+        }
+
+        public Builder withFormaPago(FormaPagoOutputModel formaPago) {
+            this.formaPago = formaPago;
             return this;
         }
     }
