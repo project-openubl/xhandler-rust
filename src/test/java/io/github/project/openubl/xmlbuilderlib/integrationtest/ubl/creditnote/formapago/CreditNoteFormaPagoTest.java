@@ -38,7 +38,7 @@ public class CreditNoteFormaPagoTest extends AbstractUBLTest {
     }
 
     @Test
-    public void testCreditNoteSinFormaPago() throws Exception {
+    public void testCreditNoteSinFormaPago_afectaFactura() throws Exception {
         // Given
         CreditNoteInputModel input = CreditNoteInputModel.Builder.aCreditNoteInputModel()
                 .withSerie("FC01")
@@ -77,12 +77,56 @@ public class CreditNoteFormaPagoTest extends AbstractUBLTest {
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
-        assertSnapshot(xml, "xml/creditnote/formapago/sinFormaPago.xml");
+        assertSnapshot(xml, "xml/creditnote/formapago/sinFormaPago_afectaFactura.xml");
         assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 
     @Test
-    public void testCreditNoteConFormaPago() throws Exception {
+    public void testCreditNoteSinFormaPago_afectaBoleta() throws Exception {
+        // Given
+        CreditNoteInputModel input = CreditNoteInputModel.Builder.aCreditNoteInputModel()
+                .withSerie("BC01")
+                .withNumero(1)
+                .withSerieNumeroComprobanteAfectado("B001-1")
+                .withDescripcionSustento("mi sustento")
+                .withProveedor(ProveedorInputModel.Builder.aProveedorInputModel()
+                        .withRuc("12345678912")
+                        .withRazonSocial("Softgreen S.A.C.")
+                        .build()
+                )
+                .withCliente(ClienteInputModel.Builder.aClienteInputModel()
+                        .withNombre("Carlos Feria")
+                        .withNumeroDocumentoIdentidad("12345678")
+                        .withTipoDocumentoIdentidad(Catalog6.DNI.toString())
+                        .build()
+                )
+                .withDetalle(Arrays.asList(
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item1")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioUnitario(new BigDecimal(100))
+                                .build(),
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item2")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioUnitario(new BigDecimal(100))
+                                .build())
+                )
+                .build();
+
+        // When
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
+
+        // Then
+        assertOutputHasNoConstraintViolations(validator, output);
+        assertSnapshot(xml, "xml/creditnote/formapago/sinFormaPago_afectaBoleta.xml");
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+    }
+
+    @Test
+    public void testCreditNoteConFormaPago_afectaFactura() throws Exception {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2019, Calendar.JANUARY, 6, 0, 0, 0);
         calendar.setTimeZone(timeZone);
@@ -144,7 +188,74 @@ public class CreditNoteFormaPagoTest extends AbstractUBLTest {
 
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
-        assertSnapshot(xml, "xml/creditnote/formapago/conFormaPago.xml");
+        assertSnapshot(xml, "xml/creditnote/formapago/conFormaPago_afectaFactura.xml");
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+    }
+
+    @Test
+    public void testCreditNoteConFormaPago_afectaBoleta() throws Exception {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2019, Calendar.JANUARY, 6, 0, 0, 0);
+        calendar.setTimeZone(timeZone);
+
+        long fechaEmision = calendar.getTimeInMillis();
+
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        long fechaCuota1 = calendar.getTimeInMillis();
+
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        long fechaCuota2 = calendar.getTimeInMillis();
+
+        // Given
+        CreditNoteInputModel input = CreditNoteInputModel.Builder.aCreditNoteInputModel()
+                .withSerie("BC01")
+                .withNumero(1)
+                .withFechaEmision(fechaEmision)
+                .withSerieNumeroComprobanteAfectado("B001-1")
+                .withDescripcionSustento("mi sustento")
+                .withProveedor(ProveedorInputModel.Builder.aProveedorInputModel()
+                        .withRuc("12345678912")
+                        .withRazonSocial("Softgreen S.A.C.")
+                        .build()
+                )
+                .withCliente(ClienteInputModel.Builder.aClienteInputModel()
+                        .withNombre("Carlos Feria")
+                        .withNumeroDocumentoIdentidad("12345678")
+                        .withTipoDocumentoIdentidad(Catalog6.DNI.toString())
+                        .build()
+                )
+                .withDetalle(Arrays.asList(
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item1")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioUnitario(new BigDecimal(100))
+                                .build(),
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item2")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioUnitario(new BigDecimal(100))
+                                .build())
+                )
+                .withCuotasDePago(Arrays.asList(
+                        CuotaDePagoInputModel.Builder.aFormaPagoCuotaInputModel()
+                                .withMonto(new BigDecimal(2000))
+                                .withFechaPago(fechaCuota1)
+                                .build(),
+                        CuotaDePagoInputModel.Builder.aFormaPagoCuotaInputModel()
+                                .withMonto(new BigDecimal(360))
+                                .withFechaPago(fechaCuota2)
+                                .build()
+                ))
+                .build();
+
+        // When
+        DocumentWrapper<CreditNoteOutputModel> result = DocumentManager.createXML(input, config, systemClock);
+        CreditNoteOutputModel output = result.getOutput();
+        String xml = result.getXml();
+
+        // Then
+        assertOutputHasNoConstraintViolations(validator, output);
+        assertSnapshot(xml, "xml/creditnote/formapago/conFormaPago_afectaBoleta.xml");
         assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
 }
