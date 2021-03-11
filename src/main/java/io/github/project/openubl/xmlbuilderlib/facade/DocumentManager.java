@@ -16,6 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.facade;
 
+import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
 import io.github.project.openubl.xmlbuilderlib.clock.SystemClockSingleton;
 import io.github.project.openubl.xmlbuilderlib.config.Config;
 import io.github.project.openubl.xmlbuilderlib.freemarker.FreemarkerExecutor;
@@ -36,9 +37,10 @@ import io.github.project.openubl.xmlbuilderlib.models.output.sunat.RetentionOutp
 import io.github.project.openubl.xmlbuilderlib.models.output.sunat.SummaryDocumentOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.sunat.VoidedDocumentOutputModel;
 import io.github.project.openubl.xmlbuilderlib.utils.InputToOutput;
-import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
 
-import javax.validation.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import java.util.Set;
 
 public class DocumentManager {

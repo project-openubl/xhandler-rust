@@ -21,7 +21,6 @@ import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
 import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog6;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
-import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.creditNote.CreditNoteInputModel;
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 
 public class CreditNoteMinDataTest extends AbstractUBLTest {
 

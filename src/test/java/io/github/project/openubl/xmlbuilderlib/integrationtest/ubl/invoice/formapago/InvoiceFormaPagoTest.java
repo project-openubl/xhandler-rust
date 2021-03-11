@@ -20,7 +20,9 @@ import io.github.project.openubl.xmlbuilderlib.facade.DocumentManager;
 import io.github.project.openubl.xmlbuilderlib.facade.DocumentWrapper;
 import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog6;
-import io.github.project.openubl.xmlbuilderlib.models.input.common.*;
+import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice.InvoiceInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.invoice.InvoiceOutputModel;
@@ -250,6 +252,73 @@ public class InvoiceFormaPagoTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/formapago/conFormaPagoBoleta.xml");
+        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
+    }
+
+    @Test
+    void testFacturaWithFormaPagoCredito_usingPercetajePayments() throws Exception {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2019, Calendar.JANUARY, 6, 0, 0, 0);
+        calendar.setTimeZone(timeZone);
+
+        long fechaEmision = calendar.getTimeInMillis();
+
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        long fechaCuota1 = calendar.getTimeInMillis();
+
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        long fechaCuota2 = calendar.getTimeInMillis();
+
+        // Given
+        InvoiceInputModel input = InvoiceInputModel.Builder.anInvoiceInputModel()
+                .withSerie("F001")
+                .withNumero(1)
+                .withFechaEmision(fechaEmision)
+                .withProveedor(ProveedorInputModel.Builder.aProveedorInputModel()
+                        .withRuc("12345678912")
+                        .withRazonSocial("Softgreen S.A.C.")
+                        .build()
+                )
+                .withCliente(ClienteInputModel.Builder.aClienteInputModel()
+                        .withNombre("Carlos Feria")
+                        .withNumeroDocumentoIdentidad("12121212121")
+                        .withTipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
+                )
+                .withDetalle(Arrays.asList(
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item1")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioUnitario(new BigDecimal(100))
+                                .build(),
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item2")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioUnitario(new BigDecimal(100))
+                                .build())
+                )
+                .withCuotasDePago(Arrays.asList(
+                        CuotaDePagoInputModel.Builder.aFormaPagoCuotaInputModel()
+                                .withPorcentaje(new BigDecimal(10))
+                                .withFechaPago(fechaCuota1)
+                                .build(),
+                        CuotaDePagoInputModel.Builder.aFormaPagoCuotaInputModel()
+                                .withPorcentaje(new BigDecimal(90))
+                                .withFechaPago(fechaCuota2)
+                                .build()
+                ))
+                .build();
+
+
+
+        // When
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
+        InvoiceOutputModel output = result.getOutput();
+        String xml = result.getXml();
+
+        // Then
+        assertOutputHasNoConstraintViolations(validator, output);
+        assertSnapshot(xml, "xml/invoice/formapago/conFormaPagoFactura_porcentaje.xml");
         assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
     }
 }

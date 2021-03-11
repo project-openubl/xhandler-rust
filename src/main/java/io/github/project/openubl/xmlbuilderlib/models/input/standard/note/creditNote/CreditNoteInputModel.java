@@ -22,6 +22,8 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputM
 import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.constraints.CuotaDePagoInputModel_Porcentaje100CollectionConstraint;
+import io.github.project.openubl.xmlbuilderlib.models.input.constraints.HighLevelGroupValidation;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.NoteInputModel;
 
@@ -34,6 +36,7 @@ public class CreditNoteInputModel extends NoteInputModel {
     private String tipoNota;
 
     @Valid
+    @CuotaDePagoInputModel_Porcentaje100CollectionConstraint(groups = HighLevelGroupValidation.class)
     private List<CuotaDePagoInputModel> cuotasDePago;
 
     public String getTipoNota() {

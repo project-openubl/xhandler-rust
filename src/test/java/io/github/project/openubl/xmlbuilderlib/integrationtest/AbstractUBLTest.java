@@ -16,9 +16,9 @@
  */
 package io.github.project.openubl.xmlbuilderlib.integrationtest;
 
-import io.github.project.openubl.xmlbuilderlib.config.DefaultConfig;
-import io.github.project.openubl.xmlbuilderlib.config.Config;
 import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
+import io.github.project.openubl.xmlbuilderlib.config.Config;
+import io.github.project.openubl.xmlbuilderlib.config.DefaultConfig;
 import io.github.project.openubl.xmlbuilderlib.utils.CertificateDetails;
 import io.github.project.openubl.xmlbuilderlib.utils.CertificateDetailsFactory;
 import io.github.project.openubl.xmlbuilderlib.xml.XMLSigner;
