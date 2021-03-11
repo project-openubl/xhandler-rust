@@ -16,7 +16,10 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.output.standard;
 
-import io.github.project.openubl.xmlbuilderlib.models.output.common.*;
+import io.github.project.openubl.xmlbuilderlib.models.output.common.ClienteOutputModel;
+import io.github.project.openubl.xmlbuilderlib.models.output.common.FirmanteOutputModel;
+import io.github.project.openubl.xmlbuilderlib.models.output.common.FormaPagoOutputModel;
+import io.github.project.openubl.xmlbuilderlib.models.output.common.ProveedorOutputModel;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;

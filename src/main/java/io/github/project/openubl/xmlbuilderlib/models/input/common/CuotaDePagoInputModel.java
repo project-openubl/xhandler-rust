@@ -16,14 +16,24 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.input.common;
 
-import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.util.Date;
+import io.github.project.openubl.xmlbuilderlib.models.input.constraints.CuotaDePagoInputModel_MontoPorcentajeConstraint;
+import io.github.project.openubl.xmlbuilderlib.models.input.constraints.HighLevelGroupValidation;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import java.math.BigDecimal;
+
+@CuotaDePagoInputModel_MontoPorcentajeConstraint(groups = HighLevelGroupValidation.class)
 public class CuotaDePagoInputModel {
 
-    @NotNull
+    @Positive
     private BigDecimal monto;
+
+    @Positive
+    @Max(100)
+    private BigDecimal porcentaje;
 
     @NotNull
     private Long fechaPago;
@@ -36,6 +46,14 @@ public class CuotaDePagoInputModel {
         this.monto = monto;
     }
 
+    public BigDecimal getPorcentaje() {
+        return porcentaje;
+    }
+
+    public void setPorcentaje(BigDecimal porcentaje) {
+        this.porcentaje = porcentaje;
+    }
+
     public Long getFechaPago() {
         return fechaPago;
     }
@@ -46,6 +64,7 @@ public class CuotaDePagoInputModel {
 
     public static final class Builder {
         private BigDecimal monto;
+        private BigDecimal porcentaje;
         private Long fechaPago;
 
         private Builder() {
@@ -60,6 +79,11 @@ public class CuotaDePagoInputModel {
             return this;
         }
 
+        public Builder withPorcentaje(BigDecimal porcentaje) {
+            this.porcentaje = porcentaje;
+            return this;
+        }
+
         public Builder withFechaPago(Long fechaPago) {
             this.fechaPago = fechaPago;
             return this;
@@ -68,6 +92,7 @@ public class CuotaDePagoInputModel {
         public CuotaDePagoInputModel build() {
             CuotaDePagoInputModel cuotaDePagoInputModel = new CuotaDePagoInputModel();
             cuotaDePagoInputModel.setMonto(monto);
+            cuotaDePagoInputModel.setPorcentaje(porcentaje);
             cuotaDePagoInputModel.setFechaPago(fechaPago);
             return cuotaDePagoInputModel;
         }

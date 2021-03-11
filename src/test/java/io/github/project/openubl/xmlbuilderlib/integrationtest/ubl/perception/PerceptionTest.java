@@ -16,6 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.integrationtest.ubl.perception;
 
+import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog22;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog6;
@@ -25,7 +26,6 @@ import io.github.project.openubl.xmlbuilderlib.models.input.sunat.PerceptionInpu
 import io.github.project.openubl.xmlbuilderlib.models.input.sunat.PerceptionRetentionComprobanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.sunat.PerceptionRetentionLineInputModel;
 import org.junit.jupiter.api.Test;
-import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 
 import java.math.BigDecimal;
 import java.util.Arrays;

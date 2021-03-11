@@ -24,8 +24,11 @@ import io.github.project.openubl.xmlbuilderlib.models.output.common.FormaPagoCuo
 import io.github.project.openubl.xmlbuilderlib.models.output.common.FormaPagoOutputModel;
 
 import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.TimeZone;
 
 import static io.github.project.openubl.xmlbuilderlib.utils.DateUtils.toGregorianCalendarDate;
 
@@ -64,12 +67,28 @@ public class FormaPagoOutputModelFactory {
                     .withTipo(FormaPagoOutputModel.Tipo.Credito)
                     .withCuotas(cuotasOutput);
 
+            BigDecimal subtotal = BigDecimal.ZERO;
             for (int i = 0; i < cuotasDePago.size(); i++) {
                 CuotaDePagoInputModel item = cuotasDePago.get(i);
 
+                BigDecimal monto;
+                if (item.getMonto() != null) {
+                    monto = item.getMonto();
+                } else if (item.getPorcentaje() != null) {
+                    if (i != cuotasDePago.size() - 1) {
+                        monto = montoTotal.multiply(item.getPorcentaje()).divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN);
+                    } else {
+                        monto = montoTotal.subtract(subtotal);
+                    }
+                } else {
+                    throw new IllegalStateException("Monto or porcentaje must be present");
+                }
+
+                subtotal = subtotal.add(monto);
+
                 FormaPagoCuotaOutputModel output = FormaPagoCuotaOutputModel.Builder.aFormaPagoCuotaOutputModel()
                         .withId(String.format("%03d", i))
-                        .withMonto(item.getMonto())
+                        .withMonto(monto)
                         .withFechaPago(toGregorianCalendarDate(item.getFechaPago(), timeZone))
                         .build();
 

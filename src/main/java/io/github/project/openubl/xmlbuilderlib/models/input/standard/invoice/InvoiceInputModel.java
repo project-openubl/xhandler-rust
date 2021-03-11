@@ -17,9 +17,11 @@
 package io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice;
 
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
-import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.constraints.CuotaDePagoInputModel_Porcentaje100CollectionConstraint;
+import io.github.project.openubl.xmlbuilderlib.models.input.constraints.HighLevelGroupValidation;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 
@@ -29,6 +31,7 @@ import java.util.List;
 public class InvoiceInputModel extends DocumentInputModel {
 
     @Valid
+    @CuotaDePagoInputModel_Porcentaje100CollectionConstraint(groups = HighLevelGroupValidation.class)
     private List<CuotaDePagoInputModel> cuotasDePago;
 
     public List<CuotaDePagoInputModel> getCuotasDePago() {
