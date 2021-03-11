@@ -14,6 +14,21 @@
     <#include "../signature.ftl">
     <#include "common/supplier.ftl">
     <#include "common/customer.ftl">
+    <#if formaPago.cuotas?has_content>
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>${formaPago.tipo}</cbc:PaymentMeansID>
+        <cbc:Amount currencyID="${moneda}">${formaPago.montoTotal}</cbc:Amount>
+    </cac:PaymentTerms>
+    </#if>
+    <#list formaPago.cuotas as item>
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>Cuota${item.id}</cbc:PaymentMeansID>
+        <cbc:Amount currencyID="${moneda}">${item.monto}</cbc:Amount>
+        <cbc:PaymentDueDate>${item.fechaPago}</cbc:PaymentDueDate>
+    </cac:PaymentTerms>
+    </#list>
     <#include "common/tax-total.ftl">
     <cac:LegalMonetaryTotal>
     <#include "common/monetary-total.ftl">

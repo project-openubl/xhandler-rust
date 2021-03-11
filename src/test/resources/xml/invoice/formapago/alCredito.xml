@@ -9,7 +9,9 @@
          xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2"
          xmlns:sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
          xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2"
-         xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
     <ext:UBLExtensions>
         <ext:UBLExtension>
             <ext:ExtensionContent/>
@@ -70,8 +72,20 @@
     </cac:AccountingCustomerParty>
     <cac:PaymentTerms>
         <cbc:ID>FormaPago</cbc:ID>
-        <cbc:PaymentMeansID>Contado</cbc:PaymentMeansID>
+        <cbc:PaymentMeansID>Credito</cbc:PaymentMeansID>
         <cbc:Amount currencyID="PEN">2360</cbc:Amount>
+    </cac:PaymentTerms>
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>Cuota000</cbc:PaymentMeansID>
+        <cbc:Amount currencyID="PEN">2000</cbc:Amount>
+        <cbc:PaymentDueDate>2019-01-07</cbc:PaymentDueDate>
+    </cac:PaymentTerms>
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>Cuota001</cbc:PaymentMeansID>
+        <cbc:Amount currencyID="PEN">360</cbc:Amount>
+        <cbc:PaymentDueDate>2019-01-08</cbc:PaymentDueDate>
     </cac:PaymentTerms>
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="PEN">360</cbc:TaxAmount>

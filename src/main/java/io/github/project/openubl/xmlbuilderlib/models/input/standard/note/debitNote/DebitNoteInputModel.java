@@ -19,6 +19,7 @@ package io.github.project.openubl.xmlbuilderlib.models.input.standard.note.debit
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog10;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
@@ -50,6 +51,7 @@ public class DebitNoteInputModel extends NoteInputModel {
         private ProveedorInputModel proveedor;
         private FirmanteInputModel firmante;
         private List<DocumentLineInputModel> detalle;
+        private List<CuotaDePagoInputModel> cuotasDePago;
 
         private Builder() {
         }
@@ -105,6 +107,11 @@ public class DebitNoteInputModel extends NoteInputModel {
 
         public Builder withDetalle(List<DocumentLineInputModel> detalle) {
             this.detalle = detalle;
+            return this;
+        }
+
+        public Builder withCuotasDePago(List<CuotaDePagoInputModel> cuotasDePago) {
+            this.cuotasDePago = cuotasDePago;
             return this;
         }
 

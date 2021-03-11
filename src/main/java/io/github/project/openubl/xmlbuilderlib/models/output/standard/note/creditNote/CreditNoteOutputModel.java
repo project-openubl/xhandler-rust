@@ -20,6 +20,7 @@ import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog9;
 import io.github.project.openubl.xmlbuilderlib.models.output.common.ClienteOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.common.FirmanteOutputModel;
+import io.github.project.openubl.xmlbuilderlib.models.output.common.FormaPagoOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.common.ProveedorOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.DocumentImpuestosOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.DocumentLineOutputModel;
@@ -57,6 +58,7 @@ public class CreditNoteOutputModel extends NoteOutputModel {
         protected DocumentImpuestosOutputModel impuestos;
         protected List<DocumentLineOutputModel> detalle;
         protected Catalog9 tipoNota;
+        protected FormaPagoOutputModel formaPago;
 
         private Builder() {
         }
@@ -135,6 +137,11 @@ public class CreditNoteOutputModel extends NoteOutputModel {
             return this;
         }
 
+        public Builder withFormaPago(FormaPagoOutputModel formaPago) {
+            this.formaPago = formaPago;
+            return this;
+        }
+
         public CreditNoteOutputModel build() {
             CreditNoteOutputModel creditNoteOutputModel = new CreditNoteOutputModel();
             creditNoteOutputModel.setTipoNota(tipoNota);
@@ -151,6 +158,7 @@ public class CreditNoteOutputModel extends NoteOutputModel {
             creditNoteOutputModel.setTotales(totales);
             creditNoteOutputModel.setImpuestos(impuestos);
             creditNoteOutputModel.setDetalle(detalle);
+            creditNoteOutputModel.setFormaPago(formaPago);
             return creditNoteOutputModel;
         }
     }

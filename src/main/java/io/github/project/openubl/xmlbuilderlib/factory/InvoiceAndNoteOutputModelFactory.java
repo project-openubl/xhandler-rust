@@ -1,13 +1,13 @@
 /**
  * Copyright 2019 Project OpenUBL, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
- *
+ * <p>
  * Licensed under the Eclipse Public License - v 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * https://www.eclipse.org/legal/epl-2.0/
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,13 +19,16 @@ package io.github.project.openubl.xmlbuilderlib.factory;
 import io.github.project.openubl.xmlbuilderlib.config.Config;
 import io.github.project.openubl.xmlbuilderlib.factory.common.ClienteOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.factory.common.FirmanteOutputModelFactory;
+import io.github.project.openubl.xmlbuilderlib.factory.common.FormaPagoOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.factory.common.ProveedorOutputModelFactory;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.*;
+import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice.InvoiceInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.NoteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.creditNote.CreditNoteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.debitNote.DebitNoteInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.output.common.FormaPagoOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.*;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.invoice.InvoiceOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.NoteOutputModel;
@@ -36,6 +39,7 @@ import io.github.project.openubl.xmlbuilderlib.clock.SystemClock;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,6 +64,13 @@ public class InvoiceAndNoteOutputModelFactory {
         }
 
         enrichDocument(input, builder, config, systemClock);
+
+        // Forma de pago
+        InvoiceOutputModel tmpOutput = builder.build();
+        builder.withFormaPago(getFormaPago(
+                input.getCuotasDePago(), tmpOutput.getTotales(), systemClock.getTimeZone()
+        ));
+
         return builder.build();
     }
 
@@ -73,6 +84,13 @@ public class InvoiceAndNoteOutputModelFactory {
 
         enrichNote(input, builder);
         enrichDocument(input, builder, config, systemClock);
+
+        // Forma de pago
+        CreditNoteOutputModel tmpOutput = builder.build();
+        builder.withFormaPago(getFormaPago(
+                input.getCuotasDePago(), tmpOutput.getTotales(), systemClock.getTimeZone()
+        ));
+
         return builder.build();
     }
 
@@ -262,4 +280,9 @@ public class InvoiceAndNoteOutputModelFactory {
                 .build();
     }
 
+    private static FormaPagoOutputModel getFormaPago(List<CuotaDePagoInputModel> cuotas, DocumentMonetaryTotalOutputModel totales, TimeZone timeZone) {
+        return FormaPagoOutputModelFactory.getFormaPago(
+                cuotas, totales.getValorVentaConImpuestos(), timeZone
+        );
+    }
 }

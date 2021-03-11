@@ -20,6 +20,7 @@ import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog10;
 import io.github.project.openubl.xmlbuilderlib.models.output.common.ClienteOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.common.FirmanteOutputModel;
+import io.github.project.openubl.xmlbuilderlib.models.output.common.FormaPagoOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.common.ProveedorOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.DocumentImpuestosOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.DocumentLineOutputModel;
@@ -57,6 +58,7 @@ public class DebitNoteOutputModel extends NoteOutputModel {
         protected DocumentMonetaryTotalOutputModel totales;
         protected DocumentImpuestosOutputModel impuestos;
         protected List<DocumentLineOutputModel> detalle;
+        protected FormaPagoOutputModel formaPago;
 
         private Builder() {
         }
@@ -135,6 +137,11 @@ public class DebitNoteOutputModel extends NoteOutputModel {
             return this;
         }
 
+        public Builder withFormaPago(FormaPagoOutputModel formaPago) {
+            this.formaPago = formaPago;
+            return this;
+        }
+
         public DebitNoteOutputModel build() {
             DebitNoteOutputModel debitNoteOutputModel = new DebitNoteOutputModel();
             debitNoteOutputModel.setMoneda(moneda);
@@ -151,6 +158,7 @@ public class DebitNoteOutputModel extends NoteOutputModel {
             debitNoteOutputModel.setTotales(totales);
             debitNoteOutputModel.setImpuestos(impuestos);
             debitNoteOutputModel.setDetalle(detalle);
+            debitNoteOutputModel.setFormaPago(formaPago);
             return debitNoteOutputModel;
         }
     }
