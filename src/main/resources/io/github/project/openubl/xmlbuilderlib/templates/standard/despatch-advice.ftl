@@ -1,3 +1,5 @@
+<@compress single_line=true>
+<#setting number_format="computer">
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <DespatchAdvice xmlns="urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2"
                 xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
@@ -130,3 +132,4 @@
     </cac:DespatchLine>
     </#list>
 </DespatchAdvice>
+</@compress>
