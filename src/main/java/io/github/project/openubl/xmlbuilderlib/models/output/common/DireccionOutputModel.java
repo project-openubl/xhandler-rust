@@ -16,6 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.output.common;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 public class DireccionOutputModel {
@@ -23,6 +24,8 @@ public class DireccionOutputModel {
     @Size(min = 6, max = 6)
     private String ubigeo;
 
+    @NotBlank
+    @Size(min = 4, max = 4)
     private String codigoLocal;
     private String urbanizacion;
     private String provincia;

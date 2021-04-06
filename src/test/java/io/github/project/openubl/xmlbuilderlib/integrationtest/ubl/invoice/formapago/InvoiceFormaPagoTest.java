@@ -76,7 +76,7 @@ public class InvoiceFormaPagoTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/formapago/sinFormaPagoFactura.xml");
-        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
+        assertSendSunat(xml);
     }
 
     @Test
@@ -118,7 +118,7 @@ public class InvoiceFormaPagoTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/formapago/sinFormaPagoBoleta.xml");
-        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
+        assertSendSunat(xml);
     }
 
     @Test
@@ -185,7 +185,7 @@ public class InvoiceFormaPagoTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/formapago/conFormaPagoFactura.xml");
-        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
+        assertSendSunat(xml);
     }
 
     @Test
@@ -252,7 +252,7 @@ public class InvoiceFormaPagoTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/formapago/conFormaPagoBoleta.xml");
-        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
+        assertSendSunat(xml);
     }
 
     @Test
@@ -319,6 +319,6 @@ public class InvoiceFormaPagoTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/formapago/conFormaPagoFactura_porcentaje.xml");
-        assertSendSunat(xml, "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor - INFO: 3030 (nodo: \"/\" valor: \"\")");
+        assertSendSunat(xml);
     }
 }

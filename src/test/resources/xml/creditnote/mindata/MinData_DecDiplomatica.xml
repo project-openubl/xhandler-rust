@@ -64,6 +64,9 @@
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName><![CDATA[Softgreen S.A.C.]]></cbc:RegistrationName>
+                <cac:RegistrationAddress>
+                    <cbc:AddressTypeCode>0000</cbc:AddressTypeCode>
+                </cac:RegistrationAddress>
             </cac:PartyLegalEntity>
         </cac:Party>
     </cac:AccountingSupplierParty>
