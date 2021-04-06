@@ -384,4 +384,57 @@ public class InvoiceTest extends AbstractUBLTest {
         assertSnapshot(xml, "xml/invoice/icb.xml");
         assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
     }
+
+    @Test
+    void testInvoiceWithCustomProveedor_direccionNotNullAndCodigoLocalNull() throws Exception {
+        // Given
+        InvoiceInputModel input = InvoiceInputModel.Builder.anInvoiceInputModel()
+                .withSerie("F001")
+                .withNumero(1)
+                .withProveedor(ProveedorInputModel.Builder.aProveedorInputModel()
+                        .withRuc("12345678912")
+                        .withRazonSocial("Project OpenUBL S.A.C.")
+                        .withDireccion(DireccionInputModel.Builder.aDireccionInputModel()
+                                .withDireccion("Jr. las flores 123")
+                                .build()
+                        )
+                        .build()
+                )
+                .withCliente(ClienteInputModel.Builder.aClienteInputModel()
+                        .withNombre("Carlos Feria")
+                        .withNumeroDocumentoIdentidad("12121212121")
+                        .withTipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
+                )
+                .withFirmante(FirmanteInputModel.Builder.aFirmanteInputModel()
+                        .withRuc("000000000000")
+                        .withRazonSocial("Wolsnut4 S.A.C.")
+                        .build()
+                )
+                .withDetalle(Arrays.asList(
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item1")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioConIgv(new BigDecimal(118))
+                                .withIcb(true)
+                                .build(),
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item2")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioConIgv(new BigDecimal(118))
+                                .withIcb(true)
+                                .build())
+                )
+                .build();
+
+        // When
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
+        InvoiceOutputModel output = result.getOutput();
+        String xml = result.getXml();
+
+        // Then
+        assertOutputHasNoConstraintViolations(validator, output);
+        assertSnapshot(xml, "xml/invoice/customCodigoLocal.xml");
+        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+    }
 }
