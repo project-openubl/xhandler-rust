@@ -28,19 +28,24 @@ public class ProveedorOutputModelFactory {
     }
 
     public static ProveedorOutputModel getProveedor(ProveedorInputModel input) {
+        DireccionOutputModel direccionOutput = input.getDireccion() != null ?
+                DireccionOutputModelFactory.getDireccion(input.getDireccion()) :
+                new DireccionOutputModel();
+        enrichDireccionOutput(direccionOutput);
+
         return ProveedorOutputModel.Builder.aProveedorOutputModel()
                 .withRuc(input.getRuc())
                 .withRazonSocial(input.getRazonSocial())
                 .withNombreComercial(input.getNombreComercial())
-                .withDireccion(input.getDireccion() != null ? DireccionOutputModelFactory.getDireccion(input.getDireccion()) : getDefaultDireccion())
+                .withDireccion(direccionOutput)
                 .withContacto(input.getContacto() != null ? ContactoOutputModelFactory.getContacto(input.getContacto()) : null)
                 .build();
 
     }
 
-    private static DireccionOutputModel getDefaultDireccion() {
-        return DireccionOutputModel.Builder.aDireccionOutputModel()
-                .withCodigoLocal(Constants.DEFAULT_CODIGO_LOCAL)
-                .build();
+    private static void enrichDireccionOutput(DireccionOutputModel direccionOutput) {
+        if (direccionOutput.getCodigoLocal() == null) {
+            direccionOutput.setCodigoLocal(Constants.DEFAULT_CODIGO_LOCAL);
+        }
     }
 }
