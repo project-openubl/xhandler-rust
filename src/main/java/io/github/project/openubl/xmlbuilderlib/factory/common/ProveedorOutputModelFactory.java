@@ -16,7 +16,9 @@
  */
 package io.github.project.openubl.xmlbuilderlib.factory.common;
 
+import io.github.project.openubl.xmlbuilderlib.config.Constants;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.output.common.DireccionOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.common.ProveedorOutputModel;
 
 public class ProveedorOutputModelFactory {
@@ -30,10 +32,15 @@ public class ProveedorOutputModelFactory {
                 .withRuc(input.getRuc())
                 .withRazonSocial(input.getRazonSocial())
                 .withNombreComercial(input.getNombreComercial())
-                .withDireccion(input.getDireccion() != null ? DireccionOutputModelFactory.getDireccion(input.getDireccion()) : null)
+                .withDireccion(input.getDireccion() != null ? DireccionOutputModelFactory.getDireccion(input.getDireccion()) : getDefaultDireccion())
                 .withContacto(input.getContacto() != null ? ContactoOutputModelFactory.getContacto(input.getContacto()) : null)
                 .build();
 
     }
 
+    private static DireccionOutputModel getDefaultDireccion() {
+        return DireccionOutputModel.Builder.aDireccionOutputModel()
+                .withCodigoLocal(Constants.DEFAULT_CODIGO_LOCAL)
+                .build();
+    }
 }

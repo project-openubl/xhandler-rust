@@ -52,6 +52,9 @@
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>Softgreen S.A.C.</cbc:RegistrationName>
+                <cac:RegistrationAddress>
+                    <cbc:AddressTypeCode>0000</cbc:AddressTypeCode>
+                </cac:RegistrationAddress>
             </cac:PartyLegalEntity>
         </cac:Party>
     </cac:AccountingSupplierParty>
@@ -64,7 +67,7 @@
                 <cbc:RegistrationName>Carlos Feria</cbc:RegistrationName>
                 <cac:RegistrationAddress>
                     <cbc:ID>050101</cbc:ID>
-                    <cbc:AddressTypeCode>010101</cbc:AddressTypeCode>
+                    <cbc:AddressTypeCode>0101</cbc:AddressTypeCode>
                     <cbc:CitySubdivisionName>000000</cbc:CitySubdivisionName>
                     <cbc:CityName>Huamanga</cbc:CityName>
                     <cbc:CountrySubentity>Ayacucho</cbc:CountrySubentity>
