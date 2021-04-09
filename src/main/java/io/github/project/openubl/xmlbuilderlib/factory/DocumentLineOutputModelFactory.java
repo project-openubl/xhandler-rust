@@ -53,17 +53,27 @@ public class DocumentLineOutputModelFactory {
         // Precio con/sin impuestos
         BigDecimal precioUnitario;
         BigDecimal precioConIgv;
+        BigDecimal valorVentaSinImpuestos;
 
         if (input.getPrecioUnitario() != null) {
             precioUnitario = input.getPrecioUnitario();
             precioConIgv = input.getPrecioUnitario().multiply(input.getCantidad())
                     .add(impuestosOutput.getIgv().getImporte())
                     .divide(input.getCantidad(), 2, RoundingMode.HALF_EVEN);
+
+            // Valor de venta (sin impuestos)
+            valorVentaSinImpuestos = input.getCantidad().multiply(precioUnitario).setScale(2, RoundingMode.HALF_EVEN);
         } else if (input.getPrecioConIgv() != null) {
             precioUnitario = input.getPrecioConIgv().multiply(input.getCantidad())
                     .subtract(impuestosOutput.getIgv().getImporte())
                     .divide(input.getCantidad(), 2, RoundingMode.HALF_EVEN);
             precioConIgv = input.getPrecioConIgv();
+
+            // Valor de venta (sin impuestos)
+            valorVentaSinImpuestos = input.getCantidad().multiply(precioConIgv).setScale(2, RoundingMode.HALF_EVEN);
+            if (impuestosOutput.getIgv().getTipo().isOperacionOnerosa()) {
+                valorVentaSinImpuestos = valorVentaSinImpuestos.subtract(impuestosOutput.getIgv().getImporte());
+            }
         } else {
             throw new IllegalStateException("Precio con impuestos y/o sin impuestos no encontrado, no se pueden calcular el precion con impuestos");
         }
@@ -74,6 +84,8 @@ public class DocumentLineOutputModelFactory {
                         impuestosOutput.getIgv().getTipo().isOperacionOnerosa() ? precioUnitario : BigDecimal.ZERO
                 );
 
+        // Valor de venta (sin impuestos)
+        builder.withValorVentaSinImpuestos(valorVentaSinImpuestos);
 
         // Precio de referencia
         builder.withPrecioDeReferencia(DocumentLinePrecioReferenciaOutputModel.Builder.aDetallePrecioReferenciaOutputModel()
@@ -85,14 +97,6 @@ public class DocumentLineOutputModelFactory {
                 )
                 .build()
         );
-
-        // Valor de venta (sin impuestos)
-        BigDecimal valorVentaSinImpuestos = input.getCantidad().multiply(precioConIgv).setScale(2, RoundingMode.HALF_EVEN);
-
-        if (impuestosOutput.getIgv().getTipo().isOperacionOnerosa()) {
-            valorVentaSinImpuestos = valorVentaSinImpuestos.subtract(impuestosOutput.getIgv().getImporte());
-        }
-        builder.withValorVentaSinImpuestos(valorVentaSinImpuestos);
 
         return builder.build();
     }
