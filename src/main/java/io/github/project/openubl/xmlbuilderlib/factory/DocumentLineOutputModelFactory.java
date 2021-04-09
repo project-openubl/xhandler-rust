@@ -62,7 +62,8 @@ public class DocumentLineOutputModelFactory {
                     .divide(input.getCantidad(), 2, RoundingMode.HALF_EVEN);
 
             // Valor de venta (sin impuestos)
-            valorVentaSinImpuestos = input.getCantidad().multiply(precioUnitario).setScale(2, RoundingMode.HALF_EVEN);
+            valorVentaSinImpuestos = precioUnitario.multiply(input.getCantidad())
+                    .setScale(2, RoundingMode.HALF_EVEN);
         } else if (input.getPrecioConIgv() != null) {
             precioUnitario = input.getPrecioConIgv().multiply(input.getCantidad())
                     .subtract(impuestosOutput.getIgv().getImporte())
@@ -70,10 +71,9 @@ public class DocumentLineOutputModelFactory {
             precioConIgv = input.getPrecioConIgv();
 
             // Valor de venta (sin impuestos)
-            valorVentaSinImpuestos = input.getCantidad().multiply(precioConIgv).setScale(2, RoundingMode.HALF_EVEN);
-            if (impuestosOutput.getIgv().getTipo().isOperacionOnerosa()) {
-                valorVentaSinImpuestos = valorVentaSinImpuestos.subtract(impuestosOutput.getIgv().getImporte());
-            }
+            valorVentaSinImpuestos = precioConIgv.multiply(input.getCantidad())
+                    .subtract(impuestosOutput.getIgv().getImporte())
+                    .setScale(2, RoundingMode.HALF_EVEN);
         } else {
             throw new IllegalStateException("Precio con impuestos y/o sin impuestos no encontrado, no se pueden calcular el precion con impuestos");
         }
@@ -89,7 +89,11 @@ public class DocumentLineOutputModelFactory {
 
         // Precio de referencia
         builder.withPrecioDeReferencia(DocumentLinePrecioReferenciaOutputModel.Builder.aDetallePrecioReferenciaOutputModel()
-                .withPrecio(precioConIgv)
+                .withPrecio(
+                        impuestosOutput.getIgv().getTipo().isOperacionOnerosa()
+                                ? precioConIgv
+                                : precioUnitario
+                )
                 .withTipoPrecio(
                         impuestosOutput.getIgv().getTipo().isOperacionOnerosa()
                                 ? Catalog16.PRECIO_UNITARIO_INCLUYE_IGV
