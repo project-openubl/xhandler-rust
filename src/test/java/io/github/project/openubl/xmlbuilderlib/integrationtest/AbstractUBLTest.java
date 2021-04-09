@@ -151,7 +151,6 @@ public abstract class AbstractUBLTest {
             List<String> notesToCheck = billServiceModel.getNotes().stream().filter(f -> allowedNotesList.stream().noneMatch(f::startsWith)).collect(Collectors.toList());
             notesToCheck.forEach(f -> System.out.println("WARNING:" + f));
 
-            // TODO Fix all warning messages and then apply this validation
             assertTrue(notesToCheck.isEmpty(), "Notes fom SUNAT:\n" + String.join("\n", notesToCheck));
         }
 
