@@ -77,7 +77,7 @@ public abstract class AbstractUBLTest {
     protected TimeZone timeZone;
     protected SystemClock systemClock;
 
-    protected String PROVIDER_WITHOUT_ADDRESS_NOTE = "3030 - El XML no contiene el tag o no existe información del código de local anexo del emisor";
+    protected String DOCUMENT_WITHOUT_2007_LEGEND = "4264 - El XML no contiene el codigo de leyenda 2007 para el tipo de operación IVAP";
 
     public AbstractUBLTest() throws Exception {
         xPath = XPathFactory.newInstance().newXPath();
@@ -152,7 +152,7 @@ public abstract class AbstractUBLTest {
             notesToCheck.forEach(f -> System.out.println("WARNING:" + f));
 
             // TODO Fix all warning messages and then apply this validation
-//            assertTrue(notesToCheck.isEmpty(), "Notes fom SUNAT:\n" + String.join("\n", notesToCheck));
+            assertTrue(notesToCheck.isEmpty(), "Notes fom SUNAT:\n" + String.join("\n", notesToCheck));
         }
 
         // Check ticket

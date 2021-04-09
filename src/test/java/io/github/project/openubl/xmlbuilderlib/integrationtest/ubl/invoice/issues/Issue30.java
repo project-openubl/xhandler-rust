@@ -84,7 +84,7 @@ public class Issue30 extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/issues/issue-30-with-precioUnitario.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class Issue30 extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/issues/issue-30-with-precioConIgv.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -177,7 +177,7 @@ public class Issue30 extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/issues/issue-30-with-precioUnitario_andICB.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -224,6 +224,6 @@ public class Issue30 extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/issues/issue-30-with-precioConIgv_andICB.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 }

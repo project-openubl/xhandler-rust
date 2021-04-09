@@ -286,7 +286,7 @@ public class InvoiceMinDataTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/mindata/MinData_DecDiplomatica.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
