@@ -80,7 +80,7 @@
         <cbc:TaxAmount currencyID="PEN">0</cbc:TaxAmount>
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="PEN">2000</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="PEN">0</cbc:TaxAmount>
+            <cbc:TaxAmount currencyID="PEN">360</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305"
                         schemeName="Tax Category Identifie">S
@@ -104,10 +104,10 @@
         <cbc:InvoicedQuantity unitCode="NIU" unitCodeListAgencyName="United Nations Economic Commission for Europe"
                               unitCodeListID="UN/ECE rec 20">10
         </cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="PEN">1180</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="PEN">1000</cbc:LineExtensionAmount>
         <cac:PricingReference>
             <cac:AlternativeConditionPrice>
-                <cbc:PriceAmount currencyID="PEN">118</cbc:PriceAmount>
+                <cbc:PriceAmount currencyID="PEN">100</cbc:PriceAmount>
                 <cbc:PriceTypeCode listAgencyName="PE:SUNAT" listName="Tipo de Precio"
                                    listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo16">02
                 </cbc:PriceTypeCode>
@@ -149,10 +149,10 @@
         <cbc:InvoicedQuantity unitCode="NIU" unitCodeListAgencyName="United Nations Economic Commission for Europe"
                               unitCodeListID="UN/ECE rec 20">10
         </cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="PEN">1180</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="PEN">1000</cbc:LineExtensionAmount>
         <cac:PricingReference>
             <cac:AlternativeConditionPrice>
-                <cbc:PriceAmount currencyID="PEN">118</cbc:PriceAmount>
+                <cbc:PriceAmount currencyID="PEN">100</cbc:PriceAmount>
                 <cbc:PriceTypeCode listAgencyName="PE:SUNAT" listName="Tipo de Precio"
                                    listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo16">02
                 </cbc:PriceTypeCode>
