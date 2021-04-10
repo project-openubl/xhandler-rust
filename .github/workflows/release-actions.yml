@@ -24,23 +24,18 @@ jobs:
           gpg_passphrase: ${{ secrets.gpg_passphrase }}
           nexus_username: ${{ secrets.nexus_username }}
           nexus_password: ${{ secrets.nexus_password }}
-      - name: changelog
-        uses: heinrichreimer/github-changelog-generator-action@v2.1.1
-        id: Changelog
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          REPO: ${{ github.repository }}
-      - name: Create Release
-        id: create_release
-        # Uses sha for added security since tags can be updated
-        uses: actions/create-release@8f324cdc2e5470815db0a286b4b3aa7803c0e6ef
+      - name: Build Changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: actions/create-release@v1
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: |
-            ${{ steps.Changelog.outputs.changelog }}
+          body: ${{ steps.github_release.outputs.changelog }}
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
