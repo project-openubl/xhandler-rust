@@ -76,7 +76,7 @@ public class InvoiceTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/customUnidadMedida.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class InvoiceTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/customFechaEmision.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -179,7 +179,7 @@ public class InvoiceTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/customClienteDireccionAndContacto.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -284,7 +284,7 @@ public class InvoiceTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/customFirmante.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -333,7 +333,7 @@ public class InvoiceTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/icb.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -382,7 +382,7 @@ public class InvoiceTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/icb.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -435,6 +435,6 @@ public class InvoiceTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/customCodigoLocal.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 }

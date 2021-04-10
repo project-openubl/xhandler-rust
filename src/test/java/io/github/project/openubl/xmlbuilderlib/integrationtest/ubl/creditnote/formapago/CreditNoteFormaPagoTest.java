@@ -78,7 +78,7 @@ public class CreditNoteFormaPagoTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/creditnote/formapago/sinFormaPago_afectaFactura.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class CreditNoteFormaPagoTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/creditnote/formapago/sinFormaPago_afectaBoleta.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -189,7 +189,7 @@ public class CreditNoteFormaPagoTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/creditnote/formapago/conFormaPago_afectaFactura.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -256,6 +256,6 @@ public class CreditNoteFormaPagoTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/creditnote/formapago/conFormaPago_afectaBoleta.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 }

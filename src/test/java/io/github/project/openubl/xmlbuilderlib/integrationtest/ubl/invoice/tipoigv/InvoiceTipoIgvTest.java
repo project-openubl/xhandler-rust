@@ -79,7 +79,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoOnerosa.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoOnerosa.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -169,7 +169,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoRetiroPorPremio.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -213,7 +213,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoRetiroPorPremio.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -257,7 +257,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoRetiroPorDonacion.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -301,7 +301,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoRetiroPorDonacion.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -345,7 +345,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoRetiro.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -389,7 +389,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoRetiro.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -433,7 +433,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoRetiroPorPublicidad.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -477,7 +477,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoRetiroPorPublicidad.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -521,7 +521,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoBonificaciones.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -565,7 +565,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoBonificaciones.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -609,7 +609,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoRetiroPorEntregaATrabajadores.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -655,7 +655,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoRetiroPorEntregaATrabajadores.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -699,7 +699,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoIVAP.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml, DOCUMENT_WITHOUT_2007_LEGEND);
     }
 
     @Test
@@ -743,7 +743,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/gravadoIVAP.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml, DOCUMENT_WITHOUT_2007_LEGEND);
     }
 
     @Test
@@ -787,7 +787,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/exoneradoOperacionOnerosa.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -831,7 +831,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/exoneradoOperacionOnerosa.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -875,7 +875,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/exoneradoTransferenciaGratuita.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -919,7 +919,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/exoneradoTransferenciaGratuita.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -963,7 +963,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoOperacionOnerosa.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1007,7 +1007,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoOperacionOnerosa.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1051,7 +1051,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoRetiroPorBonificacion.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1095,7 +1095,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoRetiroPorBonificacion.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1139,7 +1139,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoRetiro.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1183,7 +1183,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoRetiro.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1227,7 +1227,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoPorMuestrasMedicas.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1271,7 +1271,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoPorMuestrasMedicas.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1315,7 +1315,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoRetiroPorConvenioColectivo.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1359,7 +1359,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoRetiroPorConvenioColectivo.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1403,7 +1403,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoRetiroPorPremio.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1447,7 +1447,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoRetiroPorPremio.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1491,7 +1491,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoRetiroPorPublicidad.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
     @Test
@@ -1535,7 +1535,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
         // Then
         assertOutputHasNoConstraintViolations(validator, output);
         assertSnapshot(xml, "xml/invoice/tipoigv/inafectoRetiroPorPublicidad.xml");
-        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+        assertSendSunat(xml);
     }
 
 //    @Test
@@ -1578,7 +1578,7 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
 //        // Then
 //        assertOutputHasNoConstraintViolations(validator, output);
 //        assertSnapshot(xml, "xml/invoice/tipoigv/exportacion.xml");
-//        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+//        assertSendSunat(xml);
 //    }
 //
 //    @Test
@@ -1621,6 +1621,6 @@ public class InvoiceTipoIgvTest extends AbstractUBLTest {
 //        // Then
 //        assertOutputHasNoConstraintViolations(validator, output);
 //        assertSnapshot(xml, "xml/invoice/tipoigv/exportacion.xml");
-//        assertSendSunat(xml, PROVIDER_WITHOUT_ADDRESS_NOTE);
+//        assertSendSunat(xml);
 //    }
 }
