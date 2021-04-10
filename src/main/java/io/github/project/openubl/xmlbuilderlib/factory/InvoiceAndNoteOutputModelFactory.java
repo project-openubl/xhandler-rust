@@ -180,7 +180,6 @@ public class InvoiceAndNoteOutputModelFactory {
         // Gratuito
         ImpuestoTotalOutputModel gratuito = getImpuestoTotal(lineOutput, Catalog5.GRATUITO);
         if (gratuito.getBaseImponible().compareTo(BigDecimal.ZERO) > 0) {
-            gratuito.setImporte(BigDecimal.ZERO);
             impuestosBuilder.withInafectas(gratuito);
         }
 
