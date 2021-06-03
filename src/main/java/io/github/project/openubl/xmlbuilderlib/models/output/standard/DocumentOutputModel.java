@@ -70,8 +70,8 @@ public abstract class DocumentOutputModel {
     @Valid
     protected FormaPagoOutputModel formaPago;
 
+    @NotNull
     @Valid
-    @NotEmpty
     protected List<GuiaRemisionRelacionadaOutputModel> guiasRemisionRelacionadas;
 
     public String getMoneda() {
