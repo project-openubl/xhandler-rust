@@ -37,9 +37,7 @@ import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.credi
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.debitNote.DebitNoteOutputModel;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -131,15 +129,17 @@ public class InvoiceAndNoteOutputModelFactory {
                         : FirmanteOutputModelFactory.getFirmante(input.getProveedor())
         );
 
-        // Guias de remision relacionadas
-        builder.withGuiasRemisionRelacionadas(input.getGuiasRemisionRelacionadas().stream()
-                .map(guiaRemisionInput -> {
-                    GuiaRemisionRelacionadaOutputModel guiaRemisionOutput = new GuiaRemisionRelacionadaOutputModel();
-                    guiaRemisionOutput.setSerieNumero(guiaRemisionInput.getSerieNumero());
-                    guiaRemisionOutput.setTipoDocumento(Catalog.valueOfCode(Catalog1_Guia.class, guiaRemisionInput.getTipoDocumento()).orElseThrow(Catalog.invalidCatalogValue));
-                    return guiaRemisionOutput;
-                })
-                .collect(Collectors.toList())
+        // Guias de remisión relacionadas
+        builder.withGuiasRemisionRelacionadas(input.getGuiasRemisionRelacionadas() != null ?
+                input.getGuiasRemisionRelacionadas().stream()
+                        .map(guiaRemisionInput -> {
+                            GuiaRemisionRelacionadaOutputModel guiaRemisionOutput = new GuiaRemisionRelacionadaOutputModel();
+                            guiaRemisionOutput.setSerieNumero(guiaRemisionInput.getSerieNumero());
+                            guiaRemisionOutput.setTipoDocumento(Catalog.valueOfCode(Catalog1_Guia.class, guiaRemisionInput.getTipoDocumento()).orElseThrow(Catalog.invalidCatalogValue));
+                            return guiaRemisionOutput;
+                        })
+                        .collect(Collectors.toList())
+                : Collections.emptyList()
         );
 
         // Detalle
