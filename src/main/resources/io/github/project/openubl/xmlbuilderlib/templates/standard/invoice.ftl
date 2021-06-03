@@ -15,7 +15,7 @@
 <#--        <cbc:ID>${orderCompra}</cbc:ID>-->
 <#--    </cac:OrderReference>-->
 <#--    </#if>-->
-<#--    <#include "./common/despatch-document-reference.ftl">-->
+    <#include "common/despatch-document-reference.ftl">
 <#--    <#include "./common/additional-document-reference.ftl">-->
 <#--    <#list anticipos as item>-->
 <#--    <cac:AdditionalDocumentReference>-->

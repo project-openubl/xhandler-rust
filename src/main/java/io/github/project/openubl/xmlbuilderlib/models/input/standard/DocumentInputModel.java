@@ -58,6 +58,9 @@ public abstract class DocumentInputModel {
     @Valid
     private List<DocumentLineInputModel> detalle;
 
+    @Valid
+    private List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas;
+
     public String getSerie() {
         return serie;
     }
@@ -114,4 +117,11 @@ public abstract class DocumentInputModel {
         this.detalle = detalle;
     }
 
+    public List<GuiaRemisionRelacionadaInputModel> getGuiasRemisionRelacionadas() {
+        return guiasRemisionRelacionadas;
+    }
+
+    public void setGuiasRemisionRelacionadas(List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas) {
+        this.guiasRemisionRelacionadas = guiasRemisionRelacionadas;
+    }
 }

@@ -23,6 +23,7 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoIn
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.standard.GuiaRemisionRelacionadaInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.NoteInputModel;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public class DebitNoteInputModel extends NoteInputModel {
         private ProveedorInputModel proveedor;
         private FirmanteInputModel firmante;
         private List<DocumentLineInputModel> detalle;
-        private List<CuotaDePagoInputModel> cuotasDePago;
+        private List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas;
 
         private Builder() {
         }
@@ -110,8 +111,8 @@ public class DebitNoteInputModel extends NoteInputModel {
             return this;
         }
 
-        public Builder withCuotasDePago(List<CuotaDePagoInputModel> cuotasDePago) {
-            this.cuotasDePago = cuotasDePago;
+        public Builder withGuiasRemisionRelacionadas(List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas) {
+            this.guiasRemisionRelacionadas = guiasRemisionRelacionadas;
             return this;
         }
 
@@ -127,6 +128,7 @@ public class DebitNoteInputModel extends NoteInputModel {
             debitNoteInputModel.setProveedor(proveedor);
             debitNoteInputModel.setFirmante(firmante);
             debitNoteInputModel.setDetalle(detalle);
+            debitNoteInputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
             return debitNoteInputModel;
         }
     }

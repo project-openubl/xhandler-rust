@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.input.standard;
 
-import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
+import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1_Guia;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
 
 import javax.validation.constraints.NotBlank;
@@ -26,8 +26,8 @@ public class GuiaRemisionRelacionadaInputModel {
     @NotBlank
     protected String serieNumero;
 
-    @CatalogConstraint(value = Catalog1.class)
-    private String tipoDocumento;
+    @CatalogConstraint(value = Catalog1_Guia.class)
+    protected String tipoDocumento;
 
     public String getSerieNumero() {
         return serieNumero;
@@ -45,4 +45,32 @@ public class GuiaRemisionRelacionadaInputModel {
         this.tipoDocumento = tipoDocumento;
     }
 
+    public static final class Builder {
+        protected String serieNumero;
+        protected String tipoDocumento;
+
+        private Builder() {
+        }
+
+        public static Builder aGuiaRemisionRelacionadaInputModel() {
+            return new Builder();
+        }
+
+        public Builder withSerieNumero(String serieNumero) {
+            this.serieNumero = serieNumero;
+            return this;
+        }
+
+        public Builder withTipoDocumento(String tipoDocumento) {
+            this.tipoDocumento = tipoDocumento;
+            return this;
+        }
+
+        public GuiaRemisionRelacionadaInputModel build() {
+            GuiaRemisionRelacionadaInputModel guiaRemisionRelacionadaInputModel = new GuiaRemisionRelacionadaInputModel();
+            guiaRemisionRelacionadaInputModel.setSerieNumero(serieNumero);
+            guiaRemisionRelacionadaInputModel.setTipoDocumento(tipoDocumento);
+            return guiaRemisionRelacionadaInputModel;
+        }
+    }
 }

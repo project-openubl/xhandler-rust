@@ -24,6 +24,7 @@ import io.github.project.openubl.xmlbuilderlib.models.input.constraints.CuotaDeP
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.HighLevelGroupValidation;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.standard.GuiaRemisionRelacionadaInputModel;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -51,6 +52,7 @@ public class InvoiceInputModel extends DocumentInputModel {
         private FirmanteInputModel firmante;
         private List<DocumentLineInputModel> detalle;
         private List<CuotaDePagoInputModel> cuotasDePago;
+        private List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas;
 
         private Builder() {
         }
@@ -99,6 +101,11 @@ public class InvoiceInputModel extends DocumentInputModel {
             return this;
         }
 
+        public Builder withGuiasRemisionRelacionadas(List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas) {
+            this.guiasRemisionRelacionadas = guiasRemisionRelacionadas;
+            return this;
+        }
+
         public InvoiceInputModel build() {
             InvoiceInputModel invoiceInputModel = new InvoiceInputModel();
             invoiceInputModel.setSerie(serie);
@@ -109,6 +116,7 @@ public class InvoiceInputModel extends DocumentInputModel {
             invoiceInputModel.setFirmante(firmante);
             invoiceInputModel.setDetalle(detalle);
             invoiceInputModel.setCuotasDePago(cuotasDePago);
+            invoiceInputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
             return invoiceInputModel;
         }
     }
