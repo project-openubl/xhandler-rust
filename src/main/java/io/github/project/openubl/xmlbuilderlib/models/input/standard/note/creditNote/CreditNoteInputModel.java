@@ -25,6 +25,7 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInpu
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.CuotaDePagoInputModel_Porcentaje100CollectionConstraint;
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.HighLevelGroupValidation;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.standard.GuiaRemisionRelacionadaInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.NoteInputModel;
 
 import javax.validation.Valid;
@@ -67,6 +68,7 @@ public class CreditNoteInputModel extends NoteInputModel {
         private FirmanteInputModel firmante;
         private List<DocumentLineInputModel> detalle;
         private List<CuotaDePagoInputModel> cuotasDePago;
+        private List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas;
 
         private Builder() {
         }
@@ -130,6 +132,11 @@ public class CreditNoteInputModel extends NoteInputModel {
             return this;
         }
 
+        public Builder withGuiasRemisionRelacionadas(List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas) {
+            this.guiasRemisionRelacionadas = guiasRemisionRelacionadas;
+            return this;
+        }
+
         public CreditNoteInputModel build() {
             CreditNoteInputModel creditNoteInputModel = new CreditNoteInputModel();
             creditNoteInputModel.setSerieNumeroComprobanteAfectado(serieNumeroComprobanteAfectado);
@@ -143,6 +150,7 @@ public class CreditNoteInputModel extends NoteInputModel {
             creditNoteInputModel.setFirmante(firmante);
             creditNoteInputModel.setDetalle(detalle);
             creditNoteInputModel.setCuotasDePago(cuotasDePago);
+            creditNoteInputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
             return creditNoteInputModel;
         }
     }

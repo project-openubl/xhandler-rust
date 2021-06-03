@@ -159,6 +159,7 @@ public class CreditNoteOutputModel extends NoteOutputModel {
             creditNoteOutputModel.setImpuestos(impuestos);
             creditNoteOutputModel.setDetalle(detalle);
             creditNoteOutputModel.setFormaPago(formaPago);
+            creditNoteOutputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
             return creditNoteOutputModel;
         }
     }

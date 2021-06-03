@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.output.standard;
 
-import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
+import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1_Guia;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -27,7 +27,7 @@ public class GuiaRemisionRelacionadaOutputModel {
     protected String serieNumero;
 
     @NotNull
-    private Catalog1 tipoDocumento;
+    private Catalog1_Guia tipoDocumento;
 
     public String getSerieNumero() {
         return serieNumero;
@@ -37,11 +37,11 @@ public class GuiaRemisionRelacionadaOutputModel {
         this.serieNumero = serieNumero;
     }
 
-    public Catalog1 getTipoDocumento() {
+    public Catalog1_Guia getTipoDocumento() {
         return tipoDocumento;
     }
 
-    public void setTipoDocumento(Catalog1 tipoDocumento) {
+    public void setTipoDocumento(Catalog1_Guia tipoDocumento) {
         this.tipoDocumento = tipoDocumento;
     }
 

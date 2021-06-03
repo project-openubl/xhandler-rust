@@ -70,6 +70,10 @@ public abstract class DocumentOutputModel {
     @Valid
     protected FormaPagoOutputModel formaPago;
 
+    @NotNull
+    @Valid
+    protected List<GuiaRemisionRelacionadaOutputModel> guiasRemisionRelacionadas;
+
     public String getMoneda() {
         return moneda;
     }
@@ -158,6 +162,14 @@ public abstract class DocumentOutputModel {
         this.formaPago = formaPago;
     }
 
+    public List<GuiaRemisionRelacionadaOutputModel> getGuiasRemisionRelacionadas() {
+        return guiasRemisionRelacionadas;
+    }
+
+    public void setGuiasRemisionRelacionadas(List<GuiaRemisionRelacionadaOutputModel> guiasRemisionRelacionadas) {
+        this.guiasRemisionRelacionadas = guiasRemisionRelacionadas;
+    }
+
     public static class Builder {
         protected String moneda;
         protected String serieNumero;
@@ -170,6 +182,7 @@ public abstract class DocumentOutputModel {
         protected DocumentImpuestosOutputModel impuestos;
         protected List<DocumentLineOutputModel> detalle;
         protected FormaPagoOutputModel formaPago;
+        protected List<GuiaRemisionRelacionadaOutputModel> guiasRemisionRelacionadas;
 
         protected Builder() {
         }
@@ -230,6 +243,11 @@ public abstract class DocumentOutputModel {
 
         public Builder withFormaPago(FormaPagoOutputModel formaPago) {
             this.formaPago = formaPago;
+            return this;
+        }
+
+        public Builder withGuiasRemisionRelacionadas(List<GuiaRemisionRelacionadaOutputModel> guiasRemisionRelacionadas) {
+            this.guiasRemisionRelacionadas = guiasRemisionRelacionadas;
             return this;
         }
     }
