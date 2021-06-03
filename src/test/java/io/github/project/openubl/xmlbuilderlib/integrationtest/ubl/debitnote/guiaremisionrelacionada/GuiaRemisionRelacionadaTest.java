@@ -25,9 +25,7 @@ import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputM
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.GuiaRemisionRelacionadaInputModel;
-import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.creditNote.CreditNoteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.debitNote.DebitNoteInputModel;
-import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.creditNote.CreditNoteOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.debitNote.DebitNoteOutputModel;
 import org.junit.jupiter.api.Test;
 

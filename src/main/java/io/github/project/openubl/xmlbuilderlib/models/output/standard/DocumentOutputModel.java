@@ -74,6 +74,10 @@ public abstract class DocumentOutputModel {
     @Valid
     protected List<GuiaRemisionRelacionadaOutputModel> guiasRemisionRelacionadas;
 
+    @NotNull
+    @Valid
+    protected List<DocumentoTributarioRelacionadoOutputModel> otrosDocumentosTributariosRelacionados;
+
     public String getMoneda() {
         return moneda;
     }
@@ -170,6 +174,14 @@ public abstract class DocumentOutputModel {
         this.guiasRemisionRelacionadas = guiasRemisionRelacionadas;
     }
 
+    public List<DocumentoTributarioRelacionadoOutputModel> getOtrosDocumentosTributariosRelacionados() {
+        return otrosDocumentosTributariosRelacionados;
+    }
+
+    public void setOtrosDocumentosTributariosRelacionados(List<DocumentoTributarioRelacionadoOutputModel> otrosDocumentosTributariosRelacionados) {
+        this.otrosDocumentosTributariosRelacionados = otrosDocumentosTributariosRelacionados;
+    }
+
     public static class Builder {
         protected String moneda;
         protected String serieNumero;
@@ -183,6 +195,7 @@ public abstract class DocumentOutputModel {
         protected List<DocumentLineOutputModel> detalle;
         protected FormaPagoOutputModel formaPago;
         protected List<GuiaRemisionRelacionadaOutputModel> guiasRemisionRelacionadas;
+        protected List<DocumentoTributarioRelacionadoOutputModel> otrosDocumentosTributariosRelacionados;
 
         protected Builder() {
         }
@@ -248,6 +261,11 @@ public abstract class DocumentOutputModel {
 
         public Builder withGuiasRemisionRelacionadas(List<GuiaRemisionRelacionadaOutputModel> guiasRemisionRelacionadas) {
             this.guiasRemisionRelacionadas = guiasRemisionRelacionadas;
+            return this;
+        }
+
+        public Builder withOtrosDocumentosTributariosRelacionados(List<DocumentoTributarioRelacionadoOutputModel> otrosDocumentosTributariosRelacionados) {
+            this.otrosDocumentosTributariosRelacionados = otrosDocumentosTributariosRelacionados;
             return this;
         }
     }

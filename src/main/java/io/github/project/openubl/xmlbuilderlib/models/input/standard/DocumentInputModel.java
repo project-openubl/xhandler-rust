@@ -61,6 +61,8 @@ public abstract class DocumentInputModel {
     @Valid
     private List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas;
 
+    public abstract List<? extends DocTribRelacionadoInputModel> getOtrosDocumentosTributariosRelacionados();
+
     public String getSerie() {
         return serie;
     }

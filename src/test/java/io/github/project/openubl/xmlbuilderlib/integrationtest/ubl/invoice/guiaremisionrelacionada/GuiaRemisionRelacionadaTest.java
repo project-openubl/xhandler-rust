@@ -22,7 +22,6 @@ import io.github.project.openubl.xmlbuilderlib.integrationtest.AbstractUBLTest;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1_Guia;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog6;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
-import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.GuiaRemisionRelacionadaInputModel;
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Calendar;
 
 public class GuiaRemisionRelacionadaTest extends AbstractUBLTest {
 

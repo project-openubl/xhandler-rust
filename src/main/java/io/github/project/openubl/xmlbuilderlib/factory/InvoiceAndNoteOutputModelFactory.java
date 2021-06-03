@@ -37,7 +37,10 @@ import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.credi
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.debitNote.DebitNoteOutputModel;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -137,6 +140,19 @@ public class InvoiceAndNoteOutputModelFactory {
                             guiaRemisionOutput.setSerieNumero(guiaRemisionInput.getSerieNumero());
                             guiaRemisionOutput.setTipoDocumento(Catalog.valueOfCode(Catalog1_Guia.class, guiaRemisionInput.getTipoDocumento()).orElseThrow(Catalog.invalidCatalogValue));
                             return guiaRemisionOutput;
+                        })
+                        .collect(Collectors.toList())
+                : Collections.emptyList()
+        );
+
+        // Otros documentos tributarios relacionados
+        builder.withOtrosDocumentosTributariosRelacionados(input.getOtrosDocumentosTributariosRelacionados() != null ?
+                input.getOtrosDocumentosTributariosRelacionados().stream()
+                        .map(docInput -> {
+                            DocumentoTributarioRelacionadoOutputModel docOutput = new DocumentoTributarioRelacionadoOutputModel();
+                            docOutput.setSerieNumero(docInput.getSerieNumero());
+                            docOutput.setTipoDocumento(Catalog.valueOfCode(Catalog12.class, docInput.getTipoDocumento()).orElseThrow(Catalog.invalidCatalogValue));
+                            return docOutput;
                         })
                         .collect(Collectors.toList())
                 : Collections.emptyList()

@@ -16,11 +16,11 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice;
 
-import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentoTributarioRelacionadoInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocTribRelacionadoInputModel;
 
 import javax.validation.constraints.NotBlank;
 
-public class AnticipoInputModel extends DocumentoTributarioRelacionadoInputModel {
+public class AnticipoInputModel extends DocTribRelacionadoInputModel {
 
     @NotBlank
     private String ruc;

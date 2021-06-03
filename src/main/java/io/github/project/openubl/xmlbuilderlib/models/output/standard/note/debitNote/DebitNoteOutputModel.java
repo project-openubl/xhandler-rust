@@ -160,6 +160,7 @@ public class DebitNoteOutputModel extends NoteOutputModel {
             debitNoteOutputModel.setDetalle(detalle);
             debitNoteOutputModel.setFormaPago(formaPago);
             debitNoteOutputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
+            debitNoteOutputModel.setOtrosDocumentosTributariosRelacionados(otrosDocumentosTributariosRelacionados);
             return debitNoteOutputModel;
         }
     }
