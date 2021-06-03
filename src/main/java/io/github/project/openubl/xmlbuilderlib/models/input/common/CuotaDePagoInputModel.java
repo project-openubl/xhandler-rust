@@ -20,7 +20,6 @@ import io.github.project.openubl.xmlbuilderlib.models.input.constraints.CuotaDeP
 import io.github.project.openubl.xmlbuilderlib.models.input.constraints.HighLevelGroupValidation;
 
 import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;

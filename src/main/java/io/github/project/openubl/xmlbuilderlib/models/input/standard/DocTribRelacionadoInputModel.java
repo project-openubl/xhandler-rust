@@ -21,13 +21,13 @@ import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.Catal
 
 import javax.validation.constraints.NotBlank;
 
-public class DocumentoTributarioRelacionadoInputModel {
+public abstract class DocTribRelacionadoInputModel {
 
     @NotBlank
-    private String serieNumero;
+    protected String serieNumero;
 
     @CatalogConstraint(value = Catalog12.class)
-    private String tipoDocumento;
+    protected String tipoDocumento;
 
     public String getSerieNumero() {
         return serieNumero;
@@ -44,4 +44,5 @@ public class DocumentoTributarioRelacionadoInputModel {
     public void setTipoDocumento(String tipoDocumento) {
         this.tipoDocumento = tipoDocumento;
     }
+
 }

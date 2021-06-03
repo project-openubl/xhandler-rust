@@ -64,6 +64,7 @@ public class InvoiceOutputModel extends DocumentOutputModel {
             invoiceOutputModel.setTipoInvoice(tipoInvoice);
             invoiceOutputModel.setFormaPago(formaPago);
             invoiceOutputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
+            invoiceOutputModel.setOtrosDocumentosTributariosRelacionados(otrosDocumentosTributariosRelacionados);
             return invoiceOutputModel;
         }
     }

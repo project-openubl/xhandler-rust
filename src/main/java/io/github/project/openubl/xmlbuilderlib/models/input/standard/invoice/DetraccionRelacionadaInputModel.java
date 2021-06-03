@@ -19,13 +19,13 @@ package io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog54;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog59;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
-import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentoTributarioRelacionadoInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocTribRelacionadoInputModel;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-public class DetraccionRelacionadaInputModel extends DocumentoTributarioRelacionadoInputModel {
+public class DetraccionRelacionadaInputModel extends DocTribRelacionadoInputModel {
 
     @CatalogConstraint(value = Catalog59.class)
     private String medioDePago;

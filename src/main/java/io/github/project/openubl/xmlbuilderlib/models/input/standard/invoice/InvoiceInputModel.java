@@ -35,12 +35,24 @@ public class InvoiceInputModel extends DocumentInputModel {
     @CuotaDePagoInputModel_Porcentaje100CollectionConstraint(groups = HighLevelGroupValidation.class)
     private List<CuotaDePagoInputModel> cuotasDePago;
 
+    @Valid
+    private List<DocTribRelacionadoInputModel_Invoice> otrosDocumentosTributariosRelacionados;
+
     public List<CuotaDePagoInputModel> getCuotasDePago() {
         return cuotasDePago;
     }
 
     public void setCuotasDePago(List<CuotaDePagoInputModel> cuotasDePago) {
         this.cuotasDePago = cuotasDePago;
+    }
+
+    @Override
+    public List<DocTribRelacionadoInputModel_Invoice> getOtrosDocumentosTributariosRelacionados() {
+        return otrosDocumentosTributariosRelacionados;
+    }
+
+    public void setOtrosDocumentosTributariosRelacionados(List<DocTribRelacionadoInputModel_Invoice> otrosDocumentosTributariosRelacionados) {
+        this.otrosDocumentosTributariosRelacionados = otrosDocumentosTributariosRelacionados;
     }
 
     public static final class Builder {
@@ -53,6 +65,7 @@ public class InvoiceInputModel extends DocumentInputModel {
         private List<DocumentLineInputModel> detalle;
         private List<CuotaDePagoInputModel> cuotasDePago;
         private List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas;
+        private List<DocTribRelacionadoInputModel_Invoice> otrosDocumentosTributariosRelacionados;
 
         private Builder() {
         }
@@ -106,6 +119,11 @@ public class InvoiceInputModel extends DocumentInputModel {
             return this;
         }
 
+        public Builder withOtrosDocumentosTributariosRelacionados(List<DocTribRelacionadoInputModel_Invoice> otrosDocumentosTributariosRelacionados) {
+            this.otrosDocumentosTributariosRelacionados = otrosDocumentosTributariosRelacionados;
+            return this;
+        }
+
         public InvoiceInputModel build() {
             InvoiceInputModel invoiceInputModel = new InvoiceInputModel();
             invoiceInputModel.setSerie(serie);
@@ -117,6 +135,7 @@ public class InvoiceInputModel extends DocumentInputModel {
             invoiceInputModel.setDetalle(detalle);
             invoiceInputModel.setCuotasDePago(cuotasDePago);
             invoiceInputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
+            invoiceInputModel.setOtrosDocumentosTributariosRelacionados(otrosDocumentosTributariosRelacionados);
             return invoiceInputModel;
         }
     }

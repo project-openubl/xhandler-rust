@@ -16,7 +16,7 @@
 <#--    </cac:OrderReference>-->
 <#--    </#if>-->
     <#include "common/despatch-document-reference.ftl">
-<#--    <#include "./common/additional-document-reference.ftl">-->
+    <#include "common/additional-document-reference.ftl">
 <#--    <#list anticipos as item>-->
 <#--    <cac:AdditionalDocumentReference>-->
 <#--        <cbc:ID>${item.serieNumero}</cbc:ID>-->

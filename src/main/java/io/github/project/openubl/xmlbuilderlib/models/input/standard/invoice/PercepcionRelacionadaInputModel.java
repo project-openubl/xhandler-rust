@@ -18,11 +18,11 @@ package io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice;
 
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog53;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
-import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentoTributarioRelacionadoInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocTribRelacionadoInputModel;
 
 import java.math.BigDecimal;
 
-public class PercepcionRelacionadaInputModel extends DocumentoTributarioRelacionadoInputModel {
+public class PercepcionRelacionadaInputModel extends DocTribRelacionadoInputModel {
 
     @CatalogConstraint(value = Catalog53.class)
     private String tipo;

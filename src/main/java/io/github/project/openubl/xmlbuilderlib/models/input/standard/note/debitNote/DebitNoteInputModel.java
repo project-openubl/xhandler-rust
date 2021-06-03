@@ -19,13 +19,13 @@ package io.github.project.openubl.xmlbuilderlib.models.input.standard.note.debit
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog10;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ClienteInputModel;
-import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.FirmanteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.ProveedorInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentLineInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.GuiaRemisionRelacionadaInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.NoteInputModel;
 
+import javax.validation.Valid;
 import java.util.List;
 
 public class DebitNoteInputModel extends NoteInputModel {
@@ -33,12 +33,23 @@ public class DebitNoteInputModel extends NoteInputModel {
     @CatalogConstraint(value = Catalog10.class)
     private String tipoNota;
 
+    @Valid
+    private List<DocTribRelacionadoInputModel_DebitNote> otrosDocumentosTributariosRelacionados;
+
     public String getTipoNota() {
         return tipoNota;
     }
 
     public void setTipoNota(String tipoNota) {
         this.tipoNota = tipoNota;
+    }
+
+    public List<DocTribRelacionadoInputModel_DebitNote> getOtrosDocumentosTributariosRelacionados() {
+        return otrosDocumentosTributariosRelacionados;
+    }
+
+    public void setOtrosDocumentosTributariosRelacionados(List<DocTribRelacionadoInputModel_DebitNote> otrosDocumentosTributariosRelacionados) {
+        this.otrosDocumentosTributariosRelacionados = otrosDocumentosTributariosRelacionados;
     }
 
     public static final class Builder {
@@ -53,6 +64,7 @@ public class DebitNoteInputModel extends NoteInputModel {
         private FirmanteInputModel firmante;
         private List<DocumentLineInputModel> detalle;
         private List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas;
+        private List<DocTribRelacionadoInputModel_DebitNote> otrosDocumentosTributariosRelacionados;
 
         private Builder() {
         }
@@ -116,6 +128,11 @@ public class DebitNoteInputModel extends NoteInputModel {
             return this;
         }
 
+        public Builder withOtrosDocumentosTributariosRelacionados(List<DocTribRelacionadoInputModel_DebitNote> otrosDocumentosTributariosRelacionados) {
+            this.otrosDocumentosTributariosRelacionados = otrosDocumentosTributariosRelacionados;
+            return this;
+        }
+
         public DebitNoteInputModel build() {
             DebitNoteInputModel debitNoteInputModel = new DebitNoteInputModel();
             debitNoteInputModel.setSerieNumeroComprobanteAfectado(serieNumeroComprobanteAfectado);
@@ -129,6 +146,7 @@ public class DebitNoteInputModel extends NoteInputModel {
             debitNoteInputModel.setFirmante(firmante);
             debitNoteInputModel.setDetalle(detalle);
             debitNoteInputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
+            debitNoteInputModel.setOtrosDocumentosTributariosRelacionados(otrosDocumentosTributariosRelacionados);
             return debitNoteInputModel;
         }
     }

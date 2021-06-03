@@ -40,6 +40,9 @@ public class CreditNoteInputModel extends NoteInputModel {
     @CuotaDePagoInputModel_Porcentaje100CollectionConstraint(groups = HighLevelGroupValidation.class)
     private List<CuotaDePagoInputModel> cuotasDePago;
 
+    @Valid
+    private List<DocTribRelacionadoInputModel_CreditNote> otrosDocumentosTributariosRelacionados;
+
     public String getTipoNota() {
         return tipoNota;
     }
@@ -56,6 +59,14 @@ public class CreditNoteInputModel extends NoteInputModel {
         this.cuotasDePago = cuotasDePago;
     }
 
+    public List<DocTribRelacionadoInputModel_CreditNote> getOtrosDocumentosTributariosRelacionados() {
+        return otrosDocumentosTributariosRelacionados;
+    }
+
+    public void setOtrosDocumentosTributariosRelacionados(List<DocTribRelacionadoInputModel_CreditNote> otrosDocumentosTributariosRelacionados) {
+        this.otrosDocumentosTributariosRelacionados = otrosDocumentosTributariosRelacionados;
+    }
+
     public static final class Builder {
         protected String serie;
         private String serieNumeroComprobanteAfectado;
@@ -69,6 +80,7 @@ public class CreditNoteInputModel extends NoteInputModel {
         private List<DocumentLineInputModel> detalle;
         private List<CuotaDePagoInputModel> cuotasDePago;
         private List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas;
+        private List<DocTribRelacionadoInputModel_CreditNote> otrosDocumentosTributariosRelacionados;
 
         private Builder() {
         }
@@ -137,6 +149,11 @@ public class CreditNoteInputModel extends NoteInputModel {
             return this;
         }
 
+        public Builder withOtrosDocumentosTributariosRelacionados(List<DocTribRelacionadoInputModel_CreditNote> otrosDocumentosTributariosRelacionados) {
+            this.otrosDocumentosTributariosRelacionados = otrosDocumentosTributariosRelacionados;
+            return this;
+        }
+
         public CreditNoteInputModel build() {
             CreditNoteInputModel creditNoteInputModel = new CreditNoteInputModel();
             creditNoteInputModel.setSerieNumeroComprobanteAfectado(serieNumeroComprobanteAfectado);
@@ -151,6 +168,7 @@ public class CreditNoteInputModel extends NoteInputModel {
             creditNoteInputModel.setDetalle(detalle);
             creditNoteInputModel.setCuotasDePago(cuotasDePago);
             creditNoteInputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
+            creditNoteInputModel.setOtrosDocumentosTributariosRelacionados(otrosDocumentosTributariosRelacionados);
             return creditNoteInputModel;
         }
     }
