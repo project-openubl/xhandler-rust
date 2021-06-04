@@ -30,8 +30,7 @@
         <#--parte de la operación que se factura, es decir no forman parte del(os) valor(es) de ventas-->
         <#--señaladas anteriormente, pero sí forman parte del importe total de la Venta (Ejemplo:-->
         <#--propinas, garantías para devolución de envases, etc.)-->
-<#--        <#if totalOtrosCargos??><cbc:ChargeTotalAmount currencyID="${moneda}">${totalOtrosCargos}</cbc:ChargeTotalAmount></#if>-->
-<#--        <#if totalOtrosCargos??><cbc:PrepaidAmount currencyID="${moneda}">${totalAnticipos}</cbc:PrepaidAmount></#if>-->
+        <#if totales.anticiposTotal??><cbc:PrepaidAmount currencyID="${moneda}">${totales.anticiposTotal}</cbc:PrepaidAmount></#if>
         <#---------->
         <#--PUNTO5-->
         <#---------->

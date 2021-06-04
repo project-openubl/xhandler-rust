@@ -14,26 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xmlbuilderlib.models.output.standard.invoice;
+package io.github.project.openubl.xmlbuilderlib.models.catalogs;
 
-import io.github.project.openubl.xmlbuilderlib.models.output.standard.DocumentoTributarioRelacionadoOutputModel;
+public enum Catalog12_Anticipo implements Catalog {
+    FACTURA_EMITIDA_POR_ANTICIPOS("02"),
+    BOLETA_DE_VENTA_EMITIDA_POR_ANTICIPOS("03");
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 
-public class AnticipoOutputModel extends DocumentoTributarioRelacionadoOutputModel {
+    private final String code;
 
-    @Min(0)
-    @NotNull
-    private BigDecimal montoTotal;
-
-    public BigDecimal getMontoTotal() {
-        return montoTotal;
+    Catalog12_Anticipo(String code) {
+        this.code = code;
     }
 
-    public void setMontoTotal(BigDecimal montoTotal) {
-        this.montoTotal = montoTotal;
+    @Override
+    public String getCode() {
+        return code;
     }
+
 }

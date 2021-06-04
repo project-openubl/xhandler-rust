@@ -18,13 +18,20 @@ package io.github.project.openubl.xmlbuilderlib.models.output.standard.invoice;
 
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.DocumentOutputModel;
+import io.github.project.openubl.xmlbuilderlib.models.output.standard.DocumentoTributarioRelacionadoOutputModel;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class InvoiceOutputModel extends DocumentOutputModel {
 
     @NotNull
     private Catalog1 tipoInvoice;
+
+    @NotNull
+    @Valid
+    private List<AnticipoOutputModel> anticipos;
 
     public Catalog1 getTipoInvoice() {
         return tipoInvoice;
@@ -34,8 +41,17 @@ public class InvoiceOutputModel extends DocumentOutputModel {
         this.tipoInvoice = tipoInvoice;
     }
 
+    public List<AnticipoOutputModel> getAnticipos() {
+        return anticipos;
+    }
+
+    public void setAnticipos(List<AnticipoOutputModel> anticipos) {
+        this.anticipos = anticipos;
+    }
+
     public static final class Builder extends DocumentOutputModel.Builder {
         private Catalog1 tipoInvoice;
+        private List<AnticipoOutputModel> anticipos;
 
         private Builder() {
         }
@@ -46,6 +62,11 @@ public class InvoiceOutputModel extends DocumentOutputModel {
 
         public Builder withTipoInvoice(Catalog1 tipoInvoice) {
             this.tipoInvoice = tipoInvoice;
+            return this;
+        }
+
+        public Builder withAnticipos(List<AnticipoOutputModel> anticipos) {
+            this.anticipos = anticipos;
             return this;
         }
 
@@ -65,6 +86,7 @@ public class InvoiceOutputModel extends DocumentOutputModel {
             invoiceOutputModel.setFormaPago(formaPago);
             invoiceOutputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
             invoiceOutputModel.setOtrosDocumentosTributariosRelacionados(otrosDocumentosTributariosRelacionados);
+            invoiceOutputModel.setAnticipos(anticipos);
             return invoiceOutputModel;
         }
     }

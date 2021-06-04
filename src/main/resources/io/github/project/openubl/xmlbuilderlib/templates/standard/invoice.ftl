@@ -17,18 +17,18 @@
 <#--    </#if>-->
     <#include "common/despatch-document-reference.ftl">
     <#include "common/additional-document-reference.ftl">
-<#--    <#list anticipos as item>-->
-<#--    <cac:AdditionalDocumentReference>-->
-<#--        <cbc:ID>${item.serieNumero}</cbc:ID>-->
-<#--        <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="Documento relacionado" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo12">${item.tipoDocumento.code}</cbc:DocumentTypeCode>-->
-<#--        <cbc:DocumentStatusCode listName="Anticipo" listAgencyName="PE:SUNAT">${item?index + 1}</cbc:DocumentStatusCode>-->
-<#--        <cac:IssuerParty>-->
-<#--            <cac:PartyIdentification>-->
-<#--                <cbc:ID schemeID="6" schemeName="Documento de Identidad" schemeAgencyName="PE:SUNAT" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">${item.ruc}</cbc:ID>-->
-<#--            </cac:PartyIdentification>-->
-<#--        </cac:IssuerParty>-->
-<#--    </cac:AdditionalDocumentReference>-->
-<#--    </#list>-->
+    <#list anticipos as item>
+    <cac:AdditionalDocumentReference>
+        <cbc:ID>${item.serieNumero}</cbc:ID>
+        <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="Documento Relacionado" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo12">${item.tipoDocumento.code}</cbc:DocumentTypeCode>
+        <cbc:DocumentStatusCode listName="Anticipo" listAgencyName="PE:SUNAT">${item?index + 1}</cbc:DocumentStatusCode>
+        <cac:IssuerParty>
+            <cac:PartyIdentification>
+                <cbc:ID schemeID="6" schemeName="Documento de Identidad" schemeAgencyName="PE:SUNAT" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">${proveedor.ruc}</cbc:ID>
+            </cac:PartyIdentification>
+        </cac:IssuerParty>
+    </cac:AdditionalDocumentReference>
+    </#list>
     <#include "../signature.ftl">
     <#include "common/supplier.ftl">
     <#include "common/customer.ftl">
@@ -75,13 +75,12 @@
         <cbc:PaymentDueDate>${item.fechaPago}</cbc:PaymentDueDate>
     </cac:PaymentTerms>
     </#list>
-<#--    </#if>-->
-<#--    <#list anticipos as item>-->
-<#--    <cac:PrepaidPayment>-->
-<#--        <cbc:ID>${item?index + 1}</cbc:ID>-->
-<#--        <cbc:PaidAmount currencyID="${moneda}">${item.montoTotal}</cbc:PaidAmount>-->
-<#--    </cac:PrepaidPayment>-->
-<#--    </#list>-->
+    <#list anticipos as item>
+    <cac:PrepaidPayment>
+        <cbc:ID>${item?index + 1}</cbc:ID>
+        <cbc:PaidAmount currencyID="${moneda}">${item.montoTotal}</cbc:PaidAmount>
+    </cac:PrepaidPayment>
+    </#list>
 <#--    <#list cargos as item>-->
 <#--    <cac:AllowanceCharge>-->
 <#--        <cbc:ChargeIndicator>true</cbc:ChargeIndicator>-->

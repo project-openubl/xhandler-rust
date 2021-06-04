@@ -16,21 +16,74 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice;
 
+import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog12_Anticipo;
+import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocTribRelacionadoInputModel;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 public class AnticipoInputModel extends DocTribRelacionadoInputModel {
 
-    @NotBlank
-    private String ruc;
+    @CatalogConstraint(value = Catalog12_Anticipo.class)
+    protected String tipoDocumento;
 
-    public String getRuc() {
-        return ruc;
+    @Min(0)
+    @NotNull
+    private BigDecimal montoTotal;
+
+    @Override
+    public String getTipoDocumento() {
+        return tipoDocumento;
     }
 
-    public void setRuc(String ruc) {
-        this.ruc = ruc;
+    @Override
+    public void setTipoDocumento(String tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
     }
 
+    public BigDecimal getMontoTotal() {
+        return montoTotal;
+    }
+
+    public void setMontoTotal(BigDecimal montoTotal) {
+        this.montoTotal = montoTotal;
+    }
+
+    public static final class Builder {
+        protected String serieNumero;
+        protected String tipoDocumento;
+        private BigDecimal montoTotal;
+
+        private Builder() {
+        }
+
+        public static Builder anAnticipoInputModel() {
+            return new Builder();
+        }
+
+        public Builder withSerieNumero(String serieNumero) {
+            this.serieNumero = serieNumero;
+            return this;
+        }
+
+        public Builder withTipoDocumento(String tipoDocumento) {
+            this.tipoDocumento = tipoDocumento;
+            return this;
+        }
+
+        public Builder withMontoTotal(BigDecimal montoTotal) {
+            this.montoTotal = montoTotal;
+            return this;
+        }
+
+        public AnticipoInputModel build() {
+            AnticipoInputModel anticipoInputModel = new AnticipoInputModel();
+            anticipoInputModel.setSerieNumero(serieNumero);
+            anticipoInputModel.setTipoDocumento(tipoDocumento);
+            anticipoInputModel.setMontoTotal(montoTotal);
+            return anticipoInputModel;
+        }
+    }
 }
