@@ -38,6 +38,10 @@ public class DocumentMonetaryTotalOutputModel {
     @Digits(integer = 100, fraction = 2)
     private BigDecimal importeTotal;
 
+    @Min(0)
+    @Digits(integer = 100, fraction = 2)
+    private BigDecimal anticiposTotal;
+
     public BigDecimal getValorVentaSinImpuestos() {
         return valorVentaSinImpuestos;
     }
@@ -62,10 +66,19 @@ public class DocumentMonetaryTotalOutputModel {
         this.importeTotal = importeTotal;
     }
 
+    public BigDecimal getAnticiposTotal() {
+        return anticiposTotal;
+    }
+
+    public void setAnticiposTotal(BigDecimal anticiposTotal) {
+        this.anticiposTotal = anticiposTotal;
+    }
+
     public static final class Builder {
         private BigDecimal valorVentaSinImpuestos;
         private BigDecimal valorVentaConImpuestos;
         private BigDecimal importeTotal;
+        private BigDecimal anticiposTotal;
 
         private Builder() {
         }
@@ -89,11 +102,17 @@ public class DocumentMonetaryTotalOutputModel {
             return this;
         }
 
+        public Builder withAnticiposTotal(BigDecimal anticiposTotal) {
+            this.anticiposTotal = anticiposTotal;
+            return this;
+        }
+
         public DocumentMonetaryTotalOutputModel build() {
             DocumentMonetaryTotalOutputModel documentMonetaryTotalOutputModel = new DocumentMonetaryTotalOutputModel();
             documentMonetaryTotalOutputModel.setValorVentaSinImpuestos(valorVentaSinImpuestos);
             documentMonetaryTotalOutputModel.setValorVentaConImpuestos(valorVentaConImpuestos);
             documentMonetaryTotalOutputModel.setImporteTotal(importeTotal);
+            documentMonetaryTotalOutputModel.setAnticiposTotal(anticiposTotal);
             return documentMonetaryTotalOutputModel;
         }
     }

@@ -31,6 +31,7 @@ import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.credit
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.debitNote.DebitNoteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.common.FormaPagoOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.*;
+import io.github.project.openubl.xmlbuilderlib.models.output.standard.invoice.AnticipoOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.invoice.InvoiceOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.NoteOutputModel;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.creditNote.CreditNoteOutputModel;
@@ -71,6 +72,33 @@ public class InvoiceAndNoteOutputModelFactory {
         builder.withFormaPago(getFormaPago(
                 input.getCuotasDePago(), tmpOutput.getTotales(), systemClock.getTimeZone()
         ));
+
+        // Anticipos
+        builder.withAnticipos(input.getAnticipos() != null ?
+                input.getAnticipos().stream()
+                        .map(anticipoInput -> {
+                            AnticipoOutputModel anticipoOutput = new AnticipoOutputModel();
+                            anticipoOutput.setSerieNumero(anticipoInput.getSerieNumero());
+                            anticipoOutput.setTipoDocumento(Catalog.valueOfCode(Catalog12.class, anticipoInput.getTipoDocumento()).orElseThrow(Catalog.invalidCatalogValue));
+                            anticipoOutput.setMontoTotal(anticipoInput.getMontoTotal());
+                            return anticipoOutput;
+                        })
+                        .collect(Collectors.toList())
+                : Collections.emptyList()
+        );
+
+        InvoiceOutputModel tempOut = builder.build();
+        BigDecimal anticiposTotal = tempOut.getAnticipos().stream().map(AnticipoOutputModel::getMontoTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (anticiposTotal.compareTo(BigDecimal.ZERO) > 0) {
+            builder.withTotales(
+                    DocumentMonetaryTotalOutputModel.Builder.aDocumentMonetaryTotalOutputModel()
+                            .withValorVentaSinImpuestos(tempOut.getTotales().getValorVentaSinImpuestos())
+                            .withValorVentaConImpuestos(tempOut.getTotales().getValorVentaConImpuestos())
+                            .withAnticiposTotal(anticiposTotal)
+                            .withImporteTotal(tempOut.getTotales().getImporteTotal().subtract(anticiposTotal))
+                            .build()
+            );
+        }
 
         return builder.build();
     }

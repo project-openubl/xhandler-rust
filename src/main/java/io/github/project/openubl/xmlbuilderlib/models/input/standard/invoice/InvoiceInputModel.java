@@ -38,6 +38,9 @@ public class InvoiceInputModel extends DocumentInputModel {
     @Valid
     private List<DocTribRelacionadoInputModel_Invoice> otrosDocumentosTributariosRelacionados;
 
+    @Valid
+    private List<AnticipoInputModel> anticipos;
+
     public List<CuotaDePagoInputModel> getCuotasDePago() {
         return cuotasDePago;
     }
@@ -55,6 +58,14 @@ public class InvoiceInputModel extends DocumentInputModel {
         this.otrosDocumentosTributariosRelacionados = otrosDocumentosTributariosRelacionados;
     }
 
+    public List<AnticipoInputModel> getAnticipos() {
+        return anticipos;
+    }
+
+    public void setAnticipos(List<AnticipoInputModel> anticipos) {
+        this.anticipos = anticipos;
+    }
+
     public static final class Builder {
         protected String serie;
         private Integer numero;
@@ -63,9 +74,10 @@ public class InvoiceInputModel extends DocumentInputModel {
         private ProveedorInputModel proveedor;
         private FirmanteInputModel firmante;
         private List<DocumentLineInputModel> detalle;
-        private List<CuotaDePagoInputModel> cuotasDePago;
         private List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas;
+        private List<CuotaDePagoInputModel> cuotasDePago;
         private List<DocTribRelacionadoInputModel_Invoice> otrosDocumentosTributariosRelacionados;
+        private List<AnticipoInputModel> anticipos;
 
         private Builder() {
         }
@@ -109,18 +121,23 @@ public class InvoiceInputModel extends DocumentInputModel {
             return this;
         }
 
-        public Builder withCuotasDePago(List<CuotaDePagoInputModel> cuotasDePago) {
-            this.cuotasDePago = cuotasDePago;
-            return this;
-        }
-
         public Builder withGuiasRemisionRelacionadas(List<GuiaRemisionRelacionadaInputModel> guiasRemisionRelacionadas) {
             this.guiasRemisionRelacionadas = guiasRemisionRelacionadas;
             return this;
         }
 
+        public Builder withCuotasDePago(List<CuotaDePagoInputModel> cuotasDePago) {
+            this.cuotasDePago = cuotasDePago;
+            return this;
+        }
+
         public Builder withOtrosDocumentosTributariosRelacionados(List<DocTribRelacionadoInputModel_Invoice> otrosDocumentosTributariosRelacionados) {
             this.otrosDocumentosTributariosRelacionados = otrosDocumentosTributariosRelacionados;
+            return this;
+        }
+
+        public Builder withAnticipos(List<AnticipoInputModel> anticipos) {
+            this.anticipos = anticipos;
             return this;
         }
 
@@ -133,9 +150,10 @@ public class InvoiceInputModel extends DocumentInputModel {
             invoiceInputModel.setProveedor(proveedor);
             invoiceInputModel.setFirmante(firmante);
             invoiceInputModel.setDetalle(detalle);
-            invoiceInputModel.setCuotasDePago(cuotasDePago);
             invoiceInputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
+            invoiceInputModel.setCuotasDePago(cuotasDePago);
             invoiceInputModel.setOtrosDocumentosTributariosRelacionados(otrosDocumentosTributariosRelacionados);
+            invoiceInputModel.setAnticipos(anticipos);
             return invoiceInputModel;
         }
     }
