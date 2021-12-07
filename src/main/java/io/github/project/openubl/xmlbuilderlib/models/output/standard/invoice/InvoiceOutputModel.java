@@ -31,7 +31,6 @@ public class InvoiceOutputModel extends DocumentOutputModel {
     private Catalog1 tipoInvoice;
 
     @Min(0)
-    @NotNull
     private BigDecimal totalAnticipos;
 
     @NotNull
