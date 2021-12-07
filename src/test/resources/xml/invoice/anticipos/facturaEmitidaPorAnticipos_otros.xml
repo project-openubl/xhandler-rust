@@ -35,30 +35,16 @@
         <cac:IssuerParty>
             <cac:PartyIdentification>
                 <cbc:ID schemeID="6" schemeName="Documento de Identidad" schemeAgencyName="PE:SUNAT"
-                        schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">12345678912
-                </cbc:ID>
-            </cac:PartyIdentification>
-        </cac:IssuerParty>
-    </cac:AdditionalDocumentReference>
-    <cac:AdditionalDocumentReference>
-        <cbc:ID>F999-2</cbc:ID>
-        <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="Documento Relacionado"
-                              listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo12">02
-        </cbc:DocumentTypeCode>
-        <cbc:DocumentStatusCode listName="Anticipo" listAgencyName="PE:SUNAT">2</cbc:DocumentStatusCode>
-        <cac:IssuerParty>
-            <cac:PartyIdentification>
-                <cbc:ID schemeID="6" schemeName="Documento de Identidad" schemeAgencyName="PE:SUNAT"
-                        schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">12345678912
+                        schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">20100066603
                 </cbc:ID>
             </cac:PartyIdentification>
         </cac:IssuerParty>
     </cac:AdditionalDocumentReference>
     <cac:Signature>
-        <cbc:ID>12345678912</cbc:ID>
+        <cbc:ID>20100066603</cbc:ID>
         <cac:SignatoryParty>
             <cac:PartyIdentification>
-                <cbc:ID>12345678912</cbc:ID>
+                <cbc:ID>20100066603</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyName>
                 <cbc:Name><![CDATA[Softgreen S.A.C.]]></cbc:Name>
@@ -74,13 +60,23 @@
         <cac:Party>
             <cac:PartyIdentification>
                 <cbc:ID schemeID="6" schemeAgencyName="PE:SUNAT" schemeName="Documento de Identidad"
-                        schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">12345678912
+                        schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">20100066603
                 </cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName><![CDATA[Softgreen S.A.C.]]></cbc:RegistrationName>
                 <cac:RegistrationAddress>
+                    <cbc:ID>150134</cbc:ID>
                     <cbc:AddressTypeCode>0000</cbc:AddressTypeCode>
+                    <cbc:CityName>LIMA</cbc:CityName>
+                    <cbc:CountrySubentity>LIMA</cbc:CountrySubentity>
+                    <cbc:District>LA VICTORIA</cbc:District>
+                    <cac:AddressLine>
+                        <cbc:Line><![CDATA[JR. MARISCAL AGUSTIN GAMARRA NRO. 1160 INT. 603 URB. SAN GERMAN]]></cbc:Line>
+                    </cac:AddressLine>
+                    <cac:Country>
+                        <cbc:IdentificationCode>PE</cbc:IdentificationCode>
+                    </cac:Country>
                 </cac:RegistrationAddress>
             </cac:PartyLegalEntity>
         </cac:Party>
@@ -89,11 +85,11 @@
         <cac:Party>
             <cac:PartyIdentification>
                 <cbc:ID schemeID="6" schemeAgencyName="PE:SUNAT" schemeName="Documento de Identidad"
-                        schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">12121212121
+                        schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">20603348991
                 </cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName><![CDATA[Carlos Feria]]></cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[INVERSIONES GOSMEL S.A.C.]]></cbc:RegistrationName>
             </cac:PartyLegalEntity>
         </cac:Party>
     </cac:AccountingCustomerParty>
@@ -104,24 +100,20 @@
     </cac:PaymentTerms>
     <cac:PrepaidPayment>
         <cbc:ID>1</cbc:ID>
-        <cbc:PaidAmount currencyID="PEN">180</cbc:PaidAmount>
-    </cac:PrepaidPayment>
-    <cac:PrepaidPayment>
-        <cbc:ID>2</cbc:ID>
-        <cbc:PaidAmount currencyID="PEN">180</cbc:PaidAmount>
+        <cbc:PaidAmount currencyID="PEN">2360</cbc:PaidAmount>
     </cac:PrepaidPayment>
     <cac:AllowanceCharge>
         <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
         <cbc:AllowanceChargeReasonCode>04</cbc:AllowanceChargeReasonCode>
-        <cbc:MultiplierFactorNumeric>1</cbc:MultiplierFactorNumeric>
-        <cbc:Amount currencyID="PEN">360</cbc:Amount>
-        <cbc:BaseAmount currencyID="PEN">360</cbc:BaseAmount>
+        <cbc:MultiplierFactorNumeric>0</cbc:MultiplierFactorNumeric>
+        <cbc:Amount currencyID="PEN">2360</cbc:Amount>
+        <cbc:BaseAmount currencyID="PEN">2360</cbc:BaseAmount>
     </cac:AllowanceCharge>
     <cac:TaxTotal>
-        <cbc:TaxAmount currencyID="PEN">295.2</cbc:TaxAmount>
+        <cbc:TaxAmount currencyID="PEN">360</cbc:TaxAmount>
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="PEN">1640</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="PEN">295.2</cbc:TaxAmount>
+            <cbc:TaxableAmount currencyID="PEN">2000</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="PEN">360</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305"
                         schemeName="Tax Category Identifie">S
@@ -138,8 +130,8 @@
     <cac:LegalMonetaryTotal>
         <cbc:LineExtensionAmount currencyID="PEN">2000</cbc:LineExtensionAmount>
         <cbc:TaxInclusiveAmount currencyID="PEN">2360</cbc:TaxInclusiveAmount>
-        <cbc:PrepaidAmount currencyID="PEN">360</cbc:PrepaidAmount>
-        <cbc:PayableAmount currencyID="PEN">2000</cbc:PayableAmount>
+        <cbc:PrepaidAmount currencyID="PEN">2360</cbc:PrepaidAmount>
+        <cbc:PayableAmount currencyID="PEN">0</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
     <cac:InvoiceLine>
         <cbc:ID>1</cbc:ID>
@@ -179,7 +171,7 @@
             </cac:TaxSubtotal>
         </cac:TaxTotal>
         <cac:Item>
-            <cbc:Description><![CDATA[Item1]]></cbc:Description>
+            <cbc:Description><![CDATA[100% TELA POLYESTER FABRIC BJ2206]]></cbc:Description>
         </cac:Item>
         <cac:Price>
             <cbc:PriceAmount currencyID="PEN">100</cbc:PriceAmount>
@@ -223,7 +215,7 @@
             </cac:TaxSubtotal>
         </cac:TaxTotal>
         <cac:Item>
-            <cbc:Description><![CDATA[Item2]]></cbc:Description>
+            <cbc:Description><![CDATA[MEDIAS POLYESTER]]></cbc:Description>
         </cac:Item>
         <cac:Price>
             <cbc:PriceAmount currencyID="PEN">100</cbc:PriceAmount>

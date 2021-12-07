@@ -38,6 +38,7 @@ import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.credi
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.note.debitNote.DebitNoteOutputModel;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -90,14 +91,35 @@ public class InvoiceAndNoteOutputModelFactory {
         InvoiceOutputModel tempOut = builder.build();
         BigDecimal anticiposTotal = tempOut.getAnticipos().stream().map(AnticipoOutputModel::getMontoTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
         if (anticiposTotal.compareTo(BigDecimal.ZERO) > 0) {
-            builder.withTotales(
-                    DocumentMonetaryTotalOutputModel.Builder.aDocumentMonetaryTotalOutputModel()
-                            .withValorVentaSinImpuestos(tempOut.getTotales().getValorVentaSinImpuestos())
-                            .withValorVentaConImpuestos(tempOut.getTotales().getValorVentaConImpuestos())
-                            .withAnticiposTotal(anticiposTotal)
-                            .withImporteTotal(tempOut.getTotales().getImporteTotal().subtract(anticiposTotal))
-                            .build()
-            );
+            BigDecimal baseImponibleIGV = tempOut.getTotales().getValorVentaSinImpuestos().subtract(anticiposTotal);
+            BigDecimal importIGV = baseImponibleIGV.multiply(config.getIgv()).setScale(2, RoundingMode.HALF_EVEN);
+
+            builder
+                    .withTotalAnticipos(anticiposTotal)
+                    .withTotales(
+                            DocumentMonetaryTotalOutputModel.Builder.aDocumentMonetaryTotalOutputModel()
+                                    .withValorVentaSinImpuestos(tempOut.getTotales().getValorVentaSinImpuestos())
+                                    .withValorVentaConImpuestos(tempOut.getTotales().getValorVentaConImpuestos())
+                                    .withAnticiposTotal(anticiposTotal)
+                                    .withImporteTotal(tempOut.getTotales().getImporteTotal().subtract(anticiposTotal))
+                                    .build()
+                    )
+                    .withImpuestos(
+                            DocumentImpuestosOutputModel.Builder.aDocumentImpuestosOutputModel()
+                                    .withGravadas(ImpuestoTotalOutputModel.Builder.anImpuestoTotalOutputModel()
+                                            .withBaseImponible(baseImponibleIGV)
+                                            .withImporte(importIGV)
+                                            .withCategoria(Catalog5.IGV)
+                                            .build()
+                                    )
+                                    .withInafectas(tempOut.getImpuestos().getInafectas())
+                                    .withExoneradas(tempOut.getImpuestos().getExoneradas())
+                                    .withGratuitas(tempOut.getImpuestos().getGratuitas())
+                                    .withIcb(tempOut.getImpuestos().getIcb())
+                                    .withIvap(tempOut.getImpuestos().getIvap())
+                                    .withImporteTotal(importIGV)
+                                    .build()
+                    );
         }
 
         return builder.build();

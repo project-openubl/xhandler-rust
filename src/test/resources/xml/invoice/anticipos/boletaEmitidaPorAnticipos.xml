@@ -110,11 +110,18 @@
         <cbc:ID>2</cbc:ID>
         <cbc:PaidAmount currencyID="PEN">180</cbc:PaidAmount>
     </cac:PrepaidPayment>
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>04</cbc:AllowanceChargeReasonCode>
+        <cbc:MultiplierFactorNumeric>1</cbc:MultiplierFactorNumeric>
+        <cbc:Amount currencyID="PEN">360</cbc:Amount>
+        <cbc:BaseAmount currencyID="PEN">360</cbc:BaseAmount>
+    </cac:AllowanceCharge>
     <cac:TaxTotal>
-        <cbc:TaxAmount currencyID="PEN">360</cbc:TaxAmount>
+        <cbc:TaxAmount currencyID="PEN">295.2</cbc:TaxAmount>
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="PEN">2000</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="PEN">360</cbc:TaxAmount>
+            <cbc:TaxableAmount currencyID="PEN">1640</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="PEN">295.2</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305"
                         schemeName="Tax Category Identifie">S

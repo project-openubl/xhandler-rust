@@ -37,47 +37,162 @@ public class AnticiposTest extends AbstractUBLTest {
     public AnticiposTest() throws Exception {
     }
 
+    @Test
+    void testFacturaEmitidaPorAnticipos() throws Exception {
+        // Given
+        InvoiceInputModel input = InvoiceInputModel.Builder.anInvoiceInputModel()
+                .withSerie("F001")
+                .withNumero(1)
+                .withProveedor(ProveedorInputModel.Builder.aProveedorInputModel()
+                        .withRuc("12345678912")
+                        .withRazonSocial("Softgreen S.A.C.")
+                        .build()
+                )
+                .withCliente(ClienteInputModel.Builder.aClienteInputModel()
+                        .withNombre("Carlos Feria")
+                        .withNumeroDocumentoIdentidad("12121212121")
+                        .withTipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
+                )
+                .withDetalle(Arrays.asList(
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item1")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioUnitario(new BigDecimal(100))
+                                .build(),
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item2")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioUnitario(new BigDecimal(100))
+                                .build())
+                )
+                .withAnticipos(Arrays.asList(
+                        AnticipoInputModel.Builder.anAnticipoInputModel()
+                                .withSerieNumero("F999-1")
+                                .withTipoDocumento(Catalog12_Anticipo.FACTURA_EMITIDA_POR_ANTICIPOS.toString())
+                                .withMontoTotal(new BigDecimal("180"))
+                                .build(),
+                        AnticipoInputModel.Builder.anAnticipoInputModel()
+                                .withSerieNumero("F999-2")
+                                .withTipoDocumento(Catalog12_Anticipo.FACTURA_EMITIDA_POR_ANTICIPOS.toString())
+                                .withMontoTotal(new BigDecimal("180"))
+                                .build()
+                ))
+                .build();
+
+
+        // When
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
+        InvoiceOutputModel output = result.getOutput();
+        String xml = result.getXml();
+
+        // Then
+        assertOutputHasNoConstraintViolations(validator, output);
+        assertSnapshot(xml, "xml/invoice/anticipos/facturaEmitidaPorAnticipos.xml");
+        assertSendSunat(xml);
+    }
+
+    @Test
+    void testBoletaEmitidaPorAnticipos() throws Exception {
+        // Given
+        InvoiceInputModel input = InvoiceInputModel.Builder.anInvoiceInputModel()
+                .withSerie("F001")
+                .withNumero(1)
+                .withProveedor(ProveedorInputModel.Builder.aProveedorInputModel()
+                        .withRuc("12345678912")
+                        .withRazonSocial("Softgreen S.A.C.")
+                        .build()
+                )
+                .withCliente(ClienteInputModel.Builder.aClienteInputModel()
+                        .withNombre("Carlos Feria")
+                        .withNumeroDocumentoIdentidad("12121212121")
+                        .withTipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
+                )
+                .withDetalle(Arrays.asList(
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item1")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioUnitario(new BigDecimal(100))
+                                .build(),
+                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
+                                .withDescripcion("Item2")
+                                .withCantidad(new BigDecimal(10))
+                                .withPrecioUnitario(new BigDecimal(100))
+                                .build())
+                )
+                .withAnticipos(Arrays.asList(
+                        AnticipoInputModel.Builder.anAnticipoInputModel()
+                                .withSerieNumero("B999-1")
+                                .withTipoDocumento(Catalog12_Anticipo.BOLETA_DE_VENTA_EMITIDA_POR_ANTICIPOS.toString())
+                                .withMontoTotal(new BigDecimal("180"))
+                                .build(),
+                        AnticipoInputModel.Builder.anAnticipoInputModel()
+                                .withSerieNumero("B999-2")
+                                .withTipoDocumento(Catalog12_Anticipo.BOLETA_DE_VENTA_EMITIDA_POR_ANTICIPOS.toString())
+                                .withMontoTotal(new BigDecimal("180"))
+                                .build()
+                ))
+                .build();
+
+
+        // When
+        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
+        InvoiceOutputModel output = result.getOutput();
+        String xml = result.getXml();
+
+        // Then
+        assertOutputHasNoConstraintViolations(validator, output);
+        assertSnapshot(xml, "xml/invoice/anticipos/boletaEmitidaPorAnticipos.xml");
+        assertSendSunat(xml);
+    }
+
 //    @Test
-//    void testFacturaEmitidaPorAnticipos() throws Exception {
+//    void testFacturaEmitidaPorAnticipos_otros() throws Exception {
 //        // Given
-//        InvoiceInputModel input = InvoiceInputModel.Builder.anInvoiceInputModel()
+//        InvoiceInputModel input = input = InvoiceInputModel.Builder.anInvoiceInputModel()
 //                .withSerie("F001")
 //                .withNumero(1)
 //                .withProveedor(ProveedorInputModel.Builder.aProveedorInputModel()
-//                        .withRuc("12345678912")
+//                        .withRuc("20100066603")
 //                        .withRazonSocial("Softgreen S.A.C.")
+//                        .withDireccion(DireccionInputModel.Builder.aDireccionInputModel()
+//                                .withUbigeo("150134")
+//                                .withDepartamento("LIMA")
+//                                .withProvincia("LIMA")
+//                                .withDistrito("LA VICTORIA")
+//                                .withDireccion("JR. MARISCAL AGUSTIN GAMARRA NRO. 1160 INT. 603 URB. SAN GERMAN")
+//                                .withCodigoPais("PE")
+//                                .build())
 //                        .build()
 //                )
 //                .withCliente(ClienteInputModel.Builder.aClienteInputModel()
-//                        .withNombre("Carlos Feria")
-//                        .withNumeroDocumentoIdentidad("12121212121")
+//                        .withNombre("INVERSIONES GOSMEL S.A.C.")
+//                        .withNumeroDocumentoIdentidad("20603348991")
 //                        .withTipoDocumentoIdentidad(Catalog6.RUC.toString())
 //                        .build()
 //                )
+//
 //                .withDetalle(Arrays.asList(
 //                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
-//                                .withDescripcion("Item1")
+//                                .withDescripcion("100% TELA POLYESTER FABRIC BJ2206")
 //                                .withCantidad(new BigDecimal(10))
 //                                .withPrecioUnitario(new BigDecimal(100))
 //                                .build(),
 //                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
-//                                .withDescripcion("Item2")
+//                                .withDescripcion("MEDIAS POLYESTER")
 //                                .withCantidad(new BigDecimal(10))
 //                                .withPrecioUnitario(new BigDecimal(100))
 //                                .build())
 //                )
 //                .withAnticipos(Arrays.asList(
-//                        AnticipoInputModel.Builder.anAnticipoInputModel()
-//                                .withSerieNumero("F999-1")
-//                                .withTipoDocumento(Catalog12_Anticipo.FACTURA_EMITIDA_POR_ANTICIPOS.toString())
-//                                .withMontoTotal(new BigDecimal("180"))
-//                                .build(),
-//                        AnticipoInputModel.Builder.anAnticipoInputModel()
-//                                .withSerieNumero("F999-2")
-//                                .withTipoDocumento(Catalog12_Anticipo.FACTURA_EMITIDA_POR_ANTICIPOS.toString())
-//                                .withMontoTotal(new BigDecimal("180"))
-//                                .build()
-//                ))
+//                                AnticipoInputModel.Builder.anAnticipoInputModel()
+//                                        .withSerieNumero("F999-1")
+//                                        .withTipoDocumento(Catalog12_Anticipo.FACTURA_EMITIDA_POR_ANTICIPOS.toString())
+//                                        .withMontoTotal(new BigDecimal(2360))
+//                                        .build()
+//                        )
+//                )
 //                .build();
 //
 //
@@ -88,62 +203,7 @@ public class AnticiposTest extends AbstractUBLTest {
 //
 //        // Then
 //        assertOutputHasNoConstraintViolations(validator, output);
-//        assertSnapshot(xml, "xml/invoice/anticipos/facturaEmitidaPorAnticipos.xml");
-//        assertSendSunat(xml);
-//    }
-//
-//    @Test
-//    void testBoletaEmitidaPorAnticipos() throws Exception {
-//        // Given
-//        InvoiceInputModel input = InvoiceInputModel.Builder.anInvoiceInputModel()
-//                .withSerie("F001")
-//                .withNumero(1)
-//                .withProveedor(ProveedorInputModel.Builder.aProveedorInputModel()
-//                        .withRuc("12345678912")
-//                        .withRazonSocial("Softgreen S.A.C.")
-//                        .build()
-//                )
-//                .withCliente(ClienteInputModel.Builder.aClienteInputModel()
-//                        .withNombre("Carlos Feria")
-//                        .withNumeroDocumentoIdentidad("12121212121")
-//                        .withTipoDocumentoIdentidad(Catalog6.RUC.toString())
-//                        .build()
-//                )
-//                .withDetalle(Arrays.asList(
-//                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
-//                                .withDescripcion("Item1")
-//                                .withCantidad(new BigDecimal(10))
-//                                .withPrecioUnitario(new BigDecimal(100))
-//                                .build(),
-//                        DocumentLineInputModel.Builder.aDocumentLineInputModel()
-//                                .withDescripcion("Item2")
-//                                .withCantidad(new BigDecimal(10))
-//                                .withPrecioUnitario(new BigDecimal(100))
-//                                .build())
-//                )
-//                .withAnticipos(Arrays.asList(
-//                        AnticipoInputModel.Builder.anAnticipoInputModel()
-//                                .withSerieNumero("B999-1")
-//                                .withTipoDocumento(Catalog12_Anticipo.BOLETA_DE_VENTA_EMITIDA_POR_ANTICIPOS.toString())
-//                                .withMontoTotal(new BigDecimal("180"))
-//                                .build(),
-//                        AnticipoInputModel.Builder.anAnticipoInputModel()
-//                                .withSerieNumero("B999-2")
-//                                .withTipoDocumento(Catalog12_Anticipo.BOLETA_DE_VENTA_EMITIDA_POR_ANTICIPOS.toString())
-//                                .withMontoTotal(new BigDecimal("180"))
-//                                .build()
-//                ))
-//                .build();
-//
-//
-//        // When
-//        DocumentWrapper<InvoiceOutputModel> result = DocumentManager.createXML(input, config, systemClock);
-//        InvoiceOutputModel output = result.getOutput();
-//        String xml = result.getXml();
-//
-//        // Then
-//        assertOutputHasNoConstraintViolations(validator, output);
-//        assertSnapshot(xml, "xml/invoice/anticipos/boletaEmitidaPorAnticipos.xml");
+//        assertSnapshot(xml, "xml/invoice/anticipos/facturaEmitidaPorAnticipos_otros.xml");
 //        assertSendSunat(xml);
 //    }
 }

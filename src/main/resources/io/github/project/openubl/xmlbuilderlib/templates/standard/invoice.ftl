@@ -81,6 +81,15 @@
         <cbc:PaidAmount currencyID="${moneda}">${item.montoTotal}</cbc:PaidAmount>
     </cac:PrepaidPayment>
     </#list>
+    <#if totalAnticipos??>
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode >04</cbc:AllowanceChargeReasonCode>
+        <cbc:MultiplierFactorNumeric>1</cbc:MultiplierFactorNumeric>
+        <cbc:Amount currencyID="${moneda}">${totalAnticipos}</cbc:Amount>
+        <cbc:BaseAmount currencyID="${moneda}">${totalAnticipos}</cbc:BaseAmount>
+    </cac:AllowanceCharge>
+    </#if>
 <#--    <#list cargos as item>-->
 <#--    <cac:AllowanceCharge>-->
 <#--        <cbc:ChargeIndicator>true</cbc:ChargeIndicator>-->
