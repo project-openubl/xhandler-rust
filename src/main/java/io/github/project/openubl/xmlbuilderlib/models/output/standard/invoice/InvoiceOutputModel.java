@@ -20,18 +20,13 @@ import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog1;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.DocumentOutputModel;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.util.List;
 
 public class InvoiceOutputModel extends DocumentOutputModel {
 
     @NotNull
     private Catalog1 tipoInvoice;
-
-    @Min(0)
-    private BigDecimal totalAnticipos;
 
     @NotNull
     @Valid
@@ -45,14 +40,6 @@ public class InvoiceOutputModel extends DocumentOutputModel {
         this.tipoInvoice = tipoInvoice;
     }
 
-    public BigDecimal getTotalAnticipos() {
-        return totalAnticipos;
-    }
-
-    public void setTotalAnticipos(BigDecimal totalAnticipos) {
-        this.totalAnticipos = totalAnticipos;
-    }
-
     public List<AnticipoOutputModel> getAnticipos() {
         return anticipos;
     }
@@ -63,7 +50,6 @@ public class InvoiceOutputModel extends DocumentOutputModel {
 
     public static final class Builder extends DocumentOutputModel.Builder {
         private Catalog1 tipoInvoice;
-        private BigDecimal totaAnticipos;
         private List<AnticipoOutputModel> anticipos;
 
         private Builder() {
@@ -75,11 +61,6 @@ public class InvoiceOutputModel extends DocumentOutputModel {
 
         public Builder withTipoInvoice(Catalog1 tipoInvoice) {
             this.tipoInvoice = tipoInvoice;
-            return this;
-        }
-
-        public Builder withTotalAnticipos(BigDecimal totaAnticipos) {
-            this.totaAnticipos = totaAnticipos;
             return this;
         }
 
@@ -104,7 +85,6 @@ public class InvoiceOutputModel extends DocumentOutputModel {
             invoiceOutputModel.setFormaPago(formaPago);
             invoiceOutputModel.setGuiasRemisionRelacionadas(guiasRemisionRelacionadas);
             invoiceOutputModel.setOtrosDocumentosTributariosRelacionados(otrosDocumentosTributariosRelacionados);
-            invoiceOutputModel.setTotalAnticipos(totaAnticipos);
             invoiceOutputModel.setAnticipos(anticipos);
             return invoiceOutputModel;
         }

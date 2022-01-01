@@ -78,18 +78,18 @@
     <#list anticipos as item>
     <cac:PrepaidPayment>
         <cbc:ID>${item?index + 1}</cbc:ID>
-        <cbc:PaidAmount currencyID="${moneda}">${item.montoTotal}</cbc:PaidAmount>
+        <cbc:PaidAmount currencyID="${moneda}">${item.montoTotalConIgv}</cbc:PaidAmount>
     </cac:PrepaidPayment>
     </#list>
-    <#if totalAnticipos??>
+    <#list anticipos as item>
     <cac:AllowanceCharge>
         <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
-        <cbc:AllowanceChargeReasonCode >04</cbc:AllowanceChargeReasonCode>
+        <cbc:AllowanceChargeReasonCode>${item.tipoAnticipo.code}</cbc:AllowanceChargeReasonCode>
         <cbc:MultiplierFactorNumeric>1</cbc:MultiplierFactorNumeric>
-        <cbc:Amount currencyID="${moneda}">${totalAnticipos}</cbc:Amount>
-        <cbc:BaseAmount currencyID="${moneda}">${totalAnticipos}</cbc:BaseAmount>
+        <cbc:Amount currencyID="${moneda}">${item.montoTotalConIgv}</cbc:Amount>
+        <cbc:BaseAmount currencyID="${moneda}">${item.montoTotalConIgv}</cbc:BaseAmount>
     </cac:AllowanceCharge>
-    </#if>
+    </#list>
 <#--    <#list cargos as item>-->
 <#--    <cac:AllowanceCharge>-->
 <#--        <cbc:ChargeIndicator>true</cbc:ChargeIndicator>-->

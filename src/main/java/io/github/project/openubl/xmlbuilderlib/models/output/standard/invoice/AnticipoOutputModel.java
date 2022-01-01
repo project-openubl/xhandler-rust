@@ -16,24 +16,98 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.output.standard.invoice;
 
+import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog12;
+import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog53_Anticipo;
 import io.github.project.openubl.xmlbuilderlib.models.output.standard.DocumentoTributarioRelacionadoOutputModel;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class AnticipoOutputModel extends DocumentoTributarioRelacionadoOutputModel {
 
+    @NotNull
+    private Catalog53_Anticipo tipoAnticipo;
+
     @Min(0)
     @NotNull
-    private BigDecimal montoTotal;
+    private BigDecimal montoTotalConIgv;
 
-    public BigDecimal getMontoTotal() {
-        return montoTotal;
+    @Min(0)
+    @NotNull
+    private BigDecimal montoTotalSinIgv;
+
+    public Catalog53_Anticipo getTipoAnticipo() {
+        return tipoAnticipo;
     }
 
-    public void setMontoTotal(BigDecimal montoTotal) {
-        this.montoTotal = montoTotal;
+    public void setTipoAnticipo(Catalog53_Anticipo tipoAnticipo) {
+        this.tipoAnticipo = tipoAnticipo;
+    }
+
+    public BigDecimal getMontoTotalConIgv() {
+        return montoTotalConIgv;
+    }
+
+    public void setMontoTotalConIgv(BigDecimal montoTotalConIgv) {
+        this.montoTotalConIgv = montoTotalConIgv;
+    }
+
+    public BigDecimal getMontoTotalSinIgv() {
+        return montoTotalSinIgv;
+    }
+
+    public void setMontoTotalSinIgv(BigDecimal montoTotalSinIgv) {
+        this.montoTotalSinIgv = montoTotalSinIgv;
+    }
+
+    public static final class Builder {
+        private String serieNumero;
+        private Catalog12 tipoDocumento;
+        private Catalog53_Anticipo tipoAnticipo;
+        private BigDecimal montoTotalConIgv;
+        private BigDecimal montoTotalSinIgv;
+
+        private Builder() {
+        }
+
+        public static Builder anAnticipoOutputModel() {
+            return new Builder();
+        }
+
+        public Builder withSerieNumero(String serieNumero) {
+            this.serieNumero = serieNumero;
+            return this;
+        }
+
+        public Builder withTipoDocumento(Catalog12 tipoDocumento) {
+            this.tipoDocumento = tipoDocumento;
+            return this;
+        }
+
+        public Builder withTipoAnticipo(Catalog53_Anticipo tipoAnticipo) {
+            this.tipoAnticipo = tipoAnticipo;
+            return this;
+        }
+
+        public Builder withMontoTotalConIgv(BigDecimal montoTotalConIgv) {
+            this.montoTotalConIgv = montoTotalConIgv;
+            return this;
+        }
+
+        public Builder withMontoTotalSinIgv(BigDecimal montoTotalSinIgv) {
+            this.montoTotalSinIgv = montoTotalSinIgv;
+            return this;
+        }
+
+        public AnticipoOutputModel build() {
+            AnticipoOutputModel anticipoOutputModel = new AnticipoOutputModel();
+            anticipoOutputModel.setSerieNumero(serieNumero);
+            anticipoOutputModel.setTipoDocumento(tipoDocumento);
+            anticipoOutputModel.setTipoAnticipo(tipoAnticipo);
+            anticipoOutputModel.setMontoTotalConIgv(montoTotalConIgv);
+            anticipoOutputModel.setMontoTotalSinIgv(montoTotalSinIgv);
+            return anticipoOutputModel;
+        }
     }
 }

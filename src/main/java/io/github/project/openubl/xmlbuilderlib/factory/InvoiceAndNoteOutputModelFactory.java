@@ -1,13 +1,13 @@
 /**
  * Copyright 2019 Project OpenUBL, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
- *
+ * <p>
  * Licensed under the Eclipse Public License - v 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * https://www.eclipse.org/legal/epl-2.0/
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import io.github.project.openubl.xmlbuilderlib.factory.common.ProveedorOutputMod
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.*;
 import io.github.project.openubl.xmlbuilderlib.models.input.common.CuotaDePagoInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocumentInputModel;
+import io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice.AnticipoInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice.InvoiceInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.NoteInputModel;
 import io.github.project.openubl.xmlbuilderlib.models.input.standard.note.creditNote.CreditNoteInputModel;
@@ -51,6 +52,9 @@ import static io.github.project.openubl.xmlbuilderlib.utils.DateUtils.toGregoria
 
 public class InvoiceAndNoteOutputModelFactory {
 
+    public static final String FACTURA_REGEX = "^[F|f].*$";
+    public static final String BOLETA_REGEX = "^[B|b].*$";
+
     private InvoiceAndNoteOutputModelFactory() {
         // Only static methods
     }
@@ -58,15 +62,49 @@ public class InvoiceAndNoteOutputModelFactory {
     public static InvoiceOutputModel getInvoiceOutput(InvoiceInputModel input, Config config, SystemClock systemClock) {
         InvoiceOutputModel.Builder builder = InvoiceOutputModel.Builder.anInvoiceOutputModel();
 
-        if (input.getSerie().matches("^[F|b].*$")) {
+        if (input.getSerie().matches(FACTURA_REGEX)) {
             builder.withTipoInvoice(Catalog1.FACTURA);
-        } else if (input.getSerie().matches("^[B|b].*$")) {
+        } else if (input.getSerie().matches(BOLETA_REGEX)) {
             builder.withTipoInvoice(Catalog1.BOLETA);
         } else {
             throw new IllegalStateException("Invalid Serie");
         }
 
-        enrichDocument(input, builder, config, systemClock);
+        // Anticipos
+        List<AnticipoOutputModel> anticiposOutput = Collections.emptyList();
+        if (input.getAnticipos() != null) {
+            anticiposOutput = input.getAnticipos().stream()
+                    .map(anticipoInput -> {
+                        Catalog53_Anticipo tipoAnticipo = Catalog.valueOfCode(Catalog53_Anticipo.class, anticipoInput.getTipoAnticipo()).orElseThrow(Catalog.invalidCatalogValue);
+                        Catalog12 tipoDocumento;
+                        if (anticipoInput.getSerieNumero().matches(FACTURA_REGEX)) {
+                            tipoDocumento = Catalog12.FACTURA_EMITIDA_POR_ANTICIPOS;
+                        } else if (anticipoInput.getSerieNumero().matches(BOLETA_REGEX)) {
+                            tipoDocumento = Catalog12.BOLETA_DE_VENTA_EMITIDA_POR_ANTICIPOS;
+                        } else {
+                            throw new IllegalStateException("Invalid Anticipo tipoDocumento");
+                        }
+
+                        BigDecimal montoTotalAnticipoConIgv = anticipoInput.getMontoTotal();
+                        BigDecimal montoTotalAnticipoSinIgv = anticipoInput.getMontoTotal();
+                        if (tipoAnticipo.equals(Catalog53_Anticipo.DESCUENTO_GLOBAL_POR_ANTICIPOS_GRAVADOS_AFECTA_BASE_IMPONIBLE_IGV_IVAP)) {
+                            montoTotalAnticipoSinIgv = montoTotalAnticipoSinIgv.divide(config.getIgv().add(BigDecimal.ONE), 2, RoundingMode.HALF_EVEN);
+                        }
+
+                        return AnticipoOutputModel.Builder.anAnticipoOutputModel()
+                                .withSerieNumero(anticipoInput.getSerieNumero())
+                                .withTipoDocumento(tipoDocumento)
+                                .withTipoAnticipo(tipoAnticipo)
+                                .withMontoTotalConIgv(montoTotalAnticipoConIgv)
+                                .withMontoTotalSinIgv(montoTotalAnticipoSinIgv)
+                                .build();
+                    })
+                    .collect(Collectors.toList());
+        }
+        builder.withAnticipos(anticiposOutput);
+
+        //
+        enrichDocument(input, builder, config, systemClock, input.getAnticipos());
 
         // Forma de pago
         InvoiceOutputModel tmpOutput = builder.build();
@@ -74,52 +112,45 @@ public class InvoiceAndNoteOutputModelFactory {
                 input.getCuotasDePago(), tmpOutput.getTotales(), systemClock.getTimeZone()
         ));
 
-        // Anticipos
-        builder.withAnticipos(input.getAnticipos() != null ?
-                input.getAnticipos().stream()
-                        .map(anticipoInput -> {
-                            AnticipoOutputModel anticipoOutput = new AnticipoOutputModel();
-                            anticipoOutput.setSerieNumero(anticipoInput.getSerieNumero());
-                            anticipoOutput.setTipoDocumento(Catalog.valueOfCode(Catalog12.class, anticipoInput.getTipoDocumento()).orElseThrow(Catalog.invalidCatalogValue));
-                            anticipoOutput.setMontoTotal(anticipoInput.getMontoTotal());
-                            return anticipoOutput;
-                        })
-                        .collect(Collectors.toList())
-                : Collections.emptyList()
-        );
-
         InvoiceOutputModel tempOut = builder.build();
-        BigDecimal anticiposTotal = tempOut.getAnticipos().stream().map(AnticipoOutputModel::getMontoTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
-        if (anticiposTotal.compareTo(BigDecimal.ZERO) > 0) {
-            BigDecimal baseImponibleIGV = tempOut.getTotales().getValorVentaSinImpuestos().subtract(anticiposTotal);
-            BigDecimal importIGV = baseImponibleIGV.multiply(config.getIgv()).setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal anticiposConIgvTotal = tempOut.getAnticipos().stream().map(AnticipoOutputModel::getMontoTotalConIgv).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (anticiposConIgvTotal.compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal totalAnticiposConIgv = tempOut.getAnticipos().stream()
+                    .filter(f -> f.getTipoAnticipo().equals(Catalog53_Anticipo.DESCUENTO_GLOBAL_POR_ANTICIPOS_GRAVADOS_AFECTA_BASE_IMPONIBLE_IGV_IVAP))
+                    .map(AnticipoOutputModel::getMontoTotalConIgv)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal igvDelTotalAnticipo = totalAnticiposConIgv.multiply(config.getIgv()).setScale(2, RoundingMode.HALF_EVEN);
+
+            ImpuestoTotalOutputModel gravadas = tempOut.getImpuestos().getGravadas();
+            gravadas.setBaseImponible(gravadas.getBaseImponible().subtract(totalAnticiposConIgv));
+            gravadas.setImporte(gravadas.getImporte().subtract(igvDelTotalAnticipo));
+
+            BigDecimal newImpuestosTotal = tempOut.getImpuestos().getImporteTotal().subtract(igvDelTotalAnticipo);
 
             builder
-                    .withTotalAnticipos(anticiposTotal)
                     .withTotales(
                             DocumentMonetaryTotalOutputModel.Builder.aDocumentMonetaryTotalOutputModel()
                                     .withValorVentaSinImpuestos(tempOut.getTotales().getValorVentaSinImpuestos())
                                     .withValorVentaConImpuestos(tempOut.getTotales().getValorVentaConImpuestos())
-                                    .withAnticiposTotal(anticiposTotal)
-                                    .withImporteTotal(tempOut.getTotales().getImporteTotal().subtract(anticiposTotal))
+                                    .withAnticiposTotal(anticiposConIgvTotal)
+                                    .withImporteTotal(
+                                            tempOut.getTotales().getImporteTotal().subtract(anticiposConIgvTotal)
+                                    )
                                     .build()
                     )
                     .withImpuestos(
                             DocumentImpuestosOutputModel.Builder.aDocumentImpuestosOutputModel()
-                                    .withGravadas(ImpuestoTotalOutputModel.Builder.anImpuestoTotalOutputModel()
-                                            .withBaseImponible(baseImponibleIGV)
-                                            .withImporte(importIGV)
-                                            .withCategoria(Catalog5.IGV)
-                                            .build()
-                                    )
-                                    .withInafectas(tempOut.getImpuestos().getInafectas())
-                                    .withExoneradas(tempOut.getImpuestos().getExoneradas())
                                     .withGratuitas(tempOut.getImpuestos().getGratuitas())
                                     .withIcb(tempOut.getImpuestos().getIcb())
                                     .withIvap(tempOut.getImpuestos().getIvap())
-                                    .withImporteTotal(importIGV)
+
+                                    .withGravadas(gravadas)
+                                    .withInafectas(tempOut.getImpuestos().getInafectas())
+                                    .withExoneradas(tempOut.getImpuestos().getExoneradas())
+                                    .withImporteTotal(newImpuestosTotal)
                                     .build()
-                    );
+                    )
+            ;
         }
 
         return builder.build();
@@ -134,7 +165,7 @@ public class InvoiceAndNoteOutputModelFactory {
                 );
 
         enrichNote(input, builder);
-        enrichDocument(input, builder, config, systemClock);
+        enrichDocument(input, builder, config, systemClock, Collections.emptyList());
 
         // Forma de pago
         CreditNoteOutputModel tmpOutput = builder.build();
@@ -154,13 +185,13 @@ public class InvoiceAndNoteOutputModelFactory {
                 );
 
         enrichNote(input, builder);
-        enrichDocument(input, builder, config, systemClock);
+        enrichDocument(input, builder, config, systemClock, Collections.emptyList());
         return builder.build();
     }
 
     // Enrich
 
-    private static void enrichDocument(DocumentInputModel input, DocumentOutputModel.Builder builder, Config config, SystemClock systemClock) {
+    private static void enrichDocument(DocumentInputModel input, DocumentOutputModel.Builder builder, Config config, SystemClock systemClock, List<AnticipoInputModel> anticipos) {
         builder.withMoneda(config.getDefaultMoneda())
                 .withSerieNumero(input.getSerie().toUpperCase() + "-" + input.getNumero());
 

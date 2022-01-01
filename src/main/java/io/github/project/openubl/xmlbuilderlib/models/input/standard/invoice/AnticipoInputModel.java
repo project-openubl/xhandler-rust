@@ -16,31 +16,41 @@
  */
 package io.github.project.openubl.xmlbuilderlib.models.input.standard.invoice;
 
-import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog12_Anticipo;
+import io.github.project.openubl.xmlbuilderlib.models.catalogs.Catalog53_Anticipo;
 import io.github.project.openubl.xmlbuilderlib.models.catalogs.constraints.CatalogConstraint;
-import io.github.project.openubl.xmlbuilderlib.models.input.standard.DocTribRelacionadoInputModel;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-public class AnticipoInputModel extends DocTribRelacionadoInputModel {
+public class AnticipoInputModel {
 
-    @CatalogConstraint(value = Catalog12_Anticipo.class)
-    protected String tipoDocumento;
+    @NotBlank
+    private String serieNumero;
+
+    @NotNull
+    @CatalogConstraint(value = Catalog53_Anticipo.class)
+    private String tipoAnticipo;
 
     @Min(0)
     @NotNull
     private BigDecimal montoTotal;
 
-    @Override
-    public String getTipoDocumento() {
-        return tipoDocumento;
+    public String getSerieNumero() {
+        return serieNumero;
     }
 
-    @Override
-    public void setTipoDocumento(String tipoDocumento) {
-        this.tipoDocumento = tipoDocumento;
+    public void setSerieNumero(String serieNumero) {
+        this.serieNumero = serieNumero;
+    }
+
+    public String getTipoAnticipo() {
+        return tipoAnticipo;
+    }
+
+    public void setTipoAnticipo(String tipoAnticipo) {
+        this.tipoAnticipo = tipoAnticipo;
     }
 
     public BigDecimal getMontoTotal() {
@@ -52,8 +62,8 @@ public class AnticipoInputModel extends DocTribRelacionadoInputModel {
     }
 
     public static final class Builder {
-        protected String serieNumero;
-        protected String tipoDocumento;
+        private String serieNumero;
+        private String tipoAnticipo;
         private BigDecimal montoTotal;
 
         private Builder() {
@@ -68,8 +78,8 @@ public class AnticipoInputModel extends DocTribRelacionadoInputModel {
             return this;
         }
 
-        public Builder withTipoDocumento(String tipoDocumento) {
-            this.tipoDocumento = tipoDocumento;
+        public Builder withTipoAnticipo(String tipoAnticipo) {
+            this.tipoAnticipo = tipoAnticipo;
             return this;
         }
 
@@ -81,7 +91,7 @@ public class AnticipoInputModel extends DocTribRelacionadoInputModel {
         public AnticipoInputModel build() {
             AnticipoInputModel anticipoInputModel = new AnticipoInputModel();
             anticipoInputModel.setSerieNumero(serieNumero);
-            anticipoInputModel.setTipoDocumento(tipoDocumento);
+            anticipoInputModel.setTipoAnticipo(tipoAnticipo);
             anticipoInputModel.setMontoTotal(montoTotal);
             return anticipoInputModel;
         }

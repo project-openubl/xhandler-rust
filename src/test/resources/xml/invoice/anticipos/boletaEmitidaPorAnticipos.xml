@@ -114,8 +114,15 @@
         <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
         <cbc:AllowanceChargeReasonCode>04</cbc:AllowanceChargeReasonCode>
         <cbc:MultiplierFactorNumeric>1</cbc:MultiplierFactorNumeric>
-        <cbc:Amount currencyID="PEN">360</cbc:Amount>
-        <cbc:BaseAmount currencyID="PEN">360</cbc:BaseAmount>
+        <cbc:Amount currencyID="PEN">180</cbc:Amount>
+        <cbc:BaseAmount currencyID="PEN">180</cbc:BaseAmount>
+    </cac:AllowanceCharge>
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>04</cbc:AllowanceChargeReasonCode>
+        <cbc:MultiplierFactorNumeric>1</cbc:MultiplierFactorNumeric>
+        <cbc:Amount currencyID="PEN">180</cbc:Amount>
+        <cbc:BaseAmount currencyID="PEN">180</cbc:BaseAmount>
     </cac:AllowanceCharge>
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="PEN">295.2</cbc:TaxAmount>

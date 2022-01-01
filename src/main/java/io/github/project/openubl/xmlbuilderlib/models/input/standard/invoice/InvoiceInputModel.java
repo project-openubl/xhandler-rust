@@ -38,6 +38,7 @@ public class InvoiceInputModel extends DocumentInputModel {
     @Valid
     private List<DocTribRelacionadoInputModel_Invoice> otrosDocumentosTributariosRelacionados;
 
+    @Nullable
     @Valid
     private List<AnticipoInputModel> anticipos;
 
