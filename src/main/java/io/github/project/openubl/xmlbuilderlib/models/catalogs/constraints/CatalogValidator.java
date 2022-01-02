@@ -47,7 +47,7 @@ public class CatalogValidator implements ConstraintValidator<CatalogConstraint, 
             return Stream.of(f.toString(), catalog.getCode());
         }).collect(Collectors.toList());
 
-        boolean isValid = validValues.stream().anyMatch(p -> p.equals(value));
+        boolean isValid = validValues.stream().anyMatch(p -> p.equalsIgnoreCase(value));
         if (!isValid) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("Possible values: " + String.join(", ", validValues))
