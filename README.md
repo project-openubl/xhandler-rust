@@ -1,5 +1,3 @@
-[![XBuilder](https://raw.githubusercontent.com/project-openubl/xbuilder/master/xbuilder.svg)](https://project-openubl.github.io/)
-
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.project-openubl/xbuilder)](https://search.maven.org/artifact/io.github.project-openubl/xbuilder/)
 [![License](https://img.shields.io/badge/License-EPL%202.0-green.svg)](https://opensource.org/licenses/EPL-2.0)
 ![CI](https://github.com/project-openubl/xbuilder/workflows/CI/badge.svg)
