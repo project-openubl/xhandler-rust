@@ -17,7 +17,10 @@
 package io.github.project.openubl.xbuilder.content.models.sunat.resumen;
 
 
+import lombok.Data;
+
+@Data
 public class ComprobanteAfectado {
-    public String tipo;
-    public String serieNumero;
+    private String tipo;
+    private String serieNumero;
 }

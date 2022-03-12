@@ -16,7 +16,12 @@
  */
 package io.github.project.openubl.xbuilder.content.models.common;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class Firmante {
-    public String ruc;
-    public String razonSocial;
+    private String ruc;
+    private String razonSocial;
 }

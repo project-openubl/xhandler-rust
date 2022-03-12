@@ -14,11 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.content.models.standard.general;
+package io.github.project.openubl.xbuilder.enricher.kie;
 
-import java.util.List;
+import io.github.project.openubl.xbuilder.enricher.config.Defaults;
 
-public class NotaDeDebito extends BaseDocumentoNota {
-    public String tipoNota;
-    public List<DocumentoTributarioRelacionado_DebitNote> otrosDocumentosTributariosRelacionados;
+import java.time.LocalDate;
+
+public abstract class AbstractRule implements RuleFactory, Rule {
+
+    protected Defaults defaults;
+    protected LocalDate localDate;
+
+    @Override
+    public Rule create(Defaults defaults, LocalDate localDate) {
+        this.defaults = defaults;
+        this.localDate = localDate;
+        return this;
+    }
+
 }

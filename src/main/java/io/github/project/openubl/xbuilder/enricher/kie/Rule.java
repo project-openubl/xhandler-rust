@@ -14,12 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.content.models.standard.general;
+package io.github.project.openubl.xbuilder.enricher.kie;
 
-import java.util.List;
-
-public class BoletaFactura extends BaseDocumento {
-    public String tipoComprobante;
-    public List<DocumentoTributarioRelacionado_Invoice> otrosDocumentosTributariosRelacionados;
-    public List<Anticipo> anticipos;
+public interface Rule {
+    void modify(Object object);
 }

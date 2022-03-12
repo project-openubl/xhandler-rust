@@ -39,6 +39,7 @@
 
         <license.dir>${basedir}</license.dir>
 
+        <lombok.version>1.18.22</lombok.version>
         <xmlunit.version>2.6.4</xmlunit.version>
     </properties>
 
@@ -83,6 +84,13 @@
     </distributionManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -167,6 +175,14 @@
                     <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>9</source>
+                    <target>9</target>
                 </configuration>
             </plugin>
         </plugins>

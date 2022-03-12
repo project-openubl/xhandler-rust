@@ -17,5 +17,5 @@
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 public abstract class BaseDocumentoTributarioRelacionado {
-    public String serieNumero;
+    private String serieNumero;
 }

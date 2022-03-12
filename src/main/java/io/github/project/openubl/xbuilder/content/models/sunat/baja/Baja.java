@@ -19,11 +19,14 @@ package io.github.project.openubl.xbuilder.content.models.sunat.baja;
 import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 
+import lombok.Data;
+
+@Data
 public class Baja {
-    public Integer numero;
-    public Long fechaEmision;
-    public Firmante firmante;
-    public Proveedor proveedor;
-    public String descripcionSustento;
-    public BajaDetalle comprobante;
+    private Integer numero;
+    private Long fechaEmision;
+    private Firmante firmante;
+    private Proveedor proveedor;
+    private String descripcionSustento;
+    private BajaDetalle comprobante;
 }

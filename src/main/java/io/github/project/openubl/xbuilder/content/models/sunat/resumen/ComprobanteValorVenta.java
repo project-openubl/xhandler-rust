@@ -18,11 +18,14 @@ package io.github.project.openubl.xbuilder.content.models.sunat.resumen;
 
 import java.math.BigDecimal;
 
+import lombok.Data;
+
+@Data
 public class ComprobanteValorVenta {
-    public BigDecimal importeTotal;
-    public BigDecimal otrosCargos;
-    public BigDecimal gravado;
-    public BigDecimal exonerado;
-    public BigDecimal inafecto;
-    public BigDecimal gratuito;
+    private BigDecimal importeTotal;
+    private BigDecimal otrosCargos;
+    private BigDecimal gravado;
+    private BigDecimal exonerado;
+    private BigDecimal inafecto;
+    private BigDecimal gratuito;
 }

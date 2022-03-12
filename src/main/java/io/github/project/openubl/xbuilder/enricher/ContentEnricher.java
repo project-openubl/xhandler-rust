@@ -16,11 +16,25 @@
  */
 package io.github.project.openubl.xbuilder.enricher;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.BoletaFactura;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
+import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
+import io.github.project.openubl.xbuilder.enricher.config.Defaults;
+import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.EnrichRuleUnit;
 
 public class ContentEnricher {
 
-    public void enrich(BoletaFactura invoice) {
+    private final Defaults defaults;
+    private final DateProvider dateProvider;
+
+    public ContentEnricher(Defaults defaults, DateProvider dateProvider) {
+        this.defaults = defaults;
+        this.dateProvider = dateProvider;
     }
 
+    public void enrich(Invoice input) {
+        EnrichRuleUnit enrichRuleUnit = new EnrichRuleUnit(defaults, dateProvider.now());
+
+        enrichRuleUnit.modify(input);
+        input.getDetalles().forEach(enrichRuleUnit::modify);
+    }
 }

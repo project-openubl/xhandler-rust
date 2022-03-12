@@ -18,7 +18,10 @@ package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import java.math.BigDecimal;
 
+import lombok.Data;
+
+@Data
 public class Anticipo extends BaseDocumentoTributarioRelacionado {
-    public String tipoDocumento;
-    public BigDecimal montoTotal;
+    private String tipoDocumento;
+    private BigDecimal montoTotal;
 }

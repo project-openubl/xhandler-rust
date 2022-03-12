@@ -23,11 +23,11 @@ import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import java.util.List;
 
 public abstract class BasePercepcionRetencion {
-    public Integer numero;
-    public Long fechaEmision;
-    public String observacion;
-    public Proveedor proveedor;
-    public Cliente cliente;
-    public Firmante firmante;
-    public List<PercepcionRetencionDetalle> detalle;
+    private Integer numero;
+    private Long fechaEmision;
+    private String observacion;
+    private Proveedor proveedor;
+    private Cliente cliente;
+    private Firmante firmante;
+    private List<PercepcionRetencionDetalle> detalle;
 }

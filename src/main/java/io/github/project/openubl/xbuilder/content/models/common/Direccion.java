@@ -16,16 +16,21 @@
  */
 package io.github.project.openubl.xbuilder.content.models.common;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class Direccion {
-    public String ubigeo;
+    private String ubigeo;
 
-    public String codigoLocal;
-    public String urbanizacion;
+    private String codigoLocal;
+    private String urbanizacion;
 
-    public String departamento;
-    public String provincia;
-    public String distrito;
+    private String departamento;
+    private String provincia;
+    private String distrito;
 
-    public String direccion;
-    public String codigoPais;
+    private String direccion;
+    private String codigoPais;
 }

@@ -18,10 +18,13 @@ package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretenc
 
 import java.math.BigDecimal;
 
+import lombok.Data;
+
+@Data
 public class ComprobanteAfectado {
-    public String moneda;
-    public String tipo;
-    public String serieNumero;
-    public Long fechaEmision;
-    public BigDecimal importeTotal;
+    private String moneda;
+    private String tipo;
+    private String serieNumero;
+    private Long fechaEmision;
+    private BigDecimal importeTotal;
 }

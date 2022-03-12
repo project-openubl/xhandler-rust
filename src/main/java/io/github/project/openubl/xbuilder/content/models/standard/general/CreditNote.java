@@ -18,8 +18,15 @@ package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import java.util.List;
 
-public class NotaDeCredito extends BaseDocumentoNota {
-    public String tipoNota;
-    public List<CuotaDePago> cuotasDePago;
-    public List<DocumentoTributarioRelacionado_CreditNote> otrosDocumentosTributariosRelacionados;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+
+@Data
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
+public class CreditNote extends BaseDocumentoNota {
+    private String tipoNota;
+    private List<CuotaDePago> cuotasDePago;
+    private List<DocumentoTributarioRelacionado_CreditNote> otrosDocumentosTributariosRelacionados;
 }

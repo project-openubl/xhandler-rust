@@ -14,17 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.ruleunits;
+package io.github.project.openubl.xbuilder.enricher.kie;
 
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
-import io.github.project.openubl.xbuilder.enricher.pojos.EnrichDocument;
 
 import java.time.LocalDate;
 
-public class EnrichDocumentUnit {
+public interface RuleFactory {
 
-    private Defaults defaults;
-    private LocalDate currentDate;
-    private EnrichDocument document;
+    boolean test(Object object);
+
+    Rule create(Defaults defaults, LocalDate localDate);
 
 }

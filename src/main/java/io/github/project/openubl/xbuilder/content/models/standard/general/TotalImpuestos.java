@@ -18,17 +18,22 @@ package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import java.math.BigDecimal;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class TotalImpuestos {
-    public BigDecimal total;
-    public BigDecimal ivapImporte;
-    public BigDecimal ivapBaseImponible;
-    public BigDecimal gravadoImporte;
-    public BigDecimal gravadoBaseImponible;
-    public BigDecimal inafectoImporte;
-    public BigDecimal inafectoBaseImponible;
-    public BigDecimal exoneradoImporte;
-    public BigDecimal exoneradoBaseImponible;
-    public BigDecimal gratuitoImporte;
-    public BigDecimal gratuitoBaseImponible;
-    public BigDecimal icbImporte;
+    private BigDecimal total;
+    private BigDecimal ivapImporte;
+    private BigDecimal ivapBaseImponible;
+    private BigDecimal gravadoImporte;
+    private BigDecimal gravadoBaseImponible;
+    private BigDecimal inafectoImporte;
+    private BigDecimal inafectoBaseImponible;
+    private BigDecimal exoneradoImporte;
+    private BigDecimal exoneradoBaseImponible;
+    private BigDecimal gratuitoImporte;
+    private BigDecimal gratuitoBaseImponible;
+    private BigDecimal icbImporte;
 }

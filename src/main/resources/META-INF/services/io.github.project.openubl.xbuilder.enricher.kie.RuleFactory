@@ -1,0 +1,12 @@
+io.github.project.openubl.xbuilder.enricher.kie.rules.MonedaRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.FechaEmisionRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.FirmanteRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.FormaDePagoTipoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.ClienteTipoDocumentoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.ProveedorDireccionRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.invoice.TipoComprobanteRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.detalle.UnidadDeMedidaRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.detalle.IgvTipoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.detalle.IcbTasaRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.detalle.IgvTasaRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.detalle.PrecioDeReferenciaTipoRule

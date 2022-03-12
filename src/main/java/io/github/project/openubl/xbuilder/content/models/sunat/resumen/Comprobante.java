@@ -18,10 +18,13 @@ package io.github.project.openubl.xbuilder.content.models.sunat.resumen;
 
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 
+import lombok.Data;
+
+@Data
 public class Comprobante {
-    public String tipo;
-    public String serieNumero;
-    public Cliente cliente;
-    public ComprobanteValorVenta valorVenta;
-    public ComprobanteImpuestos impuestos;
+    private String tipo;
+    private String serieNumero;
+    private Cliente cliente;
+    private ComprobanteValorVenta valorVenta;
+    private ComprobanteImpuestos impuestos;
 }

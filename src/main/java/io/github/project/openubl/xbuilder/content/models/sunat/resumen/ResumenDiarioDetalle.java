@@ -16,8 +16,11 @@
  */
 package io.github.project.openubl.xbuilder.content.models.sunat.resumen;
 
+import lombok.Data;
+
+@Data
 public class ResumenDiarioDetalle {
-    public String tipoOperacion;
-    public Comprobante comprobante;
-    public ComprobanteAfectado comprobanteAfectado;
+    private String tipoOperacion;
+    private Comprobante comprobante;
+    private ComprobanteAfectado comprobanteAfectado;
 }

@@ -16,8 +16,11 @@
  */
 package io.github.project.openubl.xbuilder.content.models.sunat.baja;
 
+import lombok.Data;
+
+@Data
 public class BajaDetalle {
-    public String serieNumero;
-    public String tipoComprobante;
-    public Long fechaEmision;
+    private String serieNumero;
+    private String tipoComprobante;
+    private Long fechaEmision;
 }

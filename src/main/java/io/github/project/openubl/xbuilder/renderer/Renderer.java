@@ -17,5 +17,4 @@
 package io.github.project.openubl.xbuilder.renderer;
 
 public class Renderer {
-
 }

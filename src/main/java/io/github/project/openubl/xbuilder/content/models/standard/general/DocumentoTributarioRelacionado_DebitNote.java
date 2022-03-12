@@ -16,8 +16,11 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import lombok.Data;
+
+@Data
 public class DocumentoTributarioRelacionado_DebitNote extends BaseDocumentoTributarioRelacionado {
 
-    public String tipoDocumento;
+    private String tipoDocumento;
 
 }

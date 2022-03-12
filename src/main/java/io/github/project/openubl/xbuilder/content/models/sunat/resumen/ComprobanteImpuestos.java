@@ -18,7 +18,10 @@ package io.github.project.openubl.xbuilder.content.models.sunat.resumen;
 
 import java.math.BigDecimal;
 
+import lombok.Data;
+
+@Data
 public class ComprobanteImpuestos {
-    public BigDecimal igv;
-    public BigDecimal icb;
+    private BigDecimal igv;
+    private BigDecimal icb;
 }

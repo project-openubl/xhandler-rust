@@ -16,7 +16,10 @@
  */
 package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion;
 
+import lombok.Data;
+
+@Data
 public class Percepcion extends BasePercepcionRetencion {
-    public String serie;
-    public String regimen;
+    private String serie;
+    private String regimen;
 }

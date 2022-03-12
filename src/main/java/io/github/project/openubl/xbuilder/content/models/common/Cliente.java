@@ -16,10 +16,19 @@
  */
 package io.github.project.openubl.xbuilder.content.models.common;
 
+import lombok.Data;
+import lombok.Builder;
+
+@Data
+@Builder
 public class Cliente {
-    public String tipoDocumentoIdentidad;
-    public String numeroDocumentoIdentidad;
-    public String nombre;
-    public Direccion direccion;
-    public Contacto contacto;
+    private String tipoDocumentoIdentidad;
+    private String numeroDocumentoIdentidad;
+    private String nombre;
+
+    @Builder.Default
+    private Direccion direccion = Direccion.builder().build();
+
+    @Builder.Default
+    private Contacto contacto = Contacto.builder().build();
 }

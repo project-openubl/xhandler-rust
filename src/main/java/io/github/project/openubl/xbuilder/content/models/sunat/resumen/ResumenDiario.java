@@ -21,11 +21,14 @@ import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 
 import java.util.List;
 
+import lombok.Data;
+
+@Data
 public class ResumenDiario {
-    public Integer numero;
-    public Long fechaEmision;
-    public Long fechaEmisionDeComprobantesAsociados;
-    public Firmante firmante;
-    public Proveedor proveedor;
-    public List<ResumenDiarioDetalle> detalle;
+    private Integer numero;
+    private Long fechaEmision;
+    private Long fechaEmisionDeComprobantesAsociados;
+    private Firmante firmante;
+    private Proveedor proveedor;
+    private List<ResumenDiarioDetalle> detalle;
 }

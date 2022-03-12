@@ -18,28 +18,33 @@ package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import java.math.BigDecimal;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class DocumentoDetalle {
-    public Integer index;
-    public String descripcion;
-    public String unidadMedida;
-    public BigDecimal cantidad;
-    public BigDecimal precio;
-    public boolean precioConImpuestos;
-    public BigDecimal precioReferencia;
-    public String precioReferenciaTipo;
+    private Integer index;
+    private String descripcion;
+    private String unidadMedida;
+    private BigDecimal cantidad;
+    private BigDecimal precio;
+    private boolean precioConImpuestos;
+    private BigDecimal precioReferencia;
+    private String precioReferenciaTipo;
 
     // Impuestos
-    public BigDecimal igv;
-    public BigDecimal igvBaseImponible;
-    public BigDecimal igvTasa;
-    public String igvTipo;
+    private BigDecimal igv;
+    private BigDecimal igvBaseImponible;
+    private BigDecimal igvTasa;
+    private String igvTipo;
 
-    public BigDecimal icb;
-    public BigDecimal icbTasa;
-    public boolean icbAplica;
+    private BigDecimal icb;
+    private BigDecimal icbTasa;
+    private boolean icbAplica;
 
     // Totales
-    public BigDecimal totalImpuestos;
-    public BigDecimal valorVentaSinImpuestos;
+    private BigDecimal totalImpuestos;
+    private BigDecimal valorVentaSinImpuestos;
 }
 

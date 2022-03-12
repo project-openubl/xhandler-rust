@@ -16,7 +16,10 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import lombok.Data;
+
+@Data
 public class GuiaRemisionRelacionada {
-    public String serieNumero;
-    public String tipoDocumento;
+    private String serieNumero;
+    private String tipoDocumento;
 }

@@ -18,8 +18,11 @@ package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import java.math.BigDecimal;
 
+import lombok.Data;
+
+@Data
 public class CargoDescuento extends BaseDocumentoTributarioRelacionado {
-    public String tipo;
-    public BigDecimal monto;
-    public BigDecimal porcentaje;
+    private String tipo;
+    private BigDecimal monto;
+    private BigDecimal porcentaje;
 }

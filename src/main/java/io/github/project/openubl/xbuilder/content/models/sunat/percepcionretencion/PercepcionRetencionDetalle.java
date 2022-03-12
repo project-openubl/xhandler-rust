@@ -18,9 +18,12 @@ package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretenc
 
 import java.math.BigDecimal;
 
+import lombok.Data;
+
+@Data
 public class PercepcionRetencionDetalle {
-    public Integer numeroCobroPago;
-    public Long fechaCobroPago;
-    public BigDecimal importeCobroPago;
-    public ComprobanteAfectado comprobante;
+    private Integer numeroCobroPago;
+    private Long fechaCobroPago;
+    private BigDecimal importeCobroPago;
+    private ComprobanteAfectado comprobante;
 }

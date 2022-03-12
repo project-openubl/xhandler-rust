@@ -16,7 +16,12 @@
  */
 package io.github.project.openubl.xbuilder.content.models.common;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class Contacto {
-    public String telefono;
-    public String email;
+    private String telefono;
+    private String email;
 }

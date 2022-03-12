@@ -16,8 +16,15 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+
+@Data
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public abstract class BaseDocumentoNota extends BaseDocumento {
-    public String comprobanteAfectadoSerieNumero;
-    public String comprobanteAfectadoTipo;
-    public String sustentoDescripcion;
+    private String comprobanteAfectadoSerieNumero;
+    private String comprobanteAfectadoTipo;
+    private String sustentoDescripcion;
 }

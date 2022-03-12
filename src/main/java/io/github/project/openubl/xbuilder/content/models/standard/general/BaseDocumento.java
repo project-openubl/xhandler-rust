@@ -19,32 +19,50 @@ package io.github.project.openubl.xbuilder.content.models.standard.general;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Singular;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
-public class BaseDocumento {
-    public String moneda;
-    public String serie;
-    public Integer numero;
+@Data
+@SuperBuilder
+public abstract class BaseDocumento {
+    private String moneda;
+    private String serie;
+    private Integer numero;
 
-    public LocalDate fechaEmision;
-    public LocalTime horaEmision;
+    private LocalDate fechaEmision;
+    private LocalTime horaEmision;
 
-    public Cliente cliente;
-    public Proveedor proveedor;
-    public Firmante firmante;
+    @Builder.Default
+    private Cliente cliente = Cliente.builder().build();
 
-    public List<DocumentoDetalle> detalle;
+    @Builder.Default
+    private Proveedor proveedor = Proveedor.builder().build();
 
-    public TotalImporte totalImporte;
-    public TotalImpuestos totalImpuestos;
+    @Builder.Default
+    private Firmante firmante = Firmante.builder().build();
 
-    public String formaDePago;
-    public BigDecimal formaDePagoTotal;
-    public List<CuotaDePago> formaDePagoCuotas;
+    @Singular
+    private List<DocumentoDetalle> detalles = new ArrayList<>();
 
-    public List<GuiaRemisionRelacionada> guiasRemisionRelacionadas;
+    @Builder.Default
+    private TotalImporte totalImporte = TotalImporte.builder().build();
+
+    @Builder.Default
+    private TotalImpuestos totalImpuestos = TotalImpuestos.builder().build();
+
+    private String formaDePago;
+    private BigDecimal formaDePagoTotal;
+
+    @Singular
+    private List<CuotaDePago> formaDePagoCuotas;
+
+    private List<GuiaRemisionRelacionada> guiasRemisionRelacionadas;
 }
