@@ -14,31 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.invoice;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog1_Invoice;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.util.function.Consumer;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.*;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class FechaEmisionRule extends AbstractRule {
+public class TipoComprobanteRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
-        return isBaseDocumento.test(object) && whenBaseDocumento.apply(object)
-                .map(documento -> documento.getFechaEmision() == null)
+        return isInvoice.test(object) && whenBaseDocumento.apply(object)
+                .map(documento -> documento.getSerie() != null)
                 .orElse(false);
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<BaseDocumento> consumer = document -> document.setFechaEmision(localDate);
-        whenBaseDocumento.apply(object).ifPresent(consumer);
-    }
+        Consumer<Invoice> consumer = invoice -> {
+            String newTipoComprobante = null;
+            if (invoice.getSerie().matches("^[F|f].*$")) {
+                newTipoComprobante = Catalog1_Invoice.FACTURA.getCode();
+            } else if (invoice.getSerie().matches("^[B|b].*$")) {
+                newTipoComprobante = Catalog1_Invoice.BOLETA.getCode();
+            }
 
+            invoice.setTipoComprobante(newTipoComprobante);
+        };
+        whenInvoice.apply(object).ifPresent(consumer);
+    }
 }

@@ -14,39 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.invoice;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich;
 
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog1_Invoice;
-import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
+import io.github.project.openubl.xbuilder.content.models.common.Direccion;
+import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.util.function.Consumer;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.*;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class TipoComprobanteRule extends AbstractRule {
+public class ProveedorDireccionRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
-        return isInvoice.test(object) && whenBaseDocumento.apply(object)
-                .map(documento -> documento.getSerie() != null)
-                .orElse(false);
+        return isBaseDocumento.test(object);
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<Invoice> consumer = invoice -> {
-            String newTipoComprobante = null;
-            if (invoice.getSerie().matches("^[F|f].*$")) {
-                newTipoComprobante = Catalog1_Invoice.FACTURA.getCode();
-            } else if (invoice.getSerie().matches("^[B|b].*$")) {
-                newTipoComprobante = Catalog1_Invoice.BOLETA.getCode();
+        Consumer<BaseDocumento> consumer = document -> {
+            if(document.getProveedor().getDireccion() == null) {
+                document.getProveedor().setDireccion(Direccion.builder().build());
             }
 
-            invoice.setTipoComprobante(newTipoComprobante);
+            if (document.getProveedor().getDireccion().getCodigoLocal() == null) {
+                document.getProveedor().getDireccion().setCodigoLocal("0000");
+            }
         };
-        whenInvoice.apply(object).ifPresent(consumer);
+        whenBaseDocumento.apply(object).ifPresent(consumer);
     }
 }

@@ -14,30 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.detalle;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.process.detalle;
 
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
+import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
 
-@RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class UnidadDeMedidaRule extends AbstractRule {
+@RulePhase(type = RulePhase.PhaseType.PROCESS)
+public class IcbRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
         return isBaseDocumentoDetalle.test(object) && whenBaseDocumentoDetalle.apply(object)
-                .map(documento -> documento.getUnidadMedida() == null)
+                .map(documento -> documento.getIcb() == null)
                 .orElse(false);
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<DocumentoDetalle> consumer = detalle -> detalle.setUnidadMedida(defaults.getUnidadMedida());
+        Consumer<DocumentoDetalle> consumer = detalle -> {
+            BigDecimal icb = detalle.isIcbAplica() ?
+                    detalle.getCantidad().multiply(detalle.getIgvTasa()) :
+                    BigDecimal.ZERO;
+            detalle.setIcb(icb);
+        };
         whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);
     }
 

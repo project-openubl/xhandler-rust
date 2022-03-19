@@ -14,30 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.detalle;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.util.function.Consumer;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class MonedaRule extends AbstractRule {
+public class UnidadDeMedidaRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
-        return isBaseDocumento.test(object) && whenBaseDocumento.apply(object)
-                .map(documento -> documento.getMoneda() == null)
+        return isBaseDocumentoDetalle.test(object) && whenBaseDocumentoDetalle.apply(object)
+                .map(documento -> documento.getUnidadMedida() == null)
                 .orElse(false);
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<BaseDocumento> consumer = document -> document.setMoneda(defaults.getMoneda());
-        whenBaseDocumento.apply(object).ifPresent(consumer);
+        Consumer<DocumentoDetalle> consumer = detalle -> detalle.setUnidadMedida(defaults.getUnidadMedida());
+        whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);
     }
+
 }

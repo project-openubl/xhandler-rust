@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.detalle;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.detalle;
 
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
@@ -26,18 +26,18 @@ import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helper
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class IcbTasaRule extends AbstractRule {
+public class IgvTasaRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
         return isBaseDocumentoDetalle.test(object) && whenBaseDocumentoDetalle.apply(object)
-                .map(documento -> documento.getIcbTasa() == null)
+                .map(documento -> documento.getIgvTasa() == null)
                 .orElse(false);
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<DocumentoDetalle> consumer = detalle -> detalle.setIcbTasa(defaults.getIcbTasa());
+        Consumer<DocumentoDetalle> consumer = detalle -> detalle.setIgvTasa(defaults.getIgvTasa());
         whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);
     }
 

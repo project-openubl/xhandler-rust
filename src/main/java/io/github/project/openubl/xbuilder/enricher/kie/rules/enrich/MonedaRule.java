@@ -14,9 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich;
 
-import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
@@ -27,28 +26,18 @@ import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helper
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class FirmanteRule extends AbstractRule {
+public class MonedaRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
-        return isBaseDocumento.test(object);
+        return isBaseDocumento.test(object) && whenBaseDocumento.apply(object)
+                .map(documento -> documento.getMoneda() == null)
+                .orElse(false);
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<BaseDocumento> consumer = document -> {
-            if (document.getFirmante() == null) {
-                document.setFirmante(Firmante.builder().build());
-            }
-
-            if (document.getFirmante().getRuc() == null) {
-                document.getFirmante().setRuc(document.getProveedor().getRuc());
-            }
-            if (document.getFirmante().getRazonSocial() == null) {
-                document.getFirmante().setRazonSocial(document.getProveedor().getRazonSocial());
-            }
-        };
+        Consumer<BaseDocumento> consumer = document -> document.setMoneda(defaults.getMoneda());
         whenBaseDocumento.apply(object).ifPresent(consumer);
     }
-
 }

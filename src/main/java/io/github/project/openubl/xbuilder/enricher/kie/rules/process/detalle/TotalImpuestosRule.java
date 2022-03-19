@@ -14,40 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.detalle;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.process.detalle;
 
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog16;
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
+import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
 
-@RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class PrecioDeReferenciaTipoRule extends AbstractRule {
+@RulePhase(type = RulePhase.PhaseType.PROCESS)
+public class TotalImpuestosRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
         return isBaseDocumentoDetalle.test(object) && whenBaseDocumentoDetalle.apply(object)
-                .map(documento -> documento.getIgvTipo() != null)
+                .map(documento -> documento.getTotalImpuestos() == null
+                        && documento.getIgv() != null
+                        && documento.getIcb() != null
+                )
                 .orElse(false);
     }
 
     @Override
     public void modify(Object object) {
         Consumer<DocumentoDetalle> consumer = detalle -> {
-            Catalog7 catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo())
-                    .orElseThrow(Catalog.invalidCatalogValue);
-            Catalog16 catalog16 = catalog7.isOperacionOnerosa() ?
-                    Catalog16.PRECIO_UNITARIO_INCLUYE_IGV :
-                    Catalog16.VALOR_REFERENCIAL_UNITARIO_EN_OPERACIONES_NO_ONEROSAS;
-
-            detalle.setPrecioReferenciaTipo(catalog16.getCode());
+            BigDecimal totalImpuestos = detalle.getIgv().add(detalle.getIcb());
+            detalle.setTotalImpuestos(totalImpuestos);
         };
         whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);
     }

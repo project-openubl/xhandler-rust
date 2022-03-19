@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich;
 
 import io.github.project.openubl.xbuilder.content.catalogs.CatalogContadoCredito;
 import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;

@@ -14,30 +14,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.detalle;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.process.detalle;
 
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
+import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
 
-@RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class IgvTasaRule extends AbstractRule {
+@RulePhase(type = RulePhase.PhaseType.PROCESS)
+public class IgvBaseImponibleRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
         return isBaseDocumentoDetalle.test(object) && whenBaseDocumentoDetalle.apply(object)
-                .map(documento -> documento.getIgvTasa() == null)
+                .map(documento -> documento.getIgvBaseImponible() == null
+                        && documento.getCantidad() != null
+                        && documento.getPrecio() != null
+                        && documento.getPrecioReferencia() != null
+                )
                 .orElse(false);
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<DocumentoDetalle> consumer = detalle -> detalle.setIgvTasa(defaults.getIgvTasa());
+        Consumer<DocumentoDetalle> consumer = detalle -> {
+            BigDecimal baseImponible = !detalle.isPrecioConImpuestos() ?
+                    detalle.getCantidad().multiply(detalle.getPrecio()) :
+                    detalle.getCantidad().multiply(detalle.getPrecioReferencia());
+            detalle.setIgvBaseImponible(baseImponible);
+        };
         whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);
     }
 

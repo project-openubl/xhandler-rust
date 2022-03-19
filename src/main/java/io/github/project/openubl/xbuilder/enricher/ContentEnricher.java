@@ -19,7 +19,11 @@ package io.github.project.openubl.xbuilder.enricher;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
+import io.github.project.openubl.xbuilder.enricher.kie.RuleUnit;
 import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.EnrichRuleUnit;
+import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.ProcessRuleUnit;
+
+import java.util.Arrays;
 
 public class ContentEnricher {
 
@@ -32,9 +36,12 @@ public class ContentEnricher {
     }
 
     public void enrich(Invoice input) {
-        EnrichRuleUnit enrichRuleUnit = new EnrichRuleUnit(defaults, dateProvider.now());
+        RuleUnit enrichRuleUnit = new EnrichRuleUnit(defaults, dateProvider.now());
+        RuleUnit processRuleUnit = new ProcessRuleUnit(defaults, dateProvider.now());
 
-        enrichRuleUnit.modify(input);
-        input.getDetalles().forEach(enrichRuleUnit::modify);
+        Arrays.asList(enrichRuleUnit, processRuleUnit).forEach(ruleUnit -> {
+            ruleUnit.modify(input);
+            input.getDetalles().forEach(ruleUnit::modify);
+        });
     }
 }

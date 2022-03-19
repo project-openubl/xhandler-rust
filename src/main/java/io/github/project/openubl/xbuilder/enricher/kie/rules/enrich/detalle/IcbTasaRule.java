@@ -14,37 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.detalle;
 
-import io.github.project.openubl.xbuilder.content.models.common.Direccion;
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.util.function.Consumer;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class ProveedorDireccionRule extends AbstractRule {
+public class IcbTasaRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
-        return isBaseDocumento.test(object);
+        return isBaseDocumentoDetalle.test(object) && whenBaseDocumentoDetalle.apply(object)
+                .map(documento -> documento.getIcbTasa() == null)
+                .orElse(false);
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<BaseDocumento> consumer = document -> {
-            if(document.getProveedor().getDireccion() == null) {
-                document.getProveedor().setDireccion(Direccion.builder().build());
-            }
-
-            if (document.getProveedor().getDireccion().getCodigoLocal() == null) {
-                document.getProveedor().getDireccion().setCodigoLocal("0000");
-            }
-        };
-        whenBaseDocumento.apply(object).ifPresent(consumer);
+        Consumer<DocumentoDetalle> consumer = detalle -> detalle.setIcbTasa(defaults.getIcbTasa());
+        whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);
     }
+
 }

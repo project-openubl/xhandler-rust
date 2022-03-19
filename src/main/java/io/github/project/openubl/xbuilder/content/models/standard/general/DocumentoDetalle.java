@@ -45,6 +45,5 @@ public class DocumentoDetalle {
 
     // Totales
     private BigDecimal totalImpuestos;
-    private BigDecimal valorVentaSinImpuestos;
 }
 
