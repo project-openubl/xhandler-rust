@@ -31,7 +31,9 @@ public class ProveedorDireccionRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
-        return isBaseDocumento.test(object);
+        return isBaseDocumento.test(object) && whenBaseDocumento.apply(object)
+                .map(documento -> documento.getProveedor() != null)
+                .orElse(false);
     }
 
     @Override

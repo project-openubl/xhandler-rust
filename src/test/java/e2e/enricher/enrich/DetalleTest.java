@@ -18,21 +18,13 @@ package e2e.enricher.enrich;
 
 import e2e.AbstractTest;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog16;
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog1_Invoice;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
-import io.github.project.openubl.xbuilder.content.catalogs.CatalogContadoCredito;
-import io.github.project.openubl.xbuilder.content.models.common.Firmante;
-import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
-import io.github.project.openubl.xbuilder.content.models.standard.general.CuotaDePago;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
-import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
-import io.github.project.openubl.xbuilder.enricher.config.Defaults;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

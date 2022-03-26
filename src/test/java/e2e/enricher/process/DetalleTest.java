@@ -17,7 +17,6 @@
 package e2e.enricher.process;
 
 import e2e.AbstractTest;
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog16;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;

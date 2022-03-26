@@ -26,9 +26,6 @@ public class Cliente {
     private String numeroDocumentoIdentidad;
     private String nombre;
 
-    @Builder.Default
-    private Direccion direccion = Direccion.builder().build();
-
-    @Builder.Default
-    private Contacto contacto = Contacto.builder().build();
+    private Direccion direccion;
+    private Contacto contacto;
 }

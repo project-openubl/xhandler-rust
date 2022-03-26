@@ -31,6 +31,6 @@ public class AbstractTest {
             .igvTasa(new BigDecimal("0.18"))
             .build();
 
-    protected static final DateProvider dateProvider = () -> LocalDate.of(2022, 12, 25);
+    protected static final DateProvider dateProvider = () -> LocalDate.of(2019, 12, 24);
 
 }

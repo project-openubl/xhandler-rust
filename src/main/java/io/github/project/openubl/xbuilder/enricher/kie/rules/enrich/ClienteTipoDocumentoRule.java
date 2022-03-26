@@ -33,7 +33,9 @@ public class ClienteTipoDocumentoRule extends AbstractRule {
     @Override
     public boolean test(Object object) {
         return isBaseDocumento.test(object) && whenBaseDocumento.apply(object)
-                .map(documento -> documento.getCliente().getTipoDocumentoIdentidad() != null)
+                .map(documento -> documento.getCliente() != null &&
+                        documento.getCliente().getTipoDocumentoIdentidad() != null
+                )
                 .orElse(false);
     }
 

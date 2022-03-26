@@ -89,8 +89,14 @@ public class TotalImpuestosRule extends AbstractRule {
             return catalog7.getTaxCategory().equals(categoria);
         });
 
-        BigDecimal baseImponible = stream.get().map(DocumentoDetalle::getIgvBaseImponible).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal importe = stream.get().map(DocumentoDetalle::getIgv).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal baseImponible = stream.get()
+                .map(DocumentoDetalle::getIgvBaseImponible)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal importe = stream.get()
+                .map(DocumentoDetalle::getIgv)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return Impuesto.builder()
                 .importe(importe)

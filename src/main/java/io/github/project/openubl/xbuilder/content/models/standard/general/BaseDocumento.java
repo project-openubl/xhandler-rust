@@ -19,7 +19,6 @@ package io.github.project.openubl.xbuilder.content.models.standard.general;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
@@ -39,26 +38,18 @@ public abstract class BaseDocumento {
     private LocalDate fechaEmision;
     private LocalTime horaEmision;
 
-    @Builder.Default
-    private Cliente cliente = Cliente.builder().build();
+    private Cliente cliente;
+    private Proveedor proveedor;
+    private Firmante firmante;
 
-    @Builder.Default
-    private Proveedor proveedor = Proveedor.builder().build();
-
-    @Builder.Default
-    private Firmante firmante = Firmante.builder().build();
-
-    @Singular
-    private List<DocumentoDetalle> detalles;
-
-    @Builder.Default
-    private TotalImporte totalImporte = TotalImporte.builder().build();
-
-    @Builder.Default
-    private TotalImpuestos totalImpuestos = TotalImpuestos.builder().build();
+    private TotalImporte totalImporte;
+    private TotalImpuestos totalImpuestos;
 
     private String formaDePago;
     private BigDecimal formaDePagoTotal;
+
+    @Singular
+    private List<DocumentoDetalle> detalles;
 
     @Singular
     private List<CuotaDePago> formaDePagoCuotas;

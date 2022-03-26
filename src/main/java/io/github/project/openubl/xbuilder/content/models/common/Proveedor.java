@@ -26,9 +26,6 @@ public class Proveedor {
     private String nombreComercial;
     private String razonSocial;
 
-    @Builder.Default
-    private Direccion direccion = Direccion.builder().build();
-
-    @Builder.Default
-    private Contacto contacto = Contacto.builder().build();
+    private Direccion direccion;
+    private Contacto contacto;
 }

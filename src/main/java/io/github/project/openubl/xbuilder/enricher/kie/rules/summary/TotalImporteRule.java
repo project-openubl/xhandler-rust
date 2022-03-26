@@ -26,6 +26,7 @@ import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
@@ -52,6 +53,7 @@ public class TotalImporteRule extends AbstractRule {
                         return !catalog7.getTaxCategory().equals(Catalog5.GRATUITO);
                     })
                     .map(DocumentoDetalle::getIgvBaseImponible)
+                    .filter(Objects::nonNull)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             BigDecimal totalImpuestos = document.getDetalles().stream()
@@ -60,6 +62,7 @@ public class TotalImporteRule extends AbstractRule {
                         return !catalog7.getTaxCategory().equals(Catalog5.GRATUITO);
                     })
                     .map(DocumentoDetalle::getTotalImpuestos)
+                    .filter(Objects::nonNull)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             BigDecimal importe = importeSinImpuestos.add(totalImpuestos);

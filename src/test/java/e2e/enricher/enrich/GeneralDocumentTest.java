@@ -201,6 +201,9 @@ public class GeneralDocumentTest extends AbstractTest {
     public void testEnrichProveedorDireccionCodigoLocal() {
         // Given
         Invoice input = Invoice.builder()
+                .proveedor(Proveedor.builder()
+                        .build()
+                )
                 .build();
 
         // When
