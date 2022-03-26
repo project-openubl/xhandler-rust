@@ -16,11 +16,11 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
-import java.util.List;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 @Data
 @SuperBuilder

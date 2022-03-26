@@ -17,7 +17,6 @@
 package io.github.project.openubl.xbuilder.content.models.sunat.resumen;
 
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
-
 import lombok.Data;
 
 @Data

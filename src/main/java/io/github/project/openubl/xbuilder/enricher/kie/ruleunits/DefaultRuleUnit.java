@@ -25,15 +25,16 @@ import io.github.project.openubl.xbuilder.enricher.kie.RuleUnit;
 import java.time.LocalDate;
 import java.util.List;
 
-public class EnrichRuleUnit implements RuleUnit {
+public class DefaultRuleUnit implements RuleUnit {
 
     private final Defaults defaults;
     private final LocalDate localDate;
-    private final List<RuleFactory> rules = RuleFactoryRegistry.getRuleFactories(RulePhase.PhaseType.ENRICH);
+    private final List<RuleFactory> rules;
 
-    public EnrichRuleUnit(Defaults defaults, LocalDate localDate) {
+    public DefaultRuleUnit(RulePhase.PhaseType phaseType, Defaults defaults, LocalDate localDate) {
         this.defaults = defaults;
         this.localDate = localDate;
+        this.rules = RuleFactoryRegistry.getRuleFactories(phaseType);
     }
 
     @Override

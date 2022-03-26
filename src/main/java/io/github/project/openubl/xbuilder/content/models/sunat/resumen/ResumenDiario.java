@@ -18,10 +18,9 @@ package io.github.project.openubl.xbuilder.content.models.sunat.resumen;
 
 import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
+import lombok.Data;
 
 import java.util.List;
-
-import lombok.Data;
 
 @Data
 public class ResumenDiario {

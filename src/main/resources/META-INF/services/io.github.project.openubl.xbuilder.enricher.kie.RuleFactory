@@ -16,3 +16,5 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.process.detalle.IcbAplicaR
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.detalle.IgvBaseImponibleRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.detalle.IgvRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.detalle.TotalImpuestosRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.summary.TotalImpuestosRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.summary.TotalImporteRule

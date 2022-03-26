@@ -16,8 +16,8 @@
  */
 package io.github.project.openubl.xbuilder.content.models.common;
 
-import lombok.Data;
 import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
