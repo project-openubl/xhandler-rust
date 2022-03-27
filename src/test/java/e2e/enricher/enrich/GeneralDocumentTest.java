@@ -21,6 +21,7 @@ import io.github.project.openubl.xbuilder.content.catalogs.CatalogContadoCredito
 import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CuotaDePago;
+import io.github.project.openubl.xbuilder.content.models.standard.general.FormaDePago;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import org.junit.jupiter.api.Test;
@@ -102,16 +103,19 @@ public class GeneralDocumentTest extends AbstractTest {
         enricher.enrich(input);
 
         // Then
-        assertEquals(CatalogContadoCredito.CONTADO.getCode(), input.getFormaDePago());
+        assertEquals(CatalogContadoCredito.CONTADO.getCode(), input.getFormaDePago().getTipo());
     }
 
     @Test
     public void testEnrichFormaPagoTipo_Credito() {
         // Given
         Invoice input = Invoice.builder()
-                .formaDePagoCuota(CuotaDePago.builder()
-                        .fechaPago(LocalDate.now())
-                        .importe(BigDecimal.TEN)
+                .formaDePago(FormaDePago.builder()
+                        .cuota(CuotaDePago.builder()
+                                .fechaPago(LocalDate.now())
+                                .importe(BigDecimal.TEN)
+                                .build()
+                        )
                         .build()
                 )
                 .build();
@@ -121,7 +125,7 @@ public class GeneralDocumentTest extends AbstractTest {
         enricher.enrich(input);
 
         // Then
-        assertEquals(CatalogContadoCredito.CREDITO.getCode(), input.getFormaDePago());
+        assertEquals(CatalogContadoCredito.CREDITO.getCode(), input.getFormaDePago().getTipo());
     }
 
     @Test
@@ -130,15 +134,21 @@ public class GeneralDocumentTest extends AbstractTest {
 
         // Invoice with no "cuotas" has "formaDePago" CREDITO. It must be corrected
         Invoice input1 = Invoice.builder()
-                .formaDePago(CatalogContadoCredito.CREDITO.getCode())
+                .formaDePago(FormaDePago.builder()
+                        .tipo(CatalogContadoCredito.CREDITO.getCode())
+                        .build()
+                )
                 .build();
 
         // Invoice with "cuotas" has "formaDePago" CONTADO. It must be corrected
         Invoice input2 = Invoice.builder()
-                .formaDePago(CatalogContadoCredito.CONTADO.getCode())
-                .formaDePagoCuota(CuotaDePago.builder()
-                        .fechaPago(LocalDate.now())
-                        .importe(BigDecimal.TEN)
+                .formaDePago(FormaDePago.builder()
+                        .tipo(CatalogContadoCredito.CONTADO.getCode())
+                        .cuota(CuotaDePago.builder()
+                                .fechaPago(LocalDate.now())
+                                .importe(BigDecimal.TEN)
+                                .build()
+                        )
                         .build()
                 )
                 .build();
@@ -149,8 +159,8 @@ public class GeneralDocumentTest extends AbstractTest {
         enricher.enrich(input2);
 
         // Then
-        assertEquals(CatalogContadoCredito.CONTADO.getCode(), input1.getFormaDePago());
-        assertEquals(CatalogContadoCredito.CREDITO.getCode(), input2.getFormaDePago());
+        assertEquals(CatalogContadoCredito.CONTADO.getCode(), input1.getFormaDePago().getTipo());
+        assertEquals(CatalogContadoCredito.CREDITO.getCode(), input2.getFormaDePago().getTipo());
     }
 
     @Test

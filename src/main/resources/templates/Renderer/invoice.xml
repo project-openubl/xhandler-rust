@@ -9,7 +9,7 @@
     {#include ubl/common/signature.xml firmante=this.firmante /}
     {#include ubl/standard/include/supplier.xml proveedor=this.proveedor /}
     {#include ubl/standard/include/customer.xml cliente=this.cliente /}
-    {#include ubl/standard/include/payment-terms.xml item=this /}
+    {#include ubl/standard/include/payment-terms.xml item=this.formaDePago /}
     {#include ubl/standard/include/tax-total.xml totalImpuestos=this.totalImpuestos /}
     {#include ubl/standard/include/monetary-total.xml totalImporte=this.totalImporte /}
     {#each detalles.orEmpty}

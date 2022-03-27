@@ -37,10 +37,11 @@ public class FormaDePagoTipoRule extends AbstractRule {
     @Override
     public void modify(Object object) {
         Consumer<BaseDocumento> consumer = document -> {
-            CatalogContadoCredito formaDePagoTipo = document.getFormaDePagoCuotas() == null || document.getFormaDePagoCuotas().isEmpty() ?
+            CatalogContadoCredito formaDePagoTipo = document.getFormaDePago().getCuotas() == null || document.getFormaDePago().getCuotas().isEmpty() ?
                     CatalogContadoCredito.CONTADO :
                     CatalogContadoCredito.CREDITO;
-            document.setFormaDePago(formaDePagoTipo.getCode());
+
+            document.getFormaDePago().setTipo(formaDePagoTipo.getCode());
         };
         whenBaseDocumento.apply(object).ifPresent(consumer);
     }

@@ -2,11 +2,11 @@
  * Copyright 2019 Project OpenUBL, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License - 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CuotaDePago;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.FormaDePago;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
@@ -66,7 +67,6 @@ public class InvoiceFormaPagoTest extends AbstractTest {
                 )
                 .build();
 
-
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
         enricher.enrich(input);
 
@@ -102,14 +102,17 @@ public class InvoiceFormaPagoTest extends AbstractTest {
                         .precio(new BigDecimal("100"))
                         .build()
                 )
-                .formaDePagoCuota(CuotaDePago.builder()
-                        .importe(new BigDecimal("10"))
-                        .fechaPago(LocalDate.of(2022, Month.JANUARY, 20))
-                        .build()
-                )
-                .formaDePagoCuota(CuotaDePago.builder()
-                        .importe(new BigDecimal("20"))
-                        .fechaPago(LocalDate.of(2022, Month.FEBRUARY, 20))
+                .formaDePago(FormaDePago.builder()
+                        .cuota(CuotaDePago.builder()
+                                .importe(new BigDecimal("10"))
+                                .fechaPago(LocalDate.of(2022, Month.JANUARY, 20))
+                                .build()
+                        )
+                        .cuota(CuotaDePago.builder()
+                                .importe(new BigDecimal("20"))
+                                .fechaPago(LocalDate.of(2022, Month.FEBRUARY, 20))
+                                .build()
+                        )
                         .build()
                 )
                 .detalle(DocumentoDetalle.builder()

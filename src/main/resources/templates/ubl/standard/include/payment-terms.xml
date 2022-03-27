@@ -1,11 +1,11 @@
     <cac:PaymentTerms>
         <cbc:ID>FormaPago</cbc:ID>
-        <cbc:PaymentMeansID>{item.formaDePago}</cbc:PaymentMeansID>
-        {#if item.formaDePago == 'Credito'}
-        <cbc:Amount currencyID="{moneda}">{item.formaDePagoTotal.scale(2)}</cbc:Amount>
+        <cbc:PaymentMeansID>{item.tipo}</cbc:PaymentMeansID>
+        {#if item.tipo == 'Credito'}
+        <cbc:Amount currencyID="{moneda}">{item.total.scale(2)}</cbc:Amount>
         {/if}
     </cac:PaymentTerms>
-    {#each item.formaDePagoCuotas.orEmpty}
+    {#each item.cuotas.orEmpty}
     <cac:PaymentTerms>
     <cbc:ID>FormaPago</cbc:ID>
     <cbc:PaymentMeansID>Cuota{it_index.add(1).format('%03d')}</cbc:PaymentMeansID>

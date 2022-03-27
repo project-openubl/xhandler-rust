@@ -17,25 +17,22 @@
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich;
 
 import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
-import io.github.project.openubl.xbuilder.content.models.standard.general.CuotaDePago;
+import io.github.project.openubl.xbuilder.content.models.standard.general.FormaDePago;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
-import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class FormaDePagoTotalRule extends AbstractRule {
+public class FormaDePagoRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
         return isBaseDocumento.test(object) && whenBaseDocumento.apply(object)
-                .map(documento -> documento.getFormaDePago() != null &&
-                        documento.getFormaDePago().getCuotas() != null
+                .map(documento -> documento.getFormaDePago() == null
                 )
                 .orElse(false);
     }
@@ -43,12 +40,7 @@ public class FormaDePagoTotalRule extends AbstractRule {
     @Override
     public void modify(Object object) {
         Consumer<BaseDocumento> consumer = document -> {
-            BigDecimal total = document.getFormaDePago().getCuotas().stream()
-                    .map(CuotaDePago::getImporte)
-                    .filter(Objects::nonNull)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-            document.getFormaDePago().setTotal(total);
+            document.setFormaDePago(FormaDePago.builder().build());
         };
         whenBaseDocumento.apply(object).ifPresent(consumer);
     }
