@@ -126,7 +126,7 @@
                 <cbc:TaxAmount currencyID="PEN">2.00</cbc:TaxAmount>
                 <cbc:BaseUnitMeasure unitCode="NIU">10</cbc:BaseUnitMeasure>
                 <cac:TaxCategory>
-                    <cbc:PerUnitAmount currencyID="PEN">0.2</cbc:PerUnitAmount>
+                    <cbc:PerUnitAmount currencyID="PEN">0.20</cbc:PerUnitAmount>
                     <cac:TaxScheme>
                         <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">7152</cbc:ID>
                         <cbc:Name>ICBPER</cbc:Name>

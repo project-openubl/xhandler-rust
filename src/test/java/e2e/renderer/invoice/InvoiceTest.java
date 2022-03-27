@@ -24,14 +24,12 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Invoic
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
 import io.quarkus.qute.Template;
-import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
 
 import static e2e.renderer.XMLAssertUtils.assertSendSunat;
 import static e2e.renderer.XMLAssertUtils.assertSnapshot;
