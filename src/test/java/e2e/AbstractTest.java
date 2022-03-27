@@ -26,7 +26,7 @@ public class AbstractTest {
 
     protected static final Defaults defaults = Defaults.builder()
             .moneda("PEN")
-            .unidadMedida("NIO")
+            .unidadMedida("NIU")
             .icbTasa(new BigDecimal("0.2"))
             .igvTasa(new BigDecimal("0.18"))
             .build();

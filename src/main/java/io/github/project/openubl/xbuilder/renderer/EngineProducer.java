@@ -30,6 +30,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -46,6 +48,16 @@ public class EngineProducer {
             .removeStandaloneLines(true)
             .addResultMapper(new HtmlEscaper(List.of("text/html", "text/xml", "application/xml", "application/xhtml+xml")))
             .addValueResolver(new ReflectionValueResolver())
+
+            .addValueResolver(ValueResolver.builder()
+                    .applyToBaseClass(LocalTime.class)
+                    .applyToName("format")
+                    .resolveSync(ctx -> {
+                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern((String) ctx.getParams().get(0).getLiteral());
+                        return ((LocalTime) ctx.getBase()).format(dtf);
+                    })
+                    .build()
+            )
 
             .addValueResolver(ValueResolver.builder()
                     .applyToBaseClass(BigDecimal.class)

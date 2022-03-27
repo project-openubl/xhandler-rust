@@ -40,7 +40,7 @@ public class IcbRule extends AbstractRule {
     public void modify(Object object) {
         Consumer<DocumentoDetalle> consumer = detalle -> {
             BigDecimal icb = detalle.isIcbAplica() ?
-                    detalle.getCantidad().multiply(detalle.getIgvTasa()) :
+                    detalle.getCantidad().multiply(detalle.getIcbTasa()) :
                     BigDecimal.ZERO;
             detalle.setIcb(icb);
         };
