@@ -26,7 +26,5 @@ import java.util.List;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class CreditNote extends BaseDocumentoNota {
-    private String tipoNota;
-    private List<CuotaDePago> cuotasDePago;
     private List<DocumentoTributarioRelacionado_CreditNote> otrosDocumentosTributariosRelacionados;
 }

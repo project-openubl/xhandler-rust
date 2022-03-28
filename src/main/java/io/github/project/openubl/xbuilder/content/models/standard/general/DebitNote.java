@@ -26,6 +26,5 @@ import java.util.List;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class DebitNote extends BaseDocumentoNota {
-    private String tipoNota;
     private List<DocumentoTributarioRelacionado_DebitNote> otrosDocumentosTributariosRelacionados;
 }

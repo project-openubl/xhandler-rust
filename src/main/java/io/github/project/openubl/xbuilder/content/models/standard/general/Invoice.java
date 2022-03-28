@@ -29,6 +29,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class Invoice extends BaseDocumento {
     private String tipoComprobante;
-    private List<DocumentoTributarioRelacionado_Invoice> otrosDocumentosTributariosRelacionados;
+    private FormaDePago formaDePago;
     private List<Anticipo> anticipos;
+    private List<DocumentoTributarioRelacionado_Invoice> otrosDocumentosTributariosRelacionados;
 }

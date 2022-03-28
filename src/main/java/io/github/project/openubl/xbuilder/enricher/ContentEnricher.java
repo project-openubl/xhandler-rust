@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.enricher;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
+import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
 import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
@@ -24,6 +24,7 @@ import io.github.project.openubl.xbuilder.enricher.kie.RuleUnit;
 import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.DefaultRuleUnit;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class ContentEnricher {
 
@@ -35,14 +36,24 @@ public class ContentEnricher {
         this.dateProvider = dateProvider;
     }
 
-    public void enrich(Invoice input) {
+    private List<RuleUnit> getRuleUnits() {
         RuleUnit enrichRuleUnit = new DefaultRuleUnit(RulePhase.PhaseType.ENRICH, defaults, dateProvider.now());
-        RuleUnit processRuleUnit = new DefaultRuleUnit(RulePhase.PhaseType.PROCESS,defaults, dateProvider.now());
-        RuleUnit summaryRuleUnit = new DefaultRuleUnit(RulePhase.PhaseType.SUMMARY,defaults, dateProvider.now());
+        RuleUnit processRuleUnit = new DefaultRuleUnit(RulePhase.PhaseType.PROCESS, defaults, dateProvider.now());
+        RuleUnit summaryRuleUnit = new DefaultRuleUnit(RulePhase.PhaseType.SUMMARY, defaults, dateProvider.now());
 
-        Arrays.asList(enrichRuleUnit, processRuleUnit, summaryRuleUnit).forEach(ruleUnit -> {
+        return Arrays.asList(enrichRuleUnit, processRuleUnit, summaryRuleUnit);
+    }
+
+    /**
+     * Enrich Invoice, CreditNote, DebitNote
+     */
+    public void enrich(BaseDocumento input) {
+        List<RuleUnit> ruleUnits = getRuleUnits();
+
+        ruleUnits.forEach(ruleUnit -> {
             ruleUnit.modify(input);
             input.getDetalles().forEach(ruleUnit::modify);
         });
     }
+
 }

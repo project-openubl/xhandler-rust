@@ -14,34 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.note.creditnote;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
-import io.github.project.openubl.xbuilder.content.models.standard.general.FormaDePago;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog9;
+import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.util.function.Consumer;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isCreditNote;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenCreditNote;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class FormaDePagoRule extends AbstractRule {
+public class TipoNotaCreditoRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
-        return isBaseDocumento.test(object) && whenBaseDocumento.apply(object)
-                .map(documento -> documento.getFormaDePago() == null
-                )
+        return isCreditNote.test(object) && whenCreditNote.apply(object)
+                .map(note -> note.getTipoNota() == null)
                 .orElse(false);
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<BaseDocumento> consumer = document -> {
-            document.setFormaDePago(FormaDePago.builder().build());
-        };
-        whenBaseDocumento.apply(object).ifPresent(consumer);
+        Consumer<CreditNote> consumer = note -> note.setTipoNota(Catalog9.ANULACION_DE_LA_OPERACION.getCode());
+        whenCreditNote.apply(object).ifPresent(consumer);
     }
 }

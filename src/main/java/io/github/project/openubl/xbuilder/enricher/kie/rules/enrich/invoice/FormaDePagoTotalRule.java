@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.invoice;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CuotaDePago;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
@@ -25,15 +25,15 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isInvoice;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenInvoice;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class FormaDePagoTotalRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
-        return isBaseDocumento.test(object) && whenBaseDocumento.apply(object)
+        return isInvoice.test(object) && whenInvoice.apply(object)
                 .map(documento -> documento.getFormaDePago() != null &&
                         documento.getFormaDePago().getCuotas() != null
                 )
@@ -42,7 +42,7 @@ public class FormaDePagoTotalRule extends AbstractRule {
 
     @Override
     public void modify(Object object) {
-        Consumer<BaseDocumento> consumer = document -> {
+        Consumer<Invoice> consumer = document -> {
             BigDecimal total = document.getFormaDePago().getCuotas().stream()
                     .map(CuotaDePago::getImporte)
                     .filter(Objects::nonNull)
@@ -50,6 +50,6 @@ public class FormaDePagoTotalRule extends AbstractRule {
 
             document.getFormaDePago().setTotal(total);
         };
-        whenBaseDocumento.apply(object).ifPresent(consumer);
+        whenInvoice.apply(object).ifPresent(consumer);
     }
 }

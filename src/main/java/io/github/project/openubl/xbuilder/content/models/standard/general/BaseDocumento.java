@@ -23,7 +23,6 @@ import lombok.Data;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -41,8 +40,6 @@ public abstract class BaseDocumento {
     private Cliente cliente;
     private Proveedor proveedor;
     private Firmante firmante;
-
-    private FormaDePago formaDePago;
 
     private TotalImporte totalImporte;
     private TotalImpuestos totalImpuestos;

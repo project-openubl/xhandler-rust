@@ -1,9 +1,9 @@
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.MonedaRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.FechaEmisionRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.FirmanteRule
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.FormaDePagoRule
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.FormaDePagoTipoRule
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.FormaDePagoTotalRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.invoice.FormaDePagoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.invoice.FormaDePagoTipoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.invoice.FormaDePagoTotalRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.ClienteTipoDocumentoRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.ProveedorDireccionRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.invoice.TipoComprobanteRule
@@ -20,3 +20,6 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.process.detalle.IgvRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.detalle.TotalImpuestosRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.summary.TotalImpuestosRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.summary.TotalImporteRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.note.ComprobanteAfectadoTipoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.note.creditnote.TipoNotaCreditoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.note.debitnote.TipoNotaDebitoRule
