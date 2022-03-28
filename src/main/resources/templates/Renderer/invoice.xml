@@ -11,7 +11,9 @@
     {#include ubl/standard/include/customer.xml cliente=this.cliente /}
     {#include ubl/standard/include/payment-terms.xml item=this.formaDePago /}
     {#include ubl/standard/include/tax-total.xml totalImpuestos=this.totalImpuestos /}
-    {#include ubl/standard/include/monetary-total.xml totalImporte=this.totalImporte /}
+    <cac:LegalMonetaryTotal>
+        {#include ubl/standard/include/monetary-total.xml totalImporte=this.totalImporte /}
+    </cac:LegalMonetaryTotal>
     {#each detalles.orEmpty}
     <cac:InvoiceLine>
         <cbc:ID>{it_index.add(1)}</cbc:ID>
