@@ -18,19 +18,16 @@ package e2e.renderer.creditnote;
 
 import e2e.AbstractTest;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
-import io.github.project.openubl.xbuilder.content.models.common.*;
+import io.github.project.openubl.xbuilder.content.models.common.Cliente;
+import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
-import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
 import io.quarkus.qute.Template;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.Month;
 
 import static e2e.renderer.XMLAssertUtils.assertSendSunat;
 import static e2e.renderer.XMLAssertUtils.assertSnapshot;

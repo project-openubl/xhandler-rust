@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -28,6 +29,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class Invoice extends BaseDocumento {
+    private LocalDate fechaVencimiento;
     private String tipoComprobante;
     private FormaDePago formaDePago;
     private List<Anticipo> anticipos;

@@ -14,34 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package e2e.renderer.debitnote;
+package e2e.renderer.invoice;
 
 import e2e.AbstractTest;
+import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
 import io.quarkus.qute.Template;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
-import static e2e.renderer.XMLAssertUtils.assertSendSunat;
-import static e2e.renderer.XMLAssertUtils.assertSnapshot;
-
-public class DebitNoteTest extends AbstractTest {
+public class InvoiceFechaVencimientoTest extends AbstractTest {
 
     @Test
-    public void testInvoiceWithCustomUnidadMedida() throws Exception {
+    public void testFechaVencimiento() throws Exception {
         // Given
-        DebitNote input = DebitNote.builder()
-                .serie("FD01")
+        Invoice input = Invoice.builder()
+                .serie("F001")
                 .numero(1)
-                .comprobanteAfectadoSerieNumero("F001-1")
-                .sustentoDescripcion("mi sustento")
+                .fechaVencimiento(LocalDate.of(2022, 1, 1))
                 .proveedor(Proveedor.builder()
                         .ruc("12345678912")
                         .razonSocial("Softgreen S.A.C.")
@@ -71,12 +69,12 @@ public class DebitNoteTest extends AbstractTest {
         enricher.enrich(input);
 
         // When
-        Template template = TemplateProducer.getInstance().getDebitNote();
+        Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
         // Then
-        assertSnapshot(xml, getClass(), "MinData_RUC.xml");
-        assertSendSunat(xml);
+        XMLAssertUtils.assertSnapshot(xml, getClass(), "conFechaVencimiento.xml");
+        XMLAssertUtils.assertSendSunat(xml);
     }
 
 }
