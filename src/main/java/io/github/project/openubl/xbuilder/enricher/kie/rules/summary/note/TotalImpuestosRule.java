@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.summary;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.summary.note;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
@@ -24,6 +24,8 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Docume
 import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImpuestos;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+import io.github.project.openubl.xbuilder.enricher.kie.rules.summary.utils.DetalleUtils;
+import io.github.project.openubl.xbuilder.enricher.kie.rules.summary.utils.Impuesto;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,14 +35,16 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isNote;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
 
 @RulePhase(type = RulePhase.PhaseType.SUMMARY)
 public class TotalImpuestosRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
-        return isBaseDocumento.test(object) && whenBaseDocumento.apply(object)
+        return isNote.test(object) && whenNote.apply(object)
                 .map(documento -> documento.getTotalImpuestos() == null
                         && documento.getDetalles() != null
                 )
@@ -50,11 +54,11 @@ public class TotalImpuestosRule extends AbstractRule {
     @Override
     public void modify(Object object) {
         Consumer<BaseDocumento> consumer = document -> {
-            Impuesto ivap = calImpuestoByTipo(document.getDetalles(), Catalog5.IMPUESTO_ARROZ_PILADO);
-            Impuesto gravado = calImpuestoByTipo(document.getDetalles(), Catalog5.IGV);
-            Impuesto inafecto = calImpuestoByTipo(document.getDetalles(), Catalog5.INAFECTO);
-            Impuesto exonerado = calImpuestoByTipo(document.getDetalles(), Catalog5.EXONERADO);
-            Impuesto gratuito = calImpuestoByTipo(document.getDetalles(), Catalog5.GRATUITO);
+            Impuesto ivap = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.IMPUESTO_ARROZ_PILADO);
+            Impuesto gravado = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.IGV);
+            Impuesto inafecto = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.INAFECTO);
+            Impuesto exonerado = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.EXONERADO);
+            Impuesto gratuito = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.GRATUITO);
 
             BigDecimal icb = document.getDetalles().stream()
                     .map(DocumentoDetalle::getIcb)
@@ -80,27 +84,7 @@ public class TotalImpuestosRule extends AbstractRule {
 
             document.setTotalImpuestos(totalImpuestos);
         };
-        whenBaseDocumento.apply(object).ifPresent(consumer);
+        whenNote.apply(object).ifPresent(consumer);
     }
 
-    private Impuesto calImpuestoByTipo(List<DocumentoDetalle> detalle, Catalog5 categoria) {
-        Supplier<Stream<DocumentoDetalle>> stream = () -> detalle.stream().filter($il -> {
-            Catalog7 catalog7 = Catalog.valueOfCode(Catalog7.class, $il.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
-            return catalog7.getTaxCategory().equals(categoria);
-        });
-
-        BigDecimal baseImponible = stream.get()
-                .map(DocumentoDetalle::getIgvBaseImponible)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal importe = stream.get()
-                .map(DocumentoDetalle::getIgv)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return Impuesto.builder()
-                .importe(importe)
-                .baseImponible(baseImponible)
-                .build();
-    }
 }

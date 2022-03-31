@@ -14,42 +14,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.note;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.summary.note;
 
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
 import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoNota;
-import io.github.project.openubl.xbuilder.content.models.utils.UBLRegex;
+import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteInvoice;
+import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteNote;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+import io.github.project.openubl.xbuilder.enricher.kie.rules.summary.utils.DetalleUtils;
 
+import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isNote;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
 
-@RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class ComprobanteAfectadoTipoRule extends AbstractRule {
+@RulePhase(type = RulePhase.PhaseType.SUMMARY)
+public class TotalImporteRule extends AbstractRule {
 
     @Override
     public boolean test(Object object) {
         return isNote.test(object) && whenNote.apply(object)
-                .map(note -> note.getComprobanteAfectadoSerieNumero() != null)
+                .map(note -> note.getTotalImporte() == null && note.getDetalles() != null)
                 .orElse(false);
     }
 
     @Override
     public void modify(Object object) {
         Consumer<BaseDocumentoNota> consumer = note -> {
-            String tipoComprobanteAfectado = null;
+            BigDecimal importeSinImpuestos = DetalleUtils.getImporteSinImpuestos(note.getDetalles());
+            BigDecimal totalImpuestos = DetalleUtils.getTotalImpuestos(note.getDetalles());
 
-            if (UBLRegex.FACTURA_SERIE_REGEX.matcher(note.getSerie()).matches()) {
-                tipoComprobanteAfectado = Catalog1.FACTURA.getCode();
-            } else if (UBLRegex.BOLETA_SERIE_REGEX.matcher(note.getSerie()).matches()) {
-                tipoComprobanteAfectado = Catalog1.BOLETA.getCode();
-            }
+            BigDecimal importe = importeSinImpuestos
+                    .add(totalImpuestos);
 
-            note.setComprobanteAfectadoTipo(tipoComprobanteAfectado);
+            note.setTotalImporte(TotalImporteNote.builder()
+                    .importe(importe)
+                    .importeSinImpuestos(importeSinImpuestos)
+                    .build()
+            );
         };
         whenNote.apply(object).ifPresent(consumer);
     }
+
 }

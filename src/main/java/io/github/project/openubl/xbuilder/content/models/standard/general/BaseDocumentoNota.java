@@ -29,4 +29,6 @@ public abstract class BaseDocumentoNota extends BaseDocumento {
     private String comprobanteAfectadoSerieNumero;
     private String comprobanteAfectadoTipo;
     private String sustentoDescripcion;
+
+    private TotalImporteNote totalImporte;
 }

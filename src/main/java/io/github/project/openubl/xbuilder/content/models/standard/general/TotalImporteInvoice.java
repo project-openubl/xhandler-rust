@@ -16,35 +16,17 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
-import io.github.project.openubl.xbuilder.content.models.common.Cliente;
-import io.github.project.openubl.xbuilder.content.models.common.Firmante;
-import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import lombok.Data;
-import lombok.Singular;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
+import java.math.BigDecimal;
 
 @Data
 @SuperBuilder
-public abstract class BaseDocumento {
-    private String moneda;
-    private String serie;
-    private Integer numero;
-
-    private LocalDate fechaEmision;
-    private LocalTime horaEmision;
-
-    private Cliente cliente;
-    private Proveedor proveedor;
-    private Firmante firmante;
-
-    private TotalImpuestos totalImpuestos;
-
-    @Singular
-    private List<DocumentoDetalle> detalles;
-
-    private List<GuiaRemisionRelacionada> guiasRemisionRelacionadas;
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class TotalImporteInvoice extends TotalImporte {
+    private BigDecimal anticipos;
 }

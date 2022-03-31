@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
 
 @Data
 public class UBLRegex {
-    private static final Pattern FACTURA_SERIE_REGEX = Pattern.compile("^[F|f].*$");
-    private static final Pattern BOLETA_SERIE_REGEX = Pattern.compile("^[B|b].*$");
+    public static final Pattern FACTURA_SERIE_REGEX = Pattern.compile("^[F|f].*$");
+    public static final Pattern BOLETA_SERIE_REGEX = Pattern.compile("^[B|b].*$");
 
     private UBLRegex() {
         // Just static methods

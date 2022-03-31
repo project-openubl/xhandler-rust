@@ -9,13 +9,43 @@
     {/if}
     <cbc:InvoiceTypeCode listID="0101" listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">{tipoComprobante}</cbc:InvoiceTypeCode>
     <cbc:DocumentCurrencyCode listID="ISO 4217 Alpha" listAgencyName="United Nations Economic Commission for Europe" listName="Currency">{moneda}</cbc:DocumentCurrencyCode>
+    {#each anticipos.orEmpty}
+    <cac:AdditionalDocumentReference>
+        <cbc:ID>{it.comprobanteSerieNumero}</cbc:ID>
+        <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="Documento Relacionado" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo12">{it.comprobanteTipo}</cbc:DocumentTypeCode>
+        <cbc:DocumentStatusCode listName="Anticipo" listAgencyName="PE:SUNAT">{it_index.add(1)}</cbc:DocumentStatusCode>
+        <cac:IssuerParty>
+            <cac:PartyIdentification>
+                <cbc:ID schemeID="6" schemeName="Documento de Identidad" schemeAgencyName="PE:SUNAT" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">{proveedor.ruc}</cbc:ID>
+            </cac:PartyIdentification>
+        </cac:IssuerParty>
+    </cac:AdditionalDocumentReference>
+    {/each}
     {#include ubl/common/signature.xml firmante=this.firmante /}
     {#include ubl/standard/include/supplier.xml proveedor=this.proveedor /}
     {#include ubl/standard/include/customer.xml cliente=this.cliente /}
     {#include ubl/standard/include/payment-terms.xml item=this.formaDePago /}
+    {#each anticipos.orEmpty}
+    <cac:PrepaidPayment>
+        <cbc:ID>{it_index.add(1)}</cbc:ID>
+        <cbc:PaidAmount currencyID="{moneda}">{it.monto}</cbc:PaidAmount>
+    </cac:PrepaidPayment>
+    {/each}
+    {#each anticipos.orEmpty}
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>{it.tipo}</cbc:AllowanceChargeReasonCode>
+        <cbc:MultiplierFactorNumeric>1</cbc:MultiplierFactorNumeric>
+        <cbc:Amount currencyID="{moneda}">{it.monto}</cbc:Amount>
+        <cbc:BaseAmount currencyID="{moneda}">{it.monto}</cbc:BaseAmount>
+    </cac:AllowanceCharge>
+    {/each}
     {#include ubl/standard/include/tax-total.xml totalImpuestos=this.totalImpuestos /}
     <cac:LegalMonetaryTotal>
-        {#include ubl/standard/include/monetary-total.xml totalImporte=this.totalImporte /}
+        <cbc:LineExtensionAmount currencyID="{moneda}">{totalImporte.importeSinImpuestos.scale(2)}</cbc:LineExtensionAmount>
+        <cbc:TaxInclusiveAmount currencyID="{moneda}">{totalImporte.importeConImpuestos.scale(2)}</cbc:TaxInclusiveAmount>
+        <cbc:PrepaidAmount currencyID="PEN">{totalImporte.anticipos}</cbc:PrepaidAmount>
+        <cbc:PayableAmount currencyID="{moneda}">{totalImporte.importe.scale(2)}</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
     {#each detalles.orEmpty}
     <cac:InvoiceLine>

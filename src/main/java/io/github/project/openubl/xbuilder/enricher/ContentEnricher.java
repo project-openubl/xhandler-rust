@@ -17,6 +17,9 @@
 package io.github.project.openubl.xbuilder.enricher;
 
 import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
+import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
@@ -44,16 +47,29 @@ public class ContentEnricher {
         return Arrays.asList(enrichRuleUnit, processRuleUnit, summaryRuleUnit);
     }
 
-    /**
-     * Enrich Invoice, CreditNote, DebitNote
-     */
-    public void enrich(BaseDocumento input) {
+    private void enrichBase(BaseDocumento input, List<RuleUnit> ruleUnits) {
+        ruleUnits.forEach(ruleUnit -> {
+            ruleUnit.modify(input);
+            input.getDetalles().forEach(ruleUnit::modify);
+        });
+    }
+
+    public void enrich(Invoice input) {
         List<RuleUnit> ruleUnits = getRuleUnits();
 
         ruleUnits.forEach(ruleUnit -> {
             ruleUnit.modify(input);
             input.getDetalles().forEach(ruleUnit::modify);
+            input.getAnticipos().forEach(ruleUnit::modify);
         });
+    }
+
+    public void enrich(CreditNote input) {
+        enrichBase(input, getRuleUnits());
+    }
+
+    public void enrich(DebitNote input) {
+        enrichBase(input, getRuleUnits());
     }
 
 }

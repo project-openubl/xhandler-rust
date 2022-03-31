@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.summary;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.summary.utils;
 
 import lombok.Builder;
 import lombok.Data;

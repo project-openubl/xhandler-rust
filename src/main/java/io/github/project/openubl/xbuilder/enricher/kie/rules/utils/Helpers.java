@@ -32,6 +32,8 @@ public class Helpers {
     public static final Predicate<Object> isBaseDocumento = isInvoice.or(isCreditNote).or(isDebitNote);
     public static final Predicate<Object> isBaseDocumentoDetalle = o -> o instanceof DocumentoDetalle;
 
+    public static final Predicate<Object> isAnticipo = o -> o instanceof Anticipo;
+
     public static final Function<Object, Optional<Invoice>> whenInvoice = o -> {
         if (o instanceof Invoice) {
             return Optional.of((Invoice) o);
@@ -70,6 +72,13 @@ public class Helpers {
     public static final Function<Object, Optional<DocumentoDetalle>> whenBaseDocumentoDetalle = o -> {
         if (o instanceof DocumentoDetalle) {
             return Optional.of((DocumentoDetalle) o);
+        }
+        return Optional.empty();
+    };
+
+    public static final Function<Object, Optional<Anticipo>> whenAnticipo = o -> {
+        if (o instanceof Anticipo) {
+            return Optional.of((Anticipo) o);
         }
         return Optional.empty();
     };

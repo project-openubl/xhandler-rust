@@ -18,6 +18,7 @@ package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
@@ -32,6 +33,12 @@ public class Invoice extends BaseDocumento {
     private LocalDate fechaVencimiento;
     private String tipoComprobante;
     private FormaDePago formaDePago;
+
+    private TotalImporteInvoice totalImporte;
+
+    @Singular
     private List<Anticipo> anticipos;
+
+    @Singular
     private List<DocumentoTributarioRelacionado_Invoice> otrosDocumentosTributariosRelacionados;
 }
