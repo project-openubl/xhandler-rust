@@ -30,7 +30,13 @@ import org.w3c.dom.Document;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.diff.Diff;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,6 +68,22 @@ public class XMLAssertUtils {
 
     public static void assertSnapshot(String expected, Class<?> clasz, String snapshotFile) {
         String rootDir = clasz.getName().replaceAll("\\.", "/");
+
+        // Update snapshots and if updated do not verify since it doesn't make sense anymore
+        Boolean updateSnapshots = Boolean.valueOf(System.getProperty("xbuilder.snapshot.update", "false"));
+        if (updateSnapshots) {
+            try {
+                Path directoryPath = Paths.get("src", "test", "resources").resolve(rootDir);
+                Files.createDirectories(directoryPath);
+
+                Path filePath = directoryPath.resolve(snapshotFile);
+                Files.write(filePath, expected.getBytes());
+
+                return;
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
 
         InputStream snapshotInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(rootDir + "/" + snapshotFile);
         assertNotNull(snapshotInputStream, "Could not find snapshot file " + snapshotFile);

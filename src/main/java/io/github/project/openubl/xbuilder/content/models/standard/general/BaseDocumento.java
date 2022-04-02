@@ -23,6 +23,7 @@ import lombok.Data;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -31,6 +32,9 @@ import java.util.List;
 @SuperBuilder
 public abstract class BaseDocumento {
     private String moneda;
+    private BigDecimal tasaIgv;
+    private BigDecimal tasaIcb;
+
     private String serie;
     private Integer numero;
 

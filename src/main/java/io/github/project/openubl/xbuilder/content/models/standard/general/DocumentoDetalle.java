@@ -36,11 +36,9 @@ public class DocumentoDetalle {
     // Impuestos
     private BigDecimal igv;
     private BigDecimal igvBaseImponible;
-    private BigDecimal igvTasa;
     private String igvTipo;
 
     private BigDecimal icb;
-    private BigDecimal icbTasa;
     private boolean icbAplica;
 
     // Totales

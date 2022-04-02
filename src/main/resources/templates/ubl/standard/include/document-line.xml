@@ -12,7 +12,7 @@
                 <cbc:TaxAmount currencyID="{moneda}">{item.igv.scale(2)}</cbc:TaxAmount>
                 <cac:TaxCategory>
                     <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifier">{item.igvTipo.toCatalog7.taxCategory.categoria}</cbc:ID>
-                    <cbc:Percent>{item.igvTasa.multiply(100)}</cbc:Percent>
+                    <cbc:Percent>{tasaIgv.multiply(100)}</cbc:Percent>
                     <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">{item.igvTipo.toCatalog7.code}</cbc:TaxExemptionReasonCode>
                     <cac:TaxScheme>
                         <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">{item.igvTipo.toCatalog7.taxCategory.code}</cbc:ID>
@@ -26,7 +26,7 @@
                 <cbc:TaxAmount currencyID="{moneda}">{item.icb.scale(2)}</cbc:TaxAmount>
                 <cbc:BaseUnitMeasure unitCode="{item.unidadMedida}">{item.cantidad}</cbc:BaseUnitMeasure>
                 <cac:TaxCategory>
-                    <cbc:PerUnitAmount currencyID="{moneda}">{item.icbTasa.scale(2)}</cbc:PerUnitAmount>
+                    <cbc:PerUnitAmount currencyID="{moneda}">{tasaIcb.scale(2)}</cbc:PerUnitAmount>
                     <cac:TaxScheme>
                         <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">7152</cbc:ID>
                         <cbc:Name>ICBPER</cbc:Name>

@@ -15,7 +15,7 @@
     </cac:LegalMonetaryTotal>
     {#each detalles.orEmpty}
     <cac:CreditNoteLine>
-    <cbc:ID>{it_index.add(1)}</cbc:ID>
+        <cbc:ID>{it_index.add(1)}</cbc:ID>
         <cbc:CreditedQuantity unitCode="{it.unidadMedida}" unitCodeListAgencyName="United Nations Economic Commission for Europe" unitCodeListID="UN/ECE rec 20">{it.cantidad}</cbc:CreditedQuantity>
         {#include ubl/standard/include/document-line.xml item=it /}
     </cac:CreditNoteLine>

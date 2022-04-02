@@ -18,12 +18,10 @@ package io.github.project.openubl.xbuilder.enricher.kie;
 
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
 
-import java.time.LocalDate;
-
 public interface RuleFactory {
 
     boolean test(Object object);
 
-    Rule create(Defaults defaults, LocalDate localDate);
+    Rule create(Defaults defaults, RuleContext ruleContext);
 
 }

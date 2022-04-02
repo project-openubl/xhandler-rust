@@ -25,3 +25,11 @@ XBuilder esta diseñado para que puedas crear XMLs fácilmente.
 
 - [Documentación](https://project-openubl.github.io)
 - [Discusiones](https://github.com/project-openubl/xsender/discussions)
+
+## Developers
+
+### Update snapshots
+
+```shell
+mvn clean test -Dxbuilder.snapshot.update
+```

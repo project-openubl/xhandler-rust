@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.enricher;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
+import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoNota;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
@@ -24,10 +24,13 @@ import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import io.github.project.openubl.xbuilder.enricher.kie.RuleUnit;
-import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.DefaultRuleUnit;
+import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.BodyRuleContext;
+import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.BodyRuleUnit;
+import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.HeaderRuleContext;
+import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.HeaderRuleUnit;
 
-import java.util.Arrays;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.stream.Stream;
 
 public class ContentEnricher {
 
@@ -39,37 +42,54 @@ public class ContentEnricher {
         this.dateProvider = dateProvider;
     }
 
-    private List<RuleUnit> getRuleUnits() {
-        RuleUnit enrichRuleUnit = new DefaultRuleUnit(RulePhase.PhaseType.ENRICH, defaults, dateProvider.now());
-        RuleUnit processRuleUnit = new DefaultRuleUnit(RulePhase.PhaseType.PROCESS, defaults, dateProvider.now());
-        RuleUnit summaryRuleUnit = new DefaultRuleUnit(RulePhase.PhaseType.SUMMARY, defaults, dateProvider.now());
-
-        return Arrays.asList(enrichRuleUnit, processRuleUnit, summaryRuleUnit);
-    }
-
-    private void enrichBase(BaseDocumento input, List<RuleUnit> ruleUnits) {
-        ruleUnits.forEach(ruleUnit -> {
-            ruleUnit.modify(input);
-            input.getDetalles().forEach(ruleUnit::modify);
-        });
-    }
-
     public void enrich(Invoice input) {
-        List<RuleUnit> ruleUnits = getRuleUnits();
+        LocalDate systemLocalDate = dateProvider.now();
 
-        ruleUnits.forEach(ruleUnit -> {
-            ruleUnit.modify(input);
-            input.getDetalles().forEach(ruleUnit::modify);
-            input.getAnticipos().forEach(ruleUnit::modify);
+        Stream.of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY).forEach(phaseType -> {
+            // Header
+            HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
+                    .localDate(systemLocalDate)
+                    .build();
+            RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
+            ruleUnitHeader.modify(input);
+
+            // Body
+            BodyRuleContext ruleContextBody = BodyRuleContext.builder()
+                    .tasaIgv(input.getTasaIgv())
+                    .tasaIcb(input.getTasaIcb())
+                    .build();
+            RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
+            input.getDetalles().forEach(ruleUnitBody::modify);
+            input.getAnticipos().forEach(ruleUnitBody::modify);
         });
     }
 
     public void enrich(CreditNote input) {
-        enrichBase(input, getRuleUnits());
+        enrichNote(input);
     }
 
     public void enrich(DebitNote input) {
-        enrichBase(input, getRuleUnits());
+        enrichNote(input);
     }
 
+    private void enrichNote(BaseDocumentoNota input) {
+        LocalDate systemLocalDate = dateProvider.now();
+
+        Stream.of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY).forEach(phaseType -> {
+            // Header
+            HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
+                    .localDate(systemLocalDate)
+                    .build();
+            RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
+            ruleUnitHeader.modify(input);
+
+            // Body
+            BodyRuleContext ruleContextBody = BodyRuleContext.builder()
+                    .tasaIgv(input.getTasaIgv())
+                    .tasaIcb(input.getTasaIcb())
+                    .build();
+            RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
+            input.getDetalles().forEach(ruleUnitBody::modify);
+        });
+    }
 }

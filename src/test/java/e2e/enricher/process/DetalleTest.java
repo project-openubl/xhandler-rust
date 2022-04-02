@@ -250,9 +250,9 @@ public class DetalleTest extends AbstractTest {
     public void testEnrichIgv() {
         // Given
         Invoice input = Invoice.builder()
+                .tasaIgv(new BigDecimal("0.18"))
                 .detalle(DocumentoDetalle.builder()
                         .igvBaseImponible(new BigDecimal("10"))
-                        .igvTasa(new BigDecimal("0.18"))
                         .build()
                 )
                 .build();
@@ -271,9 +271,9 @@ public class DetalleTest extends AbstractTest {
     public void testDontEnrichIgv() {
         // Given
         Invoice input = Invoice.builder()
+                .tasaIgv(new BigDecimal("0.18"))
                 .detalle(DocumentoDetalle.builder()
                         .igvBaseImponible(new BigDecimal("10"))
-                        .igvTasa(new BigDecimal("0.18"))
                         .igv(new BigDecimal("999")) // Dont change user defined value
                         .build()
                 )
