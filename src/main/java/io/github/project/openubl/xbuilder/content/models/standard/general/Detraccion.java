@@ -17,12 +17,23 @@
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import java.math.BigDecimal;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class DetraccionRelacionada extends BaseDocumentoTributarioRelacionado {
+@Builder
+public class Detraccion {
 
+    /**
+     * Catalog59
+     **/
     private String medioDePago;
-    private String tipoBienServicio;
+    private String cuentaBancaria;
+
+    /**
+     * Catalog54
+     **/
+    private String tipoBienDetraido;
     private BigDecimal porcentaje;
+    private BigDecimal monto;
 }

@@ -14,6 +14,8 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.Form
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.FormaDePagoTotalRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.TipoComprobanteRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.DireccionDeEntregaRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.DetraccionRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.TipoOperacionRule
 
 ## Enrich - Note
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.note.ComprobanteAfectadoTipoRule
@@ -23,6 +25,7 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.note.debitno
 ## Summary - Invoice
 io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.invoice.TotalImporteRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.invoice.TotalImpuestosRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.invoice.DetraccionRule
 
 ## Summary - Note
 io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.note.TotalImporteRule

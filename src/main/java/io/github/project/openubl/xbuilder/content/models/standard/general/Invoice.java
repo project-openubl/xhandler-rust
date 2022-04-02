@@ -33,9 +33,16 @@ public class Invoice extends BaseDocumento {
 
     private LocalDate fechaVencimiento;
     private String tipoComprobante;
+
+    /**
+     * Catalog51
+     */
+    private String tipoOperacion;
+
     private FormaDePago formaDePago;
     private TotalImporteInvoice totalImporte;
     private Direccion direccionEntrega;
+    private Detraccion detraccion;
 
     @Singular
     private List<Anticipo> anticipos;
