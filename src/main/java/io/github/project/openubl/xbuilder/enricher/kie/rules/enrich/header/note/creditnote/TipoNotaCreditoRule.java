@@ -16,24 +16,24 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.note.creditnote;
 
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isCreditNote;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenCreditNote;
+
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog9;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
-
 import java.util.function.Consumer;
-
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isCreditNote;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenCreditNote;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class TipoNotaCreditoRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
-        return isCreditNote.test(object) && whenCreditNote.apply(object)
-                .map(note -> note.getTipoNota() == null)
-                .orElse(false);
+        return (
+            isCreditNote.test(object) &&
+            whenCreditNote.apply(object).map(note -> note.getTipoNota() == null).orElse(false)
+        );
     }
 
     @Override

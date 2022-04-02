@@ -39,5 +39,4 @@ public enum Catalog12 implements Catalog {
     public String getCode() {
         return code;
     }
-
 }

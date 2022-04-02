@@ -16,25 +16,27 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
-import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
-import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
-import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
-
-import java.math.BigDecimal;
-import java.util.function.Consumer;
-
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
+
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
+import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+import java.math.BigDecimal;
+import java.util.function.Consumer;
 
 @RulePhase(type = RulePhase.PhaseType.PROCESS)
 public class IgvRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
-        return isBaseDocumentoDetalle.test(object) && whenBaseDocumentoDetalle.apply(object)
+        return (
+            isBaseDocumentoDetalle.test(object) &&
+            whenBaseDocumentoDetalle
+                .apply(object)
                 .map(documento -> documento.getIgv() == null && documento.getIgvBaseImponible() != null)
-                .orElse(false);
+                .orElse(false)
+        );
     }
 
     @Override
@@ -45,5 +47,4 @@ public class IgvRule extends AbstractBodyRule {
         };
         whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);
     }
-
 }

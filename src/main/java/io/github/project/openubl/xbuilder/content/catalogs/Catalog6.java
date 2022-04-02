@@ -17,7 +17,6 @@
 package io.github.project.openubl.xbuilder.content.catalogs;
 
 public enum Catalog6 implements Catalog {
-
     DOC_TRIB_NO_DOM_SIN_RUC("0"),
     DNI("1"),
     EXTRANJERIA("4"),
@@ -35,5 +34,4 @@ public enum Catalog6 implements Catalog {
     public String getCode() {
         return code;
     }
-
 }

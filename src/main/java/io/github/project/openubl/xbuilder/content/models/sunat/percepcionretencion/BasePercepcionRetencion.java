@@ -19,10 +19,10 @@ package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretenc
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
-
 import java.util.List;
 
 public abstract class BasePercepcionRetencion {
+
     private Integer numero;
     private Long fechaEmision;
     private String observacion;

@@ -22,6 +22,7 @@ import lombok.Data;
 
 @Data
 public class Baja {
+
     private Integer numero;
     private Long fechaEmision;
     private Firmante firmante;

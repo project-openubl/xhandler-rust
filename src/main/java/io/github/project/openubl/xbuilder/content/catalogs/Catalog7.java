@@ -17,7 +17,6 @@
 package io.github.project.openubl.xbuilder.content.catalogs;
 
 public enum Catalog7 implements Catalog {
-
     GRAVADO_OPERACION_ONEROSA("10", true, Catalog5.IGV, Catalog7_1.GRAVADO),
     GRAVADO_RETIRO_POR_PREMIO("11", false, Catalog5.GRATUITO, Catalog7_1.GRAVADO),
     GRAVADO_RETIRO_POR_DONACION("12", false, Catalog5.GRATUITO, Catalog7_1.GRAVADO),

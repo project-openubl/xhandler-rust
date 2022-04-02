@@ -16,8 +16,13 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.utils;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.*;
-
+import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
+import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
+import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoNota;
+import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;

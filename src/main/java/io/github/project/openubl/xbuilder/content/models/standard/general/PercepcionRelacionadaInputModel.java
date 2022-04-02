@@ -16,15 +16,14 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
-import lombok.Data;
-
 import java.math.BigDecimal;
+import lombok.Data;
 
 @Data
 public class PercepcionRelacionadaInputModel extends BaseDocumentoTributarioRelacionado {
+
     private String tipo;
 
     private BigDecimal monto;
     private BigDecimal porcentaje;
-
 }

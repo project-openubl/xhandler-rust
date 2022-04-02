@@ -20,6 +20,7 @@ import lombok.Data;
 
 @Data
 public class GuiaRemisionRelacionada {
+
     private String serieNumero;
     private String tipoDocumento;
 }

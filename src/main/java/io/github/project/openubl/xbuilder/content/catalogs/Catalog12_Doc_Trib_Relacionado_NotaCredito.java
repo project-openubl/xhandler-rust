@@ -32,5 +32,4 @@ public enum Catalog12_Doc_Trib_Relacionado_NotaCredito implements Catalog {
     public String getCode() {
         return code;
     }
-
 }

@@ -16,24 +16,23 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
-import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
-import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
-import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
-
-import java.util.function.Consumer;
-
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
+
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
+import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+import java.util.function.Consumer;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class UnidadDeMedidaRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
-        return isBaseDocumentoDetalle.test(object) && whenBaseDocumentoDetalle.apply(object)
-                .map(documento -> documento.getUnidadMedida() == null)
-                .orElse(false);
+        return (
+            isBaseDocumentoDetalle.test(object) &&
+            whenBaseDocumentoDetalle.apply(object).map(documento -> documento.getUnidadMedida() == null).orElse(false)
+        );
     }
 
     @Override
@@ -41,5 +40,4 @@ public class UnidadDeMedidaRule extends AbstractBodyRule {
         Consumer<DocumentoDetalle> consumer = detalle -> detalle.setUnidadMedida(getDefaults().getUnidadMedida());
         whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);
     }
-
 }

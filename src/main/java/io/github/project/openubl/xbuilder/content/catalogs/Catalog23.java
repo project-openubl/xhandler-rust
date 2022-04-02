@@ -19,7 +19,6 @@ package io.github.project.openubl.xbuilder.content.catalogs;
 import java.math.BigDecimal;
 
 public enum Catalog23 implements Catalog {
-
     TASA_TRES("01", BigDecimal.valueOf(3));
 
     private final String code;

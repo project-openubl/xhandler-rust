@@ -21,6 +21,7 @@ import lombok.Data;
 
 @Data
 public class Comprobante {
+
     private String tipo;
     private String serieNumero;
     private Cliente cliente;

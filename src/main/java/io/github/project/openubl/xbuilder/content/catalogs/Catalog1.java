@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public enum Catalog1 implements Catalog {
-
     FACTURA("01"),
     BOLETA("03"),
     NOTA_CREDITO("07"),
@@ -45,14 +44,11 @@ public enum Catalog1 implements Catalog {
     }
 
     public static Optional<Catalog1> valueOfCode(String code) {
-        return Stream.of(Catalog1.values())
-                .filter(p -> p.code.equals(code))
-                .findFirst();
+        return Stream.of(Catalog1.values()).filter(p -> p.code.equals(code)).findFirst();
     }
 
     @Override
     public String getCode() {
         return code;
     }
-
 }

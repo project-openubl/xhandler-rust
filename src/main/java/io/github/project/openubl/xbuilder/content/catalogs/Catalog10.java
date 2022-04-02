@@ -31,5 +31,4 @@ public enum Catalog10 implements Catalog {
     public String getCode() {
         return code;
     }
-
 }

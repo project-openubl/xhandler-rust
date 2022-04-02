@@ -21,18 +21,18 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public interface Catalog {
-    Supplier<? extends RuntimeException> invalidCatalogValue = (Supplier<RuntimeException>) ()
-            -> new IllegalStateException("No se pudo convertir el valor del catálogo");
+    Supplier<? extends RuntimeException> invalidCatalogValue = (Supplier<RuntimeException>) () ->
+        new IllegalStateException("No se pudo convertir el valor del catálogo");
 
     /**
      * @return an instance of Catalog which is equal to ValueOf or contains the same code
      */
     static <T extends Catalog> Optional<T> valueOfCode(Class<T> enumType, String code) {
-        return Stream.of(enumType.getEnumConstants())
-                .filter(p -> p.toString().equalsIgnoreCase(code) || p.getCode().equals(code))
-                .findFirst();
+        return Stream
+            .of(enumType.getEnumConstants())
+            .filter(p -> p.toString().equalsIgnoreCase(code) || p.getCode().equals(code))
+            .findFirst();
     }
 
     String getCode();
 }
-

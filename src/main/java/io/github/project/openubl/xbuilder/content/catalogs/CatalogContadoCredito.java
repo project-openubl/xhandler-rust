@@ -17,7 +17,6 @@
 package io.github.project.openubl.xbuilder.content.catalogs;
 
 public enum CatalogContadoCredito implements Catalog {
-
     CONTADO("Contado"),
     CREDITO("Credito");
 
@@ -31,5 +30,4 @@ public enum CatalogContadoCredito implements Catalog {
     public String getCode() {
         return code;
     }
-
 }

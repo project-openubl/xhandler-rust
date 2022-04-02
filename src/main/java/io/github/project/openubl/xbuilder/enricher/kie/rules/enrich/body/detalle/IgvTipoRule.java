@@ -16,17 +16,15 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle;
 
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
+
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
-import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
-
 import java.util.function.Consumer;
-
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class IgvTipoRule extends AbstractBodyRule {
@@ -43,12 +41,12 @@ public class IgvTipoRule extends AbstractBodyRule {
             if (detalle.getIgvTipo() == null) {
                 catalog7 = Catalog7.GRAVADO_OPERACION_ONEROSA;
             } else {
-                catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
+                catalog7 =
+                    Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
             }
 
             detalle.setIgvTipo(catalog7.getCode());
         };
         whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);
     }
-
 }

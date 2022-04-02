@@ -16,12 +16,11 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import java.math.BigDecimal;
+import java.util.List;
 import lombok.Data;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @Data
 @SuperBuilder

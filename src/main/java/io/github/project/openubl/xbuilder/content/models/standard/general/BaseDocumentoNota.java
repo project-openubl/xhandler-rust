@@ -24,6 +24,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public abstract class BaseDocumentoNota extends BaseDocumento {
+
     private String tipoNota;
 
     private String comprobanteAfectadoSerieNumero;

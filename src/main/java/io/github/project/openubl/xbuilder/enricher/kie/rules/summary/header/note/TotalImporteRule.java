@@ -16,26 +16,29 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.note;
 
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isNote;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
+
 import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoNota;
 import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteNote;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import io.github.project.openubl.xbuilder.enricher.kie.rules.utils.DetalleUtils;
-
 import java.math.BigDecimal;
 import java.util.function.Consumer;
-
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isNote;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
 
 @RulePhase(type = RulePhase.PhaseType.SUMMARY)
 public class TotalImporteRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
-        return isNote.test(object) && whenNote.apply(object)
+        return (
+            isNote.test(object) &&
+            whenNote
+                .apply(object)
                 .map(note -> note.getTotalImporte() == null && note.getDetalles() != null)
-                .orElse(false);
+                .orElse(false)
+        );
     }
 
     @Override
@@ -44,16 +47,12 @@ public class TotalImporteRule extends AbstractHeaderRule {
             BigDecimal importeSinImpuestos = DetalleUtils.getImporteSinImpuestos(note.getDetalles());
             BigDecimal totalImpuestos = DetalleUtils.getTotalImpuestos(note.getDetalles());
 
-            BigDecimal importe = importeSinImpuestos
-                    .add(totalImpuestos);
+            BigDecimal importe = importeSinImpuestos.add(totalImpuestos);
 
-            note.setTotalImporte(TotalImporteNote.builder()
-                    .importe(importe)
-                    .importeSinImpuestos(importeSinImpuestos)
-                    .build()
+            note.setTotalImporte(
+                TotalImporteNote.builder().importe(importe).importeSinImpuestos(importeSinImpuestos).build()
             );
         };
         whenNote.apply(object).ifPresent(consumer);
     }
-
 }

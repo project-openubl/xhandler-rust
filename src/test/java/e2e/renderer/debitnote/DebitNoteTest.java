@@ -16,6 +16,9 @@
  */
 package e2e.renderer.debitnote;
 
+import static e2e.renderer.XMLAssertUtils.assertSendSunat;
+import static e2e.renderer.XMLAssertUtils.assertSnapshot;
+
 import e2e.AbstractTest;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
@@ -25,47 +28,46 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Docume
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
 import io.quarkus.qute.Template;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
-
-import static e2e.renderer.XMLAssertUtils.assertSendSunat;
-import static e2e.renderer.XMLAssertUtils.assertSnapshot;
+import org.junit.jupiter.api.Test;
 
 public class DebitNoteTest extends AbstractTest {
 
     @Test
     public void testInvoiceWithCustomUnidadMedida() throws Exception {
         // Given
-        DebitNote input = DebitNote.builder()
-                .serie("FD01")
-                .numero(1)
-                .comprobanteAfectadoSerieNumero("F001-1")
-                .sustentoDescripcion("mi sustento")
-                .proveedor(Proveedor.builder()
-                        .ruc("12345678912")
-                        .razonSocial("Softgreen S.A.C.")
-                        .build()
-                )
-                .cliente(Cliente.builder()
-                        .nombre("Carlos Feria")
-                        .numeroDocumentoIdentidad("12121212121")
-                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                        .build()
-                )
-                .detalle(DocumentoDetalle.builder()
-                        .descripcion("Item1")
-                        .cantidad(new BigDecimal("10"))
-                        .precio(new BigDecimal("100"))
-                        .build()
-                )
-                .detalle(DocumentoDetalle.builder()
-                        .descripcion("Item2")
-                        .cantidad(new BigDecimal("10"))
-                        .precio(new BigDecimal("100"))
-                        .build()
-                )
-                .build();
+        DebitNote input = DebitNote
+            .builder()
+            .serie("FD01")
+            .numero(1)
+            .comprobanteAfectadoSerieNumero("F001-1")
+            .sustentoDescripcion("mi sustento")
+            .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
+            .cliente(
+                Cliente
+                    .builder()
+                    .nombre("Carlos Feria")
+                    .numeroDocumentoIdentidad("12121212121")
+                    .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                    .build()
+            )
+            .detalle(
+                DocumentoDetalle
+                    .builder()
+                    .descripcion("Item1")
+                    .cantidad(new BigDecimal("10"))
+                    .precio(new BigDecimal("100"))
+                    .build()
+            )
+            .detalle(
+                DocumentoDetalle
+                    .builder()
+                    .descripcion("Item2")
+                    .cantidad(new BigDecimal("10"))
+                    .precio(new BigDecimal("100"))
+                    .build()
+            )
+            .build();
 
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
         enricher.enrich(input);
@@ -78,5 +80,4 @@ public class DebitNoteTest extends AbstractTest {
         assertSnapshot(xml, getClass(), "MinData_RUC.xml");
         assertSendSunat(xml);
     }
-
 }

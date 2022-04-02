@@ -18,19 +18,18 @@ package e2e;
 
 import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class AbstractTest {
 
-    protected static final Defaults defaults = Defaults.builder()
-            .moneda("PEN")
-            .unidadMedida("NIU")
-            .icbTasa(new BigDecimal("0.2"))
-            .igvTasa(new BigDecimal("0.18"))
-            .build();
+    protected static final Defaults defaults = Defaults
+        .builder()
+        .moneda("PEN")
+        .unidadMedida("NIU")
+        .icbTasa(new BigDecimal("0.2"))
+        .igvTasa(new BigDecimal("0.18"))
+        .build();
 
     protected static final DateProvider dateProvider = () -> LocalDate.of(2019, 12, 24);
-
 }

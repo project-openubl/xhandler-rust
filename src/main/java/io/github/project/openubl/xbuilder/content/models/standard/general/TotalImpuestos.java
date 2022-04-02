@@ -16,14 +16,14 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Data;
-
-import java.math.BigDecimal;
 
 @Data
 @Builder
 public class TotalImpuestos {
+
     private BigDecimal total;
     private BigDecimal ivapImporte;
     private BigDecimal ivapBaseImponible;

@@ -20,6 +20,7 @@ import lombok.Data;
 
 @Data
 public class Retencion extends BasePercepcionRetencion {
+
     private String serie;
     private String regimen;
 }

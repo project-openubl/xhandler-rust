@@ -20,6 +20,7 @@ import lombok.Data;
 
 @Data
 public class ResumenDiarioDetalle {
+
     private String tipoOperacion;
     private Comprobante comprobante;
     private ComprobanteAfectado comprobanteAfectado;

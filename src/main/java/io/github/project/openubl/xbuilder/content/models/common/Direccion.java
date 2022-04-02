@@ -22,6 +22,7 @@ import lombok.Data;
 @Data
 @Builder
 public class Direccion {
+
     private String ubigeo;
 
     private String codigoLocal;

@@ -22,6 +22,7 @@ import lombok.Data;
 @Data
 @Builder
 public class Contacto {
+
     private String telefono;
     private String email;
 }

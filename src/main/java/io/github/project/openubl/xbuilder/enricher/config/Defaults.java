@@ -16,15 +16,14 @@
  */
 package io.github.project.openubl.xbuilder.enricher.config;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-
 import java.math.BigDecimal;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
 @Builder
 public class Defaults {
+
     private String moneda;
     private String unidadMedida;
     private BigDecimal icbTasa;

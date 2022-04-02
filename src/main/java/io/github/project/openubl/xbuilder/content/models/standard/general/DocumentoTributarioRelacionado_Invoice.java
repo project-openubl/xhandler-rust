@@ -22,5 +22,4 @@ import lombok.Data;
 public class DocumentoTributarioRelacionado_Invoice extends BaseDocumentoTributarioRelacionado {
 
     private String tipoDocumento;
-
 }

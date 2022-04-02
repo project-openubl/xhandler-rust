@@ -16,20 +16,20 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import java.time.LocalDate;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
-import java.util.List;
-
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class Invoice extends BaseDocumento {
+
     private LocalDate fechaVencimiento;
     private String tipoComprobante;
     private FormaDePago formaDePago;

@@ -18,7 +18,11 @@ package io.github.project.openubl.xbuilder.signature;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.*;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableEntryException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -27,7 +31,7 @@ import java.util.Enumeration;
 public class CertificateDetailsFactory {
 
     public static CertificateDetails create(InputStream is, String jksPassword)
-            throws KeyStoreException, UnrecoverableEntryException, NoSuchAlgorithmException, IOException, CertificateException {
+        throws KeyStoreException, UnrecoverableEntryException, NoSuchAlgorithmException, IOException, CertificateException {
         CertificateDetails certDetails = null;
 
         boolean isAliasWithPrivateKey = false;
@@ -49,7 +53,10 @@ public class CertificateDetailsFactory {
         }
 
         if (isAliasWithPrivateKey) {
-            KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(alias, new KeyStore.PasswordProtection(jksPassword.toCharArray()));
+            KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(
+                alias,
+                new KeyStore.PasswordProtection(jksPassword.toCharArray())
+            );
             PrivateKey myPrivateKey = pkEntry.getPrivateKey();
 
             // Load certificate chain
@@ -62,5 +69,4 @@ public class CertificateDetailsFactory {
 
         return certDetails;
     }
-
 }

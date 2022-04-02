@@ -31,6 +31,6 @@ public @interface RulePhase {
     enum PhaseType {
         ENRICH,
         PROCESS,
-        SUMMARY
+        SUMMARY,
     }
 }

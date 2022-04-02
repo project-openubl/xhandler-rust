@@ -16,12 +16,12 @@
  */
 package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion;
 
-import lombok.Data;
-
 import java.math.BigDecimal;
+import lombok.Data;
 
 @Data
 public class ComprobanteAfectado {
+
     private String moneda;
     private String tipo;
     private String serieNumero;

@@ -42,5 +42,4 @@ public abstract class AbstractHeaderRule implements RuleFactory, Rule {
     public HeaderRuleContext getRuleContext() {
         return ruleContext;
     }
-
 }

@@ -16,12 +16,12 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
-import lombok.Data;
-
 import java.math.BigDecimal;
+import lombok.Data;
 
 @Data
 public class DetraccionRelacionada extends BaseDocumentoTributarioRelacionado {
+
     private String medioDePago;
     private String tipoBienServicio;
     private BigDecimal porcentaje;

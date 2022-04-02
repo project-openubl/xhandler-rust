@@ -16,36 +16,40 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header;
 
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
+
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
-
 import java.util.function.Consumer;
-
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class ClienteTipoDocumentoRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
-        return isBaseDocumento.test(object) && whenBaseDocumento.apply(object)
-                .map(documento -> documento.getCliente() != null &&
-                        documento.getCliente().getTipoDocumentoIdentidad() != null
+        return (
+            isBaseDocumento.test(object) &&
+            whenBaseDocumento
+                .apply(object)
+                .map(documento ->
+                    documento.getCliente() != null && documento.getCliente().getTipoDocumentoIdentidad() != null
                 )
-                .orElse(false);
+                .orElse(false)
+        );
     }
 
     @Override
     public void modify(Object object) {
         Consumer<BaseDocumento> consumer = document -> {
-            Catalog6 catalog6 = Catalog.valueOfCode(Catalog6.class, document.getCliente().getTipoDocumentoIdentidad()).orElseThrow(Catalog.invalidCatalogValue);
+            Catalog6 catalog6 = Catalog
+                .valueOfCode(Catalog6.class, document.getCliente().getTipoDocumentoIdentidad())
+                .orElseThrow(Catalog.invalidCatalogValue);
             document.getCliente().setTipoDocumentoIdentidad(catalog6.getCode());
         };
         whenBaseDocumento.apply(object).ifPresent(consumer);
     }
-
 }

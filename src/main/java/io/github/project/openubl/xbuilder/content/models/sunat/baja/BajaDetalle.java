@@ -20,6 +20,7 @@ import lombok.Data;
 
 @Data
 public class BajaDetalle {
+
     private String serieNumero;
     private String tipoComprobante;
     private Long fechaEmision;

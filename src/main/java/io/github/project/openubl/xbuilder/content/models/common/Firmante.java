@@ -22,6 +22,7 @@ import lombok.Data;
 @Data
 @Builder
 public class Firmante {
+
     private String ruc;
     private String razonSocial;
 }

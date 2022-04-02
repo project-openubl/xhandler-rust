@@ -22,6 +22,7 @@ import lombok.Data;
 @Data
 @Builder
 public class Proveedor {
+
     private String ruc;
     private String nombreComercial;
     private String razonSocial;

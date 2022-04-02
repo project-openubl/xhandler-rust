@@ -17,7 +17,6 @@
 package io.github.project.openubl.xbuilder.content.catalogs;
 
 public enum Catalog20 implements Catalog {
-
     VENTA("01"),
     VENTA_SUJETA_A_CONFIRMACION_DEL_COMPRADOR("14"),
     COMPRA("02"),
@@ -38,5 +37,4 @@ public enum Catalog20 implements Catalog {
     public String getCode() {
         return code;
     }
-
 }

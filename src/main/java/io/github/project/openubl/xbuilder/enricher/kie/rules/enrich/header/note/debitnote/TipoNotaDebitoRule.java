@@ -16,24 +16,24 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.note.debitnote;
 
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isDebitNote;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenDebitNote;
+
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog10;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
-
 import java.util.function.Consumer;
-
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isDebitNote;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenDebitNote;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class TipoNotaDebitoRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
-        return isDebitNote.test(object) && whenDebitNote.apply(object)
-                .map(note -> note.getTipoNota() == null)
-                .orElse(false);
+        return (
+            isDebitNote.test(object) &&
+            whenDebitNote.apply(object).map(note -> note.getTipoNota() == null).orElse(false)
+        );
     }
 
     @Override

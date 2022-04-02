@@ -20,7 +20,6 @@ public enum Catalog12_Anticipo implements Catalog {
     FACTURA_EMITIDA_POR_ANTICIPOS("02"),
     BOLETA_DE_VENTA_EMITIDA_POR_ANTICIPOS("03");
 
-
     private final String code;
 
     Catalog12_Anticipo(String code) {
@@ -31,5 +30,4 @@ public enum Catalog12_Anticipo implements Catalog {
     public String getCode() {
         return code;
     }
-
 }

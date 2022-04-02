@@ -17,7 +17,6 @@
 package io.github.project.openubl.xbuilder.content.catalogs;
 
 public enum Catalog52 implements Catalog {
-
     MONTO_EN_LETRAS("1000", "MONTO EN LETRAS");
 
     private final String code;

@@ -22,5 +22,4 @@ import lombok.Data;
 public class DocumentoTributarioRelacionado_CreditNote extends BaseDocumentoTributarioRelacionado {
 
     private String tipoDocumento;
-
 }

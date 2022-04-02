@@ -17,7 +17,6 @@
 package io.github.project.openubl.xbuilder.content.catalogs;
 
 public enum Catalog21 implements Catalog {
-
     NUMERACION_DAM("01"),
     NUMERO_DE_ORDEN_DE_ENTREGA("02"),
     NUMERO_SCOP("03"),
@@ -35,5 +34,4 @@ public enum Catalog21 implements Catalog {
     public String getCode() {
         return code;
     }
-
 }

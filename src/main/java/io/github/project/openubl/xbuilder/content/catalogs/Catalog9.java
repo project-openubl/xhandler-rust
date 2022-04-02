@@ -38,5 +38,4 @@ public enum Catalog9 implements Catalog {
     public String getCode() {
         return code;
     }
-
 }

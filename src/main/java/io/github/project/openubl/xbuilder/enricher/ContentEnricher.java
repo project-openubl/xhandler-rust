@@ -28,7 +28,6 @@ import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.BodyRuleContext
 import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.BodyRuleUnit;
 import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.HeaderRuleContext;
 import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.HeaderRuleUnit;
-
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
@@ -45,23 +44,24 @@ public class ContentEnricher {
     public void enrich(Invoice input) {
         LocalDate systemLocalDate = dateProvider.now();
 
-        Stream.of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY).forEach(phaseType -> {
-            // Header
-            HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
-                    .localDate(systemLocalDate)
-                    .build();
-            RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
-            ruleUnitHeader.modify(input);
+        Stream
+            .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
+            .forEach(phaseType -> {
+                // Header
+                HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder().localDate(systemLocalDate).build();
+                RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
+                ruleUnitHeader.modify(input);
 
-            // Body
-            BodyRuleContext ruleContextBody = BodyRuleContext.builder()
+                // Body
+                BodyRuleContext ruleContextBody = BodyRuleContext
+                    .builder()
                     .tasaIgv(input.getTasaIgv())
                     .tasaIcb(input.getTasaIcb())
                     .build();
-            RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
-            input.getDetalles().forEach(ruleUnitBody::modify);
-            input.getAnticipos().forEach(ruleUnitBody::modify);
-        });
+                RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
+                input.getDetalles().forEach(ruleUnitBody::modify);
+                input.getAnticipos().forEach(ruleUnitBody::modify);
+            });
     }
 
     public void enrich(CreditNote input) {
@@ -75,21 +75,22 @@ public class ContentEnricher {
     private void enrichNote(BaseDocumentoNota input) {
         LocalDate systemLocalDate = dateProvider.now();
 
-        Stream.of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY).forEach(phaseType -> {
-            // Header
-            HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
-                    .localDate(systemLocalDate)
-                    .build();
-            RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
-            ruleUnitHeader.modify(input);
+        Stream
+            .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
+            .forEach(phaseType -> {
+                // Header
+                HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder().localDate(systemLocalDate).build();
+                RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
+                ruleUnitHeader.modify(input);
 
-            // Body
-            BodyRuleContext ruleContextBody = BodyRuleContext.builder()
+                // Body
+                BodyRuleContext ruleContextBody = BodyRuleContext
+                    .builder()
                     .tasaIgv(input.getTasaIgv())
                     .tasaIcb(input.getTasaIcb())
                     .build();
-            RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
-            input.getDetalles().forEach(ruleUnitBody::modify);
-        });
+                RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
+                input.getDetalles().forEach(ruleUnitBody::modify);
+            });
     }
 }

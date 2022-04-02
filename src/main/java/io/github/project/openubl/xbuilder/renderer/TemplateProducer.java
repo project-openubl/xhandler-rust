@@ -21,29 +21,23 @@ import io.quarkus.qute.Template;
 public class TemplateProducer {
 
     public Template getInvoice() {
-        return EngineProducer.getInstance()
-                .getEngine()
-                .getTemplate("Renderer/invoice.xml");
+        return EngineProducer.getInstance().getEngine().getTemplate("Renderer/invoice.xml");
     }
 
     public Template getCreditNote() {
-        return EngineProducer.getInstance()
-                .getEngine()
-                .getTemplate("Renderer/creditNote.xml");
+        return EngineProducer.getInstance().getEngine().getTemplate("Renderer/creditNote.xml");
     }
 
     public Template getDebitNote() {
-        return EngineProducer.getInstance()
-                .getEngine()
-                .getTemplate("Renderer/debitNote.xml");
+        return EngineProducer.getInstance().getEngine().getTemplate("Renderer/debitNote.xml");
     }
 
     private static class TemplateProducerHolder {
+
         private static final TemplateProducer INSTANCE = new TemplateProducer();
     }
 
     public static TemplateProducer getInstance() {
         return TemplateProducerHolder.INSTANCE;
     }
-
 }

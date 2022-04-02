@@ -17,7 +17,6 @@
 package io.github.project.openubl.xbuilder.content.catalogs;
 
 public enum Catalog5 implements Catalog {
-
     IGV("1000", "VAT", "S", "IGV"),
     IMPUESTO_ARROZ_PILADO("1016", "VAT", "S", "IVAP"),
     ISC("2000", "EXC", "S", "ISC"),

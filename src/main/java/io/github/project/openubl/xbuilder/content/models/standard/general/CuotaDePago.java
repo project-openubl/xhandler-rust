@@ -16,15 +16,15 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
-import lombok.Builder;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
 public class CuotaDePago {
+
     private BigDecimal importe;
     private LocalDate fechaPago;
 }

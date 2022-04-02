@@ -22,6 +22,7 @@ import lombok.Data;
 @Data
 @Builder
 public class Cliente {
+
     private String tipoDocumentoIdentidad;
     private String numeroDocumentoIdentidad;
     private String nombre;

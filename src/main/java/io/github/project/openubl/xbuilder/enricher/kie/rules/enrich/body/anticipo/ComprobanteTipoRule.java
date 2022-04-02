@@ -1,16 +1,15 @@
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.anticipo;
 
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isAnticipo;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenAnticipo;
+
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog12;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
 import io.github.project.openubl.xbuilder.content.models.utils.UBLRegex;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
-import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
-
 import java.util.function.Consumer;
-
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.*;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class ComprobanteTipoRule extends AbstractBodyRule {
@@ -31,7 +30,9 @@ public class ComprobanteTipoRule extends AbstractBodyRule {
                     comprobanteTipo = Catalog12.BOLETA_DE_VENTA_EMITIDA_POR_ANTICIPOS.getCode();
                 }
             } else {
-                Catalog12 catalog12 = Catalog.valueOfCode(Catalog12.class, anticipo.getComprobanteTipo()).orElseThrow(Catalog.invalidCatalogValue);
+                Catalog12 catalog12 = Catalog
+                    .valueOfCode(Catalog12.class, anticipo.getComprobanteTipo())
+                    .orElseThrow(Catalog.invalidCatalogValue);
                 comprobanteTipo = catalog12.getCode();
             }
 

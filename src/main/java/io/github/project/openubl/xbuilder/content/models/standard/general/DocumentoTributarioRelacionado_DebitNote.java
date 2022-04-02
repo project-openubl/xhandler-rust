@@ -22,5 +22,4 @@ import lombok.Data;
 public class DocumentoTributarioRelacionado_DebitNote extends BaseDocumentoTributarioRelacionado {
 
     private String tipoDocumento;
-
 }

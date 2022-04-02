@@ -16,15 +16,22 @@
  */
 package io.github.project.openubl.xbuilder.signature;
 
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.Collections;
 import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.dsig.*;
+import javax.xml.crypto.dsig.CanonicalizationMethod;
+import javax.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.SignatureMethod;
+import javax.xml.crypto.dsig.SignedInfo;
+import javax.xml.crypto.dsig.Transform;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureException;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.crypto.dsig.dom.DOMSignContext;
 import javax.xml.crypto.dsig.keyinfo.KeyInfo;
 import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
@@ -32,31 +39,27 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
-import java.util.Collections;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class XMLSigner {
 
-    public static Document signXML(
-            String text,
-            String referenceID,
-            X509Certificate certificate,
-            PrivateKey privateKey
-    ) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, XMLSignatureException, MarshalException, IOException, SAXException, ParserConfigurationException {
+    public static Document signXML(String text, String referenceID, X509Certificate certificate, PrivateKey privateKey)
+        throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, XMLSignatureException, MarshalException, IOException, SAXException, ParserConfigurationException {
         Document document = XmlSignatureHelper.convertStringToXMLDocument(text);
         return signXML(document, referenceID, certificate, privateKey);
     }
 
     public static Document signXML(
-            Document document,
-            String referenceID,
-            X509Certificate certificate,
-            PrivateKey privateKey
-    ) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, MarshalException, XMLSignatureException, ParserConfigurationException {
+        Document document,
+        String referenceID,
+        X509Certificate certificate,
+        PrivateKey privateKey
+    )
+        throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, MarshalException, XMLSignatureException, ParserConfigurationException {
         addUBLExtensions(document);
         addUBLExtension(document);
         Node nodeExtensionContent = addExtensionContent(document);
@@ -68,13 +71,24 @@ public class XMLSigner {
 
         XMLSignatureFactory signatureFactory = XMLSignatureFactory.getInstance("DOM");
 
-        Reference reference = signatureFactory.newReference("",
-                signatureFactory.newDigestMethod(DigestMethod.SHA1, null),
-                Collections.singletonList(signatureFactory.newTransform(Transform.ENVELOPED, (TransformParameterSpec) null)), null, null);
+        Reference reference = signatureFactory.newReference(
+            "",
+            signatureFactory.newDigestMethod(DigestMethod.SHA1, null),
+            Collections.singletonList(
+                signatureFactory.newTransform(Transform.ENVELOPED, (TransformParameterSpec) null)
+            ),
+            null,
+            null
+        );
 
         SignedInfo signedInfo = signatureFactory.newSignedInfo(
-                signatureFactory.newCanonicalizationMethod(CanonicalizationMethod.INCLUSIVE, (C14NMethodParameterSpec) null),
-                signatureFactory.newSignatureMethod(SignatureMethod.RSA_SHA1, null), Collections.singletonList(reference));
+            signatureFactory.newCanonicalizationMethod(
+                CanonicalizationMethod.INCLUSIVE,
+                (C14NMethodParameterSpec) null
+            ),
+            signatureFactory.newSignatureMethod(SignatureMethod.RSA_SHA1, null),
+            Collections.singletonList(reference)
+        );
 
         KeyInfoFactory keyInfoFactory = signatureFactory.getKeyInfoFactory();
         X509Data xdata = keyInfoFactory.newX509Data(Collections.singletonList(certificate));
@@ -116,6 +130,4 @@ public class XMLSigner {
         }
         return nodeExtensionContent;
     }
-
 }
-
