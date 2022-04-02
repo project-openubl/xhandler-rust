@@ -17,7 +17,8 @@
 package io.github.project.openubl.xbuilder.content.catalogs;
 
 public enum Catalog52 implements Catalog {
-    MONTO_EN_LETRAS("1000", "MONTO EN LETRAS");
+    MONTO_EN_LETRAS("1000", "MONTO EN LETRAS"),
+    VENTA_REALIZADA_POR_EMISOR_ITINERANTE("2005", "Venta realizada por emisor itinerante");
 
     private final String code;
     private final String label;

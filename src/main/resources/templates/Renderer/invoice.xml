@@ -8,6 +8,9 @@
     <cbc:DueDate>{fechaVencimiento}</cbc:DueDate>
     {/if}
     <cbc:InvoiceTypeCode listID="0101" listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">{tipoComprobante}</cbc:InvoiceTypeCode>
+    {#for key in leyendas.keySet}
+    <cbc:Note languageLocaleID="{key}"><![CDATA[{leyendas.get(key)}]]></cbc:Note>
+    {/for}
     <cbc:DocumentCurrencyCode listID="ISO 4217 Alpha" listAgencyName="United Nations Economic Commission for Europe" listName="Currency">{moneda}</cbc:DocumentCurrencyCode>
     {#each anticipos.orEmpty}
     <cac:AdditionalDocumentReference>
@@ -24,6 +27,15 @@
     {#include ubl/common/signature.xml firmante=this.firmante /}
     {#include ubl/standard/include/supplier.xml proveedor=this.proveedor /}
     {#include ubl/standard/include/customer.xml cliente=this.cliente /}
+    {#if direccionEntrega}
+    <cac:Delivery>
+        <cac:DeliveryLocation>
+            <cac:Address>
+                {#include ubl/standard/include/address.xml direccion=direccionEntrega /}
+            </cac:Address>
+        </cac:DeliveryLocation>
+    </cac:Delivery>
+    {/if}
     {#include ubl/standard/include/payment-terms.xml item=this.formaDePago /}
     {#each anticipos.orEmpty}
     <cac:PrepaidPayment>

@@ -13,6 +13,7 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.Form
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.FormaDePagoTipoRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.FormaDePagoTotalRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.TipoComprobanteRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.DireccionDeEntregaRule
 
 ## Enrich - Note
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.note.ComprobanteAfectadoTipoRule

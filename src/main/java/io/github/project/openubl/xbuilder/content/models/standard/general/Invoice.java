@@ -16,6 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import io.github.project.openubl.xbuilder.content.models.common.Direccion;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;
@@ -33,8 +34,8 @@ public class Invoice extends BaseDocumento {
     private LocalDate fechaVencimiento;
     private String tipoComprobante;
     private FormaDePago formaDePago;
-
     private TotalImporteInvoice totalImporte;
+    private Direccion direccionEntrega;
 
     @Singular
     private List<Anticipo> anticipos;
