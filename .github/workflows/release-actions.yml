@@ -26,7 +26,7 @@ jobs:
           nexus_password: ${{ secrets.nexus_password }}
       - name: Build Changelog
         id: github_release
-        uses: mikepenz/release-changelog-builder-action@v1
+        uses: mikepenz/release-changelog-builder-action@v2.9.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release
