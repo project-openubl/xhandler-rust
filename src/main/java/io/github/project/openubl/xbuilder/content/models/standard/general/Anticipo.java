@@ -17,7 +17,6 @@
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import java.math.BigDecimal;
-
 import lombok.Builder;
 import lombok.Data;
 

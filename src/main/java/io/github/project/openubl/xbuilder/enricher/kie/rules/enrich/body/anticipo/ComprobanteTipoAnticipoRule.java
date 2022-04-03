@@ -25,7 +25,6 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Antici
 import io.github.project.openubl.xbuilder.content.models.utils.UBLRegex;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
-
 import java.util.function.Consumer;
 
 /**
@@ -53,8 +52,8 @@ public class ComprobanteTipoAnticipoRule extends AbstractBodyRule {
                 }
             } else {
                 Catalog12 catalog12 = Catalog
-                        .valueOfCode(Catalog12.class, anticipo.getComprobanteTipo())
-                        .orElseThrow(Catalog.invalidCatalogValue);
+                    .valueOfCode(Catalog12.class, anticipo.getComprobanteTipo())
+                    .orElseThrow(Catalog.invalidCatalogValue);
                 comprobanteTipo = catalog12.getCode();
             }
 

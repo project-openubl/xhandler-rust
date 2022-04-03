@@ -17,10 +17,8 @@
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import io.github.project.openubl.xbuilder.content.models.common.Direccion;
-
 import java.time.LocalDate;
 import java.util.List;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Singular;
@@ -55,5 +53,4 @@ public class Invoice extends Document {
 
     @Singular
     private List<DocumentoTributarioRelacionado_Invoice> otrosDocumentosTributariosRelacionados;
-
 }
