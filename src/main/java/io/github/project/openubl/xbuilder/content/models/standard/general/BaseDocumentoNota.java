@@ -23,7 +23,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public abstract class BaseDocumentoNota extends BaseDocumento {
+public abstract class BaseDocumentoNota extends Document {
 
     private String tipoNota;
 

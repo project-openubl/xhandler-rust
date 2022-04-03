@@ -29,7 +29,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class Invoice extends BaseDocumento {
+public class Invoice extends Document {
 
     private LocalDate fechaVencimiento;
     private String tipoComprobante;
@@ -45,6 +45,9 @@ public class Invoice extends BaseDocumento {
     private Detraccion detraccion;
     private Percepcion percepcion;
 
+    /**
+     * Anticipos asociados al comprobante
+     */
     @Singular
     private List<Anticipo> anticipos;
 

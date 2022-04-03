@@ -26,6 +26,11 @@ import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import java.util.function.Consumer;
 
+/**
+ * Rule for: {@link Anticipo#tipo}
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class TipoAnticipoRule extends AbstractBodyRule {
 

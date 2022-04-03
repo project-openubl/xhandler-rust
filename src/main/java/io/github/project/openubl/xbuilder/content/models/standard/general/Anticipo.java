@@ -20,12 +20,38 @@ import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Anticipo realizado.
+ * <p>
+ * Un anticipo se realiza cuando el cliente a entregado al proveedor un pago por anticipado a la prestación del servicio o la entrega.
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @Data
 @Builder
 public class Anticipo {
 
+    /**
+     * Tipo de anticipo realizado.
+     * <p>
+     * Catalogo 53.
+     * <p>
+     * Valores válidos: "04", "05", "06"
+     */
     private String tipo;
-    private String comprobanteTipo;
+
+    /**
+     * Serie y número de comprobante del anticipo, por ejemplo "F123-4"
+     */
     private String comprobanteSerieNumero;
+
+    /**
+     * Código de tipo de documento del {@link #comprobanteSerieNumero}.
+     */
+    private String comprobanteTipo;
+
+    /**
+     * Monto prepagado o anticipado
+     */
     private BigDecimal monto;
 }

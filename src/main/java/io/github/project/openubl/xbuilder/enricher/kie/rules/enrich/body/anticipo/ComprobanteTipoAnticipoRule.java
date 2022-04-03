@@ -27,8 +27,13 @@ import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import java.util.function.Consumer;
 
+/**
+ * Rule for: {@link Anticipo#comprobanteTipo}
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class ComprobanteTipoRule extends AbstractBodyRule {
+public class ComprobanteTipoAnticipoRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {

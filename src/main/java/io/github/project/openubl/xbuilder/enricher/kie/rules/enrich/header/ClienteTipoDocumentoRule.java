@@ -21,7 +21,7 @@ import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helper
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import java.util.function.Consumer;
@@ -44,7 +44,7 @@ public class ClienteTipoDocumentoRule extends AbstractHeaderRule {
 
     @Override
     public void modify(Object object) {
-        Consumer<BaseDocumento> consumer = document -> {
+        Consumer<Document> consumer = document -> {
             Catalog6 catalog6 = Catalog
                 .valueOfCode(Catalog6.class, document.getCliente().getTipoDocumentoIdentidad())
                 .orElseThrow(Catalog.invalidCatalogValue);

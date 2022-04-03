@@ -42,7 +42,7 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.Precio
 
 ## Enrich - Anticipos
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.anticipo.TipoAnticipoRule
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.anticipo.ComprobanteTipoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.anticipo.ComprobanteTipoAnticipoRule
 
 ## Process - Detalle
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.PrecioDeReferenciaRule
