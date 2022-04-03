@@ -17,13 +17,19 @@
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import java.math.BigDecimal;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class PercepcionRelacionadaInputModel extends BaseDocumentoTributarioRelacionado {
+@Builder
+public class Percepcion {
 
+    /**
+     * Catalog53
+     */
     private String tipo;
-
-    private BigDecimal monto;
-    private BigDecimal porcentaje;
+    private BigDecimal montoBase; // importeSinImpuestos
+    private BigDecimal porcentaje; // Establecido por el "tipo"
+    private BigDecimal monto; // montoBase * porcentaje
+    private BigDecimal montoTotal; // montoBase + monto
 }

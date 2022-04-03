@@ -51,6 +51,12 @@
         <cbc:Amount currencyID="{moneda}">{detraccion.monto.scale(2)}</cbc:Amount>
     </cac:PaymentTerms>
     {/if}
+    {#if percepcion}
+    <cac:PaymentTerms>
+        <cbc:ID>Percepcion</cbc:ID>
+        <cbc:Amount currencyID="PEN">{percepcion.montoTotal.scale(2)}</cbc:Amount>
+    </cac:PaymentTerms>
+    {/if}
     {#include ubl/standard/include/payment-terms.xml item=this.formaDePago /}
     {#each anticipos.orEmpty}
     <cac:PrepaidPayment>
@@ -67,6 +73,15 @@
         <cbc:BaseAmount currencyID="{moneda}">{it.monto}</cbc:BaseAmount>
     </cac:AllowanceCharge>
     {/each}
+    {#if percepcion}
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>{percepcion.tipo}</cbc:AllowanceChargeReasonCode>
+        <cbc:MultiplierFactorNumeric>{percepcion.porcentaje.scale(2)}</cbc:MultiplierFactorNumeric>
+        <cbc:Amount currencyID="PEN">{percepcion.monto.scale(2)}</cbc:Amount>
+        <cbc:BaseAmount currencyID="PEN">{percepcion.montoBase.scale(2)}</cbc:BaseAmount>
+    </cac:AllowanceCharge>
+    {/if}
     {#include ubl/standard/include/tax-total.xml totalImpuestos=this.totalImpuestos /}
     <cac:LegalMonetaryTotal>
         <cbc:LineExtensionAmount currencyID="{moneda}">{totalImporte.importeSinImpuestos.scale(2)}</cbc:LineExtensionAmount>

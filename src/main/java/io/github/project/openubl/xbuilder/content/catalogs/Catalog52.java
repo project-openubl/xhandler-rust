@@ -18,8 +18,9 @@ package io.github.project.openubl.xbuilder.content.catalogs;
 
 public enum Catalog52 implements Catalog {
     MONTO_EN_LETRAS("1000", "MONTO EN LETRAS"),
-    VENTA_REALIZADA_POR_EMISOR_ITINERANTE("2005", "Venta realizada por emisor itinerante"),
-    OPERACION_SUJETA_A_DETRACCION("2006", "Operacion sujeta a detraccion");
+    COMPROBANTE_DE_PERCEPCION("2000", "COMPROBANTE DE PERCEPCION"),
+    VENTA_REALIZADA_POR_EMISOR_ITINERANTE("2005", "VENTA REALIZADA POR EMISOR ITINERANTE"),
+    OPERACION_SUJETA_A_DETRACCION("2006", "OPERACION SUJETA A DETRACCION");
 
     private final String code;
     private final String label;

@@ -43,6 +43,7 @@ public class Invoice extends BaseDocumento {
     private TotalImporteInvoice totalImporte;
     private Direccion direccionEntrega;
     private Detraccion detraccion;
+    private Percepcion percepcion;
 
     @Singular
     private List<Anticipo> anticipos;

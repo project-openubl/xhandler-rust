@@ -14,43 +14,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.invoice;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isInvoice;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenInvoice;
 
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog51;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Percepcion;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Optional;
 import java.util.function.Consumer;
 
-@RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class TipoOperacionRule extends AbstractHeaderRule {
+@RulePhase(type = RulePhase.PhaseType.SUMMARY)
+public class PercepcionRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
         return (
             isInvoice.test(object) &&
-            whenInvoice.apply(object).map(documento -> documento.getTipoOperacion() == null).orElse(false)
+            whenInvoice
+                .apply(object)
+                .map(invoice -> invoice.getPercepcion() != null && invoice.getTotalImporte() != null)
+                .orElse(false)
         );
     }
 
     @Override
     public void modify(Object object) {
         Consumer<Invoice> consumer = invoice -> {
-            String tipoOperacion = null;
-            if (invoice.getTipoOperacion() == null) {
-                if (invoice.getDetraccion() != null) {
-                    tipoOperacion = Catalog51.OPERACION_SUJETA_A_DETRACCION.getCode();
-                } else if (invoice.getPercepcion() != null) {
-                    tipoOperacion = Catalog51.OPERACION_SUJETA_A_PERCEPCION.getCode();
-                } else {
-                    tipoOperacion = Catalog51.VENTA_INTERNA.getCode();
-                }
-            }
+            BigDecimal montoBase = invoice.getTotalImporte().getImporteSinImpuestos();
+            BigDecimal porcentaje = Optional.ofNullable(invoice.getPercepcion().getPorcentaje()).orElse(BigDecimal.ONE);
+            BigDecimal monto = montoBase.multiply(porcentaje).setScale(2, RoundingMode.HALF_EVEN);
+            BigDecimal montoTotal = montoBase.add(monto);
 
-            invoice.setTipoOperacion(tipoOperacion);
+            invoice.getPercepcion().setMontoBase(montoBase);
+            invoice.getPercepcion().setPorcentaje(porcentaje);
+            invoice.getPercepcion().setMonto(monto);
+            invoice.getPercepcion().setMontoTotal(montoTotal);
         };
         whenInvoice.apply(object).ifPresent(consumer);
     }
