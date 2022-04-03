@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: "temurin"
-          java-version: 8
+          java-version: 11
       - name: Build with Maven and Coverage/Sonar
         run: mvn verify -P coverage,sonar
         env:
