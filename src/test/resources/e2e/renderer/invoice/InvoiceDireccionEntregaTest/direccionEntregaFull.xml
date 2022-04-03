@@ -21,7 +21,7 @@
     <cbc:ID>F001-1</cbc:ID>
     <cbc:IssueDate>2019-12-24</cbc:IssueDate>
     <cbc:InvoiceTypeCode listID="0101" listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">01</cbc:InvoiceTypeCode>
-    <cbc:Note languageLocaleID="2005"><![CDATA[Venta realizada por emisor itinerante]]></cbc:Note>
+    <cbc:Note languageLocaleID="2005"><![CDATA[VENTA REALIZADA POR EMISOR ITINERANTE]]></cbc:Note>
     <cbc:DocumentCurrencyCode listID="ISO 4217 Alpha" listAgencyName="United Nations Economic Commission for Europe" listName="Currency">PEN</cbc:DocumentCurrencyCode>
     <cac:Signature>
         <cbc:ID>12345678912</cbc:ID>
