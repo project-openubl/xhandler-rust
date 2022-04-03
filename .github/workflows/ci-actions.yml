@@ -10,9 +10,10 @@ on:
       - 'README.md'
   schedule:
     - cron: '0 0 * * *'
+env:
+  CI: true
 
 jobs:
-
   linux-jvm-tests:
     name: JDK ${{matrix.java-version}} JVM Tests
     timeout-minutes: 120
@@ -22,21 +23,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v2
         with:
+          distribution: "temurin"
           java-version: ${{ matrix.java-version }}
       - name: Build with Maven
-        run: mvn install
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T -
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-linux-jvm${{matrix.java-version}}
-          path: 'test-reports.tgz'
+        run: mvn verify
 
   code-scan:
     name: Code Scan
@@ -45,8 +37,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v2
         with:
+          distribution: "temurin"
           java-version: 8
       - name: Build with Maven and Coverage/Sonar
         run: mvn verify -P coverage,sonar
@@ -55,13 +48,3 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Codecov metrics
         uses: codecov/codecov-action@v1
-      - name: Prepare failure archive (if maven failed)
-        if: failure()
-        shell: bash
-        run: find . -name '*-reports' -type d | tar -czvf test-reports.tgz -T -
-      - name: Upload failure Archive (if maven failed)
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: test-reports-linux-jvm-codescan
-          path: 'test-reports.tgz'
