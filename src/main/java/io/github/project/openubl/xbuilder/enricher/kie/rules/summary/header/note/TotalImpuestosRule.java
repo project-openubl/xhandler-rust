@@ -20,7 +20,7 @@ import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helper
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImpuestos;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
@@ -47,7 +47,7 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
 
     @Override
     public void modify(Object object) {
-        Consumer<BaseDocumento> consumer = document -> {
+        Consumer<Document> consumer = document -> {
             Impuesto ivap = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.IMPUESTO_ARROZ_PILADO);
             Impuesto gravado = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.IGV);
             Impuesto inafecto = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.INAFECTO);

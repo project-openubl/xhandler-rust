@@ -25,10 +25,16 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Antici
 import io.github.project.openubl.xbuilder.content.models.utils.UBLRegex;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+
 import java.util.function.Consumer;
 
+/**
+ * Rule for: {@link Anticipo#comprobanteTipo}
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class ComprobanteTipoRule extends AbstractBodyRule {
+public class ComprobanteTipoAnticipoRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
@@ -47,8 +53,8 @@ public class ComprobanteTipoRule extends AbstractBodyRule {
                 }
             } else {
                 Catalog12 catalog12 = Catalog
-                    .valueOfCode(Catalog12.class, anticipo.getComprobanteTipo())
-                    .orElseThrow(Catalog.invalidCatalogValue);
+                        .valueOfCode(Catalog12.class, anticipo.getComprobanteTipo())
+                        .orElseThrow(Catalog.invalidCatalogValue);
                 comprobanteTipo = catalog12.getCode();
             }
 

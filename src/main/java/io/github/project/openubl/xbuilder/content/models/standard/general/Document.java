@@ -30,7 +30,7 @@ import lombok.experimental.SuperBuilder;
 
 @Data
 @SuperBuilder
-public abstract class BaseDocumento {
+public abstract class Document {
 
     @Singular
     private Map<String, String> leyendas;

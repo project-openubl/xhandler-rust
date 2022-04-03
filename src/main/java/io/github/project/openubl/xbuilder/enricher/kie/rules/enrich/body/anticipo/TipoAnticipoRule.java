@@ -24,8 +24,14 @@ import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+
 import java.util.function.Consumer;
 
+/**
+ * Rule for: {@link Anticipo#tipo}
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class TipoAnticipoRule extends AbstractBodyRule {
 
@@ -39,12 +45,12 @@ public class TipoAnticipoRule extends AbstractBodyRule {
         Consumer<Anticipo> consumer = anticipo -> {
             String tipoAnticipo;
             if (anticipo.getComprobanteTipo() == null) {
-                tipoAnticipo =
-                    Catalog53_Anticipo.DESCUENTO_GLOBAL_POR_ANTICIPOS_GRAVADOS_AFECTA_BASE_IMPONIBLE_IGV_IVAP.getCode();
+                tipoAnticipo = Catalog53_Anticipo.DESCUENTO_GLOBAL_POR_ANTICIPOS_GRAVADOS_AFECTA_BASE_IMPONIBLE_IGV_IVAP
+                        .getCode();
             } else {
                 Catalog53_Anticipo catalog53 = Catalog
-                    .valueOfCode(Catalog53_Anticipo.class, anticipo.getTipo())
-                    .orElseThrow(Catalog.invalidCatalogValue);
+                        .valueOfCode(Catalog53_Anticipo.class, anticipo.getTipo())
+                        .orElseThrow(Catalog.invalidCatalogValue);
                 tipoAnticipo = catalog53.getCode();
             }
 

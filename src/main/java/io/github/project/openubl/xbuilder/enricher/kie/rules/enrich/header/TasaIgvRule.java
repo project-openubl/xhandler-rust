@@ -19,7 +19,7 @@ package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import java.util.function.Consumer;
@@ -37,7 +37,7 @@ public class TasaIgvRule extends AbstractHeaderRule {
 
     @Override
     public void modify(Object object) {
-        Consumer<BaseDocumento> consumer = document -> document.setTasaIgv(getDefaults().getIgvTasa());
+        Consumer<Document> consumer = document -> document.setTasaIgv(getDefaults().getIgvTasa());
         whenBaseDocumento.apply(object).ifPresent(consumer);
     }
 }

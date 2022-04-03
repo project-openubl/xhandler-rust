@@ -17,10 +17,10 @@
 package io.github.project.openubl.xbuilder.enricher.kie.rules.utils;
 
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumento;
 import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoNota;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import java.util.Optional;
@@ -60,9 +60,9 @@ public class Helpers {
         return Optional.empty();
     };
 
-    public static final Function<Object, Optional<BaseDocumento>> whenBaseDocumento = o -> {
-        if (o instanceof BaseDocumento) {
-            return Optional.of((BaseDocumento) o);
+    public static final Function<Object, Optional<Document>> whenBaseDocumento = o -> {
+        if (o instanceof Document) {
+            return Optional.of((Document) o);
         }
         return Optional.empty();
     };

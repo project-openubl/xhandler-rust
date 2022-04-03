@@ -17,8 +17,10 @@
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import io.github.project.openubl.xbuilder.content.models.common.Direccion;
+
 import java.time.LocalDate;
 import java.util.List;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Singular;
@@ -29,7 +31,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class Invoice extends BaseDocumento {
+public class Invoice extends Document {
 
     private LocalDate fechaVencimiento;
     private String tipoComprobante;
@@ -45,9 +47,13 @@ public class Invoice extends BaseDocumento {
     private Detraccion detraccion;
     private Percepcion percepcion;
 
+    /**
+     * Anticipos asociados al comprobante
+     */
     @Singular
     private List<Anticipo> anticipos;
 
     @Singular
     private List<DocumentoTributarioRelacionado_Invoice> otrosDocumentosTributariosRelacionados;
+
 }
