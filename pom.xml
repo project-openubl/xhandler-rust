@@ -119,7 +119,7 @@
         <dependency>
             <groupId>io.github.project-openubl</groupId>
             <artifactId>xsender</artifactId>
-            <version>3.0.2.Final</version>
+            <version>3.0.3.Final</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
