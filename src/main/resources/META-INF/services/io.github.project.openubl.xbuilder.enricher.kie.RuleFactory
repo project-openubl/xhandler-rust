@@ -5,7 +5,7 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.TasaIgvRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.TasaIcbRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.FechaEmisionRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.FirmanteRule
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.ClienteTipoDocumentoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.TipoDocumentoIdentidadClienteRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.ProveedorDireccionRule
 
 ## Enrich - Invoice

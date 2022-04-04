@@ -21,13 +21,17 @@ import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helper
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
+import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import java.util.function.Consumer;
 
+/**
+ * Rule for {@link Cliente#tipoDocumentoIdentidad}
+ */
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class ClienteTipoDocumentoRule extends AbstractHeaderRule {
+public class TipoDocumentoIdentidadClienteRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
@@ -45,10 +49,9 @@ public class ClienteTipoDocumentoRule extends AbstractHeaderRule {
     @Override
     public void modify(Object object) {
         Consumer<Document> consumer = document -> {
-            Catalog6 catalog6 = Catalog
+            Catalog
                 .valueOfCode(Catalog6.class, document.getCliente().getTipoDocumentoIdentidad())
-                .orElseThrow(Catalog.invalidCatalogValue);
-            document.getCliente().setTipoDocumentoIdentidad(catalog6.getCode());
+                .ifPresent(catalog6 -> document.getCliente().setTipoDocumentoIdentidad(catalog6.getCode()));
         };
         whenBaseDocumento.apply(object).ifPresent(consumer);
     }
