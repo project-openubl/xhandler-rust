@@ -74,17 +74,6 @@
         <developerConnection>scm:git:git@github.com:project-openubl/xbuilder.git</developerConnection>
     </scm>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -299,6 +288,16 @@
         </profile>
         <profile>
             <id>deploy</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
             <build>
                 <plugins>
                     <!-- Source plugin -->
@@ -357,7 +356,7 @@
             </build>
         </profile>
         <profile>
-            <id>deploy-early-access</id>
+            <id>github</id>
             <distributionManagement>
                 <repository>
                     <id>github</id>

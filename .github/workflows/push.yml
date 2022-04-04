@@ -37,7 +37,7 @@ jobs:
         with:
           distribution: "temurin"
           java-version: 11
-      - name: Build with Maven and Coverage/Sonar
-        run: mvn deploy -Pdeploy-early-access
+      - name: Deploy to GitHub
+        run: mvn deploy -Pgithub
         env:
           GITHUB_TOKEN: ${{ github.token }}
