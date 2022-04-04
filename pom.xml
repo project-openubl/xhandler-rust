@@ -357,6 +357,16 @@
             </build>
         </profile>
         <profile>
+            <id>deploy-early-access</id>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Project OpenUBL Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/project-openubl/xbuilder</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
             <id>ci</id>
             <activation>
                 <property>

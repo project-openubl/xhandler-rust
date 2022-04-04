@@ -26,3 +26,18 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Codecov metrics
         uses: codecov/codecov-action@v2
+
+  early-access:
+    name: Early access
+    if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'project-openubl' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "temurin"
+          java-version: 11
+      - name: Build with Maven and Coverage/Sonar
+        run: mvn deploy -Pdeploy-early-access
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
