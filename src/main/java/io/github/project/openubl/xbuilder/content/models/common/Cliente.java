@@ -59,5 +59,4 @@ public class Cliente {
      * Datos de contacto del cliente
      */
     private Contacto contacto;
-
 }
