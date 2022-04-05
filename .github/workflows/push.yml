@@ -39,8 +39,10 @@ jobs:
           distribution: "temurin"
           java-version: 11
           cache: maven
-      - run: ls
-      - run: cat settings.xml
+      - run: ls .m2/
+      - run: ls ~/.m2/
+      - run: cat .m2/settings.xml
+      - run: cat ~/.m2/settings.xml
       - name: OSSRH Snapshot
         run: mvn deploy -Possrh
         env:
