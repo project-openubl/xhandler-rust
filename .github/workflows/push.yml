@@ -44,7 +44,7 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
       - name: OSSRH Snapshot
-        run: mvn --batch-mode deploy -Possrh
+        run: mvn --batch-mode deploy -Possrh -DskipTests
         env:
           MAVEN_USERNAME: ${{ secrets.nexus_username }}
           MAVEN_PASSWORD: ${{ secrets.nexus_password }}
@@ -55,6 +55,6 @@ jobs:
           java-version: 11
           cache: maven
       - name: GitHub Snapshot
-        run: mvn --batch-mode deploy -Pgithub
+        run: mvn --batch-mode deploy -Pgithub -DskipTests
         env:
           GITHUB_TOKEN: ${{ github.token }}
