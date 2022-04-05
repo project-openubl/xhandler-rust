@@ -27,8 +27,8 @@ jobs:
       - name: Codecov metrics
         uses: codecov/codecov-action@v2
 
-  early-access:
-    name: Early access
+  snapshots:
+    name: Snaphots
     if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'project-openubl' }}
     runs-on: ubuntu-latest
     steps:
@@ -37,6 +37,8 @@ jobs:
         with:
           distribution: "temurin"
           java-version: 11
+      - run: ls
+      - run: cat settings.xml
       - name: OSSRH Snapshot
         run: mvn deploy -Possrh
         env:
