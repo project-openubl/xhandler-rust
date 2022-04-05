@@ -22,6 +22,7 @@ jobs:
         with:
           java-version: 11
           distribution: temurin
+          cache: maven
       - name: Set release version
         id: version
         run: |

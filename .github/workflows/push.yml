@@ -19,6 +19,7 @@ jobs:
         with:
           distribution: "temurin"
           java-version: 11
+          cache: maven
       - name: Build with Maven and Coverage/Sonar
         run: mvn verify -P coverage,sonar
         env:
@@ -29,7 +30,7 @@ jobs:
 
   snapshots:
     name: Snaphots
-    if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'project-openubl' }}
+    if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'carlosthe19916' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -37,6 +38,7 @@ jobs:
         with:
           distribution: "temurin"
           java-version: 11
+          cache: maven
       - run: ls
       - run: cat settings.xml
       - name: OSSRH Snapshot
