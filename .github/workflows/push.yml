@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: 11
@@ -30,24 +30,31 @@ jobs:
 
   snapshots:
     name: Snaphots
-    if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'carlosthe19916' }}
+    if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'project-openubl' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-java@v2
+
+      - uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: 11
           cache: maven
-      - run: ls .m2/
-      - run: ls ~/.m2/
-      - run: cat .m2/settings.xml
-      - run: cat ~/.m2/settings.xml
+          server-id: ossrh
+          server-username: OSSRH_USERNAME
+          server-password: OSSRH_TOKEN
       - name: OSSRH Snapshot
-        run: mvn deploy -Possrh
+        run: mvn --batch-mode deploy -Possrh
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: 11
+          cache: maven
       - name: GitHub Snapshot
-        run: mvn deploy -Pgithub
+        run: mvn --batch-mode deploy -Pgithub
         env:
           GITHUB_TOKEN: ${{ github.token }}
