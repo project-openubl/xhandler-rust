@@ -37,7 +37,11 @@ jobs:
         with:
           distribution: "temurin"
           java-version: 11
-      - name: Deploy to GitHub
+      - name: OSSRH Snapshot
+        run: mvn deploy -Possrh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: GitHub Snapshot
         run: mvn deploy -Pgithub
         env:
           GITHUB_TOKEN: ${{ github.token }}
