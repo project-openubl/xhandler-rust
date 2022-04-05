@@ -298,6 +298,19 @@
                     <url>https://oss.sonatype.org/content/repositories/snapshots</url>
                 </snapshotRepository>
             </distributionManagement>
+        </profile>
+        <profile>
+            <id>github</id>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Project OpenUBL Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/project-openubl/xbuilder</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>release</id>
             <build>
                 <plugins>
                     <!-- Source plugin -->
@@ -354,16 +367,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-        <profile>
-            <id>github</id>
-            <distributionManagement>
-                <repository>
-                    <id>github</id>
-                    <name>GitHub Project OpenUBL Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/project-openubl/xbuilder</url>
-                </repository>
-            </distributionManagement>
         </profile>
         <profile>
             <id>ci</id>
