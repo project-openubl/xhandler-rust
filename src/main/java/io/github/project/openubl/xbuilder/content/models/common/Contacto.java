@@ -19,10 +19,22 @@ package io.github.project.openubl.xbuilder.content.models.common;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Datos de contacto
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @Data
 @Builder
 public class Contacto {
 
+    /**
+     * Número telefónico
+     */
     private String telefono;
+
+    /**
+     * Correo electrónico
+     */
     private String email;
 }

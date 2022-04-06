@@ -19,10 +19,22 @@ package io.github.project.openubl.xbuilder.content.models.common;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Persona que firma electrónicamente el documento
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @Data
 @Builder
 public class Firmante {
 
+    /**
+     * Número de RUC de la persona
+     */
     private String ruc;
+
+    /**
+     * Razón social de la persona
+     */
     private String razonSocial;
 }

@@ -19,14 +19,37 @@ package io.github.project.openubl.xbuilder.content.models.common;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Persona que vende o presta un servicio
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @Data
 @Builder
 public class Proveedor {
 
+    /**
+     * Número de RUC de la persona jurídica
+     */
     private String ruc;
+
+    /**
+     * Nombre comercial de la persona jurídica
+     */
     private String nombreComercial;
+
+    /**
+     * Razón social de la persona jurídica
+     */
     private String razonSocial;
 
+    /**
+     * Dirección de la persona jurídica
+     */
     private Direccion direccion;
+
+    /**
+     * Contacto de la persona jurídica
+     */
     private Contacto contacto;
 }

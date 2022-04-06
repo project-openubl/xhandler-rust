@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * Rule for {@link Invoice#direccionEntrega}
+ */
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class DireccionDeEntregaRule extends AbstractHeaderRule {
 

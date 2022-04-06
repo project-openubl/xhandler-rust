@@ -20,11 +20,15 @@ import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helper
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
 
 import io.github.project.openubl.xbuilder.content.models.common.Direccion;
+import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import java.util.function.Consumer;
 
+/**
+ * Rule for {@link Proveedor#direccion}
+ */
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class ProveedorDireccionRule extends AbstractHeaderRule {
 
