@@ -19,7 +19,7 @@ package io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.not
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isNote;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoNota;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteNote;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
@@ -27,6 +27,9 @@ import io.github.project.openubl.xbuilder.enricher.kie.rules.utils.DetalleUtils;
 import java.math.BigDecimal;
 import java.util.function.Consumer;
 
+/**
+ * Rule for {@link Note#totalImporte}
+ */
 @RulePhase(type = RulePhase.PhaseType.SUMMARY)
 public class TotalImporteRule extends AbstractHeaderRule {
 
@@ -43,7 +46,7 @@ public class TotalImporteRule extends AbstractHeaderRule {
 
     @Override
     public void modify(Object object) {
-        Consumer<BaseDocumentoNota> consumer = note -> {
+        Consumer<Note> consumer = note -> {
             BigDecimal importeSinImpuestos = DetalleUtils.getImporteSinImpuestos(note.getDetalles());
             BigDecimal totalImpuestos = DetalleUtils.getTotalImpuestos(note.getDetalles());
 

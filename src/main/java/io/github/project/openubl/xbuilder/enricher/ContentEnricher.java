@@ -16,10 +16,10 @@
  */
 package io.github.project.openubl.xbuilder.enricher;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoNota;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
@@ -72,7 +72,7 @@ public class ContentEnricher {
         enrichNote(input);
     }
 
-    private void enrichNote(BaseDocumentoNota input) {
+    private void enrichNote(Note input) {
         LocalDate systemLocalDate = dateProvider.now();
 
         Stream

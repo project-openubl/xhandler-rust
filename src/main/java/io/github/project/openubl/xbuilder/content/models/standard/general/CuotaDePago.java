@@ -21,10 +21,22 @@ import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Cuota de pago para Invoice
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @Data
 @Builder
 public class CuotaDePago {
 
+    /**
+     * Importe de la cuota
+     */
     private BigDecimal importe;
+
+    /**
+     * Fecha de pago de la cuota
+     */
     private LocalDate fechaPago;
 }
