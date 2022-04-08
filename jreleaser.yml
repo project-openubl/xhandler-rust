@@ -48,4 +48,8 @@ announce:
   twitter:
     active: RELEASE
     status: '🚀 {{projectNameCapitalized}} {{projectVersion}} has been released! {{releaseNotesUrl}}'
+  slack:
+    active: RELEASE
+    channel: '#notifications'
+    status: '🚀 {{projectNameCapitalized}} {{projectVersion}} has been released! {{releaseNotesUrl}}'
 

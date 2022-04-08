@@ -68,7 +68,7 @@ jobs:
         with:
           ref: ${{ steps.head.outputs.content }}
 
-      - name: Release with JReleaser
+      - name: JReleaser
         uses: jreleaser/release-action@v2
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -78,13 +78,35 @@ jobs:
           JRELEASER_TWITTER_CONSUMER_SECRET: ${{ secrets.JRELEASER_TWITTER_CONSUMER_SECRET }}
           JRELEASER_TWITTER_ACCESS_TOKEN: ${{ secrets.JRELEASER_TWITTER_ACCESS_TOKEN }}
           JRELEASER_TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.JRELEASER_TWITTER_ACCESS_TOKEN_SECRET }}
-      - name: Release Maven package
-        uses: samuelmeuli/action-maven-publish@v1
+          JRELEASER_SLACK_TOKEN: ${{ secrets.JRELEASER_SLACK_TOKEN }}
+          JRELEASER_SLACK_WEBHOOK: ${{ secrets.JRELEASER_SLACK_WEBHOOK }}
+
+      # OSSRH
+      - uses: actions/setup-java@v3
         with:
-          gpg_private_key: ${{ secrets.gpg_private_key }}
-          gpg_passphrase: ${{ secrets.gpg_passphrase }}
-          nexus_username: ${{ secrets.nexus_username }}
-          nexus_password: ${{ secrets.nexus_password }}
+          distribution: "temurin"
+          java-version: 11
+          cache: maven
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+      - name: OSSRH Snapshot
+        run: mvn --batch-mode source:jar javadoc:jar deploy -Possrh -DskipTests
+        env:
+          MAVEN_USERNAME: ${{ secrets.nexus_username }}
+          MAVEN_PASSWORD: ${{ secrets.nexus_password }}
+
+      # GitHub
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: 11
+          cache: maven
+      - name: GitHub Snapshot
+        run: mvn --batch-mode source:jar javadoc:jar deploy -Pgithub -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
       - name: Set next version
         env:
           NEXT_VERSION: ${{ steps.version.outputs.NEXT_VERSION }}
