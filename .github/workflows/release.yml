@@ -36,8 +36,8 @@ jobs:
           mvn -B versions:set versions:commit -DnewVersion=$RELEASE_VERSION
           git config --global user.email "project.openubl.preview.bot@gmail.com"
           git config --global user.name "Project-Openubl Bot"
-          git commit -a -m "🏁 Releasing version $RELEASE_VERSION"
-          git push --allow-empty origin HEAD:master
+          git commit --allow-empty -a -m "🏁 Releasing version $RELEASE_VERSION"
+          git push origin HEAD:master
           git rev-parse HEAD > HEAD
           echo $RELEASE_VERSION > RELEASE_VERSION
           echo $PLAIN_VERSION > PLAIN_VERSION
