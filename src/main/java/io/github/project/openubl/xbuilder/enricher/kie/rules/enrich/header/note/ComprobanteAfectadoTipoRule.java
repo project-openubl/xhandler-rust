@@ -20,12 +20,15 @@ import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helper
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoNota;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import io.github.project.openubl.xbuilder.content.models.utils.UBLRegex;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import java.util.function.Consumer;
 
+/**
+ * Rule for {@link Note#comprobanteAfectadoTipo}
+ */
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class ComprobanteAfectadoTipoRule extends AbstractHeaderRule {
 
@@ -39,16 +42,16 @@ public class ComprobanteAfectadoTipoRule extends AbstractHeaderRule {
 
     @Override
     public void modify(Object object) {
-        Consumer<BaseDocumentoNota> consumer = note -> {
-            String tipoComprobanteAfectado = null;
+        Consumer<Note> consumer = note -> {
+            String comprobanteAfectadoTipo = note.getComprobanteAfectadoTipo();
 
             if (UBLRegex.FACTURA_SERIE_REGEX.matcher(note.getSerie()).matches()) {
-                tipoComprobanteAfectado = Catalog1.FACTURA.getCode();
+                comprobanteAfectadoTipo = Catalog1.FACTURA.getCode();
             } else if (UBLRegex.BOLETA_SERIE_REGEX.matcher(note.getSerie()).matches()) {
-                tipoComprobanteAfectado = Catalog1.BOLETA.getCode();
+                comprobanteAfectadoTipo = Catalog1.BOLETA.getCode();
             }
 
-            note.setComprobanteAfectadoTipo(tipoComprobanteAfectado);
+            note.setComprobanteAfectadoTipo(comprobanteAfectadoTipo);
         };
         whenNote.apply(object).ifPresent(consumer);
     }

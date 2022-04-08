@@ -20,16 +20,45 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
+/**
+ * Clase base para CreditNote y DebitNOte.
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public abstract class BaseDocumentoNota extends Document {
+public abstract class Note extends Document {
 
+    /**
+     * Tipo de nota.
+     * <p>
+     * Nota de Crédito: Catalogo 09.
+     * <p>
+     * Nota de Débito: Catalogo 10.
+     */
     private String tipoNota;
 
+    /**
+     * Serie y número del comprobante al que le aplica la nota de crédito/débito.
+     * Ejemplo: F001-1
+     */
     private String comprobanteAfectadoSerieNumero;
+
+    /**
+     * Tipo de del probante referido en {@link Note#comprobanteAfectadoSerieNumero}.
+     * <p>
+     * Catalogo 01.
+     */
     private String comprobanteAfectadoTipo;
+
+    /**
+     * Texto sustentatorio para la emision de la nota
+     */
     private String sustentoDescripcion;
 
+    /**
+     * Importe total de la nota
+     */
     private TotalImporteNote totalImporte;
 }

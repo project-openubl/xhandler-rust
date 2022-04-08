@@ -17,12 +17,12 @@
 package io.github.project.openubl.xbuilder.enricher.kie.rules.utils;
 
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
-import io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoNota;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -32,7 +32,7 @@ public class Helpers {
     public static final Predicate<Object> isInvoice = o -> o instanceof Invoice;
     public static final Predicate<Object> isCreditNote = o -> o instanceof CreditNote;
     public static final Predicate<Object> isDebitNote = o -> o instanceof DebitNote;
-    public static final Predicate<Object> isNote = o -> o instanceof BaseDocumentoNota;
+    public static final Predicate<Object> isNote = o -> o instanceof Note;
 
     public static final Predicate<Object> isBaseDocumento = isInvoice.or(isCreditNote).or(isDebitNote);
     public static final Predicate<Object> isBaseDocumentoDetalle = o -> o instanceof DocumentoDetalle;
@@ -67,9 +67,9 @@ public class Helpers {
         return Optional.empty();
     };
 
-    public static final Function<Object, Optional<BaseDocumentoNota>> whenNote = o -> {
-        if (o instanceof BaseDocumentoNota) {
-            return Optional.of((BaseDocumentoNota) o);
+    public static final Function<Object, Optional<Note>> whenNote = o -> {
+        if (o instanceof Note) {
+            return Optional.of((Note) o);
         }
         return Optional.empty();
     };

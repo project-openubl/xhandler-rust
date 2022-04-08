@@ -24,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class DebitNote extends BaseDocumentoNota {
+public class DebitNote extends Note {
 
     private List<DocumentoTributarioRelacionado_DebitNote> otrosDocumentosTributariosRelacionados;
 }

@@ -32,27 +32,75 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public abstract class Document {
 
+    /**
+     * Leyendas asociadas al comprobante
+     */
     @Singular
     private Map<String, String> leyendas;
 
+    /**
+     * Moneda en la que se emite el comprobante
+     */
     private String moneda;
+
+    /**
+     * Tasa del IGV. Ejemplo: 0.18
+     */
     private BigDecimal tasaIgv;
+
+    /**
+     * Tasa del IBC. Ejemplo: 0.2
+     */
     private BigDecimal tasaIcb;
 
+    /**
+     * Serie del comprobante
+     */
     private String serie;
+
+    /**
+     * Número del comprobante
+     */
     private Integer numero;
 
+    /**
+     * Fecha de emisión del comprobante
+     */
     private LocalDate fechaEmision;
+
+    /**
+     * Hora de emisión del comprobante
+     */
     private LocalTime horaEmision;
 
+    /**
+     * Cliente
+     */
     private Cliente cliente;
+
+    /**
+     * Proveedor del bien o servicio
+     */
     private Proveedor proveedor;
+
+    /**
+     * Persona que firma electrónicamente el comprobante
+     */
     private Firmante firmante;
 
+    /**
+     * Total de impuestos a pagar
+     */
     private TotalImpuestos totalImpuestos;
 
+    /**
+     * Detalle del comprobante
+     */
     @Singular
     private List<DocumentoDetalle> detalles;
 
+    /**
+     * Guias de remision relacionadas
+     */
     private List<GuiaRemisionRelacionada> guiasRemisionRelacionadas;
 }

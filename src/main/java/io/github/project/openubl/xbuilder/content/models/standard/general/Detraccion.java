@@ -20,6 +20,11 @@ import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Detracción asociada a un Invoice
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @Data
 @Builder
 public class Detraccion {

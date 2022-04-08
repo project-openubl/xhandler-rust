@@ -21,10 +21,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
+/**
+ * Clase base para CreditNote y DebitNote.
+ *
+ * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
+ */
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class CreditNote extends BaseDocumentoNota {
+public class CreditNote extends Note {
 
     private List<DocumentoTributarioRelacionado_CreditNote> otrosDocumentosTributariosRelacionados;
 }

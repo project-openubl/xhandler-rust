@@ -24,7 +24,6 @@ import lombok.Data;
 @Builder
 public class DocumentoDetalle {
 
-    private Integer index;
     private String descripcion;
     private String unidadMedida;
     private BigDecimal cantidad;
