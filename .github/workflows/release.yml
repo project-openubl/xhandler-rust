@@ -12,7 +12,6 @@ on:
 
 jobs:
   version:
-    name: Release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -38,7 +37,7 @@ jobs:
           git config --global user.email "project.openubl.preview.bot@gmail.com"
           git config --global user.name "Project-Openubl Bot"
           git commit -a -m "🏁 Releasing version $RELEASE_VERSION"
-          git push origin HEAD:master
+          git push origin HEAD:master --force
           git rev-parse HEAD > HEAD
           echo $RELEASE_VERSION > RELEASE_VERSION
           echo $PLAIN_VERSION > PLAIN_VERSION
