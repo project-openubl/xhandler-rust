@@ -34,7 +34,7 @@ jobs:
           then
             NEXT_VERSION=$COMPUTED_NEXT_VERSION
           fi
-          ./mvnw -B versions:set versions:commit -DnewVersion=$RELEASE_VERSION
+          mvn -B versions:set versions:commit -DnewVersion=$RELEASE_VERSION
           git config --global user.email "project.openubl.preview.bot@gmail.com"
           git config --global user.name "Project-Openubl Bot"
           git commit -a -m "🏁 Releasing version $RELEASE_VERSION"
@@ -111,7 +111,7 @@ jobs:
         env:
           NEXT_VERSION: ${{ steps.version.outputs.NEXT_VERSION }}
         run: |
-          ./mvnw -B versions:set versions:commit -DnewVersion=$NEXT_VERSION
+          mvn -B versions:set versions:commit -DnewVersion=$NEXT_VERSION
           git config --global user.email "project.openubl.preview.bot@gmail.com"
           git config --global user.name "Project-Openubl Bot"
           git commit -a -m "⬆️  Next version $NEXT_VERSION"
