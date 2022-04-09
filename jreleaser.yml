@@ -52,9 +52,3 @@ announce:
     active: RELEASE
     channel: '#notifications'
     message: '🚀 {{projectNameCapitalized}} {{projectVersion}} has been released! {{releaseNotesUrl}}'
-  discussions:
-    active: RELEASE
-    organization: project-openubl
-    team: contributors
-    title: '{{projectNameCapitalized}} {{projectVersion}} released!'
-    message: '🚀 {{projectNameCapitalized}} {{projectVersion}} has been released! {{releaseNotesUrl}}'
