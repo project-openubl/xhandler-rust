@@ -78,6 +78,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ steps.head.outputs.content }}
+          fetch-depth: 0
 
       - name: JReleaser
         uses: jreleaser/release-action@v2
@@ -101,11 +102,14 @@ jobs:
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
-      - name: OSSRH Snapshot
+          gpg-private-key: ${{ secrets.gpg_private_key }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: OSSRH Release
         run: mvn --batch-mode source:jar javadoc:jar deploy -Possrh -DskipTests
         env:
           MAVEN_USERNAME: ${{ secrets.nexus_username }}
           MAVEN_PASSWORD: ${{ secrets.nexus_password }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
 
       # GitHub
       - uses: actions/setup-java@v3
@@ -113,10 +117,13 @@ jobs:
           distribution: "temurin"
           java-version: 11
           cache: maven
-      - name: GitHub Snapshot
+          gpg-private-key: ${{ secrets.gpg_private_key }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: GitHub Release
         run: mvn --batch-mode source:jar javadoc:jar deploy -Pgithub -DskipTests
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
 
       - name: Set next version
         env:
