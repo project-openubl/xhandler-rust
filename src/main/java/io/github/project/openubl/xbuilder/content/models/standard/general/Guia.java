@@ -16,11 +16,22 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class GuiaRemisionRelacionada {
+@Builder
+public class Guia {
 
     private String serieNumero;
+
+    /**
+     * Tipo de documento Guia.
+     * <p>
+     * Catalogo 01.
+     * <p>
+     * Valores válidos: "09", "31"
+     */
     private String tipoDocumento;
 }

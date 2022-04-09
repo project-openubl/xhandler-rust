@@ -107,5 +107,6 @@ public abstract class Document {
     /**
      * Guias de remision relacionadas
      */
-    private List<GuiaRemisionRelacionada> guiasRemisionRelacionadas;
+    @Singular
+    private List<Guia> guias;
 }

@@ -20,6 +20,7 @@
         <cbc:ID>{ordenDeCompra}</cbc:ID>
     </cac:OrderReference>
     {/if}
+    {#include ubl/standard/include/guias.xml item=this /}
     {#each anticipos.orEmpty}
     <cac:AdditionalDocumentReference>
         <cbc:ID>{it.comprobanteSerieNumero}</cbc:ID>
