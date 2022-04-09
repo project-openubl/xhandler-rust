@@ -40,7 +40,7 @@ release:
 announce:
   zulip:
     active: RELEASE
-    account: carlosthe19916@gmail.com
+    account: release-bot@projectopenubl.zulipchat.com
     apiHost: https://projectopenubl.zulipchat.com/api/v1
     channel: announcements
     subject: '{{projectNameCapitalized}} {{projectVersion}} released!'
@@ -52,4 +52,9 @@ announce:
     active: RELEASE
     channel: '#notifications'
     message: '🚀 {{projectNameCapitalized}} {{projectVersion}} has been released! {{releaseNotesUrl}}'
-
+  discussions:
+    active: RELEASE
+    organization: project-openubl
+    team: contributors
+    title: '{{projectNameCapitalized}} {{projectVersion}} released!'
+    message: '🚀 {{projectNameCapitalized}} {{projectVersion}} has been released! {{releaseNotesUrl}}'
