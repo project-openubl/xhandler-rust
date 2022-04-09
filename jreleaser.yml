@@ -18,7 +18,7 @@
 project:
   name: xbuilder
   description: Crea XMLs basados en UBL 2.1 y las especificaciones de SUNAT, Perú.
-  longDescription: Consulta el DNI o RUC de cualquier persona natural o jurídica registrada en el territorio peruano. La información es obtenida del padrón reducido de la SUNAT.
+  longDescription: XBuilder es una librería que te permite crear XMLs basados en UBL 2.1. No solo crea XMLs pero tambien te ayuda a realizar cálculos matemáticos.
   website: https://project-openubl.github.io/
   authors:
     - Carlos E. Feria Vila
