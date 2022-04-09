@@ -16,7 +16,6 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
@@ -29,7 +28,4 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class CreditNote extends Note {
-
-    private List<DocumentoTributarioRelacionado_CreditNote> otrosDocumentosTributariosRelacionados;
-}
+public class CreditNote extends Note {}

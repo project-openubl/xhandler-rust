@@ -16,16 +16,13 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-public class DocumentoTributarioRelacionado_Invoice extends BaseDocumentoTributarioRelacionado {
+@Builder
+public class DocumentoRelacionado {
 
     private String tipoDocumento;
+    private String serieNumero;
 }
