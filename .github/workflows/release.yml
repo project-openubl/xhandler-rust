@@ -80,19 +80,6 @@ jobs:
           ref: ${{ steps.head.outputs.content }}
           fetch-depth: 0
 
-      - name: JReleaser
-        uses: jreleaser/release-action@v2
-        env:
-          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JRELEASER_PROJECT_VERSION: ${{ steps.version.outputs.RELEASE_VERSION }}
-          JRELEASER_ZULIP_API_KEY: ${{ secrets.JRELEASER_ZULIP_API_KEY }}
-          JRELEASER_TWITTER_CONSUMER_KEY: ${{ secrets.JRELEASER_TWITTER_CONSUMER_KEY }}
-          JRELEASER_TWITTER_CONSUMER_SECRET: ${{ secrets.JRELEASER_TWITTER_CONSUMER_SECRET }}
-          JRELEASER_TWITTER_ACCESS_TOKEN: ${{ secrets.JRELEASER_TWITTER_ACCESS_TOKEN }}
-          JRELEASER_TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.JRELEASER_TWITTER_ACCESS_TOKEN_SECRET }}
-          JRELEASER_SLACK_TOKEN: ${{ secrets.JRELEASER_SLACK_TOKEN }}
-          JRELEASER_SLACK_WEBHOOK: ${{ secrets.JRELEASER_SLACK_WEBHOOK }}
-
       # OSSRH
       - uses: actions/setup-java@v3
         with:
@@ -105,7 +92,7 @@ jobs:
           gpg-private-key: ${{ secrets.gpg_private_key }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: OSSRH Release
-        run: mvn --batch-mode source:jar javadoc:jar deploy -Possrh -DskipTests
+        run: mvn --batch-mode source:jar javadoc:jar deploy -P ossrh,release -DskipTests
         env:
           MAVEN_USERNAME: ${{ secrets.nexus_username }}
           MAVEN_PASSWORD: ${{ secrets.nexus_password }}
@@ -120,10 +107,23 @@ jobs:
           gpg-private-key: ${{ secrets.gpg_private_key }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: GitHub Release
-        run: mvn --batch-mode source:jar javadoc:jar deploy -Pgithub -DskipTests
+        run: mvn --batch-mode source:jar javadoc:jar deploy -P github,release -DskipTests
         env:
           GITHUB_TOKEN: ${{ github.token }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
+
+      - name: JReleaser
+        uses: jreleaser/release-action@v2
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_PROJECT_VERSION: ${{ steps.version.outputs.RELEASE_VERSION }}
+          JRELEASER_ZULIP_API_KEY: ${{ secrets.JRELEASER_ZULIP_API_KEY }}
+          JRELEASER_TWITTER_CONSUMER_KEY: ${{ secrets.JRELEASER_TWITTER_CONSUMER_KEY }}
+          JRELEASER_TWITTER_CONSUMER_SECRET: ${{ secrets.JRELEASER_TWITTER_CONSUMER_SECRET }}
+          JRELEASER_TWITTER_ACCESS_TOKEN: ${{ secrets.JRELEASER_TWITTER_ACCESS_TOKEN }}
+          JRELEASER_TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.JRELEASER_TWITTER_ACCESS_TOKEN_SECRET }}
+          JRELEASER_SLACK_TOKEN: ${{ secrets.JRELEASER_SLACK_TOKEN }}
+          JRELEASER_SLACK_WEBHOOK: ${{ secrets.JRELEASER_SLACK_WEBHOOK }}
 
       - name: Set next version
         env:
