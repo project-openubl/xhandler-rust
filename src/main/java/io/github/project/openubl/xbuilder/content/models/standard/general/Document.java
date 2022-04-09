@@ -109,4 +109,10 @@ public abstract class Document {
      */
     @Singular
     private List<Guia> guias;
+
+    /**
+     * Otros documentos relacionados
+     */
+    @Singular
+    private List<DocumentoRelacionado> documentosRelacionados;
 }

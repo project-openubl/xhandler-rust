@@ -53,5 +53,5 @@ public class Invoice extends Document {
     private List<Anticipo> anticipos;
 
     @Singular
-    private List<DocumentoTributarioRelacionado_Invoice> otrosDocumentosTributariosRelacionados;
+    private List<DocumentoRelacionado> otrosDocumentosTributariosRelacionados;
 }
