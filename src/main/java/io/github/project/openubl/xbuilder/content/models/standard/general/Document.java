@@ -74,6 +74,11 @@ public abstract class Document {
     private LocalTime horaEmision;
 
     /**
+     * Orden de compra
+     */
+    private String ordenDeCompra;
+
+    /**
      * Cliente
      */
     private Cliente cliente;

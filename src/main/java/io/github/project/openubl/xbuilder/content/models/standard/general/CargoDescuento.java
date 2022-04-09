@@ -24,10 +24,9 @@ import lombok.experimental.SuperBuilder;
 
 @Data
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-public class CargoDescuento extends BaseDocumentoTributarioRelacionado {
+public class CargoDescuento {
 
+    private String serieNumero;
     private String tipo;
     private BigDecimal monto;
     private BigDecimal porcentaje;

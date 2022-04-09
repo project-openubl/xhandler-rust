@@ -33,6 +33,7 @@ public class Invoice extends Document {
 
     private LocalDate fechaVencimiento;
     private String tipoComprobante;
+    private String observaciones;
 
     /**
      * Catalog51
