@@ -63,6 +63,18 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: artifacts/HEAD
+      - name: Read versions
+        id: version
+        run: |
+          RELEASE_VERSION=`cat artifacts/RELEASE_VERSION`
+          PLAIN_VERSION=`cat artifacts/PLAIN_VERSION`
+          NEXT_VERSION=`cat artifacts/NEXT_VERSION`
+          echo "RELEASE_VERSION = $RELEASE_VERSION"
+          echo "PLAIN_VERSION   = $PLAIN_VERSION"
+          echo "NEXT_VERSION    = $NEXT_VERSION"
+          echo "::set-output name=RELEASE_VERSION::$RELEASE_VERSION"
+          echo "::set-output name=PLAIN_VERSION::$PLAIN_VERSION"
+          echo "::set-output name=NEXT_VERSION::$NEXT_VERSION"
       - uses: actions/checkout@v3
         with:
           ref: ${{ steps.head.outputs.content }}
