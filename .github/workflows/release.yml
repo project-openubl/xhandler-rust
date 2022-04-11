@@ -43,7 +43,7 @@ jobs:
           echo $PLAIN_VERSION > PLAIN_VERSION
           echo $NEXT_VERSION > NEXT_VERSION
       - name: Upload version files
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: artifacts
           path: |
