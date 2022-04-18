@@ -45,7 +45,7 @@
 
         <license.dir>${basedir}</license.dir>
 
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.24</lombok.version>
         <quarkus.version>2.8.0.Final</quarkus.version>
         <xmlunit.version>2.9.0</xmlunit.version>
     </properties>
