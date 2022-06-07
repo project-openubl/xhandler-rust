@@ -232,7 +232,7 @@
             <plugin>
                 <groupId>com.hubspot.maven.plugins</groupId>
                 <artifactId>prettier-maven-plugin</artifactId>
-                <version>0.17</version>
+                <version>0.18</version>
                 <configuration>
                     <prettierJavaVersion>1.6.1</prettierJavaVersion>
                     <printWidth>120</printWidth>
