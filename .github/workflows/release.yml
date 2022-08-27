@@ -49,7 +49,6 @@ jobs:
         with:
           distribution: "temurin"
           java-version: 11
-          gpg-private-key: ${{ secrets.gpg_private_key }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: GitHub Release
         run: mvn --batch-mode clean source:jar javadoc:jar deploy -P github,release -DskipTests
