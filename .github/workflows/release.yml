@@ -61,6 +61,7 @@ jobs:
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
+          JRELEASER_PRERELEASE_PATTERN: .*(?:Alpha|alpha|Beta|beta)[0-9]
           JRELEASER_ZULIP_API_KEY: ${{ secrets.JRELEASER_ZULIP_API_KEY }}
           JRELEASER_TWITTER_CONSUMER_KEY: ${{ secrets.JRELEASER_TWITTER_CONSUMER_KEY }}
           JRELEASER_TWITTER_CONSUMER_SECRET: ${{ secrets.JRELEASER_TWITTER_CONSUMER_SECRET }}
@@ -68,6 +69,8 @@ jobs:
           JRELEASER_TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.JRELEASER_TWITTER_ACCESS_TOKEN_SECRET }}
           JRELEASER_SLACK_TOKEN: ${{ secrets.JRELEASER_SLACK_TOKEN }}
           JRELEASER_SLACK_WEBHOOK: ${{ secrets.JRELEASER_SLACK_WEBHOOK }}
+          JRELEASER_MAIL_PASSWORD: ${{ secrets.JRELEASER_MAIL_PASSWORD }}
+          JRELEASER_ARTICLE_GITHUB_TOKEN: ${{ secrets.GITHUB_PAT }}
 
       - name: Set next version
         env:
