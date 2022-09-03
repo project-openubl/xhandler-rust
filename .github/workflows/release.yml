@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
       - name: Set release version
         env:
-          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_VERSION: ${{ github.event.inputs.version }}
         run: |
           mvn -B versions:set versions:commit -DnewVersion=$RELEASE_VERSION
           git config --global user.email "project.openubl.preview.bot@gmail.com"
@@ -59,8 +59,9 @@ jobs:
       - name: JReleaser
         uses: jreleaser/release-action@v2
         env:
-          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          JRELEASER_PROJECT_VERSION: ${{ github.event.inputs.version }}
+          JRELEASER_PRERELEASE_PATTERN: .*(?:Alpha|alpha|Beta|beta)[0-9]
           JRELEASER_ZULIP_API_KEY: ${{ secrets.JRELEASER_ZULIP_API_KEY }}
           JRELEASER_TWITTER_CONSUMER_KEY: ${{ secrets.JRELEASER_TWITTER_CONSUMER_KEY }}
           JRELEASER_TWITTER_CONSUMER_SECRET: ${{ secrets.JRELEASER_TWITTER_CONSUMER_SECRET }}
@@ -68,10 +69,12 @@ jobs:
           JRELEASER_TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.JRELEASER_TWITTER_ACCESS_TOKEN_SECRET }}
           JRELEASER_SLACK_TOKEN: ${{ secrets.JRELEASER_SLACK_TOKEN }}
           JRELEASER_SLACK_WEBHOOK: ${{ secrets.JRELEASER_SLACK_WEBHOOK }}
+          JRELEASER_MAIL_PASSWORD: ${{ secrets.JRELEASER_MAIL_PASSWORD }}
+          JRELEASER_ARTICLE_GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
       - name: Set next version
         env:
-          NEXT_VERSION: ${{ inputs.next }}
+          NEXT_VERSION: ${{ github.event.inputs.next }}
         run: |
           mvn -B versions:set versions:commit -DnewVersion=$NEXT_VERSION
           git config --global user.email "project.openubl.preview.bot@gmail.com"
