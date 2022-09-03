@@ -11,81 +11,27 @@ on:
         required: false
 
 jobs:
-  version:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@v3
-        with:
-          java-version: 11
-          distribution: temurin
-          cache: maven
       - name: Set release version
-        id: version
+        env:
+          RELEASE_VERSION: ${{ github.event.inputs.version }}
         run: |
-          RELEASE_VERSION=${{ github.event.inputs.version }}
-          NEXT_VERSION=${{ github.event.inputs.next }}
-          PLAIN_VERSION=`echo ${RELEASE_VERSION} | awk 'match($0, /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)/) { print substr($0, RSTART, RLENGTH); }'`
-          COMPUTED_NEXT_VERSION="${PLAIN_VERSION}-SNAPSHOT"
-          if [ -z $NEXT_VERSION ]
-          then
-            NEXT_VERSION=$COMPUTED_NEXT_VERSION
-          fi
           mvn -B versions:set versions:commit -DnewVersion=$RELEASE_VERSION
           git config --global user.email "project.openubl.preview.bot@gmail.com"
           git config --global user.name "Project-Openubl Bot"
           git commit --allow-empty -a -m "🏁 Releasing version $RELEASE_VERSION"
           git push origin HEAD:master
-          git rev-parse HEAD > HEAD
-          echo $RELEASE_VERSION > RELEASE_VERSION
-          echo $PLAIN_VERSION > PLAIN_VERSION
-          echo $NEXT_VERSION > NEXT_VERSION
-      - name: Upload version files
-        uses: actions/upload-artifact@v2
-        with:
-          name: artifacts
-          path: |
-            HEAD
-            *_VERSION
-
-  release:
-    needs: [ version ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: artifacts
-          path: artifacts
-      - name: Read HEAD ref
-        id: head
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: artifacts/HEAD
-      - name: Read versions
-        id: version
-        run: |
-          RELEASE_VERSION=`cat artifacts/RELEASE_VERSION`
-          PLAIN_VERSION=`cat artifacts/PLAIN_VERSION`
-          NEXT_VERSION=`cat artifacts/NEXT_VERSION`
-          echo "RELEASE_VERSION = $RELEASE_VERSION"
-          echo "PLAIN_VERSION   = $PLAIN_VERSION"
-          echo "NEXT_VERSION    = $NEXT_VERSION"
-          echo "::set-output name=RELEASE_VERSION::$RELEASE_VERSION"
-          echo "::set-output name=PLAIN_VERSION::$PLAIN_VERSION"
-          echo "::set-output name=NEXT_VERSION::$NEXT_VERSION"
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ steps.head.outputs.content }}
-          fetch-depth: 0
 
       # OSSRH
       - uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: 11
-          cache: maven
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
@@ -103,8 +49,6 @@ jobs:
         with:
           distribution: "temurin"
           java-version: 11
-          cache: maven
-          gpg-private-key: ${{ secrets.gpg_private_key }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: GitHub Release
         run: mvn --batch-mode clean source:jar javadoc:jar deploy -P github,release -DskipTests
@@ -115,8 +59,9 @@ jobs:
       - name: JReleaser
         uses: jreleaser/release-action@v2
         env:
-          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JRELEASER_PROJECT_VERSION: ${{ steps.version.outputs.RELEASE_VERSION }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          JRELEASER_PROJECT_VERSION: ${{ github.event.inputs.version }}
+          JRELEASER_PRERELEASE_PATTERN: .*(?:Alpha|alpha|Beta|beta)[0-9]
           JRELEASER_ZULIP_API_KEY: ${{ secrets.JRELEASER_ZULIP_API_KEY }}
           JRELEASER_TWITTER_CONSUMER_KEY: ${{ secrets.JRELEASER_TWITTER_CONSUMER_KEY }}
           JRELEASER_TWITTER_CONSUMER_SECRET: ${{ secrets.JRELEASER_TWITTER_CONSUMER_SECRET }}
@@ -125,11 +70,11 @@ jobs:
           JRELEASER_SLACK_TOKEN: ${{ secrets.JRELEASER_SLACK_TOKEN }}
           JRELEASER_SLACK_WEBHOOK: ${{ secrets.JRELEASER_SLACK_WEBHOOK }}
           JRELEASER_MAIL_PASSWORD: ${{ secrets.JRELEASER_MAIL_PASSWORD }}
-          JRELEASER_ARTICLE_: ${{ secrets.JRELEASER_ARTICLE_TOKEN }}
+          JRELEASER_ARTICLE_GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
       - name: Set next version
         env:
-          NEXT_VERSION: ${{ steps.version.outputs.NEXT_VERSION }}
+          NEXT_VERSION: ${{ github.event.inputs.next }}
         run: |
           mvn -B versions:set versions:commit -DnewVersion=$NEXT_VERSION
           git config --global user.email "project.openubl.preview.bot@gmail.com"
