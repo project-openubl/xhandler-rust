@@ -16,11 +16,15 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DocumentoRelacionado {
 
     private String tipoDocumento;

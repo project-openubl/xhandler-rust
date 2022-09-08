@@ -17,11 +17,15 @@
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Guia {
 
     private String serieNumero;
