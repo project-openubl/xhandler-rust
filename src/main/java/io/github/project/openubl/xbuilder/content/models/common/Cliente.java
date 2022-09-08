@@ -17,8 +17,10 @@
 package io.github.project.openubl.xbuilder.content.models.common;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Cliente de la operación.
@@ -27,6 +29,8 @@ import lombok.Data;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Cliente {
 
     /**

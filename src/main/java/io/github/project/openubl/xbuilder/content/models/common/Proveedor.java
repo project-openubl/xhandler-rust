@@ -16,8 +16,10 @@
  */
 package io.github.project.openubl.xbuilder.content.models.common;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Persona que vende o presta un servicio
@@ -26,6 +28,8 @@ import lombok.Data;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Proveedor {
 
     /**

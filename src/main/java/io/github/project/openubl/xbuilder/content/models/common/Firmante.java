@@ -16,8 +16,10 @@
  */
 package io.github.project.openubl.xbuilder.content.models.common;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Persona que firma electrónicamente el documento
@@ -26,6 +28,8 @@ import lombok.Data;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Firmante {
 
     /**
