@@ -45,14 +45,3 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.nexus_username }}
           MAVEN_PASSWORD: ${{ secrets.nexus_password }}
-
-      # GitHub
-      - uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: 11
-          cache: maven
-      - name: GitHub Snapshot
-        run: mvn --batch-mode source:jar javadoc:jar deploy -Pgithub -DskipTests
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
