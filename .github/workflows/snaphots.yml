@@ -1,4 +1,4 @@
-name: Snaphots
+name: Snapshots
 
 on:
   schedule:
@@ -24,7 +24,7 @@ jobs:
         run: mvn verify
 
   snapshots:
-    needs: [ linux-jvm-tests ]
+    needs: [ test ]
     name: Snapshots
     if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'project-openubl' }}
     runs-on: ubuntu-latest
