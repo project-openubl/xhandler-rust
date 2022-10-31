@@ -16,6 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.content.models.common;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,10 +36,12 @@ public class Firmante {
     /**
      * Número de RUC de la persona
      */
+    @Schema(required = true, minLength = 11, maxLength = 11, pattern = "[0-9]+")
     private String ruc;
 
     /**
      * Razón social de la persona
      */
+    @Schema(required = true)
     private String razonSocial;
 }

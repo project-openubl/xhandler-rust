@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +28,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Guia {
 
+    @Schema(required = true)
     private String serieNumero;
 
     /**
@@ -37,5 +38,6 @@ public class Guia {
      * <p>
      * Valores válidos: "09", "31"
      */
+    @Schema(description = "Catalogo 01", required = true)
     private String tipoDocumento;
 }

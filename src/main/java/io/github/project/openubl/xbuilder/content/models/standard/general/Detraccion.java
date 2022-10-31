@@ -16,6 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,13 +37,21 @@ public class Detraccion {
     /**
      * Catalog59
      **/
+    @Schema(description = "Catalogo 59", required = true)
     private String medioDePago;
+
+    @Schema(required = true)
     private String cuentaBancaria;
 
     /**
      * Catalog54
      **/
+    @Schema(description = "Catalog 54", required = true)
     private String tipoBienDetraido;
+
+    @Schema(required = true, minimum = "0", maximum = "1", exclusiveMinimum = true)
     private BigDecimal porcentaje;
+
+    @Schema(required = true, minimum = "0", exclusiveMinimum = true)
     private BigDecimal monto;
 }

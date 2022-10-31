@@ -16,6 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -30,9 +31,13 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class FormaDePago {
 
+    @Schema(description = "CREDITO o CONTADO", required = true)
     private String tipo;
+
+    @Schema(description = "Monto total de pago", required = true, minimum = "0")
     private BigDecimal total;
 
+    @Schema(description = "Cuotas de pago")
     @Singular
     private List<CuotaDePago> cuotas;
 }

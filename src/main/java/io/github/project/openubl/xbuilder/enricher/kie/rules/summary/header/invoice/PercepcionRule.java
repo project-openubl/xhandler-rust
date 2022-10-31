@@ -20,7 +20,6 @@ import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helper
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenInvoice;
 
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
-import io.github.project.openubl.xbuilder.content.models.standard.general.Percepcion;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import java.math.BigDecimal;

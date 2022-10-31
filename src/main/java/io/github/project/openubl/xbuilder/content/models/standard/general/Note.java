@@ -16,6 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -39,12 +40,14 @@ public abstract class Note extends Document {
      * <p>
      * Nota de Débito: Catalogo 10.
      */
+    @Schema(description = "Si NotaCredito Catalog 09. Si NotaDebito Catalog 10")
     private String tipoNota;
 
     /**
      * Serie y número del comprobante al que le aplica la nota de crédito/débito.
      * Ejemplo: F001-1
      */
+    @Schema(required = true)
     private String comprobanteAfectadoSerieNumero;
 
     /**
@@ -52,11 +55,13 @@ public abstract class Note extends Document {
      * <p>
      * Catalogo 01.
      */
+    @Schema(description = "Catalog 01")
     private String comprobanteAfectadoTipo;
 
     /**
      * Texto sustentatorio para la emision de la nota
      */
+    @Schema(required = true)
     private String sustentoDescripcion;
 
     /**

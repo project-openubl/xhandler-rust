@@ -16,6 +16,8 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,20 +44,25 @@ public class Anticipo {
      * <p>
      * Valores válidos: "04", "05", "06"
      */
+    @Schema(example = "04", description = "Catalog 53", required = true, allowableValues = { "04", "05", "06" })
     private String tipo;
 
     /**
      * Serie y número de comprobante del anticipo, por ejemplo "F123-4"
      */
+    @Schema(example = "F123-4", required = true)
     private String comprobanteSerieNumero;
 
     /**
+     * Catalog 12
      * Código de tipo de documento del {@link #comprobanteSerieNumero}.
      */
+    @Schema(description = "Catalog 12. Tipo de documento del comprobante de anticipo")
     private String comprobanteTipo;
 
     /**
      * Monto prepagado o anticipado
      */
+    @Schema(example = "10", required = true, minimum = "0", exclusiveMinimum = true)
     private BigDecimal monto;
 }
