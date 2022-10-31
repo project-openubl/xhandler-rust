@@ -21,7 +21,7 @@ jobs:
         env:
           RELEASE_VERSION: ${{ github.event.inputs.version }}
         run: |
-          mvn -B versions:set versions:commit -DnewVersion=$RELEASE_VERSION
+          mvn -B versions:set versions:commit -DnewVersion=$RELEASE_VERSION -Pprepare-release
           git config --global user.email "project.openubl.preview.bot@gmail.com"
           git config --global user.name "Project-Openubl Bot"
           git commit --allow-empty -a -m "🏁 Releasing version $RELEASE_VERSION"
@@ -76,7 +76,7 @@ jobs:
         env:
           NEXT_VERSION: ${{ github.event.inputs.next }}
         run: |
-          mvn -B versions:set versions:commit -DnewVersion=$NEXT_VERSION
+          mvn -B versions:set versions:commit -DnewVersion=$NEXT_VERSION -Pprepare-release
           git config --global user.email "project.openubl.preview.bot@gmail.com"
           git config --global user.name "Project-Openubl Bot"
           git commit -a -m "⬆️  Next version $NEXT_VERSION"

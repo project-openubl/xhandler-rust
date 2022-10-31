@@ -22,21 +22,22 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.project-openubl</groupId>
-    <artifactId>xbuilder</artifactId>
+    <artifactId>xbuilder-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
 
-    <name>XML Builder :: Lib</name>
-    <description>XML Builder Library</description>
-    <packaging>jar</packaging>
+    <name>XBuilder - Parent</name>
+    <description>XBuilder parent</description>
+    <packaging>pom</packaging>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <compiler-plugin.version>3.10.1</compiler-plugin.version>
+        <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
@@ -48,6 +49,7 @@
         <lombok.version>1.18.24</lombok.version>
         <quarkus.version>2.13.3.Final</quarkus.version>
         <xmlunit.version>2.9.0</xmlunit.version>
+        <xsender.version>3.0.3.Final</xsender.version>
     </properties>
 
     <url>https://project-openubl.github.io/</url>
@@ -79,55 +81,20 @@
         <developerConnection>scm:git:git@github.com:project-openubl/xbuilder.git</developerConnection>
     </scm>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus.qute</groupId>
-            <artifactId>qute-core</artifactId>
-            <version>${quarkus.version}</version>
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.github.project-openubl</groupId>
+                <artifactId>xbuilder</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.13.3</version>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>2.2.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.xmlunit</groupId>
-            <artifactId>xmlunit-core</artifactId>
-            <version>${xmlunit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.xmlunit</groupId>
-            <artifactId>xmlunit-matchers</artifactId>
-            <version>${xmlunit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.project-openubl</groupId>
-            <artifactId>xsender</artifactId>
-            <version>3.0.3.Final</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>core</module>
+        <module>quarkus-extension</module>
+    </modules>
 
     <build>
         <pluginManagement>
@@ -193,7 +160,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
+                <version>${compiler-plugin.version}</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
@@ -202,7 +169,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
+                <version>${surefire-plugin.version}</version>
                 <inherited>true</inherited>
                 <configuration>
                     <excludes>
