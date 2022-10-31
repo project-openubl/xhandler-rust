@@ -16,6 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
@@ -37,10 +38,12 @@ public class CuotaDePago {
     /**
      * Importe de la cuota
      */
+    @Schema(required = true, minimum = "0", exclusiveMinimum = true)
     private BigDecimal importe;
 
     /**
      * Fecha de pago de la cuota
      */
+    @Schema(description = "Ejemplo 2022-12-25", required = true, pattern = "^\\d{4}-\\d{2}-\\d{2}$")
     private LocalDate fechaPago;
 }

@@ -16,8 +16,8 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -31,5 +31,6 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class TotalImporteInvoice extends TotalImporte {
 
+    @Schema(minimum = "0", required = true)
     private BigDecimal anticipos;
 }

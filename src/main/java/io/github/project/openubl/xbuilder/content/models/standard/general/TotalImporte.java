@@ -16,8 +16,8 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -27,7 +27,12 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public abstract class TotalImporte {
 
+    @Schema(minimum = "0", required = true)
     private BigDecimal importe;
+
+    @Schema(minimum = "0", required = true)
     private BigDecimal importeSinImpuestos;
+
+    @Schema(minimum = "0", required = true)
     private BigDecimal importeConImpuestos;
 }

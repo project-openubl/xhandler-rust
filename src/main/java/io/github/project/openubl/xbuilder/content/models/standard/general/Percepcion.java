@@ -16,6 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +32,9 @@ public class Percepcion {
     /**
      * Catalog53
      */
+    @Schema(description = "Catalog 53", required = true)
     private String tipo;
+
     private BigDecimal montoBase; // importeSinImpuestos
     private BigDecimal porcentaje; // Establecido por el "tipo"
     private BigDecimal monto; // montoBase * porcentaje

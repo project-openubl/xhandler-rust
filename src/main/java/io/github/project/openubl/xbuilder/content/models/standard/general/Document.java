@@ -19,6 +19,8 @@ package io.github.project.openubl.xbuilder.content.models.standard.general;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -43,36 +45,43 @@ public abstract class Document {
     /**
      * Moneda en la que se emite el comprobante
      */
+    @Schema(minLength = 3, maxLength = 3)
     private String moneda;
 
     /**
      * Tasa del IGV. Ejemplo: 0.18
      */
+    @Schema(description = "Ejemplo: 0.18", minimum = "0", maximum = "1")
     private BigDecimal tasaIgv;
 
     /**
      * Tasa del IBC. Ejemplo: 0.2
      */
+    @Schema(description = "Ejemplo: 0.2", minimum = "0")
     private BigDecimal tasaIcb;
 
     /**
      * Serie del comprobante
      */
+    @Schema(required = true, minLength = 4, pattern = "^[F|f|B|b].*$")
     private String serie;
 
     /**
      * Número del comprobante
      */
+    @Schema(required = true, minimum = "1", maximum = "99999999")
     private Integer numero;
 
     /**
-     * Fecha de emisión del comprobante
+     * Fecha de emisión del comprobante. Ejemplo 2022-12-25 (YYYY-MM-SS)
      */
+    @Schema(description = "Format: \"YYYY-MM-SS\". Ejemplo: 2022-12-25", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
     private LocalDate fechaEmision;
 
     /**
-     * Hora de emisión del comprobante
+     * Hora de emisión del comprobante. Ejemplo 12:00:00 (HH:MM:SS)
      */
+    @Schema(description = "Format: \"HH:MM:SS\". Ejemplo 12:00:00", pattern = "^\\d{2}:\\d{2}:\\d{2}$")
     private LocalTime horaEmision;
 
     /**
@@ -83,16 +92,21 @@ public abstract class Document {
     /**
      * Cliente
      */
+    @Schema(required = true)
     private Cliente cliente;
 
     /**
      * Proveedor del bien o servicio
      */
+    @Schema(required = true)
     private Proveedor proveedor;
 
     /**
-     * Persona que firma electrónicamente el comprobante
+     * Persona que firma electrónicamente el comprobante. Si es NULL los datos del proveedor son usados.
      */
+    @Schema(
+        description = "Persona que firma electrónicamente el comprobante. Si NULL los datos del proveedor son usados."
+    )
     private Firmante firmante;
 
     /**
@@ -104,17 +118,20 @@ public abstract class Document {
      * Detalle del comprobante
      */
     @Singular
+    @ArraySchema(minItems = 1, schema = @Schema(required = true))
     private List<DocumentoDetalle> detalles;
 
     /**
      * Guias de remision relacionadas
      */
     @Singular
+    @ArraySchema
     private List<Guia> guias;
 
     /**
      * Otros documentos relacionados
      */
     @Singular
+    @ArraySchema
     private List<DocumentoRelacionado> documentosRelacionados;
 }

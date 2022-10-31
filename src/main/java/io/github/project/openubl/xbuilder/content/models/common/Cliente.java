@@ -17,6 +17,7 @@
 package io.github.project.openubl.xbuilder.content.models.common;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,11 +41,13 @@ public class Cliente {
      * <p>
      * Valores válidos: {@link Catalog6}
      */
+    @Schema(description = "Catalogo 06", required = true)
     private String tipoDocumentoIdentidad;
 
     /**
      * Número de documento de identidad del cliente.
      */
+    @Schema(required = true)
     private String numeroDocumentoIdentidad;
 
     /**
@@ -52,6 +55,7 @@ public class Cliente {
      * es el nombre y apellidos de la persona; si el cliente es una persona jurídica
      * entonces es la razón social de la empresa.
      */
+    @Schema(required = true)
     private String nombre;
 
     /**

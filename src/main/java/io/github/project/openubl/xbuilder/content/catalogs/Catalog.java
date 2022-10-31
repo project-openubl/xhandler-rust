@@ -25,9 +25,9 @@ public interface Catalog {
         new IllegalStateException("No se pudo convertir el valor del catálogo");
 
     /**
-     * @param <T> Class you want to search for
+     * @param <T>      Class you want to search for
      * @param enumType class you want to search for
-     * @param code the code or Enum value
+     * @param code     the code or Enum value
      * @return an instance of Catalog which is equal to ValueOf or contains the same code
      */
     static <T extends Catalog> Optional<T> valueOfCode(Class<T> enumType, String code) {
