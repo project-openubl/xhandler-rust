@@ -10,7 +10,7 @@ env:
   CI: true
 
 jobs:
-  linux-jvm-tests:
+  test:
     name: JDK JVM Tests
     runs-on: ubuntu-latest
     steps:
@@ -25,7 +25,7 @@ jobs:
 
   snapshots:
     needs: [ linux-jvm-tests ]
-    name: Snaphots
+    name: Snapshots
     if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'project-openubl' }}
     runs-on: ubuntu-latest
     steps:
