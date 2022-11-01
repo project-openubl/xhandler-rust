@@ -27,18 +27,6 @@ jobs:
           git commit --signoff --allow-empty -a -m "🏁 Releasing version $RELEASE_VERSION"
           git push origin HEAD:master
 
-      # GitHub
-      - uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: 11
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
-      - name: GitHub Release
-        run: mvn --batch-mode clean source:jar javadoc:jar deploy -P github,release -DskipTests
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
-
       # OSSRH
       - uses: actions/setup-java@v3
         with:
@@ -55,6 +43,18 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.nexus_username }}
           MAVEN_PASSWORD: ${{ secrets.nexus_password }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
+
+#      # GitHub
+#      - uses: actions/setup-java@v3
+#        with:
+#          distribution: "temurin"
+#          java-version: 11
+#          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+#      - name: GitHub Release
+#        run: mvn --batch-mode clean source:jar javadoc:jar deploy -P github,release -DskipTests
+#        env:
+#          GITHUB_TOKEN: ${{ github.token }}
+#          MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
 
       - name: JReleaser
         uses: jreleaser/release-action@v2
