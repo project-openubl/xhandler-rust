@@ -24,7 +24,7 @@ jobs:
           mvn -B versions:set versions:commit -DnewVersion=$RELEASE_VERSION -Pprepare-release
           git config --global user.email "project.openubl.preview.bot@gmail.com"
           git config --global user.name "Project-Openubl Bot"
-          git commit --allow-empty -a -m "🏁 Releasing version $RELEASE_VERSION"
+          git commit --signoff --allow-empty -a -m "🏁 Releasing version $RELEASE_VERSION"
           git push origin HEAD:master
 
       # OSSRH
@@ -79,5 +79,5 @@ jobs:
           mvn -B versions:set versions:commit -DnewVersion=$NEXT_VERSION -Pprepare-release
           git config --global user.email "project.openubl.preview.bot@gmail.com"
           git config --global user.name "Project-Openubl Bot"
-          git commit -a -m "⬆️  Next version $NEXT_VERSION"
+          git commit --signoff -a -m "⬆️  Next version $NEXT_VERSION"
           git push origin HEAD:master
