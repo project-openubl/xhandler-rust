@@ -30,8 +30,7 @@ import java.util.Enumeration;
 
 public class CertificateDetailsFactory {
 
-    public static CertificateDetails create(InputStream is, String jksPassword)
-        throws KeyStoreException, UnrecoverableEntryException, NoSuchAlgorithmException, IOException, CertificateException {
+    public static CertificateDetails create(InputStream is, String jksPassword) throws KeyStoreException, UnrecoverableEntryException, NoSuchAlgorithmException, IOException, CertificateException {
         CertificateDetails certDetails = null;
 
         boolean isAliasWithPrivateKey = false;
@@ -54,8 +53,8 @@ public class CertificateDetailsFactory {
 
         if (isAliasWithPrivateKey) {
             KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(
-                alias,
-                new KeyStore.PasswordProtection(jksPassword.toCharArray())
+                    alias,
+                    new KeyStore.PasswordProtection(jksPassword.toCharArray())
             );
             PrivateKey myPrivateKey = pkEntry.getPrivateKey();
 

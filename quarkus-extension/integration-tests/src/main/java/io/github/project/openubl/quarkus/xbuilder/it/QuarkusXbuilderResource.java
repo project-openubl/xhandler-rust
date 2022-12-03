@@ -30,6 +30,7 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Docume
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.quarkus.qute.Template;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.enterprise.context.ApplicationScoped;
@@ -82,80 +83,80 @@ public class QuarkusXbuilderResource {
 
     private Invoice getBaseInvoice() {
         return Invoice
-            .builder()
-            .serie("F001")
-            .numero(1)
-            .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-            .cliente(
-                Cliente
-                    .builder()
-                    .nombre("Carlos Feria")
-                    .numeroDocumentoIdentidad("12121212121")
-                    .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                    .build()
-            )
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .descripcion("Item1")
-                    .cantidad(new BigDecimal("10"))
-                    .precio(new BigDecimal("100"))
-                    .build()
-            )
-            .build();
+                .builder()
+                .serie("F001")
+                .numero(1)
+                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
+                .cliente(
+                        Cliente
+                                .builder()
+                                .nombre("Carlos Feria")
+                                .numeroDocumentoIdentidad("12121212121")
+                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                                .build()
+                )
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .descripcion("Item1")
+                                .cantidad(new BigDecimal("10"))
+                                .precio(new BigDecimal("100"))
+                                .build()
+                )
+                .build();
     }
 
     private CreditNote getBaseCreditNote() {
         return CreditNote
-            .builder()
-            .serie("FC01")
-            .numero(1)
-            .comprobanteAfectadoSerieNumero("F001-1")
-            .sustentoDescripcion("mi sustento")
-            .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-            .cliente(
-                Cliente
-                    .builder()
-                    .nombre("Carlos Feria")
-                    .numeroDocumentoIdentidad("12121212121")
-                    .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                    .build()
-            )
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .descripcion("Item1")
-                    .cantidad(new BigDecimal("10"))
-                    .precio(new BigDecimal("100"))
-                    .build()
-            )
-            .build();
+                .builder()
+                .serie("FC01")
+                .numero(1)
+                .comprobanteAfectadoSerieNumero("F001-1")
+                .sustentoDescripcion("mi sustento")
+                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
+                .cliente(
+                        Cliente
+                                .builder()
+                                .nombre("Carlos Feria")
+                                .numeroDocumentoIdentidad("12121212121")
+                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                                .build()
+                )
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .descripcion("Item1")
+                                .cantidad(new BigDecimal("10"))
+                                .precio(new BigDecimal("100"))
+                                .build()
+                )
+                .build();
     }
 
     private DebitNote getBaseDebitNote() {
         return DebitNote
-            .builder()
-            .serie("FD01")
-            .numero(1)
-            .comprobanteAfectadoSerieNumero("F001-1")
-            .sustentoDescripcion("mi sustento")
-            .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-            .cliente(
-                Cliente
-                    .builder()
-                    .nombre("Carlos Feria")
-                    .numeroDocumentoIdentidad("12121212121")
-                    .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                    .build()
-            )
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .descripcion("Item1")
-                    .cantidad(new BigDecimal("10"))
-                    .precio(new BigDecimal("100"))
-                    .build()
-            )
-            .build();
+                .builder()
+                .serie("FD01")
+                .numero(1)
+                .comprobanteAfectadoSerieNumero("F001-1")
+                .sustentoDescripcion("mi sustento")
+                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
+                .cliente(
+                        Cliente
+                                .builder()
+                                .nombre("Carlos Feria")
+                                .numeroDocumentoIdentidad("12121212121")
+                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                                .build()
+                )
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .descripcion("Item1")
+                                .cantidad(new BigDecimal("10"))
+                                .precio(new BigDecimal("100"))
+                                .build()
+                )
+                .build();
     }
 }

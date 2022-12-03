@@ -17,13 +17,14 @@
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.math.BigDecimal;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @SuperBuilder

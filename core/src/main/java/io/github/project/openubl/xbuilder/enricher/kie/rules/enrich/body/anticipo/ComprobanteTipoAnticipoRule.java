@@ -16,17 +16,18 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.anticipo;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isAnticipo;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenAnticipo;
-
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog12;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
 import io.github.project.openubl.xbuilder.content.models.utils.UBLRegex;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+
 import java.util.Optional;
 import java.util.function.Consumer;
+
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isAnticipo;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenAnticipo;
 
 /**
  * Rule for: {@link Anticipo#comprobanteTipo}

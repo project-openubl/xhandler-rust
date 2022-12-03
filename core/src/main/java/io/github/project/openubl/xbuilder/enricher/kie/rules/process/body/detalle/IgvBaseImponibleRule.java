@@ -16,14 +16,15 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
-
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+
 import java.math.BigDecimal;
 import java.util.function.Consumer;
+
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
 
 @RulePhase(type = RulePhase.PhaseType.PROCESS)
 public class IgvBaseImponibleRule extends AbstractBodyRule {
@@ -31,16 +32,16 @@ public class IgvBaseImponibleRule extends AbstractBodyRule {
     @Override
     public boolean test(Object object) {
         return (
-            isBaseDocumentoDetalle.test(object) &&
-            whenBaseDocumentoDetalle
-                .apply(object)
-                .map(documento ->
-                    documento.getIgvBaseImponible() == null &&
-                    documento.getCantidad() != null &&
-                    documento.getPrecio() != null &&
-                    documento.getPrecioReferencia() != null
-                )
-                .orElse(false)
+                isBaseDocumentoDetalle.test(object) &&
+                        whenBaseDocumentoDetalle
+                                .apply(object)
+                                .map(documento ->
+                                        documento.getIgvBaseImponible() == null &&
+                                                documento.getCantidad() != null &&
+                                                documento.getPrecio() != null &&
+                                                documento.getPrecioReferencia() != null
+                                )
+                                .orElse(false)
         );
     }
 
@@ -48,8 +49,8 @@ public class IgvBaseImponibleRule extends AbstractBodyRule {
     public void modify(Object object) {
         Consumer<DocumentoDetalle> consumer = detalle -> {
             BigDecimal baseImponible = !detalle.isPrecioConImpuestos()
-                ? detalle.getCantidad().multiply(detalle.getPrecio())
-                : detalle.getCantidad().multiply(detalle.getPrecioReferencia());
+                    ? detalle.getCantidad().multiply(detalle.getPrecio())
+                    : detalle.getCantidad().multiply(detalle.getPrecioReferencia());
             detalle.setIgvBaseImponible(baseImponible);
         };
         whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);

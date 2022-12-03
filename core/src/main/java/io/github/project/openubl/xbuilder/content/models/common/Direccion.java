@@ -37,10 +37,10 @@ public class Direccion {
      * Código de 6 dígitos que corresponden al Departamento, Provincia, y Distrito
      */
     @Schema(
-        description = "Código de 6 dígitos que corresponden al Departamento, Provincia, y Distrito",
-        minLength = 6,
-        maxLength = 6,
-        pattern = "[0-9]+"
+            description = "Código de 6 dígitos que corresponden al Departamento, Provincia, y Distrito",
+            minLength = 6,
+            maxLength = 6,
+            pattern = "[0-9]+"
     )
     private String ubigeo;
 
@@ -51,10 +51,10 @@ public class Direccion {
      * de la venta, informar “0000”.
      */
     @Schema(
-        description = "Código de cuatro dígitos asignado por SUNAT, que identifica al establecimiento anexo. Dicho código se genera al momento la respectiva comunicación del establecimiento. Tratándose del domicilio fiscal y en el caso de no poder determinar el lugar de la venta, informar \"0000\"",
-        minLength = 4,
-        maxLength = 4,
-        pattern = "[0-9]+"
+            description = "Código de cuatro dígitos asignado por SUNAT, que identifica al establecimiento anexo. Dicho código se genera al momento la respectiva comunicación del establecimiento. Tratándose del domicilio fiscal y en el caso de no poder determinar el lugar de la venta, informar \"0000\"",
+            minLength = 4,
+            maxLength = 4,
+            pattern = "[0-9]+"
     )
     private String codigoLocal;
 
@@ -92,9 +92,9 @@ public class Direccion {
      * Código de 2 dígitos que corresponde al país a la que pertenece la dirección. Ejemplo: PE
      */
     @Schema(
-        description = "Código de 2 dígitos que corresponde al país a la que pertenece la dirección. Ejemplo: PE",
-        minLength = 2,
-        maxLength = 2
+            description = "Código de 2 dígitos que corresponde al país a la que pertenece la dirección. Ejemplo: PE",
+            minLength = 2,
+            maxLength = 2
     )
     private String codigoPais;
 }

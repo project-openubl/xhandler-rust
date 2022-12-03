@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 public interface Catalog {
     Supplier<? extends RuntimeException> invalidCatalogValue = (Supplier<RuntimeException>) () ->
-        new IllegalStateException("No se pudo convertir el valor del catálogo");
+            new IllegalStateException("No se pudo convertir el valor del catálogo");
 
     /**
      * @param <T>      Class you want to search for
@@ -32,9 +32,9 @@ public interface Catalog {
      */
     static <T extends Catalog> Optional<T> valueOfCode(Class<T> enumType, String code) {
         return Stream
-            .of(enumType.getEnumConstants())
-            .filter(p -> p.toString().equalsIgnoreCase(code) || p.getCode().equals(code))
-            .findFirst();
+                .of(enumType.getEnumConstants())
+                .filter(p -> p.toString().equalsIgnoreCase(code) || p.getCode().equals(code))
+                .findFirst();
     }
 
     String getCode();

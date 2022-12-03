@@ -16,13 +16,13 @@
  */
 package e2e.enricher.enrich;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import e2e.AbstractTest;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1_Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InvoiceTest extends AbstractTest {
 
@@ -30,10 +30,10 @@ public class InvoiceTest extends AbstractTest {
     public void testEnrichTipoComprobante() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .serie("F001-1")
-            .tipoComprobante(Catalog1_Invoice.BOLETA.getCode()) // This should be overwritten
-            .build();
+                .builder()
+                .serie("F001-1")
+                .tipoComprobante(Catalog1_Invoice.BOLETA.getCode()) // This should be overwritten
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);

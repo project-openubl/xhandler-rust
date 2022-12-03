@@ -16,13 +16,13 @@
  */
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 /**
  * Anticipo realizado.
@@ -44,7 +44,7 @@ public class Anticipo {
      * <p>
      * Valores válidos: "04", "05", "06"
      */
-    @Schema(example = "04", description = "Catalog 53", required = true, allowableValues = { "04", "05", "06" })
+    @Schema(example = "04", description = "Catalog 53", required = true, allowableValues = {"04", "05", "06"})
     private String tipo;
 
     /**

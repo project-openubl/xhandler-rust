@@ -16,9 +16,6 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.invoice;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isInvoice;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenInvoice;
-
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo;
@@ -30,10 +27,14 @@ import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import io.github.project.openubl.xbuilder.enricher.kie.rules.utils.DetalleUtils;
 import io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Impuesto;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isInvoice;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenInvoice;
 
 @RulePhase(type = RulePhase.PhaseType.SUMMARY)
 public class TotalImpuestosRule extends AbstractHeaderRule {
@@ -41,11 +42,11 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
     @Override
     public boolean test(Object object) {
         return (
-            isInvoice.test(object) &&
-            whenInvoice
-                .apply(object)
-                .map(documento -> documento.getTotalImpuestos() == null && documento.getDetalles() != null)
-                .orElse(false)
+                isInvoice.test(object) &&
+                        whenInvoice
+                                .apply(object)
+                                .map(documento -> documento.getTotalImpuestos() == null && documento.getDetalles() != null)
+                                .orElse(false)
         );
     }
 
@@ -59,51 +60,51 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
             Impuesto gratuito = DetalleUtils.calImpuestoByTipo(invoice.getDetalles(), Catalog5.GRATUITO);
 
             BigDecimal icb = invoice
-                .getDetalles()
-                .stream()
-                .map(DocumentoDetalle::getIcb)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    .getDetalles()
+                    .stream()
+                    .map(DocumentoDetalle::getIcb)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             BigDecimal totalAnticiposGravados = invoice
-                .getAnticipos()
-                .stream()
-                .filter(f -> {
-                    Optional<Catalog53_Anticipo> catalog53_anticipo = Catalog.valueOfCode(
-                        Catalog53_Anticipo.class,
-                        f.getTipo()
-                    );
-                    return (
-                        catalog53_anticipo.isPresent() &&
-                        catalog53_anticipo
-                            .get()
-                            .equals(
-                                Catalog53_Anticipo.DESCUENTO_GLOBAL_POR_ANTICIPOS_GRAVADOS_AFECTA_BASE_IMPONIBLE_IGV_IVAP
-                            )
-                    );
-                })
-                .map(Anticipo::getMonto)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    .getAnticipos()
+                    .stream()
+                    .filter(f -> {
+                        Optional<Catalog53_Anticipo> catalog53_anticipo = Catalog.valueOfCode(
+                                Catalog53_Anticipo.class,
+                                f.getTipo()
+                        );
+                        return (
+                                catalog53_anticipo.isPresent() &&
+                                        catalog53_anticipo
+                                                .get()
+                                                .equals(
+                                                        Catalog53_Anticipo.DESCUENTO_GLOBAL_POR_ANTICIPOS_GRAVADOS_AFECTA_BASE_IMPONIBLE_IGV_IVAP
+                                                )
+                        );
+                    })
+                    .map(Anticipo::getMonto)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal gravadoBaseImponible = gravado.getBaseImponible().subtract(totalAnticiposGravados);
             BigDecimal gravadoImporte = gravadoBaseImponible.multiply(invoice.getTasaIgv());
 
             BigDecimal total = ivap.getImporte().add(gravadoImporte).add(icb);
 
             TotalImpuestos totalImpuestos = TotalImpuestos
-                .builder()
-                .ivapImporte(ivap.getImporte())
-                .ivapBaseImponible(ivap.getBaseImponible())
-                .gravadoImporte(gravadoImporte)
-                .gravadoBaseImponible(gravadoBaseImponible)
-                .inafectoImporte(inafecto.getImporte())
-                .inafectoBaseImponible(inafecto.getBaseImponible())
-                .exoneradoImporte(exonerado.getImporte())
-                .exoneradoBaseImponible(exonerado.getBaseImponible())
-                .gratuitoImporte(gratuito.getImporte())
-                .gratuitoBaseImponible(gratuito.getBaseImponible())
-                .icbImporte(icb)
-                .total(total)
-                .build();
+                    .builder()
+                    .ivapImporte(ivap.getImporte())
+                    .ivapBaseImponible(ivap.getBaseImponible())
+                    .gravadoImporte(gravadoImporte)
+                    .gravadoBaseImponible(gravadoBaseImponible)
+                    .inafectoImporte(inafecto.getImporte())
+                    .inafectoBaseImponible(inafecto.getBaseImponible())
+                    .exoneradoImporte(exonerado.getImporte())
+                    .exoneradoBaseImponible(exonerado.getBaseImponible())
+                    .gratuitoImporte(gratuito.getImporte())
+                    .gratuitoBaseImponible(gratuito.getBaseImponible())
+                    .icbImporte(icb)
+                    .total(total)
+                    .build();
 
             invoice.setTotalImpuestos(totalImpuestos);
         };

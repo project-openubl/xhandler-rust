@@ -16,18 +16,19 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.invoice;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isInvoice;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenInvoice;
-
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteInvoice;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import io.github.project.openubl.xbuilder.enricher.kie.rules.utils.DetalleUtils;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.function.Consumer;
+
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isInvoice;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenInvoice;
 
 @RulePhase(type = RulePhase.PhaseType.SUMMARY)
 public class TotalImporteRule extends AbstractHeaderRule {
@@ -35,11 +36,11 @@ public class TotalImporteRule extends AbstractHeaderRule {
     @Override
     public boolean test(Object object) {
         return (
-            isInvoice.test(object) &&
-            whenInvoice
-                .apply(object)
-                .map(invoice -> invoice.getTotalImporte() == null && invoice.getDetalles() != null)
-                .orElse(false)
+                isInvoice.test(object) &&
+                        whenInvoice
+                                .apply(object)
+                                .map(invoice -> invoice.getTotalImporte() == null && invoice.getDetalles() != null)
+                                .orElse(false)
         );
     }
 
@@ -52,22 +53,22 @@ public class TotalImporteRule extends AbstractHeaderRule {
             BigDecimal importeConImpuestos = importeSinImpuestos.add(totalImpuestos);
 
             BigDecimal anticipos = invoice
-                .getAnticipos()
-                .stream()
-                .map(Anticipo::getMonto)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    .getAnticipos()
+                    .stream()
+                    .map(Anticipo::getMonto)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             BigDecimal importeTotal = importeConImpuestos.subtract(anticipos);
 
             invoice.setTotalImporte(
-                TotalImporteInvoice
-                    .builder()
-                    .importeSinImpuestos(importeSinImpuestos)
-                    .importeConImpuestos(importeConImpuestos)
-                    .anticipos(anticipos)
-                    .importe(importeTotal)
-                    .build()
+                    TotalImporteInvoice
+                            .builder()
+                            .importeSinImpuestos(importeSinImpuestos)
+                            .importeConImpuestos(importeConImpuestos)
+                            .anticipos(anticipos)
+                            .importe(importeTotal)
+                            .build()
             );
         };
         whenInvoice.apply(object).ifPresent(consumer);

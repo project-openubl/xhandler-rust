@@ -19,4 +19,5 @@ package io.github.project.openubl.xbuilder.content.models.standard.guia;
 import lombok.Data;
 
 @Data
-public class info {}
+public class info {
+}

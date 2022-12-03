@@ -16,16 +16,17 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isInvoice;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenInvoice;
-
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog52;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isInvoice;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenInvoice;
 
 /**
  * Rule for {@link Invoice#direccionEntrega}
@@ -36,8 +37,8 @@ public class DireccionDeEntregaRule extends AbstractHeaderRule {
     @Override
     public boolean test(Object object) {
         return (
-            isInvoice.test(object) &&
-            whenInvoice.apply(object).map(documento -> documento.getDireccionEntrega() != null).orElse(false)
+                isInvoice.test(object) &&
+                        whenInvoice.apply(object).map(documento -> documento.getDireccionEntrega() != null).orElse(false)
         );
     }
 
