@@ -27,4 +27,5 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class TotalImporteNote extends TotalImporte {}
+public class TotalImporteNote extends TotalImporte {
+}

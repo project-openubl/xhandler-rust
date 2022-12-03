@@ -16,15 +16,6 @@
  */
 package io.github.project.openubl.xbuilder.signature;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.validation.Schema;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -33,6 +24,16 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
 
 public class XmlSignatureHelper {
 
@@ -45,7 +46,7 @@ public class XmlSignatureHelper {
     }
 
     public static DocumentBuilder newDocumentBuilder(Boolean disallowDoctypeDecl, Schema schema)
-        throws ParserConfigurationException {
+            throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         dbf.setValidating(false);
@@ -64,10 +65,10 @@ public class XmlSignatureHelper {
     }
 
     public static void transformNonTextNodeToOutputStream(
-        Node node,
-        OutputStream os,
-        boolean omitXmlDeclaration,
-        String encoding
+            Node node,
+            OutputStream os,
+            boolean omitXmlDeclaration,
+            String encoding
     ) throws Exception { //NOPMD
         // previously we used javax.xml.transform.Transformer, however the JDK xalan implementation did not work correctly with a specified encoding
         // therefore we switched to DOMImplementationLS
@@ -76,7 +77,7 @@ public class XmlSignatureHelper {
         }
         DOMImplementationRegistry domImplementationRegistry = DOMImplementationRegistry.newInstance();
         DOMImplementationLS domImplementationLS = (DOMImplementationLS) domImplementationRegistry.getDOMImplementation(
-            "LS"
+                "LS"
         );
         LSOutput lsOutput = domImplementationLS.createLSOutput();
         lsOutput.setEncoding(encoding);
@@ -93,7 +94,7 @@ public class XmlSignatureHelper {
     }
 
     public static Document convertStringToXMLDocument(String xmlString)
-        throws ParserConfigurationException, IOException, SAXException {
+            throws ParserConfigurationException, IOException, SAXException {
         //API to obtain DOM Document instance
         DocumentBuilder builder = XmlSignatureHelper.newDocumentBuilder(true);
         //Parse the content to Document object

@@ -21,15 +21,16 @@ import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Singular;
+import lombok.experimental.SuperBuilder;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Singular;
-import lombok.experimental.SuperBuilder;
 
 @Data
 @SuperBuilder
@@ -105,7 +106,7 @@ public abstract class Document {
      * Persona que firma electrónicamente el comprobante. Si es NULL los datos del proveedor son usados.
      */
     @Schema(
-        description = "Persona que firma electrónicamente el comprobante. Si NULL los datos del proveedor son usados."
+            description = "Persona que firma electrónicamente el comprobante. Si NULL los datos del proveedor son usados."
     )
     private Firmante firmante;
 

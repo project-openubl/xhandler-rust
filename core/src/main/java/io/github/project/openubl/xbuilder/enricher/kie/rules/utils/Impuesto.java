@@ -16,9 +16,10 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.utils;
 
-import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 @Data
 @Builder

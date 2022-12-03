@@ -16,16 +16,17 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.note.creditnote;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isCreditNote;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenCreditNote;
-
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog9;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+
 import java.util.function.Consumer;
+
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isCreditNote;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenCreditNote;
 
 /**
  * Rule for {@link Note#tipoNota}
@@ -45,8 +46,8 @@ public class TipoNotaCreditoRule extends AbstractHeaderRule {
                 note.setTipoNota(Catalog9.ANULACION_DE_LA_OPERACION.getCode());
             } else {
                 Catalog
-                    .valueOfCode(Catalog9.class, note.getTipoNota())
-                    .ifPresent(catalog6 -> note.setTipoNota(catalog6.getCode()));
+                        .valueOfCode(Catalog9.class, note.getTipoNota())
+                        .ifPresent(catalog6 -> note.setTipoNota(catalog6.getCode()));
             }
         };
         whenCreditNote.apply(object).ifPresent(consumer);

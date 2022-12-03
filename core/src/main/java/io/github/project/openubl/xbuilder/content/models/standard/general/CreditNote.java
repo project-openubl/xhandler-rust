@@ -32,4 +32,5 @@ import lombok.extern.jackson.Jacksonized;
 @SuperBuilder
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class CreditNote extends Note {}
+public class CreditNote extends Note {
+}

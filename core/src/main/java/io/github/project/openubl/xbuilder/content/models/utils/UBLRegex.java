@@ -16,8 +16,9 @@
  */
 package io.github.project.openubl.xbuilder.content.models.utils;
 
-import java.util.regex.Pattern;
 import lombok.Data;
+
+import java.util.regex.Pattern;
 
 @Data
 public class UBLRegex {

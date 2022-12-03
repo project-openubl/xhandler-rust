@@ -16,15 +16,16 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.note;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isNote;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
-
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import io.github.project.openubl.xbuilder.content.models.utils.UBLRegex;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
+
 import java.util.function.Consumer;
+
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isNote;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
 
 /**
  * Rule for {@link Note#comprobanteAfectadoTipo}
@@ -35,8 +36,8 @@ public class ComprobanteAfectadoTipoRule extends AbstractHeaderRule {
     @Override
     public boolean test(Object object) {
         return (
-            isNote.test(object) &&
-            whenNote.apply(object).map(note -> note.getComprobanteAfectadoSerieNumero() != null).orElse(false)
+                isNote.test(object) &&
+                        whenNote.apply(object).map(note -> note.getComprobanteAfectadoSerieNumero() != null).orElse(false)
         );
     }
 

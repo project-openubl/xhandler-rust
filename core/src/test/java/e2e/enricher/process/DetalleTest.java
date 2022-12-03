@@ -16,16 +16,17 @@
  */
 package e2e.enricher.process;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import e2e.AbstractTest;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
-import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DetalleTest extends AbstractTest {
 
@@ -33,16 +34,16 @@ public class DetalleTest extends AbstractTest {
     public void testEnrichPrecioDeReferencia_precioConImpuestos_OperacionOnerosa() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .precio(BigDecimal.TEN)
-                    .precioConImpuestos(false)
-                    .igvTipo(Catalog7.GRAVADO_OPERACION_ONEROSA.getCode())
-                    .build()
-            )
-            .build();
+                .builder()
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .precio(BigDecimal.TEN)
+                                .precioConImpuestos(false)
+                                .igvTipo(Catalog7.GRAVADO_OPERACION_ONEROSA.getCode())
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -50,26 +51,26 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(new BigDecimal("11.80"), detalle.getPrecioReferencia());
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(new BigDecimal("11.80"), detalle.getPrecioReferencia());
+                });
     }
 
     @Test
     public void testEnrichPrecioDeReferencia_precioConImpuestos_OperacionNoOnerosa() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .precio(BigDecimal.TEN)
-                    .precioConImpuestos(false)
-                    .igvTipo(Catalog7.GRAVADO_RETIRO.getCode())
-                    .build()
-            )
-            .build();
+                .builder()
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .precio(BigDecimal.TEN)
+                                .precioConImpuestos(false)
+                                .igvTipo(Catalog7.GRAVADO_RETIRO.getCode())
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -77,26 +78,26 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(BigDecimal.TEN, detalle.getPrecioReferencia());
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(BigDecimal.TEN, detalle.getPrecioReferencia());
+                });
     }
 
     @Test
     public void testEnrichPrecioDeReferencia_precioSinImpuestos_OperacionOnerosa() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .precio(new BigDecimal("11.80"))
-                    .precioConImpuestos(true)
-                    .igvTipo(Catalog7.GRAVADO_OPERACION_ONEROSA.getCode())
-                    .build()
-            )
-            .build();
+                .builder()
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .precio(new BigDecimal("11.80"))
+                                .precioConImpuestos(true)
+                                .igvTipo(Catalog7.GRAVADO_OPERACION_ONEROSA.getCode())
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -104,26 +105,26 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(0, BigDecimal.TEN.compareTo(detalle.getPrecioReferencia()));
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(0, BigDecimal.TEN.compareTo(detalle.getPrecioReferencia()));
+                });
     }
 
     @Test
     public void testEnrichPrecioDeReferencia_precioSinImpuestos_OperacionNoOnerosa() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .precio(new BigDecimal("11.80"))
-                    .precioConImpuestos(true)
-                    .igvTipo(Catalog7.GRAVADO_RETIRO.getCode())
-                    .build()
-            )
-            .build();
+                .builder()
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .precio(new BigDecimal("11.80"))
+                                .precioConImpuestos(true)
+                                .igvTipo(Catalog7.GRAVADO_RETIRO.getCode())
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -131,10 +132,10 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(new BigDecimal("11.80"), detalle.getPrecioReferencia());
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(new BigDecimal("11.80"), detalle.getPrecioReferencia());
+                });
     }
 
     @Test
@@ -148,19 +149,19 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(BigDecimal.ZERO, detalle.getIcb());
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(BigDecimal.ZERO, detalle.getIcb());
+                });
     }
 
     @Test
     public void testDontEnrichIcb() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .detalle(DocumentoDetalle.builder().icb(BigDecimal.TEN).icbAplica(false).build())
-            .build();
+                .builder()
+                .detalle(DocumentoDetalle.builder().icb(BigDecimal.TEN).icbAplica(false).build())
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -168,25 +169,25 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(BigDecimal.TEN, detalle.getIcb());
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(BigDecimal.TEN, detalle.getIcb());
+                });
     }
 
     @Test
     public void testEnrichIcbAplica() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .icb(BigDecimal.TEN)
-                    .icbAplica(false) // this should be corrected
-                    .build()
-            )
-            .build();
+                .builder()
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .icb(BigDecimal.TEN)
+                                .icbAplica(false) // this should be corrected
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -194,26 +195,26 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertTrue(detalle.isIcbAplica());
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertTrue(detalle.isIcbAplica());
+                });
     }
 
     @Test
     public void testEnrichBaseImponible_whenPrecioConImpuestos() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .cantidad(new BigDecimal(2))
-                    .precio(BigDecimal.TEN)
-                    .precioConImpuestos(false)
-                    .build()
-            )
-            .build();
+                .builder()
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .cantidad(new BigDecimal(2))
+                                .precio(BigDecimal.TEN)
+                                .precioConImpuestos(false)
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -221,26 +222,26 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(0, detalle.getIgvBaseImponible().compareTo(new BigDecimal(20)));
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(0, detalle.getIgvBaseImponible().compareTo(new BigDecimal(20)));
+                });
     }
 
     @Test
     public void testEnrichBaseImponible_whenPrecioSinImpuestos() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .cantidad(new BigDecimal(2))
-                    .precio(new BigDecimal("11.8"))
-                    .precioConImpuestos(true)
-                    .build()
-            )
-            .build();
+                .builder()
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .cantidad(new BigDecimal(2))
+                                .precio(new BigDecimal("11.8"))
+                                .precioConImpuestos(true)
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -248,27 +249,27 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(0, detalle.getIgvBaseImponible().compareTo(new BigDecimal(20)));
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(0, detalle.getIgvBaseImponible().compareTo(new BigDecimal(20)));
+                });
     }
 
     @Test
     public void testDontEnrichBaseImponible() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .cantidad(new BigDecimal(2))
-                    .precio(new BigDecimal("10"))
-                    .precioConImpuestos(false)
-                    .igvBaseImponible(new BigDecimal(999)) // This user defined value should not be altered
-                    .build()
-            )
-            .build();
+                .builder()
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .cantidad(new BigDecimal(2))
+                                .precio(new BigDecimal("10"))
+                                .precioConImpuestos(false)
+                                .igvBaseImponible(new BigDecimal(999)) // This user defined value should not be altered
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -276,20 +277,20 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(0, detalle.getIgvBaseImponible().compareTo(new BigDecimal(999)));
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(0, detalle.getIgvBaseImponible().compareTo(new BigDecimal(999)));
+                });
     }
 
     @Test
     public void testEnrichIgv() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .tasaIgv(new BigDecimal("0.18"))
-            .detalle(DocumentoDetalle.builder().igvBaseImponible(new BigDecimal("10")).build())
-            .build();
+                .builder()
+                .tasaIgv(new BigDecimal("0.18"))
+                .detalle(DocumentoDetalle.builder().igvBaseImponible(new BigDecimal("10")).build())
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -297,26 +298,26 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(0, detalle.getIgv().compareTo(new BigDecimal("1.8")));
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(0, detalle.getIgv().compareTo(new BigDecimal("1.8")));
+                });
     }
 
     @Test
     public void testDontEnrichIgv() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .tasaIgv(new BigDecimal("0.18"))
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .igvBaseImponible(new BigDecimal("10"))
-                    .igv(new BigDecimal("999")) // Dont change user defined value
-                    .build()
-            )
-            .build();
+                .builder()
+                .tasaIgv(new BigDecimal("0.18"))
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .igvBaseImponible(new BigDecimal("10"))
+                                .igv(new BigDecimal("999")) // Dont change user defined value
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -324,19 +325,19 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(0, detalle.getIgv().compareTo(new BigDecimal("999")));
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(0, detalle.getIgv().compareTo(new BigDecimal("999")));
+                });
     }
 
     @Test
     public void testEnrichTotalImpuestos() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .detalle(DocumentoDetalle.builder().igv(new BigDecimal("10")).icb(new BigDecimal("2")).build())
-            .build();
+                .builder()
+                .detalle(DocumentoDetalle.builder().igv(new BigDecimal("10")).icb(new BigDecimal("2")).build())
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -344,26 +345,26 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(0, detalle.getTotalImpuestos().compareTo(new BigDecimal("12")));
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(0, detalle.getTotalImpuestos().compareTo(new BigDecimal("12")));
+                });
     }
 
     @Test
     public void testDontEnrichTotalImpuestos() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .detalle(
-                DocumentoDetalle
-                    .builder()
-                    .igv(new BigDecimal("10"))
-                    .icb(new BigDecimal("2"))
-                    .totalImpuestos(new BigDecimal("999")) // Dont change user defined value
-                    .build()
-            )
-            .build();
+                .builder()
+                .detalle(
+                        DocumentoDetalle
+                                .builder()
+                                .igv(new BigDecimal("10"))
+                                .icb(new BigDecimal("2"))
+                                .totalImpuestos(new BigDecimal("999")) // Dont change user defined value
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -371,9 +372,9 @@ public class DetalleTest extends AbstractTest {
 
         // Then
         input
-            .getDetalles()
-            .forEach(detalle -> {
-                assertEquals(0, detalle.getTotalImpuestos().compareTo(new BigDecimal("999")));
-            });
+                .getDetalles()
+                .forEach(detalle -> {
+                    assertEquals(0, detalle.getTotalImpuestos().compareTo(new BigDecimal("999")));
+                });
     }
 }

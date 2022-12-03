@@ -16,21 +16,29 @@
  */
 package e2e.renderer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import io.github.project.openubl.xbuilder.signature.CertificateDetails;
 import io.github.project.openubl.xbuilder.signature.CertificateDetailsFactory;
 import io.github.project.openubl.xbuilder.signature.XMLSigner;
 import io.github.project.openubl.xbuilder.signature.XmlSignatureHelper;
-import io.github.project.openubl.xmlsenderws.webservices.managers.smart.SmartBillServiceConfig;
-import io.github.project.openubl.xmlsenderws.webservices.managers.smart.SmartBillServiceManager;
-import io.github.project.openubl.xmlsenderws.webservices.managers.smart.SmartBillServiceModel;
-import io.github.project.openubl.xmlsenderws.webservices.providers.BillServiceModel;
-import io.github.project.openubl.xmlsenderws.webservices.xml.DocumentType;
-import io.github.project.openubl.xmlsenderws.webservices.xml.XmlContentModel;
+import io.github.project.openubl.xsender.Constants;
+import io.github.project.openubl.xsender.camel.StandaloneCamel;
+import io.github.project.openubl.xsender.camel.utils.CamelData;
+import io.github.project.openubl.xsender.camel.utils.CamelUtils;
+import io.github.project.openubl.xsender.company.CompanyCredentials;
+import io.github.project.openubl.xsender.company.CompanyURLs;
+import io.github.project.openubl.xsender.files.BillServiceFileAnalyzer;
+import io.github.project.openubl.xsender.files.BillServiceXMLFileAnalyzer;
+import io.github.project.openubl.xsender.files.ZipFile;
+import io.github.project.openubl.xsender.files.xml.DocumentType;
+import io.github.project.openubl.xsender.files.xml.XmlContent;
+import io.github.project.openubl.xsender.models.Status;
+import io.github.project.openubl.xsender.models.SunatResponse;
+import io.github.project.openubl.xsender.sunat.BillServiceDestination;
+import org.apache.camel.CamelContext;
+import org.w3c.dom.Document;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.diff.Diff;
+
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,14 +46,27 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.w3c.dom.Document;
-import org.xmlunit.builder.DiffBuilder;
-import org.xmlunit.diff.Diff;
+
+import static io.github.project.openubl.xsender.camel.utils.CamelUtils.getBillServiceCamelData;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class XMLAssertUtils {
 
-    private static final String SUNAT_BETA_USERNAME = "MODDATOS";
-    private static final String SUNAT_BETA_PASSWORD = "MODDATOS";
+    public static final CompanyURLs companyURLs = CompanyURLs
+            .builder()
+            .invoice("https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService")
+            .despatch("https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService")
+            .perceptionRetention("https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService")
+            .build();
+
+    public static final CompanyCredentials credentials = CompanyCredentials
+            .builder()
+            .username("12345678959MODDATOS")
+            .password("MODDATOS")
+            .build();
 
     private static final String SIGN_REFERENCE_ID = "PROJECT-OPENUBL";
     private static final String KEYSTORE = "LLAMA-PE-CERTIFICADO-DEMO-10467793549.pfx";
@@ -56,13 +77,6 @@ public class XMLAssertUtils {
         InputStream ksInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(KEYSTORE);
         try {
             CERTIFICATE = CertificateDetailsFactory.create(ksInputStream, KEYSTORE_PASSWORD);
-            SmartBillServiceConfig
-                .getInstance()
-                .withInvoiceAndNoteDeliveryURL("https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService")
-                .withPerceptionAndRetentionDeliveryURL(
-                    "https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService"
-                )
-                .withDespatchAdviceDeliveryURL("https://e-beta.sunat.gob.pe/ol-ti-itemision-guia-gem-beta/billService");
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -72,7 +86,7 @@ public class XMLAssertUtils {
         String rootDir = clasz.getName().replaceAll("\\.", "/");
 
         // Update snapshots and if updated do not verify since it doesn't make sense anymore
-        Boolean updateSnapshots = Boolean.valueOf(System.getProperty("xbuilder.snapshot.update", "false"));
+        boolean updateSnapshots = Boolean.parseBoolean(System.getProperty("xbuilder.snapshot.update", "false"));
         if (updateSnapshots) {
             try {
                 Path directoryPath = Paths.get("src", "test", "resources").resolve(rootDir);
@@ -88,29 +102,29 @@ public class XMLAssertUtils {
         }
 
         InputStream snapshotInputStream = Thread
-            .currentThread()
-            .getContextClassLoader()
-            .getResourceAsStream(rootDir + "/" + snapshotFile);
+                .currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream(rootDir + "/" + snapshotFile);
         assertNotNull(snapshotInputStream, "Could not find snapshot file " + snapshotFile);
 
         Diff myDiff = DiffBuilder
-            .compare(snapshotInputStream)
-            .withTest(expected)
-            .ignoreComments()
-            .ignoreWhitespace()
-            .build();
+                .compare(snapshotInputStream)
+                .withTest(expected)
+                .ignoreComments()
+                .ignoreWhitespace()
+                .build();
 
-        assertFalse(myDiff.hasDifferences(), expected + "\n" + myDiff.toString());
+        assertFalse(myDiff.hasDifferences(), expected + "\n" + myDiff);
     }
 
     public static void assertSendSunat(String xmlWithoutSignature, String... allowedNotes) throws Exception {
         String skipSunat = System.getProperty("skipSunat", "false");
         if (skipSunat != null && skipSunat.equals("false")) {
             Document signedXML = XMLSigner.signXML(
-                xmlWithoutSignature,
-                SIGN_REFERENCE_ID,
-                CERTIFICATE.getX509Certificate(),
-                CERTIFICATE.getPrivateKey()
+                    xmlWithoutSignature,
+                    SIGN_REFERENCE_ID,
+                    CERTIFICATE.getX509Certificate(),
+                    CERTIFICATE.getPrivateKey()
             );
             sendFileToSunat(signedXML, xmlWithoutSignature, allowedNotes);
         }
@@ -119,71 +133,91 @@ public class XMLAssertUtils {
     //
 
     private static void sendFileToSunat(Document document, String xmlWithoutSignature, String... allowedNotes)
-        throws Exception {
+            throws Exception {
         byte[] bytesFromDocument = XmlSignatureHelper.getBytesFromDocument(document);
-        SmartBillServiceModel smartBillServiceModel = SmartBillServiceManager.send(
-            bytesFromDocument,
-            SUNAT_BETA_USERNAME,
-            SUNAT_BETA_PASSWORD
-        );
-        XmlContentModel xmlContentModel = smartBillServiceModel.getXmlContentModel();
-        BillServiceModel billServiceModel = smartBillServiceModel.getBillServiceModel();
 
-        if (billServiceModel.getNotes() != null) {
+        CamelContext camelContext = StandaloneCamel.getInstance().getMainCamel().getCamelContext();
+
+        BillServiceFileAnalyzer fileAnalyzer = new BillServiceXMLFileAnalyzer(bytesFromDocument, companyURLs);
+        ZipFile zipFile = fileAnalyzer.getZipFile();
+        BillServiceDestination fileDestination = fileAnalyzer.getSendFileDestination();
+        BillServiceDestination ticketDestination = fileAnalyzer.getVerifyTicketDestination();
+
+        CamelData camelData = getBillServiceCamelData(zipFile, fileDestination, credentials);
+        SunatResponse sendFileSunatResponse = camelContext
+                .createProducerTemplate()
+                .requestBodyAndHeaders(
+                        Constants.XSENDER_BILL_SERVICE_URI,
+                        camelData.getBody(),
+                        camelData.getHeaders(),
+                        SunatResponse.class
+                );
+
+        if (sendFileSunatResponse.getMetadata().getNotes() != null) {
             List<String> allowedNotesList = Arrays.asList(allowedNotes);
 
-            List<String> notesToCheck = billServiceModel
-                .getNotes()
-                .stream()
-                .filter(f -> allowedNotesList.stream().noneMatch(f::startsWith))
-                .collect(Collectors.toList());
+            List<String> notesToCheck = sendFileSunatResponse
+                    .getMetadata()
+                    .getNotes()
+                    .stream()
+                    .filter(f -> allowedNotesList.stream().noneMatch(f::startsWith))
+                    .collect(Collectors.toList());
             notesToCheck.forEach(f -> System.out.println("WARNING:" + f));
 
             assertTrue(notesToCheck.isEmpty(), "Notes fom SUNAT:\n" + String.join("\n", notesToCheck));
         }
 
+        XmlContent xmlContent = fileAnalyzer.getXmlContent();
         // Check ticket
         if (
-            !xmlContentModel.getDocumentType().equals(DocumentType.VOIDED_DOCUMENT.getType()) &&
-            !xmlContentModel.getDocumentType().equals(DocumentType.SUMMARY_DOCUMENT.getType())
+                !xmlContent.getDocumentType().equals(DocumentType.VOIDED_DOCUMENT) &&
+                        !xmlContent.getDocumentType().equals(DocumentType.SUMMARY_DOCUMENT)
         ) {
             assertEquals(
-                BillServiceModel.Status.ACEPTADO,
-                billServiceModel.getStatus(),
-                xmlWithoutSignature +
-                " \n sunat [codigo=" +
-                billServiceModel.getCode() +
-                "], [descripcion=" +
-                billServiceModel.getDescription() +
-                "]"
+                    Status.ACEPTADO,
+                    sendFileSunatResponse.getStatus(),
+                    xmlWithoutSignature +
+                            " \n sunat [codigo=" +
+                            sendFileSunatResponse.getMetadata().getResponseCode() +
+                            "], [descripcion=" +
+                            sendFileSunatResponse.getMetadata().getDescription() +
+                            "]"
             );
         } else {
-            assertNotNull(billServiceModel.getTicket());
+            assertNotNull(sendFileSunatResponse.getSunat().getTicket());
 
-            BillServiceModel statusModel = SmartBillServiceManager.getStatus(
-                billServiceModel.getTicket(),
-                xmlContentModel,
-                SUNAT_BETA_USERNAME,
-                SUNAT_BETA_PASSWORD
+            CamelData camelTicketData = CamelUtils.getBillServiceCamelData(
+                    sendFileSunatResponse.getSunat().getTicket(),
+                    ticketDestination,
+                    credentials
             );
+            SunatResponse verifyTicketSunatResponse = camelContext
+                    .createProducerTemplate()
+                    .requestBodyAndHeaders(
+                            Constants.XSENDER_BILL_SERVICE_URI,
+                            camelTicketData.getBody(),
+                            camelTicketData.getHeaders(),
+                            SunatResponse.class
+                    );
+
             assertEquals(
-                BillServiceModel.Status.ACEPTADO,
-                statusModel.getStatus(),
-                xmlWithoutSignature +
-                " sunat [status=" +
-                statusModel.getStatus() +
-                "], [descripcion=" +
-                statusModel.getDescription() +
-                "]"
+                    Status.ACEPTADO,
+                    verifyTicketSunatResponse.getStatus(),
+                    xmlWithoutSignature +
+                            " sunat [status=" +
+                            verifyTicketSunatResponse.getStatus() +
+                            "], [descripcion=" +
+                            verifyTicketSunatResponse.getMetadata().getDescription() +
+                            "]"
             );
             assertNotNull(
-                statusModel.getCdr(),
-                xmlWithoutSignature +
-                " sunat [codigo=" +
-                billServiceModel.getCode() +
-                "], [descripcion=" +
-                billServiceModel.getDescription() +
-                "]"
+                    verifyTicketSunatResponse.getSunat().getCdr(),
+                    xmlWithoutSignature +
+                            " sunat [codigo=" +
+                            verifyTicketSunatResponse.getMetadata().getResponseCode() +
+                            "], [descripcion=" +
+                            verifyTicketSunatResponse.getMetadata().getDescription() +
+                            "]"
             );
         }
     }

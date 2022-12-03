@@ -19,6 +19,7 @@ package io.github.project.openubl.quarkus.xbuilder.runtime;
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
+
 import java.math.BigDecimal;
 import java.util.Optional;
 

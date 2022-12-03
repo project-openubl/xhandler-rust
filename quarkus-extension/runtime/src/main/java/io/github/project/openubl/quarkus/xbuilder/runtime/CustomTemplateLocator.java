@@ -19,6 +19,7 @@ package io.github.project.openubl.quarkus.xbuilder.runtime;
 import io.quarkus.qute.Locate;
 import io.quarkus.qute.TemplateLocator;
 import io.quarkus.qute.Variant;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;

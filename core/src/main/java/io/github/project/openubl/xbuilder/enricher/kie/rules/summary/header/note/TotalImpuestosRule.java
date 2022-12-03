@@ -16,9 +16,6 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.note;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isNote;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
-
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
@@ -27,9 +24,13 @@ import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import io.github.project.openubl.xbuilder.enricher.kie.rules.utils.DetalleUtils;
 import io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Impuesto;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.function.Consumer;
+
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isNote;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
 
 @RulePhase(type = RulePhase.PhaseType.SUMMARY)
 public class TotalImpuestosRule extends AbstractHeaderRule {
@@ -37,11 +38,11 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
     @Override
     public boolean test(Object object) {
         return (
-            isNote.test(object) &&
-            whenNote
-                .apply(object)
-                .map(documento -> documento.getTotalImpuestos() == null && documento.getDetalles() != null)
-                .orElse(false)
+                isNote.test(object) &&
+                        whenNote
+                                .apply(object)
+                                .map(documento -> documento.getTotalImpuestos() == null && documento.getDetalles() != null)
+                                .orElse(false)
         );
     }
 
@@ -55,29 +56,29 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
             Impuesto gratuito = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.GRATUITO);
 
             BigDecimal icb = document
-                .getDetalles()
-                .stream()
-                .map(DocumentoDetalle::getIcb)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    .getDetalles()
+                    .stream()
+                    .map(DocumentoDetalle::getIcb)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             BigDecimal total = ivap.getImporte().add(gravado.getImporte()).add(icb);
 
             TotalImpuestos totalImpuestos = TotalImpuestos
-                .builder()
-                .ivapImporte(ivap.getImporte())
-                .ivapBaseImponible(ivap.getBaseImponible())
-                .gravadoImporte(gravado.getImporte())
-                .gravadoBaseImponible(gravado.getBaseImponible())
-                .inafectoImporte(inafecto.getImporte())
-                .inafectoBaseImponible(inafecto.getBaseImponible())
-                .exoneradoImporte(exonerado.getImporte())
-                .exoneradoBaseImponible(exonerado.getBaseImponible())
-                .gratuitoImporte(gratuito.getImporte())
-                .gratuitoBaseImponible(gratuito.getBaseImponible())
-                .icbImporte(icb)
-                .total(total)
-                .build();
+                    .builder()
+                    .ivapImporte(ivap.getImporte())
+                    .ivapBaseImponible(ivap.getBaseImponible())
+                    .gravadoImporte(gravado.getImporte())
+                    .gravadoBaseImponible(gravado.getBaseImponible())
+                    .inafectoImporte(inafecto.getImporte())
+                    .inafectoBaseImponible(inafecto.getBaseImponible())
+                    .exoneradoImporte(exonerado.getImporte())
+                    .exoneradoBaseImponible(exonerado.getBaseImponible())
+                    .gratuitoImporte(gratuito.getImporte())
+                    .gratuitoBaseImponible(gratuito.getBaseImponible())
+                    .icbImporte(icb)
+                    .total(total)
+                    .build();
 
             document.setTotalImpuestos(totalImpuestos);
         };

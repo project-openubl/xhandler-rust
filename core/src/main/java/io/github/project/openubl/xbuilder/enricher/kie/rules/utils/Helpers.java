@@ -23,6 +23,7 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Docume
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
+
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;

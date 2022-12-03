@@ -16,8 +16,6 @@
  */
 package e2e.enricher.enrich;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import e2e.AbstractTest;
 import io.github.project.openubl.xbuilder.content.catalogs.CatalogContadoCredito;
 import io.github.project.openubl.xbuilder.content.models.common.Firmante;
@@ -26,9 +24,12 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.CuotaD
 import io.github.project.openubl.xbuilder.content.models.standard.general.FormaDePago;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
+import org.junit.jupiter.api.Test;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GeneralDocumentTest extends AbstractTest {
 
@@ -102,14 +103,14 @@ public class GeneralDocumentTest extends AbstractTest {
     public void testEnrichFormaPagoTipo_Credito() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .formaDePago(
-                FormaDePago
-                    .builder()
-                    .cuota(CuotaDePago.builder().fechaPago(LocalDate.now()).importe(BigDecimal.TEN).build())
-                    .build()
-            )
-            .build();
+                .builder()
+                .formaDePago(
+                        FormaDePago
+                                .builder()
+                                .cuota(CuotaDePago.builder().fechaPago(LocalDate.now()).importe(BigDecimal.TEN).build())
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -125,21 +126,21 @@ public class GeneralDocumentTest extends AbstractTest {
 
         // Invoice with no "cuotas" has "formaDePago" CREDITO. It must be corrected
         Invoice input1 = Invoice
-            .builder()
-            .formaDePago(FormaDePago.builder().tipo(CatalogContadoCredito.CREDITO.getCode()).build())
-            .build();
+                .builder()
+                .formaDePago(FormaDePago.builder().tipo(CatalogContadoCredito.CREDITO.getCode()).build())
+                .build();
 
         // Invoice with "cuotas" has "formaDePago" CONTADO. It must be corrected
         Invoice input2 = Invoice
-            .builder()
-            .formaDePago(
-                FormaDePago
-                    .builder()
-                    .tipo(CatalogContadoCredito.CONTADO.getCode())
-                    .cuota(CuotaDePago.builder().fechaPago(LocalDate.now()).importe(BigDecimal.TEN).build())
-                    .build()
-            )
-            .build();
+                .builder()
+                .formaDePago(
+                        FormaDePago
+                                .builder()
+                                .tipo(CatalogContadoCredito.CONTADO.getCode())
+                                .cuota(CuotaDePago.builder().fechaPago(LocalDate.now()).importe(BigDecimal.TEN).build())
+                                .build()
+                )
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -155,9 +156,9 @@ public class GeneralDocumentTest extends AbstractTest {
     public void testEnrichFirmante() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Mi razón social").build())
-            .build();
+                .builder()
+                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Mi razón social").build())
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -172,10 +173,10 @@ public class GeneralDocumentTest extends AbstractTest {
     public void testEnrichFirmante_whenFirmanteIsPartiallyFilled() {
         // Given
         Invoice input = Invoice
-            .builder()
-            .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Mi razón social").build())
-            .firmante(Firmante.builder().ruc("12345678912").build())
-            .build();
+                .builder()
+                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Mi razón social").build())
+                .firmante(Firmante.builder().ruc("12345678912").build())
+                .build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);

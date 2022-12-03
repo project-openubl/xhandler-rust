@@ -21,6 +21,7 @@ import io.github.project.openubl.xbuilder.enricher.kie.RuleFactory;
 import io.github.project.openubl.xbuilder.enricher.kie.RuleFactoryRegistry;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import io.github.project.openubl.xbuilder.enricher.kie.RuleUnit;
+
 import java.util.List;
 
 public class HeaderRuleUnit implements RuleUnit {
@@ -43,10 +44,10 @@ public class HeaderRuleUnit implements RuleUnit {
         do {
             prevHashCode = object.hashCode();
             rules
-                .stream()
-                .filter(factory -> factory.test(object))
-                .map(factory -> factory.create(defaults, context))
-                .forEach(rule -> rule.modify(object));
+                    .stream()
+                    .filter(factory -> factory.test(object))
+                    .map(factory -> factory.create(defaults, context))
+                    .forEach(rule -> rule.modify(object));
             currentHashCode = object.hashCode();
         } while (prevHashCode != currentHashCode);
     }

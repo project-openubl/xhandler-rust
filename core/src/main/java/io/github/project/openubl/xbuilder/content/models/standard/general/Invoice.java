@@ -18,8 +18,6 @@ package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import io.github.project.openubl.xbuilder.content.models.common.Direccion;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -27,6 +25,9 @@ import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Jacksonized
 @Data

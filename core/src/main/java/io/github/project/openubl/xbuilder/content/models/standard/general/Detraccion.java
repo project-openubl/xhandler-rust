@@ -17,11 +17,12 @@
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 /**
  * Detracción asociada a un Invoice
