@@ -100,6 +100,7 @@ class QuarkusXbuilderProcessor {
         return new ReflectiveClassBuildItem(
                 true,
                 false,
+                io.github.project.openubl.xbuilder.content.models.common.Document.class,
                 io.github.project.openubl.xbuilder.content.models.common.Cliente.class,
                 io.github.project.openubl.xbuilder.content.models.common.Proveedor.class,
                 io.github.project.openubl.xbuilder.content.models.common.Contacto.class,
@@ -117,9 +118,9 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.CuotaDePago.class,
-                io.github.project.openubl.xbuilder.content.models.standard.general.Document.class,
+                io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.Detraccion.class,
-                io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle.class,
+                io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle.class,
                 //                io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoRelacionado.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.FormaDePago.class,
                 //                io.github.project.openubl.xbuilder.content.models.standard.general.Guia.class,
@@ -141,7 +142,7 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporte.TotalImporteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteNote.TotalImporteNoteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteInvoice.TotalImporteInvoiceBuilder.class,
-                io.github.project.openubl.xbuilder.content.models.standard.general.Document.DocumentBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument.SalesDocumentBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.Invoice.InvoiceBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.Note.NoteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteInvoice.TotalImporteInvoiceBuilder.class,
@@ -174,7 +175,12 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog53.class,
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo.class,
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog54.class,
-                io.github.project.openubl.xbuilder.content.catalogs.Catalog59.class
+                io.github.project.openubl.xbuilder.content.catalogs.Catalog59.class,
+
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.VoidedDocumentsBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.VoidedDocumentsItemBuilder.class
         );
     }
 }

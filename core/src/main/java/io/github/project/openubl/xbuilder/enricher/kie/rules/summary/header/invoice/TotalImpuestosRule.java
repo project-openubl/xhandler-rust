@@ -20,7 +20,7 @@ import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImpuestos;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
@@ -62,7 +62,7 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
             BigDecimal icb = invoice
                     .getDetalles()
                     .stream()
-                    .map(DocumentoDetalle::getIcb)
+                    .map(DocumentoVentaDetalle::getIcb)
                     .filter(Objects::nonNull)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 

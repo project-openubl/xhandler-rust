@@ -44,13 +44,13 @@ public class Anticipo {
      * <p>
      * Valores válidos: "04", "05", "06"
      */
-    @Schema(example = "04", description = "Catalog 53", required = true, allowableValues = {"04", "05", "06"})
+    @Schema(example = "04", description = "Catalog 53", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = {"04", "05", "06"})
     private String tipo;
 
     /**
      * Serie y número de comprobante del anticipo, por ejemplo "F123-4"
      */
-    @Schema(example = "F123-4", required = true)
+    @Schema(example = "F123-4", requiredMode = Schema.RequiredMode.REQUIRED)
     private String comprobanteSerieNumero;
 
     /**
@@ -63,6 +63,6 @@ public class Anticipo {
     /**
      * Monto prepagado o anticipado
      */
-    @Schema(example = "10", required = true, minimum = "0", exclusiveMinimum = true)
+    @Schema(example = "10", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0", exclusiveMinimum = true)
     private BigDecimal monto;
 }

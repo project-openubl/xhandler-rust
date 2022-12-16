@@ -18,7 +18,7 @@ package e2e.enricher.process;
 
 import e2e.AbstractTest;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ public class DetalleTest extends AbstractTest {
         Invoice input = Invoice
                 .builder()
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .precio(BigDecimal.TEN)
                                 .precioConImpuestos(false)
@@ -63,7 +63,7 @@ public class DetalleTest extends AbstractTest {
         Invoice input = Invoice
                 .builder()
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .precio(BigDecimal.TEN)
                                 .precioConImpuestos(false)
@@ -90,7 +90,7 @@ public class DetalleTest extends AbstractTest {
         Invoice input = Invoice
                 .builder()
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .precio(new BigDecimal("11.80"))
                                 .precioConImpuestos(true)
@@ -117,7 +117,7 @@ public class DetalleTest extends AbstractTest {
         Invoice input = Invoice
                 .builder()
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .precio(new BigDecimal("11.80"))
                                 .precioConImpuestos(true)
@@ -141,7 +141,7 @@ public class DetalleTest extends AbstractTest {
     @Test
     public void testEnrichIcb() {
         // Given
-        Invoice input = Invoice.builder().detalle(DocumentoDetalle.builder().build()).build();
+        Invoice input = Invoice.builder().detalle(DocumentoVentaDetalle.builder().build()).build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -160,7 +160,7 @@ public class DetalleTest extends AbstractTest {
         // Given
         Invoice input = Invoice
                 .builder()
-                .detalle(DocumentoDetalle.builder().icb(BigDecimal.TEN).icbAplica(false).build())
+                .detalle(DocumentoVentaDetalle.builder().icb(BigDecimal.TEN).icbAplica(false).build())
                 .build();
 
         // When
@@ -181,7 +181,7 @@ public class DetalleTest extends AbstractTest {
         Invoice input = Invoice
                 .builder()
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .icb(BigDecimal.TEN)
                                 .icbAplica(false) // this should be corrected
@@ -207,7 +207,7 @@ public class DetalleTest extends AbstractTest {
         Invoice input = Invoice
                 .builder()
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .cantidad(new BigDecimal(2))
                                 .precio(BigDecimal.TEN)
@@ -234,7 +234,7 @@ public class DetalleTest extends AbstractTest {
         Invoice input = Invoice
                 .builder()
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .cantidad(new BigDecimal(2))
                                 .precio(new BigDecimal("11.8"))
@@ -261,7 +261,7 @@ public class DetalleTest extends AbstractTest {
         Invoice input = Invoice
                 .builder()
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .cantidad(new BigDecimal(2))
                                 .precio(new BigDecimal("10"))
@@ -289,7 +289,7 @@ public class DetalleTest extends AbstractTest {
         Invoice input = Invoice
                 .builder()
                 .tasaIgv(new BigDecimal("0.18"))
-                .detalle(DocumentoDetalle.builder().igvBaseImponible(new BigDecimal("10")).build())
+                .detalle(DocumentoVentaDetalle.builder().igvBaseImponible(new BigDecimal("10")).build())
                 .build();
 
         // When
@@ -311,7 +311,7 @@ public class DetalleTest extends AbstractTest {
                 .builder()
                 .tasaIgv(new BigDecimal("0.18"))
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .igvBaseImponible(new BigDecimal("10"))
                                 .igv(new BigDecimal("999")) // Dont change user defined value
@@ -336,7 +336,7 @@ public class DetalleTest extends AbstractTest {
         // Given
         Invoice input = Invoice
                 .builder()
-                .detalle(DocumentoDetalle.builder().igv(new BigDecimal("10")).icb(new BigDecimal("2")).build())
+                .detalle(DocumentoVentaDetalle.builder().igv(new BigDecimal("10")).icb(new BigDecimal("2")).build())
                 .build();
 
         // When
@@ -357,7 +357,7 @@ public class DetalleTest extends AbstractTest {
         Invoice input = Invoice
                 .builder()
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .igv(new BigDecimal("10"))
                                 .icb(new BigDecimal("2"))

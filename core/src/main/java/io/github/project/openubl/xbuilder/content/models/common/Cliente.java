@@ -41,13 +41,13 @@ public class Cliente {
      * <p>
      * Valores válidos: {@link Catalog6}
      */
-    @Schema(description = "Catalogo 06", required = true)
+    @Schema(description = "Catalogo 06", requiredMode = Schema.RequiredMode.REQUIRED)
     private String tipoDocumentoIdentidad;
 
     /**
      * Número de documento de identidad del cliente.
      */
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String numeroDocumentoIdentidad;
 
     /**
@@ -55,7 +55,7 @@ public class Cliente {
      * es el nombre y apellidos de la persona; si el cliente es una persona jurídica
      * entonces es la razón social de la empresa.
      */
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String nombre;
 
     /**

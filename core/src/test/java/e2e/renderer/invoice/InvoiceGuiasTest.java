@@ -22,7 +22,7 @@ import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Guia;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
@@ -51,7 +51,7 @@ public class InvoiceGuiasTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item1")
                                 .cantidad(new BigDecimal("2"))
@@ -59,7 +59,7 @@ public class InvoiceGuiasTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item2")
                                 .cantidad(new BigDecimal("2"))

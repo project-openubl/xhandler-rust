@@ -14,37 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.content.models.standard.general;
+package io.github.project.openubl.xbuilder.content.models.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * Cuota de pago para Invoice
- *
- * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
- */
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-public class CuotaDePago {
+public abstract class Document {
 
     /**
-     * Importe de la cuota
+     * Fecha de emisión del comprobante. Ejemplo 2022-12-25 (YYYY-MM-SS)
      */
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0", exclusiveMinimum = true)
-    private BigDecimal importe;
+    @Schema(description = "Format: \"YYYY-MM-SS\". Ejemplo: 2022-12-25", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
+    private LocalDate fechaEmision;
 
     /**
-     * Fecha de pago de la cuota
+     * Proveedor del bien o servicio
      */
-    @Schema(description = "Ejemplo 2022-12-25", requiredMode = Schema.RequiredMode.REQUIRED, pattern = "^\\d{4}-\\d{2}-\\d{2}$")
-    private LocalDate fechaPago;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private Proveedor proveedor;
+
+    /**
+     * Persona que firma electrónicamente el comprobante. Si es NULL los datos del proveedor son usados.
+     */
+    @Schema(
+            description = "Persona que firma electrónicamente el comprobante. Si NULL los datos del proveedor son usados."
+    )
+    private Firmante firmante;
+
 }

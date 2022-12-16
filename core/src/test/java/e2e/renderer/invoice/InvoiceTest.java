@@ -23,7 +23,7 @@ import io.github.project.openubl.xbuilder.content.models.common.Contacto;
 import io.github.project.openubl.xbuilder.content.models.common.Direccion;
 import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
@@ -57,7 +57,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item1")
                                 .cantidad(new BigDecimal("10"))
@@ -66,7 +66,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item2")
                                 .cantidad(new BigDecimal("10"))
@@ -110,7 +110,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item1")
                                 .cantidad(new BigDecimal("10"))
@@ -118,7 +118,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item2")
                                 .cantidad(new BigDecimal("10"))
@@ -170,7 +170,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item1")
                                 .cantidad(new BigDecimal("10"))
@@ -178,7 +178,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item2")
                                 .cantidad(new BigDecimal("10"))
@@ -236,7 +236,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item1")
                                 .cantidad(new BigDecimal("10"))
@@ -244,7 +244,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item2")
                                 .cantidad(new BigDecimal("10"))
@@ -283,7 +283,7 @@ public class InvoiceTest extends AbstractTest {
                 )
                 .firmante(Firmante.builder().ruc("000000000000").razonSocial("Wolsnut4 S.A.C.").build())
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item1")
                                 .cantidad(new BigDecimal("10"))
@@ -291,7 +291,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item2")
                                 .cantidad(new BigDecimal("10"))
@@ -329,7 +329,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item1")
                                 .cantidad(new BigDecimal("10"))
@@ -338,7 +338,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item2")
                                 .cantidad(new BigDecimal("10"))
@@ -377,7 +377,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item1")
                                 .cantidad(new BigDecimal("10"))
@@ -387,7 +387,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item2")
                                 .cantidad(new BigDecimal("10"))
@@ -434,7 +434,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item1")
                                 .cantidad(new BigDecimal("10"))
@@ -442,7 +442,7 @@ public class InvoiceTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item2")
                                 .cantidad(new BigDecimal("10"))

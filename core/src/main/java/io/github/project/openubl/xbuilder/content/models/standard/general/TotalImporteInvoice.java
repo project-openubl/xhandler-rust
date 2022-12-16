@@ -32,6 +32,6 @@ import java.math.BigDecimal;
 @ToString(callSuper = true)
 public class TotalImporteInvoice extends TotalImporte {
 
-    @Schema(minimum = "0", required = true)
+    @Schema(minimum = "0", requiredMode = Schema.RequiredMode.REQUIRED)
     private BigDecimal anticipos;
 }

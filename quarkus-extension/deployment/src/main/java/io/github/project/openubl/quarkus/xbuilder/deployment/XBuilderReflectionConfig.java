@@ -20,6 +20,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection(
         targets = {
+                io.github.project.openubl.xbuilder.content.models.common.Document.class,
                 io.github.project.openubl.xbuilder.content.models.common.Cliente.class,
                 io.github.project.openubl.xbuilder.content.models.common.Proveedor.class,
                 io.github.project.openubl.xbuilder.content.models.common.Contacto.class,
@@ -33,7 +34,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
                 io.github.project.openubl.xbuilder.content.models.standard.general.Note.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote.class,
-                io.github.project.openubl.xbuilder.content.models.standard.general.Document.class,
+                io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.Invoice.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.Note.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporte.class,
@@ -51,10 +52,15 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporte.TotalImporteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteNote.TotalImporteNoteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteInvoice.TotalImporteInvoiceBuilder.class,
-                io.github.project.openubl.xbuilder.content.models.standard.general.Document.DocumentBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument.SalesDocumentBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.Invoice.InvoiceBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.Note.NoteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteInvoice.TotalImporteInvoiceBuilder.class,
+
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.VoidedDocumentsBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.VoidedDocumentsItemBuilder.class
         }
 )
 public class XBuilderReflectionConfig {

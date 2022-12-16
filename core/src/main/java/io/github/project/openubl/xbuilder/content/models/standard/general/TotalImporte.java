@@ -28,12 +28,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public abstract class TotalImporte {
 
-    @Schema(minimum = "0", required = true)
+    @Schema(minimum = "0", requiredMode = Schema.RequiredMode.REQUIRED)
     private BigDecimal importe;
 
-    @Schema(minimum = "0", required = true)
+    @Schema(minimum = "0", requiredMode = Schema.RequiredMode.REQUIRED)
     private BigDecimal importeSinImpuestos;
 
-    @Schema(minimum = "0", required = true)
+    @Schema(minimum = "0", requiredMode = Schema.RequiredMode.REQUIRED)
     private BigDecimal importeConImpuestos;
 }

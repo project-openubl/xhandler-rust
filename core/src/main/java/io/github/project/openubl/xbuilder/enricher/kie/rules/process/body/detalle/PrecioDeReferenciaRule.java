@@ -18,7 +18,7 @@ package io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detal
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
@@ -26,8 +26,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.function.Consumer;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isSalesDocumentItem;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenSalesDocumentItem;
 
 @RulePhase(type = RulePhase.PhaseType.PROCESS)
 public class PrecioDeReferenciaRule extends AbstractBodyRule {
@@ -35,8 +35,8 @@ public class PrecioDeReferenciaRule extends AbstractBodyRule {
     @Override
     public boolean test(Object object) {
         return (
-                isBaseDocumentoDetalle.test(object) &&
-                        whenBaseDocumentoDetalle
+                isSalesDocumentItem.test(object) &&
+                        whenSalesDocumentItem
                                 .apply(object)
                                 .map(documento ->
                                         documento.getPrecioReferencia() == null &&
@@ -49,7 +49,7 @@ public class PrecioDeReferenciaRule extends AbstractBodyRule {
 
     @Override
     public void modify(Object object) {
-        Consumer<DocumentoDetalle> consumer = detalle -> {
+        Consumer<DocumentoVentaDetalle> consumer = detalle -> {
             Catalog7 catalog7 = Catalog
                     .valueOfCode(Catalog7.class, detalle.getIgvTipo())
                     .orElseThrow(Catalog.invalidCatalogValue);
@@ -71,6 +71,6 @@ public class PrecioDeReferenciaRule extends AbstractBodyRule {
 
             detalle.setPrecioReferencia(precioReferencia);
         };
-        whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);
+        whenSalesDocumentItem.apply(object).ifPresent(consumer);
     }
 }

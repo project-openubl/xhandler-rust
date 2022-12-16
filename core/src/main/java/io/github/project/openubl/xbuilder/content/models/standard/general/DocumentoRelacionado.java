@@ -28,9 +28,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DocumentoRelacionado {
 
-    @Schema(description = "Catalog 12", required = true)
+    @Schema(description = "Catalog 12", requiredMode = Schema.RequiredMode.REQUIRED)
     private String tipoDocumento;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String serieNumero;
 }

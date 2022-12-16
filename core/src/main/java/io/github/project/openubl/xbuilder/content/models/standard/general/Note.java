@@ -31,7 +31,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public abstract class Note extends Document {
+public abstract class Note extends SalesDocument {
 
     /**
      * Tipo de nota.
@@ -47,7 +47,7 @@ public abstract class Note extends Document {
      * Serie y número del comprobante al que le aplica la nota de crédito/débito.
      * Ejemplo: F001-1
      */
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String comprobanteAfectadoSerieNumero;
 
     /**
@@ -61,7 +61,7 @@ public abstract class Note extends Document {
     /**
      * Texto sustentatorio para la emision de la nota
      */
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String sustentoDescripcion;
 
     /**

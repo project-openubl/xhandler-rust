@@ -36,12 +36,12 @@ public class Firmante {
     /**
      * Número de RUC de la persona
      */
-    @Schema(required = true, minLength = 11, maxLength = 11, pattern = "[0-9]+")
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minLength = 11, maxLength = 11, pattern = "[0-9]+")
     private String ruc;
 
     /**
      * Razón social de la persona
      */
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String razonSocial;
 }

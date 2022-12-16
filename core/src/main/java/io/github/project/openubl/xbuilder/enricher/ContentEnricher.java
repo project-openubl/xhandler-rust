@@ -20,6 +20,7 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Credit
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
+import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
 import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
@@ -73,6 +74,27 @@ public class ContentEnricher {
         enrichNote(input);
     }
 
+    public void enrich(VoidedDocuments input) {
+        LocalDate systemLocalDate = dateProvider.now();
+
+        Stream
+                .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
+                .forEach(phaseType -> {
+                    // Header
+                    HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
+                            .localDate(systemLocalDate)
+                            .build();
+                    RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
+                    ruleUnitHeader.modify(input);
+
+                    // Body
+                    BodyRuleContext ruleContextBody = BodyRuleContext.builder().build();
+
+                    RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
+                    input.getComprobantes().forEach(ruleUnitBody::modify);
+                });
+    }
+
     private void enrichNote(Note input) {
         LocalDate systemLocalDate = dateProvider.now();
 
@@ -94,4 +116,5 @@ public class ContentEnricher {
                     input.getDetalles().forEach(ruleUnitBody::modify);
                 });
     }
+
 }

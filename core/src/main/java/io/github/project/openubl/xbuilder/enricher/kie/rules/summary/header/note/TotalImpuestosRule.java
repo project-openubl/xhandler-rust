@@ -17,8 +17,8 @@
 package io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.note;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
-import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument;
 import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImpuestos;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
@@ -48,7 +48,7 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
 
     @Override
     public void modify(Object object) {
-        Consumer<Document> consumer = document -> {
+        Consumer<SalesDocument> consumer = document -> {
             Impuesto ivap = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.IMPUESTO_ARROZ_PILADO);
             Impuesto gravado = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.IGV);
             Impuesto inafecto = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.INAFECTO);
@@ -58,7 +58,7 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
             BigDecimal icb = document
                     .getDetalles()
                     .stream()
-                    .map(DocumentoDetalle::getIcb)
+                    .map(DocumentoVentaDetalle::getIcb)
                     .filter(Objects::nonNull)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 

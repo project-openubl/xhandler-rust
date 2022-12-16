@@ -35,7 +35,7 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class Invoice extends Document {
+public class Invoice extends SalesDocument {
 
     @Schema(description = "Ejemplo 2022-12-25", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
     private LocalDate fechaVencimiento;

@@ -36,7 +36,7 @@ public class Proveedor {
     /**
      * Número de RUC de la persona jurídica
      */
-    @Schema(required = true, minLength = 11, maxLength = 11, pattern = "[0-9]+")
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minLength = 11, maxLength = 11, pattern = "[0-9]+")
     private String ruc;
 
     /**
@@ -47,7 +47,7 @@ public class Proveedor {
     /**
      * Razón social de la persona jurídica
      */
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String razonSocial;
 
     /**

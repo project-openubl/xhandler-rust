@@ -16,14 +16,14 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
+import io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.util.function.Consumer;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isSalesDocument;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenSalesDocument;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class MonedaRule extends AbstractHeaderRule {
@@ -31,14 +31,14 @@ public class MonedaRule extends AbstractHeaderRule {
     @Override
     public boolean test(Object object) {
         return (
-                isBaseDocumento.test(object) &&
-                        whenBaseDocumento.apply(object).map(documento -> documento.getMoneda() == null).orElse(false)
+                isSalesDocument.test(object) &&
+                        whenSalesDocument.apply(object).map(documento -> documento.getMoneda() == null).orElse(false)
         );
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<Document> consumer = document -> document.setMoneda(getDefaults().getMoneda());
-        whenBaseDocumento.apply(object).ifPresent(consumer);
+        Consumer<SalesDocument> consumer = document -> document.setMoneda(getDefaults().getMoneda());
+        whenSalesDocument.apply(object).ifPresent(consumer);
     }
 }

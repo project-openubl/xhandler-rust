@@ -38,21 +38,21 @@ public class Detraccion {
     /**
      * Catalog59
      **/
-    @Schema(description = "Catalogo 59", required = true)
+    @Schema(description = "Catalogo 59", requiredMode = Schema.RequiredMode.REQUIRED)
     private String medioDePago;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String cuentaBancaria;
 
     /**
      * Catalog54
      **/
-    @Schema(description = "Catalog 54", required = true)
+    @Schema(description = "Catalog 54", requiredMode = Schema.RequiredMode.REQUIRED)
     private String tipoBienDetraido;
 
-    @Schema(required = true, minimum = "0", maximum = "1", exclusiveMinimum = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0", maximum = "1", exclusiveMinimum = true)
     private BigDecimal porcentaje;
 
-    @Schema(required = true, minimum = "0", exclusiveMinimum = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0", exclusiveMinimum = true)
     private BigDecimal monto;
 }

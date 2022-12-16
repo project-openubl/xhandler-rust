@@ -32,6 +32,10 @@ public class TemplateProducer {
         return EngineProducer.getInstance().getEngine().getTemplate("Renderer/debitNote.xml");
     }
 
+    public Template getVoidedDocument() {
+        return EngineProducer.getInstance().getEngine().getTemplate("Renderer/voidedDocuments.xml");
+    }
+
     private static class TemplateProducerHolder {
 
         private static final TemplateProducer INSTANCE = new TemplateProducer();

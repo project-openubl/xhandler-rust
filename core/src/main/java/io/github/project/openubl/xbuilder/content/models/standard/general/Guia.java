@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Guia {
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String serieNumero;
 
     /**
@@ -38,6 +38,6 @@ public class Guia {
      * <p>
      * Valores válidos: "09", "31"
      */
-    @Schema(description = "Catalogo 01", required = true)
+    @Schema(description = "Catalogo 01", requiredMode = Schema.RequiredMode.REQUIRED)
     private String tipoDocumento;
 }

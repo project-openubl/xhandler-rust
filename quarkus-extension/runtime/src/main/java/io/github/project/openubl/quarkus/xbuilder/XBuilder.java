@@ -27,7 +27,8 @@ public interface XBuilder {
     enum Type {
         INVOICE("invoice.xml"),
         CREDIT_NOTE("creditNote.xml"),
-        DEBIT_NOTE("debitNote.xml");
+        DEBIT_NOTE("debitNote.xml"),
+        VOIDED_DOCUMENTS("voidedDocuments.xml");
 
         private final String templatePath;
 
