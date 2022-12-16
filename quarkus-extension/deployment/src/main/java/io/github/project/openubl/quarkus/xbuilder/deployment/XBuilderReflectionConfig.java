@@ -56,6 +56,11 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
                 io.github.project.openubl.xbuilder.content.models.standard.general.Invoice.InvoiceBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.Note.NoteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteInvoice.TotalImporteInvoiceBuilder.class,
+
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.VoidedDocumentsBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.VoidedDocumentsItemBuilder.class
         }
 )
 public class XBuilderReflectionConfig {

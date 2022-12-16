@@ -176,7 +176,12 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog53.class,
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo.class,
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog54.class,
-                io.github.project.openubl.xbuilder.content.catalogs.Catalog59.class
+                io.github.project.openubl.xbuilder.content.catalogs.Catalog59.class,
+
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.VoidedDocumentsBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.VoidedDocumentsItemBuilder.class
         );
     }
 }

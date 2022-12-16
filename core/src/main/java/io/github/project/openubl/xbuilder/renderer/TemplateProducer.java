@@ -33,7 +33,7 @@ public class TemplateProducer {
     }
 
     public Template getVoidedDocument() {
-        return EngineProducer.getInstance().getEngine().getTemplate("Renderer/voidedDocument.xml");
+        return EngineProducer.getInstance().getEngine().getTemplate("Renderer/voidedDocuments.xml");
     }
 
     private static class TemplateProducerHolder {
