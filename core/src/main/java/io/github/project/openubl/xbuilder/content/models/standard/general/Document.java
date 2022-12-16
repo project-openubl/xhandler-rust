@@ -64,13 +64,13 @@ public abstract class Document {
     /**
      * Serie del comprobante
      */
-    @Schema(required = true, minLength = 4, pattern = "^[F|f|B|b].*$")
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minLength = 4, pattern = "^[F|f|B|b].*$")
     private String serie;
 
     /**
      * Número del comprobante
      */
-    @Schema(required = true, minimum = "1", maximum = "99999999")
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "1", maximum = "99999999")
     private Integer numero;
 
     /**
@@ -93,13 +93,13 @@ public abstract class Document {
     /**
      * Cliente
      */
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Cliente cliente;
 
     /**
      * Proveedor del bien o servicio
      */
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Proveedor proveedor;
 
     /**
@@ -119,7 +119,7 @@ public abstract class Document {
      * Detalle del comprobante
      */
     @Singular
-    @ArraySchema(minItems = 1, schema = @Schema(required = true))
+    @ArraySchema(minItems = 1, schema = @Schema(requiredMode = Schema.RequiredMode.REQUIRED))
     private List<DocumentoDetalle> detalles;
 
     /**

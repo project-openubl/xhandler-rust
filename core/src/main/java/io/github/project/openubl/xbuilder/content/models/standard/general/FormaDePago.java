@@ -32,10 +32,10 @@ import java.util.List;
 @AllArgsConstructor
 public class FormaDePago {
 
-    @Schema(description = "CREDITO o CONTADO", required = true)
+    @Schema(description = "CREDITO o CONTADO", requiredMode = Schema.RequiredMode.REQUIRED)
     private String tipo;
 
-    @Schema(description = "Monto total de pago", required = true, minimum = "0")
+    @Schema(description = "Monto total de pago", requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
     private BigDecimal total;
 
     @Schema(description = "Cuotas de pago")

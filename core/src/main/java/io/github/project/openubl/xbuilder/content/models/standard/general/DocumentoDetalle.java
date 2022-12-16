@@ -30,12 +30,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class DocumentoDetalle {
 
-    @Schema(description = "Descripcion del bien o servicio", required = true)
+    @Schema(description = "Descripcion del bien o servicio", requiredMode = Schema.RequiredMode.REQUIRED)
     private String descripcion;
 
     private String unidadMedida;
 
-    @Schema(required = true, minimum = "0", exclusiveMinimum = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0", exclusiveMinimum = true)
     private BigDecimal cantidad;
 
     @Schema(description = "Precio sin incluir impuestos", minimum = "0")
@@ -51,7 +51,7 @@ public class DocumentoDetalle {
     private String precioReferenciaTipo;
 
     // Impuestos
-    @Schema(description = "Ejemplo 0.18", minimum = "0", maximum = "1")
+    @Schema(description = "Monto total de IGV", minimum = "0")
     private BigDecimal igv;
 
     @Schema(minimum = "0")

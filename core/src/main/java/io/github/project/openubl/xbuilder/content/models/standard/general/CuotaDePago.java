@@ -39,12 +39,12 @@ public class CuotaDePago {
     /**
      * Importe de la cuota
      */
-    @Schema(required = true, minimum = "0", exclusiveMinimum = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0", exclusiveMinimum = true)
     private BigDecimal importe;
 
     /**
      * Fecha de pago de la cuota
      */
-    @Schema(description = "Ejemplo 2022-12-25", required = true, pattern = "^\\d{4}-\\d{2}-\\d{2}$")
+    @Schema(description = "Ejemplo 2022-12-25", requiredMode = Schema.RequiredMode.REQUIRED, pattern = "^\\d{4}-\\d{2}-\\d{2}$")
     private LocalDate fechaPago;
 }

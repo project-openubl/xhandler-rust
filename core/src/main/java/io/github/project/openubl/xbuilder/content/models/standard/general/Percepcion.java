@@ -33,7 +33,7 @@ public class Percepcion {
     /**
      * Catalog53
      */
-    @Schema(description = "Catalog 53", required = true)
+    @Schema(description = "Catalog 53", requiredMode = Schema.RequiredMode.REQUIRED)
     private String tipo;
 
     private BigDecimal montoBase; // importeSinImpuestos
