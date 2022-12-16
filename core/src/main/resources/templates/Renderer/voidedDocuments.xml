@@ -13,15 +13,7 @@
     <cbc:ReferenceDate>{fechaEmisionComprobantes}</cbc:ReferenceDate>
     <cbc:IssueDate>{fechaEmision}</cbc:IssueDate>
     {#include ubl/common/signature.xml firmante=this.firmante /}
-    <cac:AccountingSupplierParty>
-        <cbc:CustomerAssignedAccountID>{proveedor.ruc}</cbc:CustomerAssignedAccountID>
-        <cbc:AdditionalAccountID>6</cbc:AdditionalAccountID>
-        <cac:Party>
-            <cac:PartyLegalEntity>
-                <cbc:RegistrationName><![CDATA[{proveedor.razonSocial}]]></cbc:RegistrationName>
-            </cac:PartyLegalEntity>
-        </cac:Party>
-    </cac:AccountingSupplierParty>
+    {#include ubl/sunat/include/supplier.xml proveedor=this.proveedor /}
     {#each comprobantes.orEmpty}
     <sac:VoidedDocumentsLine>
         <cbc:LineID>{it_index.add(1)}</cbc:LineID>
