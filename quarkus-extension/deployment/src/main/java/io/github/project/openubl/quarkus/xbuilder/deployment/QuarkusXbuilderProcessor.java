@@ -19,8 +19,6 @@ package io.github.project.openubl.quarkus.xbuilder.deployment;
 import io.github.project.openubl.quarkus.xbuilder.XBuilder;
 import io.github.project.openubl.quarkus.xbuilder.runtime.CustomTemplateLocator;
 import io.github.project.openubl.quarkus.xbuilder.runtime.DefaultXBuilder;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
-import io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument;
 import io.github.project.openubl.xbuilder.enricher.kie.RuleFactory;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -102,6 +100,7 @@ class QuarkusXbuilderProcessor {
         return new ReflectiveClassBuildItem(
                 true,
                 false,
+                io.github.project.openubl.xbuilder.content.models.common.Document.class,
                 io.github.project.openubl.xbuilder.content.models.common.Cliente.class,
                 io.github.project.openubl.xbuilder.content.models.common.Proveedor.class,
                 io.github.project.openubl.xbuilder.content.models.common.Contacto.class,
@@ -119,9 +118,9 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.CuotaDePago.class,
-                SalesDocument.class,
+                io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.Detraccion.class,
-                DocumentoVentaDetalle.class,
+                io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle.class,
                 //                io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoRelacionado.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.FormaDePago.class,
                 //                io.github.project.openubl.xbuilder.content.models.standard.general.Guia.class,

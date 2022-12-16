@@ -16,11 +16,11 @@
  */
 package io.github.project.openubl.quarkus.xbuilder.deployment;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection(
         targets = {
+                io.github.project.openubl.xbuilder.content.models.common.Document.class,
                 io.github.project.openubl.xbuilder.content.models.common.Cliente.class,
                 io.github.project.openubl.xbuilder.content.models.common.Proveedor.class,
                 io.github.project.openubl.xbuilder.content.models.common.Contacto.class,
