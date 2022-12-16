@@ -16,14 +16,14 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header;
 
-import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
+import io.github.project.openubl.xbuilder.content.models.common.Document;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.util.function.Consumer;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumento;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isDocument;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenDocument;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class FechaEmisionRule extends AbstractHeaderRule {
@@ -31,14 +31,14 @@ public class FechaEmisionRule extends AbstractHeaderRule {
     @Override
     public boolean test(Object object) {
         return (
-                isBaseDocumento.test(object) &&
-                        whenBaseDocumento.apply(object).map(documento -> documento.getFechaEmision() == null).orElse(false)
+                isDocument.test(object) &&
+                        whenDocument.apply(object).map(documento -> documento.getFechaEmision() == null).orElse(false)
         );
     }
 
     @Override
     public void modify(Object object) {
         Consumer<Document> consumer = document -> document.setFechaEmision(getRuleContext().getLocalDate());
-        whenBaseDocumento.apply(object).ifPresent(consumer);
+        whenDocument.apply(object).ifPresent(consumer);
     }
 }

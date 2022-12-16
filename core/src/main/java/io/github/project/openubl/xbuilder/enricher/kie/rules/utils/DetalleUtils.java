@@ -19,7 +19,7 @@ package io.github.project.openubl.xbuilder.enricher.kie.rules.utils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 
 public class DetalleUtils {
 
-    public static BigDecimal getImporteSinImpuestos(List<DocumentoDetalle> detalles) {
+    public static BigDecimal getImporteSinImpuestos(List<DocumentoVentaDetalle> detalles) {
         return detalles
                 .stream()
                 .filter(item -> {
@@ -38,12 +38,12 @@ public class DetalleUtils {
                             .orElseThrow(Catalog.invalidCatalogValue);
                     return !catalog7.getTaxCategory().equals(Catalog5.GRATUITO);
                 })
-                .map(DocumentoDetalle::getIgvBaseImponible)
+                .map(DocumentoVentaDetalle::getIgvBaseImponible)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public static BigDecimal getTotalImpuestos(List<DocumentoDetalle> detalles) {
+    public static BigDecimal getTotalImpuestos(List<DocumentoVentaDetalle> detalles) {
         return detalles
                 .stream()
                 .filter(detalle -> {
@@ -52,13 +52,13 @@ public class DetalleUtils {
                             .orElseThrow(Catalog.invalidCatalogValue);
                     return !catalog7.getTaxCategory().equals(Catalog5.GRATUITO);
                 })
-                .map(DocumentoDetalle::getTotalImpuestos)
+                .map(DocumentoVentaDetalle::getTotalImpuestos)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public static Impuesto calImpuestoByTipo(List<DocumentoDetalle> detalle, Catalog5 categoria) {
-        Supplier<Stream<DocumentoDetalle>> stream = () ->
+    public static Impuesto calImpuestoByTipo(List<DocumentoVentaDetalle> detalle, Catalog5 categoria) {
+        Supplier<Stream<DocumentoVentaDetalle>> stream = () ->
                 detalle
                         .stream()
                         .filter($il -> {
@@ -70,12 +70,12 @@ public class DetalleUtils {
 
         BigDecimal baseImponible = stream
                 .get()
-                .map(DocumentoDetalle::getIgvBaseImponible)
+                .map(DocumentoVentaDetalle::getIgvBaseImponible)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal importe = stream
                 .get()
-                .map(DocumentoDetalle::getIgv)
+                .map(DocumentoVentaDetalle::getIgv)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 

@@ -51,3 +51,6 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.IcbAp
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.IgvBaseImponibleRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.IgvRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.TotalImpuestosRule
+
+# VoidedDocuments
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.voidedDocumentItem.TipoComprobanteRule

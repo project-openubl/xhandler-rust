@@ -153,7 +153,7 @@ public class XMLAssertUtils {
                         SunatResponse.class
                 );
 
-        if (sendFileSunatResponse.getMetadata().getNotes() != null) {
+        if (sendFileSunatResponse.getMetadata() != null && sendFileSunatResponse.getMetadata().getNotes() != null) {
             List<String> allowedNotesList = Arrays.asList(allowedNotes);
 
             List<String> notesToCheck = sendFileSunatResponse

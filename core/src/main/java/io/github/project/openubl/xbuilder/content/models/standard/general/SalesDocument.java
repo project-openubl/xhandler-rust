@@ -17,25 +17,25 @@
 package io.github.project.openubl.xbuilder.content.models.standard.general;
 
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
-import io.github.project.openubl.xbuilder.content.models.common.Firmante;
-import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
+import io.github.project.openubl.xbuilder.content.models.common.Document;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @NoArgsConstructor
-public abstract class Document {
+public abstract class SalesDocument extends Document {
 
     /**
      * Leyendas asociadas al comprobante
@@ -74,12 +74,6 @@ public abstract class Document {
     private Integer numero;
 
     /**
-     * Fecha de emisión del comprobante. Ejemplo 2022-12-25 (YYYY-MM-SS)
-     */
-    @Schema(description = "Format: \"YYYY-MM-SS\". Ejemplo: 2022-12-25", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
-    private LocalDate fechaEmision;
-
-    /**
      * Hora de emisión del comprobante. Ejemplo 12:00:00 (HH:MM:SS)
      */
     @Schema(description = "Format: \"HH:MM:SS\". Ejemplo 12:00:00", pattern = "^\\d{2}:\\d{2}:\\d{2}$")
@@ -97,20 +91,6 @@ public abstract class Document {
     private Cliente cliente;
 
     /**
-     * Proveedor del bien o servicio
-     */
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private Proveedor proveedor;
-
-    /**
-     * Persona que firma electrónicamente el comprobante. Si es NULL los datos del proveedor son usados.
-     */
-    @Schema(
-            description = "Persona que firma electrónicamente el comprobante. Si NULL los datos del proveedor son usados."
-    )
-    private Firmante firmante;
-
-    /**
      * Total de impuestos a pagar
      */
     private TotalImpuestos totalImpuestos;
@@ -120,7 +100,7 @@ public abstract class Document {
      */
     @Singular
     @ArraySchema(minItems = 1, schema = @Schema(requiredMode = Schema.RequiredMode.REQUIRED))
-    private List<DocumentoDetalle> detalles;
+    private List<DocumentoVentaDetalle> detalles;
 
     /**
      * Guias de remision relacionadas

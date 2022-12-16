@@ -31,7 +31,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public abstract class Note extends Document {
+public abstract class Note extends SalesDocument {
 
     /**
      * Tipo de nota.

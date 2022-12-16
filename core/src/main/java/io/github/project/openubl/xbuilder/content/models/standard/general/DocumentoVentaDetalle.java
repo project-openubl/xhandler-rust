@@ -28,7 +28,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DocumentoDetalle {
+public class DocumentoVentaDetalle {
 
     @Schema(description = "Descripcion del bien o servicio", requiredMode = Schema.RequiredMode.REQUIRED)
     private String descripcion;

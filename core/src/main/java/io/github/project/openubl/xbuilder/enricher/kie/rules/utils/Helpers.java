@@ -16,13 +16,16 @@
  */
 package io.github.project.openubl.xbuilder.enricher.kie.rules.utils;
 
+import io.github.project.openubl.xbuilder.content.models.common.Document;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
-import io.github.project.openubl.xbuilder.content.models.standard.general.Document;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
+import io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument;
+import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
+import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -35,14 +38,26 @@ public class Helpers {
     public static final Predicate<Object> isDebitNote = o -> o instanceof DebitNote;
     public static final Predicate<Object> isNote = o -> o instanceof Note;
 
-    public static final Predicate<Object> isBaseDocumento = isInvoice.or(isCreditNote).or(isDebitNote);
-    public static final Predicate<Object> isBaseDocumentoDetalle = o -> o instanceof DocumentoDetalle;
+    public static final Predicate<Object> isVoidedDocuments = o -> o instanceof VoidedDocuments;
+    public static final Predicate<Object> isVoidedDocumentsItem = o -> o instanceof VoidedDocumentsItem;
+
+    public static final Predicate<Object> isDocument = isInvoice.or(isCreditNote).or(isDebitNote).or(isVoidedDocuments);
+
+    public static final Predicate<Object> isSalesDocument = isInvoice.or(isCreditNote).or(isDebitNote);
+    public static final Predicate<Object> isSalesDocumentItem = o -> o instanceof DocumentoVentaDetalle;
 
     public static final Predicate<Object> isAnticipo = o -> o instanceof Anticipo;
 
     public static final Function<Object, Optional<Invoice>> whenInvoice = o -> {
         if (o instanceof Invoice) {
             return Optional.of((Invoice) o);
+        }
+        return Optional.empty();
+    };
+
+    public static final Function<Object, Optional<Document>> whenDocument = o -> {
+        if (o instanceof Document) {
+            return Optional.of((Document) o);
         }
         return Optional.empty();
     };
@@ -61,9 +76,9 @@ public class Helpers {
         return Optional.empty();
     };
 
-    public static final Function<Object, Optional<Document>> whenBaseDocumento = o -> {
-        if (o instanceof Document) {
-            return Optional.of((Document) o);
+    public static final Function<Object, Optional<SalesDocument>> whenSalesDocument = o -> {
+        if (o instanceof SalesDocument) {
+            return Optional.of((SalesDocument) o);
         }
         return Optional.empty();
     };
@@ -75,9 +90,9 @@ public class Helpers {
         return Optional.empty();
     };
 
-    public static final Function<Object, Optional<DocumentoDetalle>> whenBaseDocumentoDetalle = o -> {
-        if (o instanceof DocumentoDetalle) {
-            return Optional.of((DocumentoDetalle) o);
+    public static final Function<Object, Optional<DocumentoVentaDetalle>> whenSalesDocumentItem = o -> {
+        if (o instanceof DocumentoVentaDetalle) {
+            return Optional.of((DocumentoVentaDetalle) o);
         }
         return Optional.empty();
     };
@@ -85,6 +100,13 @@ public class Helpers {
     public static final Function<Object, Optional<Anticipo>> whenAnticipo = o -> {
         if (o instanceof Anticipo) {
             return Optional.of((Anticipo) o);
+        }
+        return Optional.empty();
+    };
+
+    public static final Function<Object, Optional<VoidedDocumentsItem>> whenVoidedDocumentsItem = o -> {
+        if (o instanceof VoidedDocumentsItem) {
+            return Optional.of((VoidedDocumentsItem) o);
         }
         return Optional.empty();
     };

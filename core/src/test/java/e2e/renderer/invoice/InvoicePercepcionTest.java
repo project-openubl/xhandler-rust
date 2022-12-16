@@ -21,7 +21,7 @@ import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Percepcion;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
@@ -50,7 +50,7 @@ public class InvoicePercepcionTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item1")
                                 .cantidad(new BigDecimal("4"))

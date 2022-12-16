@@ -19,14 +19,14 @@ package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detall
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog16;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.util.function.Consumer;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isBaseDocumentoDetalle;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumentoDetalle;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isSalesDocumentItem;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenSalesDocumentItem;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class PrecioDeReferenciaTipoRule extends AbstractBodyRule {
@@ -34,14 +34,14 @@ public class PrecioDeReferenciaTipoRule extends AbstractBodyRule {
     @Override
     public boolean test(Object object) {
         return (
-                isBaseDocumentoDetalle.test(object) &&
-                        whenBaseDocumentoDetalle.apply(object).map(documento -> documento.getIgvTipo() != null).orElse(false)
+                isSalesDocumentItem.test(object) &&
+                        whenSalesDocumentItem.apply(object).map(documento -> documento.getIgvTipo() != null).orElse(false)
         );
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<DocumentoDetalle> consumer = detalle -> {
+        Consumer<DocumentoVentaDetalle> consumer = detalle -> {
             Catalog7 catalog7 = Catalog
                     .valueOfCode(Catalog7.class, detalle.getIgvTipo())
                     .orElseThrow(Catalog.invalidCatalogValue);
@@ -51,6 +51,6 @@ public class PrecioDeReferenciaTipoRule extends AbstractBodyRule {
 
             detalle.setPrecioReferenciaTipo(catalog16.getCode());
         };
-        whenBaseDocumentoDetalle.apply(object).ifPresent(consumer);
+        whenSalesDocumentItem.apply(object).ifPresent(consumer);
     }
 }

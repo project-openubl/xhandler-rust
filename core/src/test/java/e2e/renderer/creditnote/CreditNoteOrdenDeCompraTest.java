@@ -21,7 +21,7 @@ import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
 import io.quarkus.qute.Template;
@@ -54,7 +54,7 @@ public class CreditNoteOrdenDeCompraTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item1")
                                 .cantidad(new BigDecimal("10"))
@@ -62,7 +62,7 @@ public class CreditNoteOrdenDeCompraTest extends AbstractTest {
                                 .build()
                 )
                 .detalle(
-                        DocumentoDetalle
+                        DocumentoVentaDetalle
                                 .builder()
                                 .descripcion("Item2")
                                 .cantidad(new BigDecimal("10"))

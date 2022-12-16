@@ -24,8 +24,8 @@ import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import java.util.function.Consumer;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isInvoice;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenBaseDocumento;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenInvoice;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenSalesDocument;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class TipoComprobanteRule extends AbstractHeaderRule {
@@ -34,7 +34,7 @@ public class TipoComprobanteRule extends AbstractHeaderRule {
     public boolean test(Object object) {
         return (
                 isInvoice.test(object) &&
-                        whenBaseDocumento.apply(object).map(documento -> documento.getSerie() != null).orElse(false)
+                        whenSalesDocument.apply(object).map(documento -> documento.getSerie() != null).orElse(false)
         );
     }
 

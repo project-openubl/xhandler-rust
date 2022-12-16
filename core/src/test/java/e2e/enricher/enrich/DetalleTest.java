@@ -19,7 +19,7 @@ package e2e.enricher.enrich;
 import e2e.AbstractTest;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog16;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoDetalle;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ public class DetalleTest extends AbstractTest {
     @Test
     public void testEnrichUnidadMedida() {
         // Given
-        Invoice input = Invoice.builder().detalle(DocumentoDetalle.builder().build()).build();
+        Invoice input = Invoice.builder().detalle(DocumentoVentaDetalle.builder().build()).build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -48,7 +48,7 @@ public class DetalleTest extends AbstractTest {
     @Test
     public void testDontEnrichUnidadMedida() {
         // Given
-        Invoice input = Invoice.builder().detalle(DocumentoDetalle.builder().unidadMedida("KG").build()).build();
+        Invoice input = Invoice.builder().detalle(DocumentoVentaDetalle.builder().unidadMedida("KG").build()).build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -65,7 +65,7 @@ public class DetalleTest extends AbstractTest {
     @Test
     public void testEnrichIgvTipo() {
         // Given
-        Invoice input = Invoice.builder().detalle(DocumentoDetalle.builder().build()).build();
+        Invoice input = Invoice.builder().detalle(DocumentoVentaDetalle.builder().build()).build();
 
         // When
         ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
@@ -84,7 +84,7 @@ public class DetalleTest extends AbstractTest {
         // Given
         Invoice input = Invoice
                 .builder()
-                .detalle(DocumentoDetalle.builder().igvTipo(Catalog7.INAFECTO_RETIRO.getCode()).build())
+                .detalle(DocumentoVentaDetalle.builder().igvTipo(Catalog7.INAFECTO_RETIRO.getCode()).build())
                 .build();
 
         // When
@@ -104,7 +104,7 @@ public class DetalleTest extends AbstractTest {
         // Given
         Invoice input = Invoice
                 .builder()
-                .detalle(DocumentoDetalle.builder().igvTipo(Catalog7.GRAVADO_OPERACION_ONEROSA.getCode()).build())
+                .detalle(DocumentoVentaDetalle.builder().igvTipo(Catalog7.GRAVADO_OPERACION_ONEROSA.getCode()).build())
                 .build();
 
         // When
@@ -124,7 +124,7 @@ public class DetalleTest extends AbstractTest {
         // Given
         Invoice input = Invoice
                 .builder()
-                .detalle(DocumentoDetalle.builder().igvTipo(Catalog7.GRAVADO_RETIRO_POR_DONACION.getCode()).build())
+                .detalle(DocumentoVentaDetalle.builder().igvTipo(Catalog7.GRAVADO_RETIRO_POR_DONACION.getCode()).build())
                 .build();
 
         // When
