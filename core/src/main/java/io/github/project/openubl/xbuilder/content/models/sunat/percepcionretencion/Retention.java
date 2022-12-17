@@ -21,9 +21,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
 
+@Jacksonized
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
