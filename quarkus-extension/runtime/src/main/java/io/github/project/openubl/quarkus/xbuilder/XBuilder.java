@@ -29,7 +29,9 @@ public interface XBuilder {
         CREDIT_NOTE("creditNote.xml"),
         DEBIT_NOTE("debitNote.xml"),
         VOIDED_DOCUMENTS("voidedDocuments.xml"),
-        SUMMARY_DOCUMENTS("summaryDocuments.xml");
+        SUMMARY_DOCUMENTS("summaryDocuments.xml"),
+        PERCEPTION("perception.xml"),
+        RETENTION("retention.xml"),;
 
         private final String templatePath;
 

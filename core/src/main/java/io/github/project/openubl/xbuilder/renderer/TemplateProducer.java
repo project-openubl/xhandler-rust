@@ -40,6 +40,14 @@ public class TemplateProducer {
         return EngineProducer.getInstance().getEngine().getTemplate("Renderer/summaryDocuments.xml");
     }
 
+    public Template getPerception() {
+        return EngineProducer.getInstance().getEngine().getTemplate("Renderer/perception.xml");
+    }
+
+    public Template getRetention() {
+        return EngineProducer.getInstance().getEngine().getTemplate("Renderer/retention.xml");
+    }
+
     private static class TemplateProducerHolder {
 
         private static final TemplateProducer INSTANCE = new TemplateProducer();

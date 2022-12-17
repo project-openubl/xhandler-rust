@@ -16,6 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion;
 
+import io.github.project.openubl.xbuilder.content.models.common.TipoCambio;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,18 +30,19 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ComprobanteAfectado {
-    private String moneda;
+public class PercepcionRetencionOperacion {
 
-    @Schema(description = "Catalogo 01")
-    private String tipoComprobante;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Numero de cobro o pago")
+    private Integer numeroOperacion;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Fecha en la que se realiza el cobro o pago")
+    private LocalDate fechaOperacion;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Importe del cobro o pago")
+    private BigDecimal importeOperacion;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private String serieNumero;
+    private ComprobanteAfectado comprobante;
 
-    @Schema(description = "Format: \"YYYY-MM-SS\". Ejemplo: 2022-12-25", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
-    private LocalDate fechaEmision;
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private BigDecimal importeTotal;
+    private TipoCambio tipoCambio;
 }

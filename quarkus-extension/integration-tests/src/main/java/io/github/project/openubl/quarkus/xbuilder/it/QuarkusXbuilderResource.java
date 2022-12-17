@@ -20,6 +20,8 @@ import io.github.project.openubl.quarkus.xbuilder.XBuilder;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog19;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1_Invoice;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog22;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog23;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
@@ -29,6 +31,9 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Docume
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.PercepcionRetencionOperacion;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention;
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.Comprobante;
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado;
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteImpuestos;
@@ -48,6 +53,8 @@ import java.time.LocalDate;
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.CREDIT_NOTE;
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.DEBIT_NOTE;
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.INVOICE;
+import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.PERCEPTION;
+import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.RETENTION;
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.SUMMARY_DOCUMENTS;
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.VOIDED_DOCUMENTS;
 
@@ -116,6 +123,30 @@ public class QuarkusXbuilderResource {
 
         Template template = xBuilder.getTemplate(SUMMARY_DOCUMENTS);
         return template.data(summaryDocuments).render();
+    }
+
+    @GET
+    @Path("perception")
+    public String createPerception() {
+        Perception perception = getPerception();
+
+        ContentEnricher enricher = new ContentEnricher(xBuilder.getDefaults(), () -> LocalDate.of(2022, 1, 25));
+        enricher.enrich(perception);
+
+        Template template = xBuilder.getTemplate(PERCEPTION);
+        return template.data(perception).render();
+    }
+
+    @GET
+    @Path("retention")
+    public String createRetention() {
+        Retention retention = getRetention();
+
+        ContentEnricher enricher = new ContentEnricher(xBuilder.getDefaults(), () -> LocalDate.of(2022, 1, 25));
+        enricher.enrich(retention);
+
+        Template template = xBuilder.getTemplate(RETENTION);
+        return template.data(retention).render();
     }
 
     private Invoice getBaseInvoice() {
@@ -284,6 +315,80 @@ public class QuarkusXbuilderResource {
                                         .gravado(new BigDecimal("118"))
                                         .build()
                                 )
+                                .build()
+                        )
+                        .build()
+                )
+                .build();
+    }
+
+    public Perception getPerception() {
+        return Perception.builder()
+                .serie("P001")
+                .numero(1)
+                .fechaEmision(LocalDate.of(2022, 01, 31))
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
+                )
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.getCode())
+                        .build()
+                )
+                .importeTotalPercibido(new BigDecimal("10"))
+                .importeTotalCobrado(new BigDecimal("210"))
+                .tipoRegimen(Catalog22.VENTA_INTERNA.getCode())
+                .tipoRegimenPorcentaje(Catalog22.VENTA_INTERNA.getPercent()) //
+                .operacion(PercepcionRetencionOperacion.builder()
+                        .numeroOperacion(1)
+                        .fechaOperacion(LocalDate.of(2022, 01, 31))
+                        .importeOperacion(new BigDecimal("100"))
+                        .comprobante(io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.ComprobanteAfectado.builder()
+                                .tipoComprobante(Catalog1.FACTURA.getCode())
+                                .serieNumero("F001-1")
+                                .fechaEmision(LocalDate.of(2022, 01, 31))
+                                .importeTotal(new BigDecimal("200"))
+                                .moneda("PEN")
+                                .build()
+                        )
+                        .build()
+                )
+                .build();
+    }
+
+    public Retention getRetention() {
+        return Retention.builder()
+                .serie("R001")
+                .numero(1)
+                .fechaEmision(LocalDate.of(2022, 01, 31))
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
+                )
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.getCode())
+                        .build()
+                )
+                .importeTotalRetenido(new BigDecimal("10"))
+                .importeTotalPagado(new BigDecimal("200"))
+                .tipoRegimen(Catalog23.TASA_TRES.getCode())
+                .tipoRegimenPorcentaje(Catalog23.TASA_TRES.getPercent()) //
+                .operacion(PercepcionRetencionOperacion.builder()
+                        .numeroOperacion(1)
+                        .fechaOperacion(LocalDate.of(2022, 01, 31))
+                        .importeOperacion(new BigDecimal("100"))
+                        .comprobante(io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.ComprobanteAfectado.builder()
+                                .tipoComprobante(Catalog1.FACTURA.getCode())
+                                .serieNumero("F001-1")
+                                .fechaEmision(LocalDate.of(2022, 01, 31))
+                                .importeTotal(new BigDecimal("210"))
+                                .moneda("PEN")
                                 .build()
                         )
                         .build()

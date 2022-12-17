@@ -21,6 +21,8 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.DebitN
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention;
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments;
 import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
@@ -114,6 +116,40 @@ public class ContentEnricher {
 
                     RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
                     input.getComprobantes().forEach(ruleUnitBody::modify);
+                });
+    }
+
+    public void enrich(Perception input) {
+        LocalDate systemLocalDate = dateProvider.now();
+
+        Stream
+                .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
+                .forEach(phaseType -> {
+                    // Header
+                    HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
+                            .localDate(systemLocalDate)
+                            .build();
+                    RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
+                    ruleUnitHeader.modify(input);
+
+                    // Body
+                });
+    }
+
+    public void enrich(Retention input) {
+        LocalDate systemLocalDate = dateProvider.now();
+
+        Stream
+                .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
+                .forEach(phaseType -> {
+                    // Header
+                    HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
+                            .localDate(systemLocalDate)
+                            .build();
+                    RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
+                    ruleUnitHeader.modify(input);
+
+                    // Body
                 });
     }
 

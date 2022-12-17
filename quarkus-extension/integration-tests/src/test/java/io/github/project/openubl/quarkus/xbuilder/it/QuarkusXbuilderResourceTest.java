@@ -643,4 +643,164 @@ public class QuarkusXbuilderResourceTest {
                         "    </sac:SummaryDocumentsLine>\n" +
                         "</SummaryDocuments>\n"));
     }
+
+    @Test
+    public void testPerception() {
+        given()
+                .when().get("/quarkus-xbuilder/perception")
+                .then()
+                .statusCode(200)
+                .body(is("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+                        "<Perception xmlns=\"urn:sunat:names:specification:ubl:peru:schema:xsd:Perception-1\"\n" +
+                        "            xmlns:cac=\"urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2\"\n" +
+                        "            xmlns:cbc=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\"\n" +
+                        "            xmlns:ccts=\"urn:un:unece:uncefact:documentation:2\"\n" +
+                        "            xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n" +
+                        "            xmlns:ext=\"urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2\"\n" +
+                        "            xmlns:qdt=\"urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2\"\n" +
+                        "            xmlns:sac=\"urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1\"\n" +
+                        "            xmlns:udt=\"urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2\"\n" +
+                        "            xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
+                        "    <ext:UBLExtensions>\n" +
+                        "        <ext:UBLExtension>\n" +
+                        "            <ext:ExtensionContent />\n" +
+                        "        </ext:UBLExtension>\n" +
+                        "    </ext:UBLExtensions>\n" +
+                        "    <cbc:UBLVersionID>2.0</cbc:UBLVersionID>\n" +
+                        "    <cbc:CustomizationID>1.0</cbc:CustomizationID>\n" +
+                        "    <cac:Signature>\n" +
+                        "        <cbc:ID>12345678912</cbc:ID>\n" +
+                        "        <cac:SignatoryParty>\n" +
+                        "            <cac:PartyIdentification>\n" +
+                        "                <cbc:ID>12345678912</cbc:ID>\n" +
+                        "            </cac:PartyIdentification>\n" +
+                        "            <cac:PartyName>\n" +
+                        "                <cbc:Name><![CDATA[Softgreen S.A.C.]]></cbc:Name>\n" +
+                        "            </cac:PartyName>\n" +
+                        "        </cac:SignatoryParty>\n" +
+                        "        <cac:DigitalSignatureAttachment>\n" +
+                        "            <cac:ExternalReference>\n" +
+                        "                <cbc:URI>#PROJECT-OPENUBL-SIGN</cbc:URI>\n" +
+                        "            </cac:ExternalReference>\n" +
+                        "        </cac:DigitalSignatureAttachment>\n" +
+                        "    </cac:Signature>\n" +
+                        "    <cbc:ID>P001-1</cbc:ID>\n" +
+                        "    <cbc:IssueDate>2022-01-31</cbc:IssueDate>\n" +
+                        "    <cac:AgentParty>\n" +
+                        "        <cac:PartyIdentification>\n" +
+                        "            <cbc:ID schemeID=\"6\">12345678912</cbc:ID>\n" +
+                        "        </cac:PartyIdentification>\n" +
+                        "        <cac:PartyLegalEntity>\n" +
+                        "            <cbc:RegistrationName><![CDATA[Softgreen S.A.C.]]></cbc:RegistrationName>\n" +
+                        "        </cac:PartyLegalEntity>\n" +
+                        "    </cac:AgentParty>\n" +
+                        "    <cac:ReceiverParty>\n" +
+                        "        <cac:PartyIdentification>\n" +
+                        "            <cbc:ID schemeID=\"6\">12121212121</cbc:ID>\n" +
+                        "        </cac:PartyIdentification>\n" +
+                        "        <cac:PartyLegalEntity>\n" +
+                        "            <cbc:RegistrationName><![CDATA[Carlos Feria]]></cbc:RegistrationName>\n" +
+                        "        </cac:PartyLegalEntity>\n" +
+                        "    </cac:ReceiverParty>\n" +
+                        "    <sac:SUNATPerceptionSystemCode>01</sac:SUNATPerceptionSystemCode>\n" +
+                        "    <sac:SUNATPerceptionPercent>2</sac:SUNATPerceptionPercent>\n" +
+                        "    <cbc:TotalInvoiceAmount currencyID=\"PEN\">10</cbc:TotalInvoiceAmount>\n" +
+                        "    <sac:SUNATTotalCashed currencyID=\"PEN\">210</sac:SUNATTotalCashed>\n" +
+                        "    <sac:SUNATPerceptionDocumentReference>\n" +
+                        "        <cbc:ID schemeID=\"01\">F001-1</cbc:ID>\n" +
+                        "        <cbc:IssueDate>2022-01-31</cbc:IssueDate>\n" +
+                        "        <cbc:TotalInvoiceAmount currencyID=\"PEN\">200</cbc:TotalInvoiceAmount>\n" +
+                        "        <cac:Payment>\n" +
+                        "            <cbc:ID>1</cbc:ID>\n" +
+                        "            <cbc:PaidAmount currencyID=\"PEN\">100</cbc:PaidAmount>\n" +
+                        "            <cbc:PaidDate>2022-01-31</cbc:PaidDate>\n" +
+                        "        </cac:Payment>\n" +
+                        "        <sac:SUNATPerceptionInformation>\n" +
+                        "            <sac:SUNATPerceptionAmount currencyID=\"PEN\">10</sac:SUNATPerceptionAmount>\n" +
+                        "            <sac:SUNATPerceptionDate>2022-01-31</sac:SUNATPerceptionDate>\n" +
+                        "            <sac:SUNATNetTotalCashed currencyID=\"PEN\">210</sac:SUNATNetTotalCashed>\n" +
+                        "        </sac:SUNATPerceptionInformation>\n" +
+                        "    </sac:SUNATPerceptionDocumentReference>\n" +
+                        "</Perception>\n"));
+    }
+
+    @Test
+    public void testRetention() {
+        given()
+                .when().get("/quarkus-xbuilder/retention")
+                .then()
+                .statusCode(200)
+                .body(is("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+                        "<Retention xmlns=\"urn:sunat:names:specification:ubl:peru:schema:xsd:Retention-1\"\n" +
+                        "           xmlns:cac=\"urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2\"\n" +
+                        "           xmlns:cbc=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\"\n" +
+                        "           xmlns:ccts=\"urn:un:unece:uncefact:documentation:2\"\n" +
+                        "           xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n" +
+                        "           xmlns:ext=\"urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2\"\n" +
+                        "           xmlns:qdt=\"urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2\"\n" +
+                        "           xmlns:sac=\"urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1\"\n" +
+                        "           xmlns:udt=\"urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2\"\n" +
+                        "           xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
+                        "    <ext:UBLExtensions>\n" +
+                        "        <ext:UBLExtension>\n" +
+                        "            <ext:ExtensionContent />\n" +
+                        "        </ext:UBLExtension>\n" +
+                        "    </ext:UBLExtensions>\n" +
+                        "    <cbc:UBLVersionID>2.0</cbc:UBLVersionID>\n" +
+                        "    <cbc:CustomizationID>1.0</cbc:CustomizationID>\n" +
+                        "    <cac:Signature>\n" +
+                        "        <cbc:ID>12345678912</cbc:ID>\n" +
+                        "        <cac:SignatoryParty>\n" +
+                        "            <cac:PartyIdentification>\n" +
+                        "                <cbc:ID>12345678912</cbc:ID>\n" +
+                        "            </cac:PartyIdentification>\n" +
+                        "            <cac:PartyName>\n" +
+                        "                <cbc:Name><![CDATA[Softgreen S.A.C.]]></cbc:Name>\n" +
+                        "            </cac:PartyName>\n" +
+                        "        </cac:SignatoryParty>\n" +
+                        "        <cac:DigitalSignatureAttachment>\n" +
+                        "            <cac:ExternalReference>\n" +
+                        "                <cbc:URI>#PROJECT-OPENUBL-SIGN</cbc:URI>\n" +
+                        "            </cac:ExternalReference>\n" +
+                        "        </cac:DigitalSignatureAttachment>\n" +
+                        "    </cac:Signature>\n" +
+                        "    <cbc:ID>R001-1</cbc:ID>\n" +
+                        "    <cbc:IssueDate>2022-01-31</cbc:IssueDate>\n" +
+                        "    <cac:AgentParty>\n" +
+                        "        <cac:PartyIdentification>\n" +
+                        "            <cbc:ID schemeID=\"6\">12345678912</cbc:ID>\n" +
+                        "        </cac:PartyIdentification>\n" +
+                        "        <cac:PartyLegalEntity>\n" +
+                        "            <cbc:RegistrationName><![CDATA[Softgreen S.A.C.]]></cbc:RegistrationName>\n" +
+                        "        </cac:PartyLegalEntity>\n" +
+                        "    </cac:AgentParty>\n" +
+                        "    <cac:ReceiverParty>\n" +
+                        "        <cac:PartyIdentification>\n" +
+                        "            <cbc:ID schemeID=\"6\">12121212121</cbc:ID>\n" +
+                        "        </cac:PartyIdentification>\n" +
+                        "        <cac:PartyLegalEntity>\n" +
+                        "            <cbc:RegistrationName><![CDATA[Carlos Feria]]></cbc:RegistrationName>\n" +
+                        "        </cac:PartyLegalEntity>\n" +
+                        "    </cac:ReceiverParty>\n" +
+                        "    <sac:SUNATRetentionSystemCode>01</sac:SUNATRetentionSystemCode>\n" +
+                        "    <sac:SUNATRetentionPercent>3</sac:SUNATRetentionPercent>\n" +
+                        "    <cbc:TotalInvoiceAmount currencyID=\"PEN\">10</cbc:TotalInvoiceAmount>\n" +
+                        "    <sac:SUNATTotalPaid currencyID=\"PEN\">200</sac:SUNATTotalPaid>\n" +
+                        "    <sac:SUNATRetentionDocumentReference>\n" +
+                        "        <cbc:ID schemeID=\"01\">F001-1</cbc:ID>\n" +
+                        "        <cbc:IssueDate>2022-01-31</cbc:IssueDate>\n" +
+                        "        <cbc:TotalInvoiceAmount currencyID=\"PEN\">210</cbc:TotalInvoiceAmount>\n" +
+                        "        <cac:Payment>\n" +
+                        "            <cbc:ID>1</cbc:ID>\n" +
+                        "            <cbc:PaidAmount currencyID=\"PEN\">100</cbc:PaidAmount>\n" +
+                        "            <cbc:PaidDate>2022-01-31</cbc:PaidDate>\n" +
+                        "        </cac:Payment>\n" +
+                        "        <sac:SUNATRetentionInformation>\n" +
+                        "            <sac:SUNATRetentionAmount currencyID=\"PEN\">10</sac:SUNATRetentionAmount>\n" +
+                        "            <sac:SUNATRetentionDate>2022-01-31</sac:SUNATRetentionDate>\n" +
+                        "            <sac:SUNATNetTotalPaid currencyID=\"PEN\">200</sac:SUNATNetTotalPaid>\n" +
+                        "        </sac:SUNATRetentionInformation>\n" +
+                        "    </sac:SUNATRetentionDocumentReference>\n" +
+                        "</Retention>\n"));
+    }
 }

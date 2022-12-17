@@ -17,22 +17,38 @@
 package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion;
 
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
-import io.github.project.openubl.xbuilder.content.models.common.Firmante;
-import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
+import io.github.project.openubl.xbuilder.content.models.common.Document;
+import io.github.project.openubl.xbuilder.content.models.common.TipoCambio;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
 @SuperBuilder
-public abstract class BasePercepcionRetencion {
+@EqualsAndHashCode(callSuper = true)
+public abstract class BasePercepcionRetencion extends Document {
 
+    /**
+     * Número del comprobante
+     */
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "1", maximum = "99999999")
     private Integer numero;
-    private Long fechaEmision;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0", maximum = "100", exclusiveMinimum = true)
+    private BigDecimal tipoRegimenPorcentaje;
+
     private String observacion;
-    private Proveedor proveedor;
+
+    /**
+     * Cliente
+     */
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Cliente cliente;
-    private Firmante firmante;
-    private List<PercepcionRetencionDetalle> detalle;
+
+    private PercepcionRetencionOperacion operacion;
+
 }
