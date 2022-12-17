@@ -212,6 +212,7 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception.PerceptionBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention.RetentionBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.BasePercepcionRetencion.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.BasePercepcionRetencion.BasePercepcionRetencionBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.ComprobanteAfectado.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.ComprobanteAfectado.ComprobanteAfectadoBuilder.class,
