@@ -28,7 +28,8 @@ public interface XBuilder {
         INVOICE("invoice.xml"),
         CREDIT_NOTE("creditNote.xml"),
         DEBIT_NOTE("debitNote.xml"),
-        VOIDED_DOCUMENTS("voidedDocuments.xml");
+        VOIDED_DOCUMENTS("voidedDocuments.xml"),
+        SUMMARY_DOCUMENTS("summaryDocuments.xml");
 
         private final String templatePath;
 

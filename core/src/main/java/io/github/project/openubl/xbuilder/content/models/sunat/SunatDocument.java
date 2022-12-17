@@ -14,25 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.content.models.common;
+package io.github.project.openubl.xbuilder.content.models.sunat;
 
+import io.github.project.openubl.xbuilder.content.models.common.Document;
+import io.github.project.openubl.xbuilder.content.models.common.Firmante;
+import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
 @Data
 @SuperBuilder
-@NoArgsConstructor
-public abstract class Document {
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class SunatDocument extends Document {
 
     /**
-     * Moneda en la que se emite el comprobante
+     * Numero de comprobante emitido para la fecha de emision dada
      */
-    @Schema(minLength = 3, maxLength = 3)
-    private String moneda;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "1", maximum = "99999999")
+    private Integer numero;
 
     /**
      * Fecha de emisión del comprobante. Ejemplo 2022-12-25 (YYYY-MM-SS)
@@ -41,17 +46,10 @@ public abstract class Document {
     private LocalDate fechaEmision;
 
     /**
-     * Proveedor del bien o servicio
+     * Fecha de emisión de los comprobantes dados de baja. Ejemplo 2022-12-25 (YYYY-MM-SS)
      */
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private Proveedor proveedor;
-
-    /**
-     * Persona que firma electrónicamente el comprobante. Si es NULL los datos del proveedor son usados.
-     */
-    @Schema(
-            description = "Persona que firma electrónicamente el comprobante. Si NULL los datos del proveedor son usados."
-    )
+    @Schema(description = "Format: \"YYYY-MM-SS\". Ejemplo: 2022-12-25", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
+    private LocalDate fechaEmisionComprobantes;
     private Firmante firmante;
-
+    private Proveedor proveedor;
 }

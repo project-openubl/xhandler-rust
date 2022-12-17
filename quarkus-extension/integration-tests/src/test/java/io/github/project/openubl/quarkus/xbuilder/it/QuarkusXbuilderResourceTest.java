@@ -444,7 +444,6 @@ public class QuarkusXbuilderResourceTest {
                 );
     }
 
-    @Disabled
     @Test
     public void testVoidedDocuments() {
         given()
@@ -509,5 +508,139 @@ public class QuarkusXbuilderResourceTest {
                         "        <sac:VoidReasonDescription>Mi sustento2</sac:VoidReasonDescription>\n" +
                         "    </sac:VoidedDocumentsLine>\n" +
                         "</VoidedDocuments>\n"));
+    }
+
+    @Test
+    public void testSummaryDocuments() {
+        given()
+                .when().get("/quarkus-xbuilder/summary-documents")
+                .then()
+                .statusCode(200)
+                .body(is("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+                        "<SummaryDocuments xmlns=\"urn:sunat:names:specification:ubl:peru:schema:xsd:SummaryDocuments-1\"\n" +
+                        "                  xmlns:cac=\"urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2\"\n" +
+                        "                  xmlns:cbc=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\"\n" +
+                        "                  xmlns:ccts=\"urn:un:unece:uncefact:documentation:2\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n" +
+                        "                  xmlns:ext=\"urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2\"\n" +
+                        "                  xmlns:ns11=\"urn:sunat:names:specification:ubl:peru:schema:xsd:Perception-1\"\n" +
+                        "                  xmlns:qdt=\"urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2\"\n" +
+                        "                  xmlns:sac=\"urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1\"\n" +
+                        "                  xmlns:udt=\"urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2\"\n" +
+                        "                  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
+                        "    <ext:UBLExtensions>\n" +
+                        "        <ext:UBLExtension>\n" +
+                        "            <ext:ExtensionContent />\n" +
+                        "        </ext:UBLExtension>\n" +
+                        "    </ext:UBLExtensions>\n" +
+                        "    <cbc:UBLVersionID>2.0</cbc:UBLVersionID>\n" +
+                        "    <cbc:CustomizationID>1.1</cbc:CustomizationID>\n" +
+                        "    <cbc:ID>RC-20220131-1</cbc:ID>\n" +
+                        "    <cbc:ReferenceDate>2022-01-29</cbc:ReferenceDate>\n" +
+                        "    <cbc:IssueDate>2022-01-31</cbc:IssueDate>\n" +
+                        "    <cac:Signature>\n" +
+                        "        <cbc:ID>12345678912</cbc:ID>\n" +
+                        "        <cac:SignatoryParty>\n" +
+                        "            <cac:PartyIdentification>\n" +
+                        "                <cbc:ID>12345678912</cbc:ID>\n" +
+                        "            </cac:PartyIdentification>\n" +
+                        "            <cac:PartyName>\n" +
+                        "                <cbc:Name><![CDATA[Softgreen S.A.C.]]></cbc:Name>\n" +
+                        "            </cac:PartyName>\n" +
+                        "        </cac:SignatoryParty>\n" +
+                        "        <cac:DigitalSignatureAttachment>\n" +
+                        "            <cac:ExternalReference>\n" +
+                        "                <cbc:URI>#PROJECT-OPENUBL-SIGN</cbc:URI>\n" +
+                        "            </cac:ExternalReference>\n" +
+                        "        </cac:DigitalSignatureAttachment>\n" +
+                        "    </cac:Signature>\n" +
+                        "    <cac:AccountingSupplierParty>\n" +
+                        "        <cbc:CustomerAssignedAccountID>12345678912</cbc:CustomerAssignedAccountID>\n" +
+                        "        <cbc:AdditionalAccountID>6</cbc:AdditionalAccountID>\n" +
+                        "        <cac:Party>\n" +
+                        "            <cac:PartyLegalEntity>\n" +
+                        "                <cbc:RegistrationName><![CDATA[Softgreen S.A.C.]]></cbc:RegistrationName>\n" +
+                        "            </cac:PartyLegalEntity>\n" +
+                        "        </cac:Party>\n" +
+                        "    </cac:AccountingSupplierParty>\n" +
+                        "    <sac:SummaryDocumentsLine>\n" +
+                        "        <cbc:LineID>1</cbc:LineID>\n" +
+                        "        <cbc:DocumentTypeCode>03</cbc:DocumentTypeCode>\n" +
+                        "        <cbc:ID>B001-1</cbc:ID>\n" +
+                        "        <cac:AccountingCustomerParty>\n" +
+                        "            <cbc:CustomerAssignedAccountID>12345678</cbc:CustomerAssignedAccountID>\n" +
+                        "            <cbc:AdditionalAccountID>1</cbc:AdditionalAccountID>\n" +
+                        "        </cac:AccountingCustomerParty>\n" +
+                        "        <cac:Status>\n" +
+                        "            <cbc:ConditionCode>1</cbc:ConditionCode>\n" +
+                        "        </cac:Status>\n" +
+                        "        <sac:TotalAmount currencyID=\"PEN\">120</sac:TotalAmount>\n" +
+                        "        <sac:BillingPayment>\n" +
+                        "            <cbc:PaidAmount currencyID=\"PEN\">120</cbc:PaidAmount>\n" +
+                        "            <cbc:InstructionID>01</cbc:InstructionID>\n" +
+                        "        </sac:BillingPayment>\n" +
+                        "        <cac:TaxTotal>\n" +
+                        "            <cbc:TaxAmount currencyID=\"PEN\">18</cbc:TaxAmount>\n" +
+                        "            <cac:TaxSubtotal>\n" +
+                        "                <cbc:TaxAmount currencyID=\"PEN\">18</cbc:TaxAmount>\n" +
+                        "                <cac:TaxCategory>\n" +
+                        "                    <cac:TaxScheme>\n" +
+                        "                        <cbc:ID>1000</cbc:ID>\n" +
+                        "                        <cbc:Name>IGV</cbc:Name>\n" +
+                        "                        <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>\n" +
+                        "                    </cac:TaxScheme>\n" +
+                        "                </cac:TaxCategory>\n" +
+                        "            </cac:TaxSubtotal>\n" +
+                        "        </cac:TaxTotal>\n" +
+                        "        <cac:TaxTotal>\n" +
+                        "            <cbc:TaxAmount currencyID=\"PEN\">2</cbc:TaxAmount>\n" +
+                        "            <cac:TaxSubtotal>\n" +
+                        "                <cbc:TaxAmount currencyID=\"PEN\">2</cbc:TaxAmount>\n" +
+                        "                <cac:TaxCategory>\n" +
+                        "                    <cac:TaxScheme>\n" +
+                        "                        <cbc:ID>7152</cbc:ID>\n" +
+                        "                        <cbc:Name>ICBPER</cbc:Name>\n" +
+                        "                        <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>\n" +
+                        "                    </cac:TaxScheme>\n" +
+                        "                </cac:TaxCategory>\n" +
+                        "            </cac:TaxSubtotal>\n" +
+                        "        </cac:TaxTotal>\n" +
+                        "    </sac:SummaryDocumentsLine>\n" +
+                        "    <sac:SummaryDocumentsLine>\n" +
+                        "        <cbc:LineID>2</cbc:LineID>\n" +
+                        "        <cbc:DocumentTypeCode>07</cbc:DocumentTypeCode>\n" +
+                        "        <cbc:ID>BC02-2</cbc:ID>\n" +
+                        "        <cac:AccountingCustomerParty>\n" +
+                        "            <cbc:CustomerAssignedAccountID>12345678</cbc:CustomerAssignedAccountID>\n" +
+                        "            <cbc:AdditionalAccountID>1</cbc:AdditionalAccountID>\n" +
+                        "        </cac:AccountingCustomerParty>\n" +
+                        "        <cac:BillingReference>\n" +
+                        "            <cac:InvoiceDocumentReference>\n" +
+                        "                <cbc:ID>B002-2</cbc:ID>\n" +
+                        "                <cbc:DocumentTypeCode>03</cbc:DocumentTypeCode>\n" +
+                        "            </cac:InvoiceDocumentReference>\n" +
+                        "        </cac:BillingReference>\n" +
+                        "        <cac:Status>\n" +
+                        "            <cbc:ConditionCode>1</cbc:ConditionCode>\n" +
+                        "        </cac:Status>\n" +
+                        "        <sac:TotalAmount currencyID=\"PEN\">118</sac:TotalAmount>\n" +
+                        "        <sac:BillingPayment>\n" +
+                        "            <cbc:PaidAmount currencyID=\"PEN\">118</cbc:PaidAmount>\n" +
+                        "            <cbc:InstructionID>01</cbc:InstructionID>\n" +
+                        "        </sac:BillingPayment>\n" +
+                        "        <cac:TaxTotal>\n" +
+                        "            <cbc:TaxAmount currencyID=\"PEN\">18</cbc:TaxAmount>\n" +
+                        "            <cac:TaxSubtotal>\n" +
+                        "                <cbc:TaxAmount currencyID=\"PEN\">18</cbc:TaxAmount>\n" +
+                        "                <cac:TaxCategory>\n" +
+                        "                    <cac:TaxScheme>\n" +
+                        "                        <cbc:ID>1000</cbc:ID>\n" +
+                        "                        <cbc:Name>IGV</cbc:Name>\n" +
+                        "                        <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>\n" +
+                        "                    </cac:TaxScheme>\n" +
+                        "                </cac:TaxCategory>\n" +
+                        "            </cac:TaxSubtotal>\n" +
+                        "        </cac:TaxTotal>\n" +
+                        "    </sac:SummaryDocumentsLine>\n" +
+                        "</SummaryDocuments>\n"));
     }
 }

@@ -54,3 +54,6 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.Total
 
 # VoidedDocuments
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.voidedDocumentItem.TipoComprobanteRule
+
+# SummaryDocuments
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.summaryDocumentItem.TipoOperacionRule

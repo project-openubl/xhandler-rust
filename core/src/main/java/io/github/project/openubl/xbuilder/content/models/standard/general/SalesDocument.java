@@ -44,12 +44,6 @@ public abstract class SalesDocument extends Document {
     private Map<String, String> leyendas;
 
     /**
-     * Moneda en la que se emite el comprobante
-     */
-    @Schema(minLength = 3, maxLength = 3)
-    private String moneda;
-
-    /**
      * Tasa del IGV. Ejemplo: 0.18
      */
     @Schema(description = "Ejemplo: 0.18", minimum = "0", maximum = "1")

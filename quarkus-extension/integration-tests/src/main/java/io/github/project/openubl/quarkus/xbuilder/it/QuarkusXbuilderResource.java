@@ -16,12 +16,9 @@
  */
 package io.github.project.openubl.quarkus.xbuilder.it;
 
-import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.CREDIT_NOTE;
-import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.DEBIT_NOTE;
-import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.INVOICE;
-import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.VOIDED_DOCUMENTS;
-
 import io.github.project.openubl.quarkus.xbuilder.XBuilder;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog19;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1_Invoice;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
@@ -32,15 +29,27 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Docume
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem;
+import io.github.project.openubl.xbuilder.content.models.sunat.resumen.Comprobante;
+import io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado;
+import io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteImpuestos;
+import io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteValorVenta;
+import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments;
+import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.quarkus.qute.Template;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.CREDIT_NOTE;
+import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.DEBIT_NOTE;
+import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.INVOICE;
+import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.SUMMARY_DOCUMENTS;
+import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.VOIDED_DOCUMENTS;
 
 @Path("/quarkus-xbuilder")
 @ApplicationScoped
@@ -95,6 +104,18 @@ public class QuarkusXbuilderResource {
 
         Template template = xBuilder.getTemplate(VOIDED_DOCUMENTS);
         return template.data(voidedDocuments).render();
+    }
+
+    @GET
+    @Path("summary-documents")
+    public String createSummaryDocuments() {
+        SummaryDocuments summaryDocuments = getSummaryDocuments();
+
+        ContentEnricher enricher = new ContentEnricher(xBuilder.getDefaults(), () -> LocalDate.of(2022, 1, 25));
+        enricher.enrich(summaryDocuments);
+
+        Template template = xBuilder.getTemplate(SUMMARY_DOCUMENTS);
+        return template.data(summaryDocuments).render();
     }
 
     private Invoice getBaseInvoice() {
@@ -198,6 +219,73 @@ public class QuarkusXbuilderResource {
                         .numero(2)
                         .tipoComprobante(Catalog1_Invoice.FACTURA.getCode())
                         .descripcionSustento("Mi sustento2")
+                        .build()
+                )
+                .build();
+    }
+
+    public SummaryDocuments getSummaryDocuments() {
+        return SummaryDocuments.builder()
+                .numero(1)
+                .fechaEmision(LocalDate.of(2022, 01, 31))
+                .fechaEmisionComprobantes(LocalDate.of(2022, 01, 29))
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
+                )
+                .comprobante(SummaryDocumentsItem.builder()
+                        .tipoOperacion(Catalog19.ADICIONAR.toString())
+                        .comprobante(Comprobante.builder()
+                                .tipoComprobante(Catalog1_Invoice.BOLETA.getCode())//
+                                .serieNumero("B001-1")
+                                .cliente(Cliente.builder()
+                                        .nombre("Carlos Feria")
+                                        .numeroDocumentoIdentidad("12345678")
+                                        .tipoDocumentoIdentidad(Catalog6.DNI.getCode())
+                                        .build()
+                                )
+                                .impuestos(ComprobanteImpuestos.builder()
+                                        .igv(new BigDecimal("18"))
+                                        .icb(new BigDecimal(2))
+                                        .build()
+                                )
+                                .valorVenta(ComprobanteValorVenta.builder()
+                                        .importeTotal(new BigDecimal("120"))
+                                        .gravado(new BigDecimal("120"))
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .comprobante(SummaryDocumentsItem.builder()
+                        .tipoOperacion(Catalog19.ADICIONAR.toString())
+                        .comprobante(Comprobante.builder()
+                                .tipoComprobante(Catalog1.NOTA_CREDITO.getCode())
+                                .serieNumero("BC02-2")
+                                .comprobanteAfectado(ComprobanteAfectado.builder()
+                                        .serieNumero("B002-2")
+                                        .tipoComprobante(Catalog1.BOLETA.getCode()) //
+                                        .build()
+                                )
+                                .cliente(Cliente.builder()
+                                        .nombre("Carlos Feria")
+                                        .numeroDocumentoIdentidad("12345678")
+                                        .tipoDocumentoIdentidad(Catalog6.DNI.getCode())//
+                                        .build()
+                                )
+                                .impuestos(ComprobanteImpuestos.builder()
+                                        .igv(new BigDecimal("18"))
+                                        .build()
+                                )
+                                .valorVenta(ComprobanteValorVenta.builder()
+                                        .importeTotal(new BigDecimal("118"))
+                                        .gravado(new BigDecimal("118"))
+                                        .build()
+                                )
+                                .build()
+                        )
                         .build()
                 )
                 .build();
