@@ -26,6 +26,8 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention;
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments;
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem;
 
@@ -45,7 +47,12 @@ public class Helpers {
     public static final Predicate<Object> isSummaryDocuments = o -> o instanceof SummaryDocuments;
     public static final Predicate<Object> isSummaryDocumentsItem = o -> o instanceof SummaryDocumentsItem;
 
-    public static final Predicate<Object> isDocument = isInvoice.or(isCreditNote).or(isDebitNote).or(isVoidedDocuments).or(isSummaryDocuments);
+    public static final Predicate<Object> isPerception = o -> o instanceof Perception;
+    public static final Predicate<Object> isRetention = o -> o instanceof Retention;
+
+    public static final Predicate<Object> isDocument = isInvoice.or(isCreditNote).or(isDebitNote)
+            .or(isVoidedDocuments).or(isSummaryDocuments)
+            .or(isPerception).or(isRetention);
 
     public static final Predicate<Object> isSalesDocument = isInvoice.or(isCreditNote).or(isDebitNote);
     public static final Predicate<Object> isSalesDocumentItem = o -> o instanceof DocumentoVentaDetalle;

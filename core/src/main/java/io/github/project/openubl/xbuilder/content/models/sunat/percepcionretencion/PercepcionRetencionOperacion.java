@@ -16,37 +16,33 @@
  */
 package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion;
 
-import io.github.project.openubl.xbuilder.content.models.common.Cliente;
-import io.github.project.openubl.xbuilder.content.models.common.Document;
 import io.github.project.openubl.xbuilder.content.models.common.TipoCambio;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.SuperBuilder;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDate;
 
 @Data
-@SuperBuilder
-public abstract class BasePercepcionRetencion extends Document {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PercepcionRetencionOperacion {
 
-    /**
-     * Número del comprobante
-     */
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "1", maximum = "99999999")
-    private Integer numero;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Numero de cobro o pago")
+    private Integer numeroOperacion;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0", maximum = "100", exclusiveMinimum = true)
-    private BigDecimal tipoRegimenPorcentaje;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Fecha en la que se realiza el cobro o pago")
+    private LocalDate fechaOperacion;
 
-    private String observacion;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Importe del cobro o pago")
+    private BigDecimal importeOperacion;
 
-    /**
-     * Cliente
-     */
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private Cliente cliente;
+    private ComprobanteAfectado comprobante;
 
-    private PercepcionRetencionOperacion operacion;
-
+    private TipoCambio tipoCambio;
 }

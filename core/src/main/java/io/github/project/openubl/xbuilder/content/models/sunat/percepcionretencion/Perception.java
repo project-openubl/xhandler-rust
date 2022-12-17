@@ -16,17 +16,31 @@
  */
 package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
+
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class Percepcion extends BasePercepcionRetencion {
-
+public class Perception extends BasePercepcionRetencion {
+    /**
+     * Serie del comprobante
+     */
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minLength = 4, pattern = "^[P|p].*$")
     private String serie;
-    private String regimen;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Catalog 22")
+    private String tipoRegimen;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
+    private BigDecimal importeTotalPercibido;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "0")
+    private BigDecimal importeTotalCobrado;
 }

@@ -14,17 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion;
+package io.github.project.openubl.xbuilder.content.models.common;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
-public class PercepcionRetencionDetalle {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TipoCambio {
 
-    private Integer numeroCobroPago;
-    private Long fechaCobroPago;
-    private BigDecimal importeCobroPago;
-    private ComprobanteAfectado comprobante;
+    private LocalDate fecha;
+    private BigDecimal valor;
 }

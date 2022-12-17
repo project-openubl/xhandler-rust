@@ -75,7 +75,17 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
                 io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteImpuestos.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteImpuestos.ComprobanteImpuestosBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteValorVenta.class,
-                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteValorVenta.ComprobanteValorVentaBuilder.class
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteValorVenta.ComprobanteValorVentaBuilder.class,
+
+                io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception.PerceptionBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention.RetentionBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.BasePercepcionRetencion.BasePercepcionRetencionBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.ComprobanteAfectado.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.ComprobanteAfectado.ComprobanteAfectadoBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.PercepcionRetencionOperacion.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.PercepcionRetencionOperacion.PercepcionRetencionOperacionBuilder.class
         }
 )
 public class XBuilderReflectionConfig {
