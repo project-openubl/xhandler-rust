@@ -16,19 +16,21 @@
  */
 package io.github.project.openubl.xbuilder.content.models.sunat.resumen;
 
-import io.github.project.openubl.xbuilder.content.models.common.Firmante;
-import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Data
-public class ResumenDiario {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SummaryDocumentsItem {
 
-    private Integer numero;
-    private Long fechaEmision;
-    private Long fechaEmisionDeComprobantesAsociados;
-    private Firmante firmante;
-    private Proveedor proveedor;
-    private List<ResumenDiarioDetalle> detalle;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Catalogo Catalog19")
+    private String tipoOperacion;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    private Comprobante comprobante;
 }

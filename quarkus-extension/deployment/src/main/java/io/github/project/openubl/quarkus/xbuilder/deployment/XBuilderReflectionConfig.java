@@ -31,6 +31,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
                 io.github.project.openubl.xbuilder.content.models.common.Firmante.FirmanteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.common.Proveedor.ProveedorBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.common.Direccion.DireccionBuilder.class,
+
                 io.github.project.openubl.xbuilder.content.models.standard.general.Note.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote.class,
@@ -57,10 +58,24 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
                 io.github.project.openubl.xbuilder.content.models.standard.general.Note.NoteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteInvoice.TotalImporteInvoiceBuilder.class,
 
+                io.github.project.openubl.xbuilder.content.models.sunat.SunatDocument.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.SunatDocument.SunatDocumentBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.VoidedDocumentsBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.class,
-                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.VoidedDocumentsItemBuilder.class
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.VoidedDocumentsItemBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments.SunatDocumentBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem.SummaryDocumentsItemBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.Comprobante.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.Comprobante.ComprobanteBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado.ComprobanteAfectadoBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteImpuestos.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteImpuestos.ComprobanteImpuestosBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteValorVenta.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteValorVenta.ComprobanteValorVentaBuilder.class
         }
 )
 public class XBuilderReflectionConfig {

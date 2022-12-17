@@ -16,7 +16,7 @@
  */
 package io.github.project.openubl.xbuilder.content.models.sunat.baja;
 
-import io.github.project.openubl.xbuilder.content.models.common.Document;
+import io.github.project.openubl.xbuilder.content.models.sunat.SunatDocument;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -26,7 +26,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Jacksonized
@@ -34,24 +33,7 @@ import java.util.List;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class VoidedDocuments extends Document {
-    /**
-     * Numero de comprobante emitido para la fecha de emision dada
-     */
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minimum = "1", maximum = "99999999")
-    private Integer numero;
-
-    /**
-     * Fecha de emisión del comprobante. Ejemplo 2022-12-25 (YYYY-MM-SS)
-     */
-    @Schema(description = "Format: \"YYYY-MM-SS\". Ejemplo: 2022-12-25", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
-    private LocalDate fechaEmision;
-
-    /**
-     * Fecha de emisión de los comprobantes dados de baja. Ejemplo 2022-12-25 (YYYY-MM-SS)
-     */
-    @Schema(description = "Format: \"YYYY-MM-SS\". Ejemplo: 2022-12-25", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
-    private LocalDate fechaEmisionComprobantes;
+public class VoidedDocuments extends SunatDocument {
 
     /**
      * Lista de comprobantes a dar de baja

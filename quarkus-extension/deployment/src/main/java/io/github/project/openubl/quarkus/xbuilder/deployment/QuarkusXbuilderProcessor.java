@@ -58,7 +58,11 @@ class QuarkusXbuilderProcessor {
                         "templates/Renderer/creditNote.xml",
                         "templates/Renderer/debitNote.xml",
                         "templates/Renderer/invoice.xml",
+                        "templates/Renderer/voidedDocuments.xml",
+                        "templates/Renderer/summaryDocuments.xml",
+
                         "templates/ubl/common/signature.xml",
+
                         "templates/ubl/standard/include/address.xml",
                         "templates/ubl/standard/include/contact.xml",
                         "templates/ubl/standard/include/customer.xml",
@@ -72,7 +76,9 @@ class QuarkusXbuilderProcessor {
                         "templates/ubl/standard/include/payment-terms.xml",
                         "templates/ubl/standard/include/supplier.xml",
                         "templates/ubl/standard/include/tax-total.xml",
-                        "templates/ubl/standard/include/ubl-extensions.xml"
+                        "templates/ubl/standard/include/ubl-extensions.xml",
+
+                        "templates/ubl/sunat/include/supplier.xml"
                 )
         );
         //        resource.produce(new NativeImageResourceDirectoryBuildItem("templates"));
@@ -111,6 +117,7 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.models.common.Firmante.FirmanteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.common.Proveedor.ProveedorBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.common.Direccion.DireccionBuilder.class,
+
                 io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoTributarioRelacionado.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.CargoDescuento.class,
@@ -146,6 +153,7 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.models.standard.general.Invoice.InvoiceBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.Note.NoteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteInvoice.TotalImporteInvoiceBuilder.class,
+
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog.class,
                 io.github.project.openubl.xbuilder.content.catalogs.CatalogContadoCredito.class,
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog1.class,
@@ -177,10 +185,24 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog54.class,
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog59.class,
 
+                io.github.project.openubl.xbuilder.content.models.sunat.SunatDocument.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.SunatDocument.SunatDocumentBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments.VoidedDocumentsBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.class,
-                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.VoidedDocumentsItemBuilder.class
+                io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.VoidedDocumentsItemBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments.SunatDocumentBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem.SummaryDocumentsItemBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.Comprobante.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.Comprobante.ComprobanteBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado.ComprobanteAfectadoBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteImpuestos.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteImpuestos.ComprobanteImpuestosBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteValorVenta.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteValorVenta.ComprobanteValorVentaBuilder.class
         );
     }
 }
