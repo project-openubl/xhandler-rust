@@ -43,8 +43,7 @@ public class InvoiceTest extends AbstractTest {
     @Test
     public void testInvoiceWithCustomUnidadMedida() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
                 .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())

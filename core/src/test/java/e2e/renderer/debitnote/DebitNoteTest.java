@@ -37,36 +37,33 @@ public class DebitNoteTest extends AbstractTest {
     @Test
     public void testInvoiceWithCustomUnidadMedida() throws Exception {
         // Given
-        DebitNote input = DebitNote
-                .builder()
+        DebitNote input = DebitNote.builder()
                 .serie("FD01")
                 .numero(1)
                 .comprobanteAfectadoSerieNumero("F001-1")
                 .sustentoDescripcion("mi sustento")
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
                 )
                 .build();
 
