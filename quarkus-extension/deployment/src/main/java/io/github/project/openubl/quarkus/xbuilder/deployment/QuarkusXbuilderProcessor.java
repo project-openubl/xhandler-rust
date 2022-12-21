@@ -113,7 +113,7 @@ class QuarkusXbuilderProcessor {
                 "io.github.project.openubl.xbuilder.content.models.standard.general.Invoice$InvoiceBuilderImpl",
 
                 "io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments$VoidedDocumentsBuilderImpl",
-                "io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments$SunatDocumentBuilderImpl",
+                "io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments$SummaryDocumentsBuilderImpl",
 
                 "io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception$PerceptionBuilderImpl",
                 "io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention$RetentionBuilderImpl"
@@ -217,7 +217,7 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem.VoidedDocumentsItemBuilder.class,
 
                 io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments.class,
-                io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments.SunatDocumentBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments.SummaryDocumentsBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem.SummaryDocumentsItemBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.resumen.Comprobante.class,
