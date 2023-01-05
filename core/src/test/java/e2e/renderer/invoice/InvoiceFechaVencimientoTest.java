@@ -77,6 +77,6 @@ public class InvoiceFechaVencimientoTest extends AbstractTest {
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, getClass(), "conFechaVencimiento.xml");
-        XMLAssertUtils.assertSendSunat(xml);
+        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 }

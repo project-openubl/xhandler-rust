@@ -77,7 +77,7 @@ public class InvoiceDireccionEntregaTest extends AbstractTest {
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, getClass(), "direccionEntregaMin.xml");
-        XMLAssertUtils.assertSendSunat(xml);
+        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
     @Test
@@ -136,6 +136,6 @@ public class InvoiceDireccionEntregaTest extends AbstractTest {
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, getClass(), "direccionEntregaFull.xml");
-        XMLAssertUtils.assertSendSunat(xml);
+        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 }

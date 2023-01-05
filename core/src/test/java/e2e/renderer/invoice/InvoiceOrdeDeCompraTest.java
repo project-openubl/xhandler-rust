@@ -76,6 +76,6 @@ public class InvoiceOrdeDeCompraTest extends AbstractTest {
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, getClass(), "ordenDeCompra.xml");
-        XMLAssertUtils.assertSendSunat(xml);
+        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 }

@@ -69,6 +69,6 @@ public class InvoicePercepcionTest extends AbstractTest {
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, getClass(), "percepcion.xml");
-        XMLAssertUtils.assertSendSunat(xml);
+        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 }

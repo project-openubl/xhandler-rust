@@ -17,6 +17,7 @@
 package e2e.renderer.invoice;
 
 import e2e.AbstractTest;
+import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Contacto;
@@ -84,7 +85,7 @@ public class InvoiceTest extends AbstractTest {
 
         // Then
         assertSnapshot(xml, getClass(), "customUnidadMedida.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
     @Test
@@ -135,7 +136,7 @@ public class InvoiceTest extends AbstractTest {
 
         // Then
         assertSnapshot(xml, getClass(), "customFechaEmision.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
     @Test
@@ -195,7 +196,7 @@ public class InvoiceTest extends AbstractTest {
 
         // Then
         assertSnapshot(xml, getClass(), "customClienteDireccionAndContacto.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
     @Test
@@ -261,7 +262,7 @@ public class InvoiceTest extends AbstractTest {
 
         // Then
         assertSnapshot(xml, getClass(), "customProveedorDireccionAndContacto.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
     @Test
@@ -308,7 +309,7 @@ public class InvoiceTest extends AbstractTest {
 
         // Then
         assertSnapshot(xml, getClass(), "customFirmante.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
     @Test
@@ -356,7 +357,7 @@ public class InvoiceTest extends AbstractTest {
 
         // Then
         assertSnapshot(xml, getClass(), "icb.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
     @Test
@@ -406,7 +407,7 @@ public class InvoiceTest extends AbstractTest {
 
         // Then
         assertSnapshot(xml, getClass(), "icb.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
     @Test
@@ -459,6 +460,6 @@ public class InvoiceTest extends AbstractTest {
 
         // Then
         assertSnapshot(xml, getClass(), "customCodigoLocal.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 }
