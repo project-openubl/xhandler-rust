@@ -77,6 +77,6 @@ public class InvoiceAnticiposTest extends AbstractTest {
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, getClass(), "minAnticipos.xml");
-        XMLAssertUtils.assertSendSunat(xml);
+        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 }

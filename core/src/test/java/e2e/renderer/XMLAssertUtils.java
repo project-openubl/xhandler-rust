@@ -36,10 +36,19 @@ import io.github.project.openubl.xsender.models.SunatResponse;
 import io.github.project.openubl.xsender.sunat.BillServiceDestination;
 import org.apache.camel.CamelContext;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.diff.Diff;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,6 +63,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class XMLAssertUtils {
+
+    public static final String INVOICE_XSD = "xsd/2.1/maindoc/UBL-Invoice-2.1.xsd";
+    public static final String CREDIT_NOTE_XSD = "xsd/2.1/maindoc/UBL-CreditNote-2.1.xsd";
+    public static final String DEBIT_NOTE_XSD = "xsd/2.1/maindoc/UBL-DebitNote-2.1.xsd";
+    public static final String VOIDED_DOCUMENTS_XSD = "xsd/2.0/maindoc/UBLPE-VoidedDocuments-1.0.xsd";
+    public static final String SUMMARY_DOCUMENTS_XSD = "xsd/2.0/maindoc/UBLPE-SummaryDocuments-1.0.xsd";
+    public static final String PERCEPTION_XSD = "xsd/2.0/maindoc/UBLPE-Perception-1.0.xsd";
+    public static final String RETENTION_XSD = "xsd/2.0/maindoc/UBLPE-Retention-1.0.xsd";
 
     public static final CompanyURLs companyURLs = CompanyURLs
             .builder()
@@ -82,7 +99,7 @@ public class XMLAssertUtils {
         }
     }
 
-    public static void assertSnapshot(String expected, Class<?> clasz, String snapshotFile) {
+    public static void assertSnapshot(String expected, Class<?> clasz, String snapshotFile) throws SAXException {
         String rootDir = clasz.getName().replaceAll("\\.", "/");
 
         // Update snapshots and if updated do not verify since it doesn't make sense anymore
@@ -117,7 +134,7 @@ public class XMLAssertUtils {
         assertFalse(myDiff.hasDifferences(), expected + "\n" + myDiff);
     }
 
-    public static void assertSendSunat(String xmlWithoutSignature, String... allowedNotes) throws Exception {
+    public static void assertSendSunat(String xmlWithoutSignature, String xsdSchema, String... allowedNotes) throws Exception {
         String skipSunat = System.getProperty("skipSunat", "false");
         if (skipSunat != null && skipSunat.equals("false")) {
             Document signedXML = XMLSigner.signXML(
@@ -127,6 +144,22 @@ public class XMLAssertUtils {
                     CERTIFICATE.getPrivateKey()
             );
             sendFileToSunat(signedXML, xmlWithoutSignature, allowedNotes);
+            isCompliantWithXsd(xsdSchema, signedXML);
+        }
+    }
+
+    private static void isCompliantWithXsd(String xsdSchema, Document signedXML) throws Exception {
+        // Assert XSD
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        URL xsd = Thread.currentThread().getContextClassLoader().getResource(xsdSchema);
+        Schema schema = factory.newSchema(xsd);
+        Validator validator = schema.newValidator();
+        try {
+            byte[] bytesFromDocument = XmlSignatureHelper.getBytesFromDocument(signedXML);
+            InputStream is = new ByteArrayInputStream(bytesFromDocument);
+            validator.validate(new StreamSource(is));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

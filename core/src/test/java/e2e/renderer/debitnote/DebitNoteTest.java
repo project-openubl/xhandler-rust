@@ -17,6 +17,7 @@
 package e2e.renderer.debitnote;
 
 import e2e.AbstractTest;
+import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
@@ -76,6 +77,6 @@ public class DebitNoteTest extends AbstractTest {
 
         // Then
         assertSnapshot(xml, getClass(), "MinData_RUC.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, XMLAssertUtils.DEBIT_NOTE_XSD);
     }
 }

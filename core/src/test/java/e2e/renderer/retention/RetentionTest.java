@@ -17,6 +17,7 @@
 package e2e.renderer.retention;
 
 import e2e.AbstractTest;
+import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog22;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog23;
@@ -87,7 +88,7 @@ public class RetentionTest extends AbstractTest {
 
         // Then
         assertSnapshot(xml, getClass(), "retention_simple.xml");
-        assertSendSunat(xml);
+        assertSendSunat(xml, XMLAssertUtils.RETENTION_XSD);
     }
 
 }
