@@ -36,35 +36,32 @@ public class InvoiceDireccionEntregaTest extends AbstractTest {
     @Test
     public void testDireccionEntregaMin() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
                 .direccionEntrega(Direccion.builder().direccion("Jr. las flores 123").build())
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("2"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("2"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("2"))
+                        .precio(new BigDecimal("100"))
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("2"))
+                        .precio(new BigDecimal("100"))
+                        .build()
                 )
                 .build();
 
@@ -83,47 +80,42 @@ public class InvoiceDireccionEntregaTest extends AbstractTest {
     @Test
     public void testDireccionEntregaFull() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
-                .direccionEntrega(
-                        Direccion
-                                .builder()
-                                .ubigeo("050101")
-                                .departamento("Ayacucho")
-                                .provincia("Huamanga")
-                                .distrito("Jesus Nazareno")
-                                .codigoLocal("0101")
-                                .urbanizacion("000000")
-                                .direccion("Jr. Las piedras 123")
-                                .codigoPais("PE")
-                                .build()
+                .direccionEntrega(Direccion.builder()
+                        .ubigeo("050101")
+                        .departamento("Ayacucho")
+                        .provincia("Huamanga")
+                        .distrito("Jesus Nazareno")
+                        .codigoLocal("0101")
+                        .urbanizacion("000000")
+                        .direccion("Jr. Las piedras 123")
+                        .codigoPais("PE")
+                        .build()
                 )
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("2"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("2"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("2"))
+                        .precio(new BigDecimal("100"))
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("2"))
+                        .precio(new BigDecimal("100"))
+                        .build()
                 )
                 .build();
 

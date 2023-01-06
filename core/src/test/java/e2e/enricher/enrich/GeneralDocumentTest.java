@@ -102,8 +102,7 @@ public class GeneralDocumentTest extends AbstractTest {
     @Test
     public void testEnrichFormaPagoTipo_Credito() {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .formaDePago(
                         FormaDePago
                                 .builder()
@@ -125,14 +124,12 @@ public class GeneralDocumentTest extends AbstractTest {
         // Given
 
         // Invoice with no "cuotas" has "formaDePago" CREDITO. It must be corrected
-        Invoice input1 = Invoice
-                .builder()
+        Invoice input1 = Invoice.builder()
                 .formaDePago(FormaDePago.builder().tipo(CatalogContadoCredito.CREDITO.getCode()).build())
                 .build();
 
         // Invoice with "cuotas" has "formaDePago" CONTADO. It must be corrected
-        Invoice input2 = Invoice
-                .builder()
+        Invoice input2 = Invoice.builder()
                 .formaDePago(
                         FormaDePago
                                 .builder()
@@ -155,8 +152,7 @@ public class GeneralDocumentTest extends AbstractTest {
     @Test
     public void testEnrichFirmante() {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Mi razón social").build())
                 .build();
 
@@ -172,8 +168,7 @@ public class GeneralDocumentTest extends AbstractTest {
     @Test
     public void testEnrichFirmante_whenFirmanteIsPartiallyFilled() {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Mi razón social").build())
                 .firmante(Firmante.builder().ruc("12345678912").build())
                 .build();

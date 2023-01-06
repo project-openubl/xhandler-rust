@@ -20,10 +20,8 @@ import e2e.AbstractTest;
 import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog18;
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog1_Invoice;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog20;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
-import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdvice;
 import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdviceItem;
 import io.github.project.openubl.xbuilder.content.models.standard.guia.Destinatario;
@@ -31,15 +29,12 @@ import io.github.project.openubl.xbuilder.content.models.standard.guia.Destino;
 import io.github.project.openubl.xbuilder.content.models.standard.guia.Envio;
 import io.github.project.openubl.xbuilder.content.models.standard.guia.Partida;
 import io.github.project.openubl.xbuilder.content.models.standard.guia.Remitente;
-import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
-import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
 import io.quarkus.qute.Template;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import static e2e.renderer.XMLAssertUtils.assertSendSunat;
 import static e2e.renderer.XMLAssertUtils.assertSnapshot;

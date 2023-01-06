@@ -35,26 +35,21 @@ public class InvoiceIssue30Test extends AbstractTest {
     @Test
     public void testInvoice_withPrecioUnitario() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
                 .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Project OpenUBL S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("6.68"))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("6.68"))
+                        .build()
                 )
                 .build();
 
@@ -73,27 +68,22 @@ public class InvoiceIssue30Test extends AbstractTest {
     @Test
     public void testInvoice_withPrecioConIgv() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
                 .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Project OpenUBL S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("7.88"))
-                                .precioConImpuestos(true)
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("7.88"))
+                        .precioConImpuestos(true)
+                        .build()
                 )
                 .build();
 
@@ -112,27 +102,22 @@ public class InvoiceIssue30Test extends AbstractTest {
     @Test
     public void testInvoice_withPrecioUnitario_andICB() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
                 .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Project OpenUBL S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("6.68"))
-                                .icbAplica(true)
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("6.68"))
+                        .icbAplica(true)
+                        .build()
                 )
                 .build();
 
@@ -151,28 +136,23 @@ public class InvoiceIssue30Test extends AbstractTest {
     @Test
     public void testInvoice_withPrecioConIgv_andICB() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
                 .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Project OpenUBL S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("7.88"))
-                                .precioConImpuestos(true)
-                                .icbAplica(true)
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("7.88"))
+                        .precioConImpuestos(true)
+                        .icbAplica(true)
+                        .build()
                 )
                 .build();
 
