@@ -47,32 +47,30 @@ public class InvoiceTest extends AbstractTest {
         Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .unidadMedida("KGM")
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .unidadMedida("KGM")
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .unidadMedida("KGM")
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .unidadMedida("KGM")
+                        .build()
                 )
                 .build();
 
@@ -94,36 +92,33 @@ public class InvoiceTest extends AbstractTest {
         LocalTime horaEmision = LocalTime.of(0, 0);
 
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
                 .fechaEmision(fechaEmision)
                 .horaEmision(horaEmision)
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
                 )
                 .build();
 
@@ -142,48 +137,43 @@ public class InvoiceTest extends AbstractTest {
     @Test
     public void testInvoiceWithCustomClienteDireccionAndContacto() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .contacto(Contacto.builder().email("carlos@gmail.com").telefono("+123456789").build())
-                                .direccion(
-                                        Direccion
-                                                .builder()
-                                                .ubigeo("050101")
-                                                .departamento("Ayacucho")
-                                                .provincia("Huamanga")
-                                                .distrito("Jesus Nazareno")
-                                                .codigoLocal("0101")
-                                                .urbanizacion("000000")
-                                                .direccion("Jr. Las piedras 123")
-                                                .codigoPais("PE")
-                                                .build()
-                                )
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .contacto(Contacto.builder().email("carlos@gmail.com").telefono("+123456789").build())
+                        .direccion(Direccion.builder()
+                                .ubigeo("050101")
+                                .departamento("Ayacucho")
+                                .provincia("Huamanga")
+                                .distrito("Jesus Nazareno")
+                                .codigoLocal("0101")
+                                .urbanizacion("000000")
+                                .direccion("Jr. Las piedras 123")
+                                .codigoPais("PE")
                                 .build()
+                        )
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
                 )
                 .build();
 
@@ -202,54 +192,43 @@ public class InvoiceTest extends AbstractTest {
     @Test
     public void testInvoiceWithCustomProveedorDireccionAndContacto() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
-                .proveedor(
-                        Proveedor
-                                .builder()
-                                .ruc("12345678912")
-                                .razonSocial("Softgreen S.A.C.")
-                                .contacto(Contacto.builder().email("carlos@gmail.com").telefono("+123456789").build())
-                                .direccion(
-                                        Direccion
-                                                .builder()
-                                                .ubigeo("050101")
-                                                .departamento("Ayacucho")
-                                                .provincia("Huamanga")
-                                                .distrito("Jesus Nazareno")
-                                                .codigoLocal("0101")
-                                                .urbanizacion("000000")
-                                                .direccion("Jr. Las piedras 123")
-                                                .codigoPais("PE")
-                                                .build()
-                                )
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .contacto(Contacto.builder().email("carlos@gmail.com").telefono("+123456789").build())
+                        .direccion(Direccion.builder()
+                                .ubigeo("050101")
+                                .departamento("Ayacucho")
+                                .provincia("Huamanga")
+                                .distrito("Jesus Nazareno")
+                                .codigoLocal("0101")
+                                .urbanizacion("000000")
+                                .direccion("Jr. Las piedras 123")
+                                .codigoPais("PE")
                                 .build()
+                        )
+                        .build()
                 )
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
                 )
                 .build();
 
@@ -268,35 +247,36 @@ public class InvoiceTest extends AbstractTest {
     @Test
     public void testInvoiceWithCustomFirmante() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .firmante(Firmante.builder().ruc("000000000000").razonSocial("Wolsnut4 S.A.C.").build())
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .firmante(Firmante.builder()
+                        .ruc("000000000000")
+                        .razonSocial("Wolsnut4 S.A.C.")
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
                 )
                 .build();
 
@@ -315,36 +295,33 @@ public class InvoiceTest extends AbstractTest {
     @Test
     public void testInvoiceWithICB_precioUnitario() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .icbAplica(true)
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .icbAplica(true)
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .icbAplica(true)
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .icbAplica(true)
+                        .build()
                 )
                 .build();
 
@@ -363,38 +340,35 @@ public class InvoiceTest extends AbstractTest {
     @Test
     public void testInvoiceWithICB_precioConIgv() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("118"))
-                                .precioConImpuestos(true)
-                                .icbAplica(true)
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("118"))
-                                .precioConImpuestos(true)
-                                .icbAplica(true)
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("118"))
+                        .precioConImpuestos(true)
+                        .icbAplica(true)
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("118"))
+                        .precioConImpuestos(true)
+                        .icbAplica(true)
+                        .build()
                 )
                 .build();
 
@@ -413,41 +387,32 @@ public class InvoiceTest extends AbstractTest {
     @Test
     public void testInvoiceWithCustomProveedor_direccionNotNullAndCodigoLocalNull() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
-                .proveedor(
-                        Proveedor
-                                .builder()
-                                .ruc("12345678912")
-                                .razonSocial("Softgreen S.A.C.")
-                                .direccion(Direccion.builder().direccion("Jr. las flores 123").build())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .direccion(Direccion.builder().direccion("Jr. las flores 123").build())
+                        .build()
                 )
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("118"))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("118"))
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("118"))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("118"))
+                        .build()
                 )
                 .build();
 

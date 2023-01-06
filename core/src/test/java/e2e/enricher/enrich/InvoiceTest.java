@@ -29,8 +29,7 @@ public class InvoiceTest extends AbstractTest {
     @Test
     public void testEnrichTipoComprobante() {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001-1")
                 .tipoComprobante(Catalog1_Invoice.BOLETA.getCode()) // This should be overwritten
                 .build();

@@ -39,34 +39,31 @@ public class InvoiceFormaPagoTest extends AbstractTest {
     @Test
     public void testInvoiceWithFormaPagoContadoPorDefecto() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
                 )
                 .build();
 
@@ -85,53 +82,44 @@ public class InvoiceFormaPagoTest extends AbstractTest {
     @Test
     public void testInvoiceWithFormaPagoCredito() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .formaDePago(
-                        FormaDePago
-                                .builder()
-                                .cuota(
-                                        CuotaDePago
-                                                .builder()
-                                                .importe(new BigDecimal("10"))
-                                                .fechaPago(LocalDate.of(2022, Month.JANUARY, 20))
-                                                .build()
-                                )
-                                .cuota(
-                                        CuotaDePago
-                                                .builder()
-                                                .importe(new BigDecimal("20"))
-                                                .fechaPago(LocalDate.of(2022, Month.FEBRUARY, 20))
-                                                .build()
-                                )
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item2")
-                                .cantidad(new BigDecimal("10"))
-                                .precio(new BigDecimal("100"))
+                .formaDePago(FormaDePago.builder()
+                        .cuota(CuotaDePago.builder()
+                                .importe(new BigDecimal("10"))
+                                .fechaPago(LocalDate.of(2022, Month.JANUARY, 20))
                                 .build()
+                        )
+                        .cuota(CuotaDePago.builder()
+                                .importe(new BigDecimal("20"))
+                                .fechaPago(LocalDate.of(2022, Month.FEBRUARY, 20))
+                                .build()
+                        )
+                        .build()
+                )
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item2")
+                        .cantidad(new BigDecimal("10"))
+                        .precio(new BigDecimal("100"))
+                        .build()
                 )
                 .build();
 

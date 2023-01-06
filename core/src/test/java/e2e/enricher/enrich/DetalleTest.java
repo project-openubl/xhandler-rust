@@ -82,8 +82,7 @@ public class DetalleTest extends AbstractTest {
     @Test
     public void testDontEnrichIgvTipo() {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .detalle(DocumentoVentaDetalle.builder().igvTipo(Catalog7.INAFECTO_RETIRO.getCode()).build())
                 .build();
 
@@ -102,8 +101,7 @@ public class DetalleTest extends AbstractTest {
     @Test
     public void testEnrichPrecioReferenciaTipo_PrecioConIgv() {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .detalle(DocumentoVentaDetalle.builder().igvTipo(Catalog7.GRAVADO_OPERACION_ONEROSA.getCode()).build())
                 .build();
 
@@ -122,8 +120,7 @@ public class DetalleTest extends AbstractTest {
     @Test
     public void testEnrichPrecioReferenciaTipo_ValorReferencial() {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .detalle(DocumentoVentaDetalle.builder().igvTipo(Catalog7.GRAVADO_RETIRO_POR_DONACION.getCode()).build())
                 .build();
 

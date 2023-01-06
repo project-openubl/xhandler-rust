@@ -37,36 +37,33 @@ public class InvoiceDetraccionTest extends AbstractTest {
     @Test
     public void testFechaVencimiento() throws Exception {
         // Given
-        Invoice input = Invoice
-                .builder()
+        Invoice input = Invoice.builder()
                 .serie("F001")
                 .numero(1)
-                .proveedor(Proveedor.builder().ruc("12345678912").razonSocial("Softgreen S.A.C.").build())
-                .cliente(
-                        Cliente
-                                .builder()
-                                .nombre("Carlos Feria")
-                                .numeroDocumentoIdentidad("12121212121")
-                                .tipoDocumentoIdentidad(Catalog6.RUC.toString())
-                                .build()
+                .proveedor(Proveedor.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
                 )
-                .detalle(
-                        DocumentoVentaDetalle
-                                .builder()
-                                .descripcion("Item1")
-                                .cantidad(new BigDecimal("4"))
-                                .precio(new BigDecimal("200"))
-                                .build()
+                .cliente(Cliente.builder()
+                        .nombre("Carlos Feria")
+                        .numeroDocumentoIdentidad("12121212121")
+                        .tipoDocumentoIdentidad(Catalog6.RUC.toString())
+                        .build()
                 )
-                .detraccion(
-                        Detraccion
-                                .builder()
-                                .medioDePago(Catalog59.DEPOSITO_EN_CUENTA.getCode())
-                                .cuentaBancaria("0004-3342343243")
-                                .tipoBienDetraido("014")
-                                .porcentaje(new BigDecimal("0.04"))
-                                .monto(new BigDecimal(100))
-                                .build()
+                .detalle(DocumentoVentaDetalle.builder()
+                        .descripcion("Item1")
+                        .cantidad(new BigDecimal("4"))
+                        .precio(new BigDecimal("200"))
+                        .build()
+                )
+                .detraccion(Detraccion.builder()
+                        .medioDePago(Catalog59.DEPOSITO_EN_CUENTA.getCode())
+                        .cuentaBancaria("0004-3342343243")
+                        .tipoBienDetraido("014")
+                        .porcentaje(new BigDecimal("0.04"))
+                        .monto(new BigDecimal(100))
+                        .build()
                 )
                 .build();
 
