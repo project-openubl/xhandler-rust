@@ -20,6 +20,7 @@ import io.github.project.openubl.quarkus.xbuilder.XBuilder;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdvice;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention;
@@ -39,6 +40,7 @@ import java.time.LocalDate;
 
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.CREDIT_NOTE;
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.DEBIT_NOTE;
+import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.DESPATCH_ADVICE;
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.INVOICE;
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.PERCEPTION;
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.RETENTION;
@@ -136,6 +138,19 @@ public class QuarkusXbuilderResource {
 
         Template template = xBuilder.getTemplate(RETENTION);
         return template.data(retention).render();
+    }
+
+    @POST
+    @Path("despatch-advice")
+    public String createDespatchAdvice(JsonObject json) {
+        DespatchAdvice despatchAdvice = json.mapTo(DespatchAdvice.class);
+
+        ContentEnricher enricher = new ContentEnricher(xBuilder.getDefaults(), () -> LocalDate.of(2022, 1, 25));
+        enricher.enrich(despatchAdvice);
+
+        Template template = xBuilder.getTemplate(DESPATCH_ADVICE);
+        String xml = template.data(despatchAdvice).render();
+        return xml;
     }
 
 }

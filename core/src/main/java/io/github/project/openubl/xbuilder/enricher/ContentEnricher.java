@@ -20,6 +20,7 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Credit
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdvice;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention;
@@ -75,6 +76,30 @@ public class ContentEnricher {
 
     public void enrich(DebitNote input) {
         enrichNote(input);
+    }
+
+    private void enrichNote(Note input) {
+        LocalDate systemLocalDate = dateProvider.now();
+
+        Stream
+                .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
+                .forEach(phaseType -> {
+                    // Header
+                    HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
+                            .localDate(systemLocalDate)
+                            .build();
+                    RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
+                    ruleUnitHeader.modify(input);
+
+                    // Body
+                    BodyRuleContext ruleContextBody = BodyRuleContext
+                            .builder()
+                            .tasaIgv(input.getTasaIgv())
+                            .tasaIcb(input.getTasaIcb())
+                            .build();
+                    RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
+                    input.getDetalles().forEach(ruleUnitBody::modify);
+                });
     }
 
     public void enrich(VoidedDocuments input) {
@@ -153,22 +178,21 @@ public class ContentEnricher {
                 });
     }
 
-    private void enrichNote(Note input) {
+    public void enrich(DespatchAdvice input) {
         LocalDate systemLocalDate = dateProvider.now();
 
         Stream
                 .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
                 .forEach(phaseType -> {
                     // Header
-                    HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder().localDate(systemLocalDate).build();
+                    HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
+                            .localDate(systemLocalDate)
+                            .build();
                     RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
                     ruleUnitHeader.modify(input);
 
                     // Body
-                    BodyRuleContext ruleContextBody = BodyRuleContext
-                            .builder()
-                            .tasaIgv(input.getTasaIgv())
-                            .tasaIcb(input.getTasaIcb())
+                    BodyRuleContext ruleContextBody = BodyRuleContext.builder()
                             .build();
                     RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
                     input.getDetalles().forEach(ruleUnitBody::modify);

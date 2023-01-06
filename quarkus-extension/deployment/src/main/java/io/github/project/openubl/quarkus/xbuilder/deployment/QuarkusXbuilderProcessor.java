@@ -44,8 +44,7 @@ class QuarkusXbuilderProcessor {
 
     @BuildStep
     AdditionalBeanBuildItem additionalBeans() {
-        return AdditionalBeanBuildItem
-                .builder()
+        return AdditionalBeanBuildItem.builder()
                 .setUnremovable()
                 .addBeanClasses(XBuilder.class, DefaultXBuilder.class, CustomTemplateLocator.class)
                 .build();
@@ -62,6 +61,7 @@ class QuarkusXbuilderProcessor {
                         "templates/Renderer/summaryDocuments.xml",
                         "templates/Renderer/perception.xml",
                         "templates/Renderer/retention.xml",
+                        "templates/Renderer/despatchAdvice.xml",
 
                         "templates/ubl/common/signature.xml",
 
@@ -176,6 +176,29 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteNote.TotalImporteNoteBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImpuestos.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.TotalImpuestos.TotalImpuestosBuilder.class,
+
+                io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdvice.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdvice.DespatchAdviceBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdviceItem.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdviceItem.DespatchAdviceItemBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Destinatario.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Destinatario.DestinatarioBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Destino.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Destino.DestinoBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.DocumentoBaja.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.DocumentoBaja.DocumentoBajaBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.DocumentoRelacionado.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.DocumentoRelacionado.DocumentoRelacionadoBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Envio.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Envio.EnvioBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Partida.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Partida.PartidaBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Proveedor.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Proveedor.ProveedorBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Remitente.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Remitente.RemitenteBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Transportista.class,
+                io.github.project.openubl.xbuilder.content.models.standard.guia.Transportista.TransportistaBuilder.class,
 
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog.class,
                 io.github.project.openubl.xbuilder.content.catalogs.CatalogContadoCredito.class,

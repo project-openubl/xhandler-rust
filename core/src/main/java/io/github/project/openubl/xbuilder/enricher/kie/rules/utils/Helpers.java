@@ -24,6 +24,7 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Docume
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdvice;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception;
@@ -49,6 +50,8 @@ public class Helpers {
 
     public static final Predicate<Object> isPerception = o -> o instanceof Perception;
     public static final Predicate<Object> isRetention = o -> o instanceof Retention;
+
+    public static final Predicate<Object> isDespatchAdvice = o -> o instanceof DespatchAdvice;
 
     public static final Predicate<Object> isDocument = isInvoice.or(isCreditNote).or(isDebitNote)
             .or(isVoidedDocuments).or(isSummaryDocuments)
@@ -125,6 +128,13 @@ public class Helpers {
     public static final Function<Object, Optional<SummaryDocumentsItem>> whenSummaryDocumentsItem = o -> {
         if (o instanceof SummaryDocumentsItem) {
             return Optional.of((SummaryDocumentsItem) o);
+        }
+        return Optional.empty();
+    };
+
+    public static final Function<Object, Optional<DespatchAdvice>> whenDespatchAdvice = o -> {
+        if (o instanceof DespatchAdvice) {
+            return Optional.of((DespatchAdvice) o);
         }
         return Optional.empty();
     };
