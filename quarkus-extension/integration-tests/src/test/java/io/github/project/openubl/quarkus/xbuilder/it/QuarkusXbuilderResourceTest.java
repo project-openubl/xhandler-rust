@@ -17,8 +17,10 @@
 package io.github.project.openubl.quarkus.xbuilder.it;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog18;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog19;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1_Invoice;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog20;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog22;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog23;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
@@ -28,6 +30,13 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Credit
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdvice;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdviceItem;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.Destinatario;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.Destino;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.Envio;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.Partida;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.Remitente;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.PercepcionRetencionOperacion;
@@ -1073,5 +1082,150 @@ public class QuarkusXbuilderResourceTest {
                         "        </sac:SUNATRetentionInformation>\n" +
                         "    </sac:SUNATRetentionDocumentReference>\n" +
                         "</Retention>\n"));
+    }
+
+    @Test
+    public void testDespatchAdvice() {
+        DespatchAdvice despatchAdvice = DespatchAdvice.builder()
+                .serie("T001")
+                .numero(1)
+                .tipoComprobante(Catalog1.GUIA_REMISION_REMITENTE.getCode())
+                .remitente(Remitente.builder()
+                        .ruc("12345678912")
+                        .razonSocial("Softgreen S.A.C.")
+                        .build()
+                )
+                .destinatario(Destinatario.builder()
+                        .tipoDocumentoIdentidad(Catalog6.DNI.getCode())
+                        .numeroDocumentoIdentidad("12345678")
+                        .nombre("mi cliente")
+                        .build()
+                )
+                .envio(Envio.builder()
+                        .tipoTraslado(Catalog20.TRASLADO_EMISOR_ITINERANTE_CP.getCode())
+                        .pesoTotal(BigDecimal.ONE)
+                        .pesoTotalUnidadMedida("KG")
+                        .transbordoProgramado(false)
+                        .tipoModalidadTraslado(Catalog18.TRANSPORTE_PRIVADO.getCode())
+                        .fechaTraslado(LocalDate.of(2022, 1, 25))
+                        .partida(Partida.builder()
+                                .direccion("DireccionOrigen")
+                                .ubigeo("010101")
+                                .build()
+                        )
+                        .destino(Destino.builder()
+                                .direccion("DireccionDestino")
+                                .ubigeo("020202")
+                                .build()
+                        )
+                        .build()
+                )
+                .detalle(DespatchAdviceItem.builder()
+                        .cantidad(new BigDecimal("0.5"))
+                        .unidadMedida("KG")
+                        .codigo("123456")
+                        .build()
+                )
+                .build();
+
+        given()
+                .when()
+                .contentType(ContentType.JSON)
+                .body(despatchAdvice)
+                .post("/quarkus-xbuilder/despatch-advice")
+                .then()
+                .statusCode(200)
+                .body(is("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<DespatchAdvice xmlns=\"urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2\"\n" +
+                        "                xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n" +
+                        "                xmlns:cac=\"urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2\"\n" +
+                        "                xmlns:cbc=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\"\n" +
+                        "                xmlns:ext=\"urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2\"\n" +
+                        ">\n" +
+                        "    <ext:UBLExtensions>\n" +
+                        "        <ext:UBLExtension>\n" +
+                        "            <ext:ExtensionContent/>\n" +
+                        "        </ext:UBLExtension>\n" +
+                        "    </ext:UBLExtensions>\n" +
+                        "    <cbc:UBLVersionID>2.1</cbc:UBLVersionID>\n" +
+                        "    <cbc:CustomizationID>2.0</cbc:CustomizationID>\n" +
+                        "    <cbc:ID>T001-1</cbc:ID>\n" +
+                        "    <cbc:IssueDate>2022-01-25</cbc:IssueDate>\n" +
+                        "    <cbc:DespatchAdviceTypeCode>09</cbc:DespatchAdviceTypeCode>\n" +
+                        "    <cac:Signature>\n" +
+                        "        <cbc:ID>12345678912</cbc:ID>\n" +
+                        "        <cac:SignatoryParty>\n" +
+                        "            <cac:PartyIdentification>\n" +
+                        "                <cbc:ID>12345678912</cbc:ID>\n" +
+                        "            </cac:PartyIdentification>\n" +
+                        "            <cac:PartyName>\n" +
+                        "                <cbc:Name><![CDATA[Softgreen S.A.C.]]></cbc:Name>\n" +
+                        "            </cac:PartyName>\n" +
+                        "        </cac:SignatoryParty>\n" +
+                        "        <cac:DigitalSignatureAttachment>\n" +
+                        "            <cac:ExternalReference>\n" +
+                        "                <cbc:URI>#PROJECT-OPENUBL-SIGN</cbc:URI>\n" +
+                        "            </cac:ExternalReference>\n" +
+                        "        </cac:DigitalSignatureAttachment>\n" +
+                        "    </cac:Signature>\n" +
+                        "    <cac:DespatchSupplierParty>\n" +
+                        "        <cbc:CustomerAssignedAccountID schemeID=\"6\">12345678912</cbc:CustomerAssignedAccountID>\n" +
+                        "        <cac:Party>\n" +
+                        "            <cac:PartyIdentification>\n" +
+                        "                <cbc:ID schemeID=\"6\" schemeName=\"Documento de Identidad\" schemeAgencyName=\"PE:SUNAT\" schemeURI=\"urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06\">12345678912</cbc:ID>\n" +
+                        "            </cac:PartyIdentification>\n" +
+                        "            <cac:PartyLegalEntity>\n" +
+                        "                <cbc:RegistrationName><![CDATA[Softgreen S.A.C.]]></cbc:RegistrationName>\n" +
+                        "            </cac:PartyLegalEntity>\n" +
+                        "        </cac:Party>\n" +
+                        "    </cac:DespatchSupplierParty>\n" +
+                        "    <cac:DeliveryCustomerParty>\n" +
+                        "        <cac:Party>\n" +
+                        "            <cac:PartyIdentification>\n" +
+                        "                <cbc:ID schemeID=\"1\" schemeName=\"Documento de Identidad\" schemeAgencyName=\"PE:SUNAT\" schemeURI=\"urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06\">12345678</cbc:ID>\n" +
+                        "            </cac:PartyIdentification>\n" +
+                        "            <cac:PartyLegalEntity>\n" +
+                        "                <cbc:RegistrationName><![CDATA[mi cliente]]></cbc:RegistrationName>\n" +
+                        "            </cac:PartyLegalEntity>\n" +
+                        "        </cac:Party>\n" +
+                        "    </cac:DeliveryCustomerParty>\n" +
+                        "    <cac:Shipment>\n" +
+                        "        <cbc:ID>1</cbc:ID>\n" +
+                        "        <cbc:HandlingCode listAgencyName=\"PE:SUNAT\" listName=\"Motivo de traslado\" listURI=\"urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo20\">18</cbc:HandlingCode>\n" +
+                        "        <cbc:GrossWeightMeasure unitCode=\"KG\">1.000</cbc:GrossWeightMeasure>\n" +
+                        "        <cbc:SplitConsignmentIndicator>false</cbc:SplitConsignmentIndicator>\n" +
+                        "        <cac:ShipmentStage>\n" +
+                        "            <cbc:TransportModeCode listName=\"Modalidad de traslado\" listAgencyName=\"PE:SUNAT\" listURI=\"urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo18\">02</cbc:TransportModeCode>\n" +
+                        "            <cac:TransitPeriod>\n" +
+                        "                <cbc:StartDate>2022-01-25</cbc:StartDate>\n" +
+                        "            </cac:TransitPeriod>\n" +
+                        "        </cac:ShipmentStage>\n" +
+                        "        <cac:Delivery>\n" +
+                        "            <cac:DeliveryAddress>\n" +
+                        "                <cbc:ID schemeAgencyName=\"PE:INEI\" schemeName=\"Ubigeos\">020202</cbc:ID>\n" +
+                        "                <cac:AddressLine>\n" +
+                        "                    <cbc:Line>DireccionDestino</cbc:Line>\n" +
+                        "                </cac:AddressLine>\n" +
+                        "            </cac:DeliveryAddress>\n" +
+                        "        </cac:Delivery>\n" +
+                        "        <cac:OriginAddress>\n" +
+                        "            <cbc:ID>010101}</cbc:ID>\n" +
+                        "            <cbc:StreetName>DireccionOrigen}</cbc:StreetName>\n" +
+                        "        </cac:OriginAddress>\n" +
+                        "    </cac:Shipment>\n" +
+                        "    <cac:DespatchLine>\n" +
+                        "        <cbc:ID>1</cbc:ID>\n" +
+                        "        <cbc:DeliveredQuantity unitCode=\"KG\">0.5</cbc:DeliveredQuantity>\n" +
+                        "        <cac:OrderLineReference>\n" +
+                        "            <cbc:LineID>1</cbc:LineID>\n" +
+                        "        </cac:OrderLineReference>\n" +
+                        "        <cac:Item>\n" +
+                        "            <cbc:Name><![CDATA[]]></cbc:Name>\n" +
+                        "            <cac:SellersItemIdentification>\n" +
+                        "                <cbc:ID>123456</cbc:ID>\n" +
+                        "            </cac:SellersItemIdentification>\n" +
+                        "        </cac:Item>\n" +
+                        "    </cac:DespatchLine>\n" +
+                        "</DespatchAdvice>\n"));
     }
 }

@@ -31,7 +31,8 @@ public interface XBuilder {
         VOIDED_DOCUMENTS("voidedDocuments.xml"),
         SUMMARY_DOCUMENTS("summaryDocuments.xml"),
         PERCEPTION("perception.xml"),
-        RETENTION("retention.xml"),;
+        RETENTION("retention.xml"),
+        DESPATCH_ADVICE("despatchAdvice.xml");
 
         private final String templatePath;
 

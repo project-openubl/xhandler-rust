@@ -48,6 +48,10 @@ public class TemplateProducer {
         return EngineProducer.getInstance().getEngine().getTemplate("Renderer/retention.xml");
     }
 
+    public Template getDespatchAdvice() {
+        return EngineProducer.getInstance().getEngine().getTemplate("Renderer/despatchAdvice.xml");
+    }
+
     private static class TemplateProducerHolder {
 
         private static final TemplateProducer INSTANCE = new TemplateProducer();
