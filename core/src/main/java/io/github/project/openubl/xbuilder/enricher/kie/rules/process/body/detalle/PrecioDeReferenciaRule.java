@@ -23,7 +23,6 @@ import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.function.Consumer;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isSalesDocumentItem;
@@ -34,16 +33,13 @@ public class PrecioDeReferenciaRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
-        return (
-                isSalesDocumentItem.test(object) &&
-                        whenSalesDocumentItem
-                                .apply(object)
-                                .map(documento ->
-                                        documento.getPrecioReferencia() == null &&
-                                                documento.getPrecio() != null &&
-                                                documento.getIgvTipo() != null
-                                )
-                                .orElse(false)
+        return (isSalesDocumentItem.test(object) && whenSalesDocumentItem.apply(object)
+                .map(documento -> documento.getPrecioReferencia() == null &&
+                        documento.getPrecio() != null &&
+                        documento.getTasaIgv() != null &&
+                        documento.getIgvTipo() != null
+                )
+                .orElse(false)
         );
     }
 
@@ -55,18 +51,14 @@ public class PrecioDeReferenciaRule extends AbstractBodyRule {
                     .orElseThrow(Catalog.invalidCatalogValue);
 
             BigDecimal precioReferencia;
-            if (detalle.isPrecioConImpuestos()) {
-                precioReferencia =
-                        catalog7.isOperacionOnerosa()
-                                ? detalle
-                                .getPrecio()
-                                .divide(getRuleContext().getTasaIgv().add(BigDecimal.ONE), 10, RoundingMode.HALF_EVEN)
-                                : detalle.getPrecio();
+            if (catalog7.isOperacionOnerosa()) {
+                if (detalle.isPrecioConImpuestos()) {
+                    precioReferencia = detalle.getPrecio();
+                } else {
+                    precioReferencia = detalle.getPrecio().multiply(detalle.getTasaIgv().add(BigDecimal.ONE));
+                }
             } else {
-                precioReferencia =
-                        catalog7.isOperacionOnerosa()
-                                ? detalle.getPrecio().multiply(getRuleContext().getTasaIgv().add(BigDecimal.ONE))
-                                : detalle.getPrecio();
+                precioReferencia = detalle.getPrecio();
             }
 
             detalle.setPrecioReferencia(precioReferencia);

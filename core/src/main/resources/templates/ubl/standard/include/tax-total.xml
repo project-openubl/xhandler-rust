@@ -1,6 +1,6 @@
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="{moneda}">{totalImpuestos.total.scale(2)}</cbc:TaxAmount>
-        {#if totalImpuestos.gravadoImporte}
+        {#if totalImpuestos.gravadoBaseImponible}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{moneda}">{totalImpuestos.gravadoBaseImponible.scale(2)}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{moneda}">{totalImpuestos.gravadoImporte.scale(2)}</cbc:TaxAmount>
@@ -14,7 +14,7 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         {/if}
-        {#if totalImpuestos.inafectoImporte}
+        {#if totalImpuestos.inafectoBaseImponible}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{moneda}">{totalImpuestos.inafectoBaseImponible.scale(2)}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{moneda}">{totalImpuestos.inafectoImporte.scale(2)}</cbc:TaxAmount>
@@ -28,7 +28,7 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         {/if}
-        {#if totalImpuestos.exoneradoImporte}
+        {#if totalImpuestos.exoneradoBaseImponible}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{moneda}">{totalImpuestos.exoneradoBaseImponible.scale(2)}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{moneda}">{totalImpuestos.exoneradoImporte.scale(2)}</cbc:TaxAmount>
@@ -42,7 +42,7 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         {/if}
-        {#if totalImpuestos.gratuitoImporte}
+        {#if totalImpuestos.gratuitoBaseImponible}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{moneda}">{totalImpuestos.gratuitoBaseImponible.scale(2)}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{moneda}">{totalImpuestos.gratuitoImporte.scale(2)}</cbc:TaxAmount>
@@ -56,7 +56,7 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         {/if}
-        {#if totalImpuestos.ivapImporte}
+        {#if totalImpuestos.ivapBaseImponible}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{moneda}">{totalImpuestos.ivapBaseImponible.scale(2)}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{moneda}">{totalImpuestos.ivapImporte.scale(2)}</cbc:TaxAmount>

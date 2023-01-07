@@ -39,6 +39,7 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.note.TotalI
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.UnidadDeMedidaRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.IgvTipoRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.PrecioDeReferenciaTipoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.TasaIgvRule
 
 ## Enrich - Anticipos
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.anticipo.TipoAnticipoRule
@@ -46,6 +47,7 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.anticipo.Compr
 
 ## Process - Detalle
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.PrecioDeReferenciaRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.PrecioRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.IcbRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.IcbAplicaRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.IgvBaseImponibleRule

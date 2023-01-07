@@ -48,87 +48,70 @@ public class EngineProducer {
     private final Locale defaultLocale = Locale.ENGLISH;
     private final Charset defaultCharset = StandardCharsets.UTF_8;
 
-    private final Engine engine = Engine
-            .builder()
+    private final Engine engine = Engine.builder()
             .addDefaults()
             .addLocator(this::locate)
             .removeStandaloneLines(true)
             .addResultMapper(new HtmlEscaper(List.of("text/html", "text/xml", "application/xml", "application/xhtml+xml")))
             .addValueResolver(new ReflectionValueResolver())
-            .addValueResolver(
-                    ValueResolver
-                            .builder()
-                            .applyToBaseClass(LocalDate.class)
-                            .applyToName("format")
-                            .resolveSync(ctx -> {
-                                DateTimeFormatter dtf = DateTimeFormatter.ofPattern((String) ctx.getParams().get(0).getLiteral());
-                                return ((LocalDate) ctx.getBase()).format(dtf);
-                            })
-                            .build()
+            .addValueResolver(ValueResolver.builder()
+                    .applyToBaseClass(LocalDate.class)
+                    .applyToName("format")
+                    .resolveSync(ctx -> {
+                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern((String) ctx.getParams().get(0).getLiteral());
+                        return ((LocalDate) ctx.getBase()).format(dtf);
+                    })
+                    .build()
             )
-            .addValueResolver(
-                    ValueResolver
-                            .builder()
-                            .applyToBaseClass(LocalTime.class)
-                            .applyToName("format")
-                            .resolveSync(ctx -> {
-                                DateTimeFormatter dtf = DateTimeFormatter.ofPattern((String) ctx.getParams().get(0).getLiteral());
-                                return ((LocalTime) ctx.getBase()).format(dtf);
-                            })
-                            .build()
+            .addValueResolver(ValueResolver.builder()
+                    .applyToBaseClass(LocalTime.class)
+                    .applyToName("format")
+                    .resolveSync(ctx -> {
+                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern((String) ctx.getParams().get(0).getLiteral());
+                        return ((LocalTime) ctx.getBase()).format(dtf);
+                    })
+                    .build()
             )
-            .addValueResolver(
-                    ValueResolver
-                            .builder()
-                            .applyToBaseClass(BigDecimal.class)
-                            .applyToName("scale")
-                            .applyToParameters(1)
-                            .resolveSync(ctx ->
-                                    ((BigDecimal) ctx.getBase()).setScale(
-                                            (Integer) ctx.getParams().get(0).getLiteral(),
-                                            RoundingMode.HALF_EVEN
-                                    )
-                            )
-                            .build()
+            .addValueResolver(ValueResolver.builder()
+                    .applyToBaseClass(BigDecimal.class)
+                    .applyToName("scale")
+                    .applyToParameters(1)
+                    .resolveSync(ctx -> ((BigDecimal) ctx.getBase()).setScale(
+                            (Integer) ctx.getParams().get(0).getLiteral(),
+                            RoundingMode.HALF_EVEN
+                    ))
+                    .build()
             )
-            .addValueResolver(
-                    ValueResolver
-                            .builder()
-                            .applyToBaseClass(BigDecimal.class)
-                            .applyToName("multiply")
-                            .resolveSync(ctx ->
-                                    ((BigDecimal) ctx.getBase()).multiply(new BigDecimal((Integer) ctx.getParams().get(0).getLiteral()))
-                                            .setScale(2, RoundingMode.HALF_EVEN)
-                            )
-                            .build()
+            .addValueResolver(ValueResolver.builder()
+                    .applyToBaseClass(BigDecimal.class)
+                    .applyToName("multiply")
+                    .resolveSync(ctx -> ((BigDecimal) ctx.getBase())
+                            .multiply(new BigDecimal((Integer) ctx.getParams().get(0).getLiteral()))
+                            .setScale(2, RoundingMode.HALF_EVEN)
+                    )
+                    .build()
             )
-            .addValueResolver(
-                    ValueResolver
-                            .builder()
-                            .applyToBaseClass(Integer.class)
-                            .applyToName("add")
-                            .applyToParameters(1)
-                            .resolveSync(ctx -> (Integer) ctx.getBase() + (Integer) ctx.getParams().get(0).getLiteral())
-                            .build()
+            .addValueResolver(ValueResolver.builder()
+                    .applyToBaseClass(Integer.class)
+                    .applyToName("add")
+                    .applyToParameters(1)
+                    .resolveSync(ctx -> (Integer) ctx.getBase() + (Integer) ctx.getParams().get(0).getLiteral())
+                    .build()
             )
-            .addValueResolver(
-                    ValueResolver
-                            .builder()
-                            .applyToBaseClass(Integer.class)
-                            .applyToName("format")
-                            .applyToParameters(1)
-                            .resolveSync(ctx -> String.format((String) ctx.getParams().get(0).getLiteral(), ctx.getBase()))
-                            .build()
+            .addValueResolver(ValueResolver.builder()
+                    .applyToBaseClass(Integer.class)
+                    .applyToName("format")
+                    .applyToParameters(1)
+                    .resolveSync(ctx -> String.format((String) ctx.getParams().get(0).getLiteral(), ctx.getBase()))
+                    .build()
             )
-            .addValueResolver(
-                    ValueResolver
-                            .builder()
-                            .applyToBaseClass(String.class)
-                            .applyToName("toCatalog7")
-                            .resolveSync(ctx ->
-                                    Catalog.valueOfCode(Catalog7.class, (String) ctx.getBase()).orElseThrow(Catalog.invalidCatalogValue)
-                            )
-                            .build()
+            .addValueResolver(ValueResolver.builder()
+                    .applyToBaseClass(String.class)
+                    .applyToName("toCatalog7")
+                    .resolveSync(ctx ->
+                            Catalog.valueOfCode(Catalog7.class, (String) ctx.getBase()).orElseThrow(Catalog.invalidCatalogValue)
+                    )
+                    .build()
             )
             .build();
 

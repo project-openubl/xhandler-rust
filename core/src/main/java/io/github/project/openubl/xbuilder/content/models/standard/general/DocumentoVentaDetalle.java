@@ -51,6 +51,9 @@ public class DocumentoVentaDetalle {
     private String precioReferenciaTipo;
 
     // Impuestos
+    @Schema(description = "Ejemplo: 0.18", minimum = "0", maximum = "1")
+    private BigDecimal tasaIgv;
+
     @Schema(description = "Monto total de IGV", minimum = "0")
     private BigDecimal igv;
 

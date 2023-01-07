@@ -73,15 +73,13 @@ public class XMLAssertUtils {
     public static final String PERCEPTION_XSD = "xsd/2.0/maindoc/UBLPE-Perception-1.0.xsd";
     public static final String RETENTION_XSD = "xsd/2.0/maindoc/UBLPE-Retention-1.0.xsd";
 
-    public static final CompanyURLs companyURLs = CompanyURLs
-            .builder()
+    public static final CompanyURLs companyURLs = CompanyURLs.builder()
             .invoice("https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService")
             .despatch("https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService")
             .perceptionRetention("https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService")
             .build();
 
-    public static final CompanyCredentials credentials = CompanyCredentials
-            .builder()
+    public static final CompanyCredentials credentials = CompanyCredentials.builder()
             .username("12345678959MODDATOS")
             .password("MODDATOS")
             .build();
