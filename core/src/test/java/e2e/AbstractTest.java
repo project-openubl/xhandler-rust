@@ -16,16 +16,22 @@
  */
 package e2e;
 
+import e2e.renderer.XMLAssertUtils;
+import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
+import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
+import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
+import io.quarkus.qute.Template;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class AbstractTest {
 
-    protected static final Defaults defaults = Defaults
-            .builder()
+    protected static final Defaults defaults = Defaults.builder()
             .moneda("PEN")
             .unidadMedida("NIU")
             .icbTasa(new BigDecimal("0.2"))
@@ -33,4 +39,43 @@ public class AbstractTest {
             .build();
 
     protected static final DateProvider dateProvider = () -> LocalDate.of(2019, 12, 24);
+
+    protected void assertInput(Invoice input, String snapshot) throws Exception {
+        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
+        enricher.enrich(input);
+
+        // When
+        Template template = TemplateProducer.getInstance().getInvoice();
+        String xml = template.data(input).render();
+
+        // Then
+        XMLAssertUtils.assertSnapshot(xml, getClass(), snapshot);
+        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+    }
+
+    protected void assertInput(CreditNote input, String snapshot) throws Exception {
+        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
+        enricher.enrich(input);
+
+        // When
+        Template template = TemplateProducer.getInstance().getCreditNote();
+        String xml = template.data(input).render();
+
+        // Then
+        XMLAssertUtils.assertSnapshot(xml, getClass(), snapshot);
+        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.CREDIT_NOTE_XSD);
+    }
+
+    protected void assertInput(DebitNote input, String snapshot) throws Exception {
+        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
+        enricher.enrich(input);
+
+        // When
+        Template template = TemplateProducer.getInstance().getDebitNote();
+        String xml = template.data(input).render();
+
+        // Then
+        XMLAssertUtils.assertSnapshot(xml, getClass(), snapshot);
+        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.DEBIT_NOTE_XSD);
+    }
 }

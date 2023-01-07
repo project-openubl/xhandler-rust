@@ -23,23 +23,19 @@ import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.function.Consumer;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isSalesDocumentItem;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenSalesDocumentItem;
 
 @RulePhase(type = RulePhase.PhaseType.PROCESS)
-public class IgvBaseImponibleRule extends AbstractBodyRule {
+public class PrecioRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
         return (isSalesDocumentItem.test(object) && whenSalesDocumentItem.apply(object)
-                .map(documento -> documento.getIgvBaseImponible() == null &&
-                        documento.getIgvTipo() != null &&
-                        documento.getCantidad() != null &&
-                        documento.getPrecio() != null &&
-                        documento.getPrecioReferencia() != null
-                )
+                .map(documento -> documento.getPrecioReferencia() != null && documento.getIgvTipo() != null)
                 .orElse(false)
         );
     }
@@ -49,13 +45,18 @@ public class IgvBaseImponibleRule extends AbstractBodyRule {
         Consumer<DocumentoVentaDetalle> consumer = detalle -> {
             Catalog7 catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
 
-            BigDecimal baseImponible;
+            BigDecimal precio;
             if (catalog7.isOperacionOnerosa()) {
-                baseImponible = detalle.getCantidad().multiply(detalle.getPrecio());
+                if (detalle.isPrecioConImpuestos()) {
+                    precio = detalle.getPrecioReferencia().divide(detalle.getTasaIgv().add(BigDecimal.ONE), 10, RoundingMode.HALF_EVEN);;
+                } else {
+                    precio = detalle.getPrecio();
+                }
             } else {
-                baseImponible = detalle.getCantidad().multiply(detalle.getPrecioReferencia());
+                precio = BigDecimal.ZERO;
             }
-            detalle.setIgvBaseImponible(baseImponible);
+
+            detalle.setPrecio(precio);
         };
         whenSalesDocumentItem.apply(object).ifPresent(consumer);
     }

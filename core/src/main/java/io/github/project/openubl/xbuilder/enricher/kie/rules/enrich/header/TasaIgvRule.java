@@ -30,9 +30,9 @@ public class TasaIgvRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
-        return (
-                isSalesDocument.test(object) &&
-                        whenSalesDocument.apply(object).map(documento -> documento.getTasaIgv() == null).orElse(false)
+        return (isSalesDocument.test(object) && whenSalesDocument.apply(object)
+                .map(documento -> documento.getTasaIgv() == null)
+                .orElse(false)
         );
     }
 

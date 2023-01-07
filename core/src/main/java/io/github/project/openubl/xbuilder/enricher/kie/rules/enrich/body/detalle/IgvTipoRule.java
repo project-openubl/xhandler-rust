@@ -42,8 +42,7 @@ public class IgvTipoRule extends AbstractBodyRule {
             if (detalle.getIgvTipo() == null) {
                 catalog7 = Catalog7.GRAVADO_OPERACION_ONEROSA;
             } else {
-                catalog7 =
-                        Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
+                catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
             }
 
             detalle.setIgvTipo(catalog7.getCode());

@@ -31,19 +31,19 @@ public class IgvRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
-        return (
-                isSalesDocumentItem.test(object) &&
-                        whenSalesDocumentItem
-                                .apply(object)
-                                .map(documento -> documento.getIgv() == null && documento.getIgvBaseImponible() != null)
-                                .orElse(false)
+        return (isSalesDocumentItem.test(object) && whenSalesDocumentItem.apply(object)
+                .map(documento -> documento.getIgv() == null &&
+                        documento.getIgvBaseImponible() != null &&
+                        documento.getTasaIgv() != null
+                )
+                .orElse(false)
         );
     }
 
     @Override
     public void modify(Object object) {
         Consumer<DocumentoVentaDetalle> consumer = detalle -> {
-            BigDecimal igv = detalle.getIgvBaseImponible().multiply(getRuleContext().getTasaIgv());
+            BigDecimal igv = detalle.getIgvBaseImponible().multiply(detalle.getTasaIgv());
             detalle.setIgv(igv);
         };
         whenSalesDocumentItem.apply(object).ifPresent(consumer);

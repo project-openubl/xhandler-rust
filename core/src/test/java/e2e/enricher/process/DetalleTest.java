@@ -98,7 +98,8 @@ public class DetalleTest extends AbstractTest {
         input
                 .getDetalles()
                 .forEach(detalle -> {
-                    assertEquals(0, BigDecimal.TEN.compareTo(detalle.getPrecioReferencia()));
+                    assertEquals(0, BigDecimal.TEN.compareTo(detalle.getPrecio()));
+                    assertEquals(0, new BigDecimal("11.80").compareTo(detalle.getPrecioReferencia()));
                 });
     }
 

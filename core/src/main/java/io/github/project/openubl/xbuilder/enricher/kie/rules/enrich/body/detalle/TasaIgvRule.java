@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
@@ -28,18 +28,13 @@ import java.util.function.Consumer;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isSalesDocumentItem;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenSalesDocumentItem;
 
-@RulePhase(type = RulePhase.PhaseType.PROCESS)
-public class IgvBaseImponibleRule extends AbstractBodyRule {
+@RulePhase(type = RulePhase.PhaseType.ENRICH)
+public class TasaIgvRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
         return (isSalesDocumentItem.test(object) && whenSalesDocumentItem.apply(object)
-                .map(documento -> documento.getIgvBaseImponible() == null &&
-                        documento.getIgvTipo() != null &&
-                        documento.getCantidad() != null &&
-                        documento.getPrecio() != null &&
-                        documento.getPrecioReferencia() != null
-                )
+                .map(documento -> documento.getTasaIgv() == null && documento.getIgvTipo() != null)
                 .orElse(false)
         );
     }
@@ -47,15 +42,21 @@ public class IgvBaseImponibleRule extends AbstractBodyRule {
     @Override
     public void modify(Object object) {
         Consumer<DocumentoVentaDetalle> consumer = detalle -> {
+            BigDecimal igvTasa;
             Catalog7 catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
-
-            BigDecimal baseImponible;
-            if (catalog7.isOperacionOnerosa()) {
-                baseImponible = detalle.getCantidad().multiply(detalle.getPrecio());
-            } else {
-                baseImponible = detalle.getCantidad().multiply(detalle.getPrecioReferencia());
+            switch (catalog7.getGrupo()) {
+                case EXPORTACION:
+                case EXONERADO:
+                case INAFECTO: {
+                    igvTasa = BigDecimal.ZERO;
+                    break;
+                }
+                default: {
+                    igvTasa = getRuleContext().getTasaIgv();
+                    break;
+                }
             }
-            detalle.setIgvBaseImponible(baseImponible);
+            detalle.setTasaIgv(igvTasa);
         };
         whenSalesDocumentItem.apply(object).ifPresent(consumer);
     }
