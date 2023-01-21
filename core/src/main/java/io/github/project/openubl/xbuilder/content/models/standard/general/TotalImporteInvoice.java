@@ -34,4 +34,7 @@ public class TotalImporteInvoice extends TotalImporte {
 
     @Schema(minimum = "0", requiredMode = Schema.RequiredMode.REQUIRED)
     private BigDecimal anticipos;
+
+    @Schema(minimum = "0", requiredMode = Schema.RequiredMode.REQUIRED)
+    private BigDecimal descuentos;
 }
