@@ -140,6 +140,8 @@ class QuarkusXbuilderProcessor {
 
                 io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo.AnticipoBuilder.class,
+                io.github.project.openubl.xbuilder.content.models.standard.general.Descuento.class,
+                io.github.project.openubl.xbuilder.content.models.standard.general.Descuento.DescuentoBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoTributarioRelacionado.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.BaseDocumentoTributarioRelacionado.BaseDocumentoTributarioRelacionadoBuilder.class,
                 io.github.project.openubl.xbuilder.content.models.standard.general.CargoDescuento.class,
@@ -228,6 +230,7 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog52.class,
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog53.class,
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo.class,
+                io.github.project.openubl.xbuilder.content.catalogs.Catalog53_DescuentoGlobal.class,
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog54.class,
                 io.github.project.openubl.xbuilder.content.catalogs.Catalog59.class,
 
