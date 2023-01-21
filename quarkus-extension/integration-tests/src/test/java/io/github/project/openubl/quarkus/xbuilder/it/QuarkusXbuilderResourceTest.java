@@ -178,6 +178,7 @@ public class QuarkusXbuilderResourceTest {
                                         "    <cac:LegalMonetaryTotal>\n" +
                                         "        <cbc:LineExtensionAmount currencyID=\"PEN\">1000.00</cbc:LineExtensionAmount>\n" +
                                         "        <cbc:TaxInclusiveAmount currencyID=\"PEN\">1200.00</cbc:TaxInclusiveAmount>\n" +
+                                        "        <cbc:AllowanceTotalAmount currencyID=\"PEN\">0</cbc:AllowanceTotalAmount\n>" +
                                         "        <cbc:PrepaidAmount currencyID=\"PEN\">0</cbc:PrepaidAmount>\n" +
                                         "        <cbc:PayableAmount currencyID=\"PEN\">1200.00</cbc:PayableAmount>\n" +
                                         "    </cac:LegalMonetaryTotal>\n" +
