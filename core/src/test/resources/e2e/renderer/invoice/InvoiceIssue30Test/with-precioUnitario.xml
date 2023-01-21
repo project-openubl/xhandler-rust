@@ -83,6 +83,7 @@
     <cac:LegalMonetaryTotal>
         <cbc:LineExtensionAmount currencyID="PEN">66.80</cbc:LineExtensionAmount>
         <cbc:TaxInclusiveAmount currencyID="PEN">78.82</cbc:TaxInclusiveAmount>
+        <cbc:AllowanceTotalAmount currencyID="PEN">0</cbc:AllowanceTotalAmount>
         <cbc:PrepaidAmount currencyID="PEN">0</cbc:PrepaidAmount>
         <cbc:PayableAmount currencyID="PEN">78.82</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
