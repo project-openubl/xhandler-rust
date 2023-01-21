@@ -20,6 +20,7 @@ import io.github.project.openubl.xbuilder.content.models.common.Document;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Descuento;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
@@ -61,6 +62,7 @@ public class Helpers {
     public static final Predicate<Object> isSalesDocumentItem = o -> o instanceof DocumentoVentaDetalle;
 
     public static final Predicate<Object> isAnticipo = o -> o instanceof Anticipo;
+    public static final Predicate<Object> isDescuento = o -> o instanceof Descuento;
 
     public static final Function<Object, Optional<Invoice>> whenInvoice = o -> {
         if (o instanceof Invoice) {
@@ -114,6 +116,13 @@ public class Helpers {
     public static final Function<Object, Optional<Anticipo>> whenAnticipo = o -> {
         if (o instanceof Anticipo) {
             return Optional.of((Anticipo) o);
+        }
+        return Optional.empty();
+    };
+
+    public static final Function<Object, Optional<Descuento>> whenDescuento = o -> {
+        if (o instanceof Descuento) {
+            return Optional.of((Descuento) o);
         }
         return Optional.empty();
     };

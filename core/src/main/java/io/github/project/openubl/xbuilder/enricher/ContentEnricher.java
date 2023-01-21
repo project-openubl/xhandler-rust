@@ -66,7 +66,9 @@ public class ContentEnricher {
                             .build();
                     RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
                     input.getDetalles().forEach(ruleUnitBody::modify);
+
                     input.getAnticipos().forEach(ruleUnitBody::modify);
+                    input.getDescuentos().forEach(ruleUnitBody::modify);
                 });
     }
 

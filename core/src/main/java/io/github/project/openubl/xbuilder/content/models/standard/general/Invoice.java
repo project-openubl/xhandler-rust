@@ -69,4 +69,7 @@ public class Invoice extends SalesDocument {
 
     @Singular
     private List<DocumentoRelacionado> otrosDocumentosTributariosRelacionados;
+
+    @Singular
+    private List<Descuento> descuentos;
 }

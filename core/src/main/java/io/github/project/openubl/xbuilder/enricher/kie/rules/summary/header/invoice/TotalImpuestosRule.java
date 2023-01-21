@@ -19,7 +19,9 @@ package io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.inv
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_DescuentoGlobal;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Descuento;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImpuestos;
@@ -29,9 +31,11 @@ import io.github.project.openubl.xbuilder.enricher.kie.rules.utils.DetalleUtils;
 import io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Impuesto;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isInvoice;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenInvoice;
@@ -41,12 +45,9 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
-        return (
-                isInvoice.test(object) &&
-                        whenInvoice
-                                .apply(object)
-                                .map(documento -> documento.getTotalImpuestos() == null && documento.getDetalles() != null)
-                                .orElse(false)
+        return (isInvoice.test(object) && whenInvoice.apply(object)
+                .map(documento -> documento.getTotalImpuestos() == null && documento.getDetalles() != null)
+                .orElse(false)
         );
     }
 
@@ -59,39 +60,39 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
             Impuesto exonerado = DetalleUtils.calImpuestoByTipo(invoice.getDetalles(), Catalog5.EXONERADO);
             Impuesto gratuito = DetalleUtils.calImpuestoByTipo(invoice.getDetalles(), Catalog5.GRATUITO);
 
-            BigDecimal icb = invoice
-                    .getDetalles()
-                    .stream()
+            BigDecimal icb = invoice.getDetalles().stream()
                     .map(DocumentoVentaDetalle::getIcb)
                     .filter(Objects::nonNull)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            BigDecimal totalAnticiposGravados = invoice
-                    .getAnticipos()
-                    .stream()
+            // Anticipos
+            BigDecimal totalAnticiposGravados = invoice.getAnticipos().stream()
                     .filter(f -> {
-                        Optional<Catalog53_Anticipo> catalog53_anticipo = Catalog.valueOfCode(
-                                Catalog53_Anticipo.class,
-                                f.getTipo()
-                        );
-                        return (
-                                catalog53_anticipo.isPresent() &&
-                                        catalog53_anticipo
-                                                .get()
-                                                .equals(
-                                                        Catalog53_Anticipo.DESCUENTO_GLOBAL_POR_ANTICIPOS_GRAVADOS_AFECTA_BASE_IMPONIBLE_IGV_IVAP
-                                                )
-                        );
+                        Optional<Catalog53_Anticipo> catalog53_anticipo = Catalog.valueOfCode(Catalog53_Anticipo.class, f.getTipo());
+                        return (catalog53_anticipo.isPresent() && catalog53_anticipo.get().equals(Catalog53_Anticipo.DESCUENTO_GLOBAL_POR_ANTICIPOS_GRAVADOS_AFECTA_BASE_IMPONIBLE_IGV_IVAP));
                     })
                     .map(Anticipo::getMonto)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal gravadoBaseImponible = gravado.getBaseImponible().subtract(totalAnticiposGravados);
-            BigDecimal gravadoImporte = gravadoBaseImponible.multiply(invoice.getTasaIgv());
 
+            // Descuentos
+            Map<Catalog53_DescuentoGlobal, BigDecimal> descuentos = invoice.getDescuentos().stream()
+                    .filter(descuento -> descuento.getTipoDescuento() != null && descuento.getMonto() != null)
+                    .collect(Collectors.groupingBy(
+                            descuento -> Catalog.valueOfCode(Catalog53_DescuentoGlobal.class, descuento.getTipoDescuento()).orElseThrow(Catalog.invalidCatalogValue),
+                            Collectors.reducing(BigDecimal.ZERO, Descuento::getMonto, BigDecimal::add)
+                    ));
+            BigDecimal descuentosQueAfectanBaseImponible_sinImpuestos = descuentos.getOrDefault(Catalog53_DescuentoGlobal.DESCUENTO_GLOBAL_AFECTA_BASE_IMPONIBLE_IGV_IVAP, BigDecimal.ZERO);
+
+            // Gravado
+            BigDecimal gravadoBaseImponible = gravado.getBaseImponible()
+                    .subtract(totalAnticiposGravados)
+                    .subtract(descuentosQueAfectanBaseImponible_sinImpuestos);
+
+            BigDecimal gravadoImporte = gravadoBaseImponible.multiply(invoice.getTasaIgv());
             BigDecimal total = ivap.getImporte().add(gravadoImporte).add(icb);
 
-            TotalImpuestos totalImpuestos = TotalImpuestos
-                    .builder()
+            // Set final values
+            TotalImpuestos totalImpuestos = TotalImpuestos.builder()
                     .ivapImporte(ivap.getImporte())
                     .ivapBaseImponible(ivap.getBaseImponible())
                     .gravadoImporte(gravadoImporte)
