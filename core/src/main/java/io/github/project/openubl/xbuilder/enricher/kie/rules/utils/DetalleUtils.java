@@ -30,22 +30,23 @@ import java.util.stream.Stream;
 public class DetalleUtils {
 
     public static BigDecimal getImporteSinImpuestos(List<DocumentoVentaDetalle> detalles) {
-        return detalles
-                .stream()
+        return detalles.stream()
                 .filter(item -> {
                     Catalog7 catalog7 = Catalog
                             .valueOfCode(Catalog7.class, item.getIgvTipo())
                             .orElseThrow(Catalog.invalidCatalogValue);
                     return !catalog7.getTaxCategory().equals(Catalog5.GRATUITO);
                 })
-                .map(DocumentoVentaDetalle::getIgvBaseImponible)
+                .map(detalle -> detalle.getIscBaseImponible() != null && detalle.getIscBaseImponible().compareTo(BigDecimal.ZERO) > 0 ?
+                        detalle.getIscBaseImponible() :
+                        detalle.getIgvBaseImponible()
+                )
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public static BigDecimal getTotalImpuestos(List<DocumentoVentaDetalle> detalles) {
-        return detalles
-                .stream()
+        return detalles.stream()
                 .filter(detalle -> {
                     Catalog7 catalog7 = Catalog
                             .valueOfCode(Catalog7.class, detalle.getIgvTipo())
@@ -58,27 +59,44 @@ public class DetalleUtils {
     }
 
     public static Impuesto calImpuestoByTipo(List<DocumentoVentaDetalle> detalle, Catalog5 categoria) {
-        Supplier<Stream<DocumentoVentaDetalle>> stream = () ->
-                detalle
-                        .stream()
-                        .filter($il -> {
-                            Catalog7 catalog7 = Catalog
-                                    .valueOfCode(Catalog7.class, $il.getIgvTipo())
-                                    .orElseThrow(Catalog.invalidCatalogValue);
-                            return catalog7.getTaxCategory().equals(categoria);
-                        });
+        Supplier<Stream<DocumentoVentaDetalle>> stream = () -> detalle.stream()
+                .filter($il -> {
+                    Catalog7 catalog7 = Catalog
+                            .valueOfCode(Catalog7.class, $il.getIgvTipo())
+                            .orElseThrow(Catalog.invalidCatalogValue);
+                    return catalog7.getTaxCategory().equals(categoria);
+                });
 
-        BigDecimal baseImponible = stream
-                .get()
+        BigDecimal baseImponible = stream.get()
                 .map(DocumentoVentaDetalle::getIgvBaseImponible)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal importe = stream
-                .get()
+        BigDecimal importe = stream.get()
                 .map(DocumentoVentaDetalle::getIgv)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return Impuesto.builder().importe(importe).baseImponible(baseImponible).build();
+        return Impuesto.builder()
+                .importe(importe)
+                .baseImponible(baseImponible)
+                .build();
+    }
+
+    public static Impuesto calImpuestoIsc(List<DocumentoVentaDetalle> detalle) {
+        Supplier<Stream<DocumentoVentaDetalle>> stream = detalle::stream;
+
+        BigDecimal baseImponible = stream.get()
+                .map(DocumentoVentaDetalle::getIscBaseImponible)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal importe = stream.get()
+                .map(DocumentoVentaDetalle::getIsc)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return Impuesto.builder()
+                .importe(importe)
+                .baseImponible(baseImponible)
+                .build();
     }
 }

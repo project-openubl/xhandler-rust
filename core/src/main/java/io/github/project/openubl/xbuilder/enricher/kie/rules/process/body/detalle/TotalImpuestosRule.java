@@ -31,21 +31,23 @@ public class TotalImpuestosRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
-        return (
-                isSalesDocumentItem.test(object) &&
-                        whenSalesDocumentItem
-                                .apply(object)
-                                .map(documento ->
-                                        documento.getTotalImpuestos() == null && documento.getIgv() != null && documento.getIcb() != null
-                                )
-                                .orElse(false)
+        return (isSalesDocumentItem.test(object) && whenSalesDocumentItem
+                .apply(object)
+                .map(documento -> documento.getTotalImpuestos() == null &&
+                        documento.getIgv() != null &&
+                        documento.getIcb() != null &&
+                        documento.getIsc() != null
+                )
+                .orElse(false)
         );
     }
 
     @Override
     public void modify(Object object) {
         Consumer<DocumentoVentaDetalle> consumer = detalle -> {
-            BigDecimal totalImpuestos = detalle.getIgv().add(detalle.getIcb());
+            BigDecimal totalImpuestos = detalle.getIgv()
+                    .add(detalle.getIcb())
+                    .add(detalle.getIsc());
             detalle.setTotalImpuestos(totalImpuestos);
         };
         whenSalesDocumentItem.apply(object).ifPresent(consumer);

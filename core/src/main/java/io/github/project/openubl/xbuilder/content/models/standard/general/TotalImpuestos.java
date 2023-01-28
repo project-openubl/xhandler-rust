@@ -65,4 +65,10 @@ public class TotalImpuestos {
 
     @Schema(minimum = "0")
     private BigDecimal icbImporte;
+
+    @Schema(minimum = "0")
+    private BigDecimal iscImporte;
+
+    @Schema(minimum = "0")
+    private BigDecimal iscBaseImponible;
 }

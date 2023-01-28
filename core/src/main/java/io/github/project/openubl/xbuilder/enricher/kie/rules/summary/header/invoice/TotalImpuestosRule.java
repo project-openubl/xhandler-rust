@@ -59,6 +59,7 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
             Impuesto inafecto = DetalleUtils.calImpuestoByTipo(invoice.getDetalles(), Catalog5.INAFECTO);
             Impuesto exonerado = DetalleUtils.calImpuestoByTipo(invoice.getDetalles(), Catalog5.EXONERADO);
             Impuesto gratuito = DetalleUtils.calImpuestoByTipo(invoice.getDetalles(), Catalog5.GRATUITO);
+            Impuesto isc = DetalleUtils.calImpuestoIsc(invoice.getDetalles());
 
             BigDecimal icb = invoice.getDetalles().stream()
                     .map(DocumentoVentaDetalle::getIcb)
@@ -86,10 +87,16 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
             // Gravado
             BigDecimal gravadoBaseImponible = gravado.getBaseImponible()
                     .subtract(totalAnticiposGravados)
-                    .subtract(descuentosQueAfectanBaseImponible_sinImpuestos);
+                    .subtract(descuentosQueAfectanBaseImponible_sinImpuestos)
+                    .subtract(isc.getImporte());
 
-            BigDecimal gravadoImporte = gravadoBaseImponible.multiply(invoice.getTasaIgv());
-            BigDecimal total = ivap.getImporte().add(gravadoImporte).add(icb);
+            BigDecimal gravadoImporte = gravadoBaseImponible
+                    .add(isc.getImporte())
+                    .multiply(invoice.getTasaIgv());
+            BigDecimal total = gravadoImporte
+                    .add(ivap.getImporte())
+                    .add(icb)
+                    .add(isc.getImporte());
 
             // Set final values
             TotalImpuestos totalImpuestos = TotalImpuestos.builder()
@@ -103,6 +110,8 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
                     .exoneradoBaseImponible(exonerado.getBaseImponible())
                     .gratuitoImporte(gratuito.getImporte())
                     .gratuitoBaseImponible(gratuito.getBaseImponible())
+                    .iscImporte(isc.getImporte())
+                    .iscBaseImponible(isc.getBaseImponible())
                     .icbImporte(icb)
                     .total(total)
                     .build();

@@ -38,7 +38,8 @@ public class IgvBaseImponibleRule extends AbstractBodyRule {
                         documento.getIgvTipo() != null &&
                         documento.getCantidad() != null &&
                         documento.getPrecio() != null &&
-                        documento.getPrecioReferencia() != null
+                        documento.getPrecioReferencia() != null &&
+                        documento.getIsc() != null
                 )
                 .orElse(false)
         );
@@ -55,7 +56,7 @@ public class IgvBaseImponibleRule extends AbstractBodyRule {
             } else {
                 baseImponible = detalle.getCantidad().multiply(detalle.getPrecioReferencia());
             }
-            detalle.setIgvBaseImponible(baseImponible);
+            detalle.setIgvBaseImponible(baseImponible.add(detalle.getIsc()));
         };
         whenSalesDocumentItem.apply(object).ifPresent(consumer);
     }

@@ -37,12 +37,12 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
-        return (
-                isNote.test(object) &&
-                        whenNote
-                                .apply(object)
-                                .map(documento -> documento.getTotalImpuestos() == null && documento.getDetalles() != null)
-                                .orElse(false)
+        return (isNote.test(object) && whenNote
+                .apply(object)
+                .map(documento -> documento.getTotalImpuestos() == null &&
+                        documento.getDetalles() != null
+                )
+                .orElse(false)
         );
     }
 
@@ -54,28 +54,36 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
             Impuesto inafecto = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.INAFECTO);
             Impuesto exonerado = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.EXONERADO);
             Impuesto gratuito = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.GRATUITO);
+            Impuesto isc = DetalleUtils.calImpuestoIsc(document.getDetalles());
 
-            BigDecimal icb = document
-                    .getDetalles()
-                    .stream()
+            BigDecimal icb = document.getDetalles().stream()
                     .map(DocumentoVentaDetalle::getIcb)
                     .filter(Objects::nonNull)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            BigDecimal total = ivap.getImporte().add(gravado.getImporte()).add(icb);
+            //
+            BigDecimal gravadoBaseImponible = gravado.getBaseImponible()
+                    .subtract(isc.getImporte());
+            BigDecimal gravadoImporte = gravado.getImporte();
 
-            TotalImpuestos totalImpuestos = TotalImpuestos
-                    .builder()
+            BigDecimal total = gravadoImporte
+                    .add(ivap.getImporte())
+                    .add(icb)
+                    .add(isc.getImporte());
+
+            TotalImpuestos totalImpuestos = TotalImpuestos.builder()
                     .ivapImporte(ivap.getImporte())
                     .ivapBaseImponible(ivap.getBaseImponible())
-                    .gravadoImporte(gravado.getImporte())
-                    .gravadoBaseImponible(gravado.getBaseImponible())
+                    .gravadoImporte(gravadoImporte)
+                    .gravadoBaseImponible(gravadoBaseImponible)
                     .inafectoImporte(inafecto.getImporte())
                     .inafectoBaseImponible(inafecto.getBaseImponible())
                     .exoneradoImporte(exonerado.getImporte())
                     .exoneradoBaseImponible(exonerado.getBaseImponible())
                     .gratuitoImporte(gratuito.getImporte())
                     .gratuitoBaseImponible(gratuito.getBaseImponible())
+                    .iscImporte(isc.getImporte())
+                    .iscBaseImponible(isc.getBaseImponible())
                     .icbImporte(icb)
                     .total(total)
                     .build();

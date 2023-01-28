@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
@@ -28,17 +28,14 @@ import java.util.function.Consumer;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isSalesDocumentItem;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenSalesDocumentItem;
 
-@RulePhase(type = RulePhase.PhaseType.PROCESS)
-public class PrecioDeReferenciaRule extends AbstractBodyRule {
+@RulePhase(type = RulePhase.PhaseType.ENRICH)
+public class TasaIscRule1 extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
         return (isSalesDocumentItem.test(object) && whenSalesDocumentItem.apply(object)
-                .map(documento -> documento.getPrecioReferencia() == null &&
-                        documento.getPrecio() != null &&
-                        documento.getTasaIgv() != null &&
-                        documento.getIgvTipo() != null &&
-                        documento.getTasaIsc() != null
+                .map(documento -> documento.getTasaIsc() != null &&
+                        documento.getIgvTipo() != null
                 )
                 .orElse(false)
         );
@@ -47,23 +44,23 @@ public class PrecioDeReferenciaRule extends AbstractBodyRule {
     @Override
     public void modify(Object object) {
         Consumer<DocumentoVentaDetalle> consumer = detalle -> {
+            BigDecimal iscTasa;
             Catalog7 catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
-
-            BigDecimal precioReferencia;
-            if (catalog7.isOperacionOnerosa()) {
-                if (detalle.isPrecioConImpuestos()) {
-                    precioReferencia = detalle.getPrecio();
-                } else {
-                    precioReferencia = detalle.getPrecio()
-                            .multiply(detalle.getTasaIgv().add(BigDecimal.ONE))
-                            .multiply(detalle.getTasaIsc().add(BigDecimal.ONE));
+            switch (catalog7.getGrupo()) {
+                case EXPORTACION:
+                case EXONERADO:
+                case INAFECTO: {
+                    iscTasa = BigDecimal.ZERO;
+                    break;
                 }
-            } else {
-                precioReferencia = detalle.getPrecio();
+                default: {
+                    iscTasa = detalle.getTasaIsc();
+                    break;
+                }
             }
-
-            detalle.setPrecioReferencia(precioReferencia);
+            detalle.setTasaIsc(iscTasa);
         };
         whenSalesDocumentItem.apply(object).ifPresent(consumer);
     }
+
 }

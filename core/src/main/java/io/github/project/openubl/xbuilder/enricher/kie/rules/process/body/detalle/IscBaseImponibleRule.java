@@ -29,15 +29,16 @@ import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helper
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenSalesDocumentItem;
 
 @RulePhase(type = RulePhase.PhaseType.PROCESS)
-public class PrecioDeReferenciaRule extends AbstractBodyRule {
+public class IscBaseImponibleRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
         return (isSalesDocumentItem.test(object) && whenSalesDocumentItem.apply(object)
-                .map(documento -> documento.getPrecioReferencia() == null &&
-                        documento.getPrecio() != null &&
-                        documento.getTasaIgv() != null &&
+                .map(documento -> documento.getIscBaseImponible() == null &&
                         documento.getIgvTipo() != null &&
+                        documento.getCantidad() != null &&
+                        documento.getPrecio() != null &&
+                        documento.getPrecioReferencia() != null &&
                         documento.getTasaIsc() != null
                 )
                 .orElse(false)
@@ -47,22 +48,20 @@ public class PrecioDeReferenciaRule extends AbstractBodyRule {
     @Override
     public void modify(Object object) {
         Consumer<DocumentoVentaDetalle> consumer = detalle -> {
-            Catalog7 catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
+            BigDecimal baseImponible;
 
-            BigDecimal precioReferencia;
-            if (catalog7.isOperacionOnerosa()) {
-                if (detalle.isPrecioConImpuestos()) {
-                    precioReferencia = detalle.getPrecio();
+            if (detalle.getTasaIsc().compareTo(BigDecimal.ZERO) > 0) {
+                Catalog7 catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
+                if (catalog7.isOperacionOnerosa()) {
+                    baseImponible = detalle.getCantidad().multiply(detalle.getPrecio());
                 } else {
-                    precioReferencia = detalle.getPrecio()
-                            .multiply(detalle.getTasaIgv().add(BigDecimal.ONE))
-                            .multiply(detalle.getTasaIsc().add(BigDecimal.ONE));
+                    baseImponible = detalle.getCantidad().multiply(detalle.getPrecioReferencia());
                 }
             } else {
-                precioReferencia = detalle.getPrecio();
+                baseImponible = BigDecimal.ZERO;
             }
 
-            detalle.setPrecioReferencia(precioReferencia);
+            detalle.setIscBaseImponible(baseImponible);
         };
         whenSalesDocumentItem.apply(object).ifPresent(consumer);
     }

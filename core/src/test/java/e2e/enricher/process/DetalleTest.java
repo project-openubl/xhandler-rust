@@ -307,7 +307,12 @@ public class DetalleTest extends AbstractTest {
     public void testEnrichTotalImpuestos() {
         // Given
         Invoice input = Invoice.builder()
-                .detalle(DocumentoVentaDetalle.builder().igv(new BigDecimal("10")).icb(new BigDecimal("2")).build())
+                .detalle(DocumentoVentaDetalle.builder()
+                        .igv(new BigDecimal("10"))
+                        .icb(new BigDecimal("2"))
+                        .isc(new BigDecimal("5"))
+                        .build()
+                )
                 .build();
 
         // When
@@ -318,7 +323,7 @@ public class DetalleTest extends AbstractTest {
         input
                 .getDetalles()
                 .forEach(detalle -> {
-                    assertEquals(0, detalle.getTotalImpuestos().compareTo(new BigDecimal("12")));
+                    assertEquals(0, detalle.getTotalImpuestos().compareTo(new BigDecimal("17")));
                 });
     }
 
