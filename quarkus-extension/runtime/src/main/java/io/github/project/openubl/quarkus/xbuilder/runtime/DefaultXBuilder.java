@@ -54,10 +54,7 @@ public class DefaultXBuilder implements XBuilder {
 
     @Override
     public Defaults getDefaults() {
-        return Defaults
-                .builder()
-                .moneda(config.moneda.orElse("PEN"))
-                .unidadMedida(config.unidadMedida.orElse("NIU"))
+        return Defaults.builder()
                 .igvTasa(config.igvTasa.orElse(new BigDecimal("0.18")))
                 .icbTasa(config.icbTasa.orElse(new BigDecimal("0.2")))
                 .build();
