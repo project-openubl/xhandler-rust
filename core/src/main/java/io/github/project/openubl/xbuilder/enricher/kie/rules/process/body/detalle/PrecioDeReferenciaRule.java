@@ -37,7 +37,8 @@ public class PrecioDeReferenciaRule extends AbstractBodyRule {
                 .map(documento -> documento.getPrecioReferencia() == null &&
                         documento.getPrecio() != null &&
                         documento.getTasaIgv() != null &&
-                        documento.getIgvTipo() != null
+                        documento.getIgvTipo() != null &&
+                        documento.getTasaIsc() != null
                 )
                 .orElse(false)
         );
@@ -46,16 +47,16 @@ public class PrecioDeReferenciaRule extends AbstractBodyRule {
     @Override
     public void modify(Object object) {
         Consumer<DocumentoVentaDetalle> consumer = detalle -> {
-            Catalog7 catalog7 = Catalog
-                    .valueOfCode(Catalog7.class, detalle.getIgvTipo())
-                    .orElseThrow(Catalog.invalidCatalogValue);
+            Catalog7 catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
 
             BigDecimal precioReferencia;
             if (catalog7.isOperacionOnerosa()) {
                 if (detalle.isPrecioConImpuestos()) {
                     precioReferencia = detalle.getPrecio();
                 } else {
-                    precioReferencia = detalle.getPrecio().multiply(detalle.getTasaIgv().add(BigDecimal.ONE));
+                    precioReferencia = detalle.getPrecio()
+                            .multiply(detalle.getTasaIgv().add(BigDecimal.ONE))
+                            .multiply(detalle.getTasaIsc().add(BigDecimal.ONE));
                 }
             } else {
                 precioReferencia = detalle.getPrecio();

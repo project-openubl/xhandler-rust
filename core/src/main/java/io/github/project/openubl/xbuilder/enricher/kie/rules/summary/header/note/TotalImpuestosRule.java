@@ -28,6 +28,7 @@ import io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Impuesto;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isNote;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenNote;
@@ -37,12 +38,12 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
-        return (
-                isNote.test(object) &&
-                        whenNote
-                                .apply(object)
-                                .map(documento -> documento.getTotalImpuestos() == null && documento.getDetalles() != null)
-                                .orElse(false)
+        return (isNote.test(object) && whenNote
+                .apply(object)
+                .map(documento -> documento.getTotalImpuestos() == null &&
+                        documento.getDetalles() != null
+                )
+                .orElse(false)
         );
     }
 
@@ -50,33 +51,71 @@ public class TotalImpuestosRule extends AbstractHeaderRule {
     public void modify(Object object) {
         Consumer<SalesDocument> consumer = document -> {
             Impuesto ivap = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.IMPUESTO_ARROZ_PILADO);
+            Impuesto exportacion = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.EXPORTACION);
             Impuesto gravado = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.IGV);
             Impuesto inafecto = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.INAFECTO);
             Impuesto exonerado = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.EXONERADO);
             Impuesto gratuito = DetalleUtils.calImpuestoByTipo(document.getDetalles(), Catalog5.GRATUITO);
 
-            BigDecimal icb = document
-                    .getDetalles()
-                    .stream()
-                    .map(DocumentoVentaDetalle::getIcb)
+            // ICB
+            BigDecimal icbImporte = Stream.of(
+                            ivap.getImporteIcb(),
+                            exportacion.getImporteIcb(),
+                            gravado.getImporteIcb(),
+                            inafecto.getImporteIcb(),
+                            exonerado.getImporteIcb(),
+                            gratuito.getImporteIcb()
+                    )
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // ISC
+            BigDecimal iscImporte = Stream.of(
+                            ivap.getImporteIsc(),
+                            exportacion.getImporteIsc(),
+                            gravado.getImporteIsc(),
+                            inafecto.getImporteIsc(),
+                            exonerado.getImporteIsc(),
+                            gratuito.getImporteIsc()
+                    )
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            BigDecimal iscBaseImponible = document.getDetalles().stream()
+                    .filter(d -> d.getTasaIsc().compareTo(BigDecimal.ZERO) != 0)
+                    .map(DocumentoVentaDetalle::getIscBaseImponible)
                     .filter(Objects::nonNull)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            BigDecimal total = ivap.getImporte().add(gravado.getImporte()).add(icb);
+            // Set final values
+            BigDecimal total = gravado.getImporte()
+                    .add(ivap.getImporte())
+                    .add(exportacion.getImporte());
 
-            TotalImpuestos totalImpuestos = TotalImpuestos
-                    .builder()
-                    .ivapImporte(ivap.getImporte())
+            TotalImpuestos totalImpuestos = TotalImpuestos.builder()
+                    // IVAP
+                    .ivapImporte(ivap.getImporteIgv())
                     .ivapBaseImponible(ivap.getBaseImponible())
-                    .gravadoImporte(gravado.getImporte())
-                    .gravadoBaseImponible(gravado.getBaseImponible())
+
+                    // EXPORTACION
+                    .exportacionImporte(exportacion.getImporteIgv())
+                    .exportacionBaseImponible(exportacion.getBaseImponible())
+
+                    // ISC and GRAVADO go together
+                    .iscImporte(iscImporte)
+                    .iscBaseImponible(iscBaseImponible)
+                    .gravadoImporte(gravado.getImporteIgv()) //
+                    .gravadoBaseImponible(gravado.getBaseImponible()) //
+
+                    // INAFECTO, EXONERADO, GRATUITO
                     .inafectoImporte(inafecto.getImporte())
                     .inafectoBaseImponible(inafecto.getBaseImponible())
                     .exoneradoImporte(exonerado.getImporte())
                     .exoneradoBaseImponible(exonerado.getBaseImponible())
                     .gratuitoImporte(gratuito.getImporte())
                     .gratuitoBaseImponible(gratuito.getBaseImponible())
-                    .icbImporte(icb)
+
+                    // ICB
+                    .icbImporte(icbImporte)
+
                     .total(total)
                     .build();
 

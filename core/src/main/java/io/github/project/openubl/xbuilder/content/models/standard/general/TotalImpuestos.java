@@ -40,6 +40,12 @@ public class TotalImpuestos {
     private BigDecimal ivapBaseImponible;
 
     @Schema(minimum = "0")
+    private BigDecimal exportacionImporte;
+
+    @Schema(minimum = "0")
+    private BigDecimal exportacionBaseImponible;
+
+    @Schema(minimum = "0")
     private BigDecimal gravadoImporte;
 
     @Schema(minimum = "0")
@@ -65,4 +71,10 @@ public class TotalImpuestos {
 
     @Schema(minimum = "0")
     private BigDecimal icbImporte;
+
+    @Schema(minimum = "0")
+    private BigDecimal iscImporte;
+
+    @Schema(minimum = "0")
+    private BigDecimal iscBaseImponible;
 }

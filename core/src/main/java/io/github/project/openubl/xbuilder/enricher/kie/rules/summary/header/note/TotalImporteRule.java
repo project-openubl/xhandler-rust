@@ -36,12 +36,11 @@ public class TotalImporteRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
-        return (
-                isNote.test(object) &&
-                        whenNote
-                                .apply(object)
-                                .map(note -> note.getTotalImporte() == null && note.getDetalles() != null)
-                                .orElse(false)
+        return (isNote.test(object) && whenNote.apply(object)
+                .map(note -> note.getTotalImporte() == null &&
+                        note.getDetalles() != null
+                )
+                .orElse(false)
         );
     }
 
@@ -53,8 +52,10 @@ public class TotalImporteRule extends AbstractHeaderRule {
 
             BigDecimal importe = importeSinImpuestos.add(totalImpuestos);
 
-            note.setTotalImporte(
-                    TotalImporteNote.builder().importe(importe).importeSinImpuestos(importeSinImpuestos).build()
+            note.setTotalImporte(TotalImporteNote.builder()
+                    .importe(importe)
+                    .importeSinImpuestos(importeSinImpuestos)
+                    .build()
             );
         };
         whenNote.apply(object).ifPresent(consumer);

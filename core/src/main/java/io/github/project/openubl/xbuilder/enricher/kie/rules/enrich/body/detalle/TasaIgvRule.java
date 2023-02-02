@@ -43,19 +43,25 @@ public class TasaIgvRule extends AbstractBodyRule {
     public void modify(Object object) {
         Consumer<DocumentoVentaDetalle> consumer = detalle -> {
             BigDecimal igvTasa;
+
             Catalog7 catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
-            switch (catalog7.getGrupo()) {
-                case EXPORTACION:
-                case EXONERADO:
-                case INAFECTO: {
-                    igvTasa = BigDecimal.ZERO;
-                    break;
-                }
-                default: {
-                    igvTasa = getRuleContext().getTasaIgv();
-                    break;
+            if (catalog7.equals(Catalog7.GRAVADO_IVAP)) {
+                igvTasa = getRuleContext().getTasaIvap();
+            } else {
+                switch (catalog7.getGrupo()) {
+                    case EXPORTACION:
+                    case EXONERADO:
+                    case INAFECTO: {
+                        igvTasa = BigDecimal.ZERO;
+                        break;
+                    }
+                    default: {
+                        igvTasa = getRuleContext().getTasaIgv();
+                        break;
+                    }
                 }
             }
+
             detalle.setTasaIgv(igvTasa);
         };
         whenSalesDocumentItem.apply(object).ifPresent(consumer);

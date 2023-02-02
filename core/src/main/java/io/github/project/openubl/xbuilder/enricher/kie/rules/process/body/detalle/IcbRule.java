@@ -31,9 +31,9 @@ public class IcbRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
-        return (
-                isSalesDocumentItem.test(object) &&
-                        whenSalesDocumentItem.apply(object).map(documento -> documento.getIcb() == null).orElse(false)
+        return (isSalesDocumentItem.test(object) && whenSalesDocumentItem.apply(object)
+                .map(documento -> documento.getIcb() == null)
+                .orElse(false)
         );
     }
 

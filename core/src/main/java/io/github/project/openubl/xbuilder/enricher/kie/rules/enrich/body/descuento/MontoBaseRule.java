@@ -20,7 +20,6 @@ import io.github.project.openubl.xbuilder.content.models.standard.general.Descue
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
-import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isDescuento;

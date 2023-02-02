@@ -98,7 +98,7 @@
             </cac:AlternativeConditionPrice>
         </cac:PricingReference>
         <cac:TaxTotal>
-            <cbc:TaxAmount currencyID="PEN">18.00</cbc:TaxAmount>
+            <cbc:TaxAmount currencyID="PEN">0.00</cbc:TaxAmount>
             <cac:TaxSubtotal>
                 <cbc:TaxableAmount currencyID="PEN">100.00</cbc:TaxableAmount>
                 <cbc:TaxAmount currencyID="PEN">18.00</cbc:TaxAmount>
@@ -132,7 +132,7 @@
             </cac:AlternativeConditionPrice>
         </cac:PricingReference>
         <cac:TaxTotal>
-            <cbc:TaxAmount currencyID="PEN">72.00</cbc:TaxAmount>
+            <cbc:TaxAmount currencyID="PEN">0.00</cbc:TaxAmount>
             <cac:TaxSubtotal>
                 <cbc:TaxableAmount currencyID="PEN">400.00</cbc:TaxableAmount>
                 <cbc:TaxAmount currencyID="PEN">72.00</cbc:TaxAmount>
@@ -166,7 +166,7 @@
             </cac:AlternativeConditionPrice>
         </cac:PricingReference>
         <cac:TaxTotal>
-            <cbc:TaxAmount currencyID="PEN">162.00</cbc:TaxAmount>
+            <cbc:TaxAmount currencyID="PEN">0.00</cbc:TaxAmount>
             <cac:TaxSubtotal>
                 <cbc:TaxableAmount currencyID="PEN">900.00</cbc:TaxableAmount>
                 <cbc:TaxAmount currencyID="PEN">162.00</cbc:TaxAmount>

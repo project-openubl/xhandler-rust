@@ -29,4 +29,5 @@ public class Defaults {
     private String unidadMedida;
     private BigDecimal icbTasa;
     private BigDecimal igvTasa;
+    private BigDecimal ivapTasa;
 }

@@ -1,5 +1,18 @@
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="{moneda}">{totalImpuestos.total.scale(2)}</cbc:TaxAmount>
+        {#if totalImpuestos.iscImporte}
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{moneda}">{totalImpuestos.iscBaseImponible.scale(2)}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{moneda}">{totalImpuestos.iscImporte.scale(2)}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>2000</cbc:ID>
+                    <cbc:Name>ISC</cbc:Name>
+                    <cbc:TaxTypeCode>EXC</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        {/if}
         {#if totalImpuestos.gravadoBaseImponible}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{moneda}">{totalImpuestos.gravadoBaseImponible.scale(2)}</cbc:TaxableAmount>
@@ -51,6 +64,19 @@
                 <cac:TaxScheme>
                     <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">9996</cbc:ID>
                     <cbc:Name>GRA</cbc:Name>
+                    <cbc:TaxTypeCode>FRE</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        {/if}
+        {#if totalImpuestos.exportacionBaseImponible}
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{moneda}">{totalImpuestos.exportacionBaseImponible.scale(2)}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{moneda}">0</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>9995</cbc:ID>
+                    <cbc:Name>EXP</cbc:Name>
                     <cbc:TaxTypeCode>FRE</cbc:TaxTypeCode>
                 </cac:TaxScheme>
             </cac:TaxCategory>

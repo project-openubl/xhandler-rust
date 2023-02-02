@@ -1,4 +1,8 @@
+        {#if item.iscBaseImponible}
+        <cbc:LineExtensionAmount currencyID="{moneda}">{item.iscBaseImponible.scale(2)}</cbc:LineExtensionAmount>
+        {#else}
         <cbc:LineExtensionAmount currencyID="{moneda}">{item.igvBaseImponible.scale(2)}</cbc:LineExtensionAmount>
+        {/if}
         <cac:PricingReference>
             <cac:AlternativeConditionPrice>
                 <cbc:PriceAmount currencyID="{moneda}">{item.precioReferencia.scale(2)}</cbc:PriceAmount>
@@ -7,6 +11,21 @@
         </cac:PricingReference>
         <cac:TaxTotal>
             <cbc:TaxAmount currencyID="{moneda}">{item.totalImpuestos.scale(2)}</cbc:TaxAmount>
+            {#if item.isc}
+            <cac:TaxSubtotal>
+                <cbc:TaxableAmount currencyID="{moneda}">{item.iscBaseImponible.scale(2)}</cbc:TaxableAmount>
+                <cbc:TaxAmount currencyID="{moneda}">{item.isc.scale(2)}</cbc:TaxAmount>
+                <cac:TaxCategory>
+                    <cbc:Percent>{item.tasaIsc.multiply(100)}</cbc:Percent>
+                    <cbc:TierRange>{item.iscTipo}</cbc:TierRange>
+                    <cac:TaxScheme>
+                        <cbc:ID>2000</cbc:ID>
+                        <cbc:Name>ISC</cbc:Name>
+                        <cbc:TaxTypeCode>EXC</cbc:TaxTypeCode>
+                    </cac:TaxScheme>
+                </cac:TaxCategory>
+            </cac:TaxSubtotal>
+            {/if}
             <cac:TaxSubtotal>
                 <cbc:TaxableAmount currencyID="{moneda}">{item.igvBaseImponible.scale(2)}</cbc:TaxableAmount>
                 <cbc:TaxAmount currencyID="{moneda}">{item.igv.scale(2)}</cbc:TaxAmount>

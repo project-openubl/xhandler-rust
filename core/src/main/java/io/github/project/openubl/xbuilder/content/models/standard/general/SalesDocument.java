@@ -44,6 +44,12 @@ public abstract class SalesDocument extends Document {
     private Map<String, String> leyendas;
 
     /**
+     * Tasa IVAP. Ejemplo: 0.04
+     */
+    @Schema(description = "Ejemplo: 0.04", minimum = "0", maximum = "1")
+    private BigDecimal tasaIvap;
+
+    /**
      * Tasa del IGV. Ejemplo: 0.18
      */
     @Schema(description = "Ejemplo: 0.18", minimum = "0", maximum = "1")

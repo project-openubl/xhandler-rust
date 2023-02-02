@@ -54,19 +54,21 @@ public class ContentEnricher {
                 .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
                 .forEach(phaseType -> {
                     // Header
-                    HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder().localDate(systemLocalDate).build();
+                    HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
+                            .localDate(systemLocalDate)
+                            .build();
                     RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
                     ruleUnitHeader.modify(input);
 
                     // Body
-                    BodyRuleContext ruleContextBody = BodyRuleContext
-                            .builder()
+                    BodyRuleContext ruleContextBody = BodyRuleContext.builder()
                             .tasaIgv(input.getTasaIgv())
+                            .tasaIvap(input.getTasaIvap())
                             .tasaIcb(input.getTasaIcb())
                             .build();
                     RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
-                    input.getDetalles().forEach(ruleUnitBody::modify);
 
+                    input.getDetalles().forEach(ruleUnitBody::modify);
                     input.getAnticipos().forEach(ruleUnitBody::modify);
                     input.getDescuentos().forEach(ruleUnitBody::modify);
                 });
@@ -94,8 +96,7 @@ public class ContentEnricher {
                     ruleUnitHeader.modify(input);
 
                     // Body
-                    BodyRuleContext ruleContextBody = BodyRuleContext
-                            .builder()
+                    BodyRuleContext ruleContextBody = BodyRuleContext.builder()
                             .tasaIgv(input.getTasaIgv())
                             .tasaIcb(input.getTasaIcb())
                             .build();
@@ -118,7 +119,8 @@ public class ContentEnricher {
                     ruleUnitHeader.modify(input);
 
                     // Body
-                    BodyRuleContext ruleContextBody = BodyRuleContext.builder().build();
+                    BodyRuleContext ruleContextBody = BodyRuleContext.builder()
+                            .build();
 
                     RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
                     input.getComprobantes().forEach(ruleUnitBody::modify);
@@ -139,7 +141,8 @@ public class ContentEnricher {
                     ruleUnitHeader.modify(input);
 
                     // Body
-                    BodyRuleContext ruleContextBody = BodyRuleContext.builder().build();
+                    BodyRuleContext ruleContextBody = BodyRuleContext.builder()
+                            .build();
 
                     RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
                     input.getComprobantes().forEach(ruleUnitBody::modify);

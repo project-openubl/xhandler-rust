@@ -69,6 +69,18 @@ public class DocumentoVentaDetalle {
     @Schema(description = "'true' si ICB is aplicado a este bien o servicio")
     private boolean icbAplica;
 
+    @Schema(description = "Ejemplo: 0.17", minimum = "0", maximum = "1")
+    private BigDecimal tasaIsc;
+
+    @Schema(description = "Monto total de ISC", minimum = "0")
+    private BigDecimal isc;
+
+    @Schema(minimum = "0")
+    private BigDecimal iscBaseImponible;
+
+    @Schema(description = "Catalogo 08")
+    private String iscTipo;
+
     // Totales
     @Schema(minimum = "0")
     private BigDecimal totalImpuestos;

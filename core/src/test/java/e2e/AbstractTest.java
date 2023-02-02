@@ -36,6 +36,7 @@ public class AbstractTest {
             .unidadMedida("NIU")
             .icbTasa(new BigDecimal("0.2"))
             .igvTasa(new BigDecimal("0.18"))
+            .ivapTasa(new BigDecimal("0.04"))
             .build();
 
     protected static final DateProvider dateProvider = () -> LocalDate.of(2019, 12, 24);

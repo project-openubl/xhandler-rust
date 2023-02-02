@@ -27,5 +27,6 @@ import java.math.BigDecimal;
 public class BodyRuleContext implements RuleContext {
 
     private BigDecimal tasaIgv;
+    private BigDecimal tasaIvap;
     private BigDecimal tasaIcb;
 }
