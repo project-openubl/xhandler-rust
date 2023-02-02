@@ -41,7 +41,7 @@ public class DetalleTest extends AbstractTest {
         input
                 .getDetalles()
                 .forEach(detalle -> {
-                    assertEquals(defaults.getUnidadMedida(), detalle.getUnidadMedida());
+                    assertEquals("NIU", detalle.getUnidadMedida());
                 });
     }
 

@@ -30,15 +30,15 @@ public class UnidadDeMedidaRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
-        return (
-                isSalesDocumentItem.test(object) &&
-                        whenSalesDocumentItem.apply(object).map(documento -> documento.getUnidadMedida() == null).orElse(false)
+        return (isSalesDocumentItem.test(object) && whenSalesDocumentItem.apply(object)
+                .map(documento -> documento.getUnidadMedida() == null)
+                .orElse(false)
         );
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<DocumentoVentaDetalle> consumer = detalle -> detalle.setUnidadMedida(getDefaults().getUnidadMedida());
+        Consumer<DocumentoVentaDetalle> consumer = detalle -> detalle.setUnidadMedida("NIU");
         whenSalesDocumentItem.apply(object).ifPresent(consumer);
     }
 }

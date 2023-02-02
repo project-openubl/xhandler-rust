@@ -24,10 +24,7 @@ import java.math.BigDecimal;
 @Getter
 @Builder
 public class Defaults {
-
-    private String moneda;
-    private String unidadMedida;
-    private BigDecimal icbTasa;
-    private BigDecimal igvTasa;
-    private BigDecimal ivapTasa;
+    private BigDecimal icbTasa = new BigDecimal("0.5");
+    private BigDecimal igvTasa = new BigDecimal("0.18");
+    private BigDecimal ivapTasa = new BigDecimal("0.04");
 }

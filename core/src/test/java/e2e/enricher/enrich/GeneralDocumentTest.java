@@ -43,7 +43,7 @@ public class GeneralDocumentTest extends AbstractTest {
         enricher.enrich(input);
 
         // Then
-        assertEquals(defaults.getMoneda(), input.getMoneda());
+        assertEquals("PEN", input.getMoneda());
     }
 
     @Test

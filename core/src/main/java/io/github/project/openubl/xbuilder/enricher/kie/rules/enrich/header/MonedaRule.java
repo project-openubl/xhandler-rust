@@ -38,7 +38,7 @@ public class MonedaRule extends AbstractHeaderRule {
 
     @Override
     public void modify(Object object) {
-        Consumer<Document> consumer = document -> document.setMoneda(getDefaults().getMoneda());
+        Consumer<Document> consumer = document -> document.setMoneda("PEN");
         whenDocument.apply(object).ifPresent(consumer);
     }
 }
