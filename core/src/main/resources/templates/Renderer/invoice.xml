@@ -107,8 +107,8 @@
     <cac:LegalMonetaryTotal>
         <cbc:LineExtensionAmount currencyID="{moneda}">{totalImporte.importeSinImpuestos.scale(2)}</cbc:LineExtensionAmount>
         <cbc:TaxInclusiveAmount currencyID="{moneda}">{totalImporte.importeConImpuestos.scale(2)}</cbc:TaxInclusiveAmount>
-        <cbc:AllowanceTotalAmount currencyID="PEN">{totalImporte.descuentos}</cbc:AllowanceTotalAmount>
-        <cbc:PrepaidAmount currencyID="PEN">{totalImporte.anticipos}</cbc:PrepaidAmount>
+        <cbc:AllowanceTotalAmount currencyID="{moneda}">{totalImporte.descuentos}</cbc:AllowanceTotalAmount>
+        <cbc:PrepaidAmount currencyID="{moneda}">{totalImporte.anticipos}</cbc:PrepaidAmount>
         <cbc:PayableAmount currencyID="{moneda}">{totalImporte.importe.scale(2)}</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
     {#each detalles.orEmpty}
