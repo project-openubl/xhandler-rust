@@ -47,12 +47,6 @@ public class DetalleUtils {
 
     public static BigDecimal getTotalImpuestos(List<DocumentoVentaDetalle> detalles) {
         return detalles.stream()
-                .filter(detalle -> {
-                    Catalog7 catalog7 = Catalog
-                            .valueOfCode(Catalog7.class, detalle.getIgvTipo())
-                            .orElseThrow(Catalog.invalidCatalogValue);
-                    return !catalog7.getTaxCategory().equals(Catalog5.GRATUITO);
-                })
                 .map(DocumentoVentaDetalle::getTotalImpuestos)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -68,35 +62,33 @@ public class DetalleUtils {
                 });
 
         BigDecimal baseImponible = stream.get()
-                .map(DocumentoVentaDetalle::getIgvBaseImponible)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal importe = stream.get()
-                .map(DocumentoVentaDetalle::getIgv)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return Impuesto.builder()
-                .importe(importe)
-                .baseImponible(baseImponible)
-                .build();
-    }
-
-    public static Impuesto calImpuestoIsc(List<DocumentoVentaDetalle> detalle) {
-        Supplier<Stream<DocumentoVentaDetalle>> stream = detalle::stream;
-
-        BigDecimal baseImponible = stream.get()
                 .map(DocumentoVentaDetalle::getIscBaseImponible)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal importe = stream.get()
+                .map(DocumentoVentaDetalle::getTotalImpuestos)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal importeIsc = stream.get()
                 .map(DocumentoVentaDetalle::getIsc)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal importeIgv = stream.get()
+                .map(DocumentoVentaDetalle::getIgv)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal importeIcb = stream.get()
+                .map(DocumentoVentaDetalle::getIcb)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return Impuesto.builder()
-                .importe(importe)
                 .baseImponible(baseImponible)
+                .importe(importe)
+                .importeIsc(importeIsc)
+                .importeIgv(importeIgv)
+                .importeIcb(importeIcb)
                 .build();
     }
 }

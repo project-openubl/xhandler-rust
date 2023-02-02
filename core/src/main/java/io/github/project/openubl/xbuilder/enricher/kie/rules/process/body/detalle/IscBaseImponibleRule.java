@@ -38,8 +38,7 @@ public class IscBaseImponibleRule extends AbstractBodyRule {
                         documento.getIgvTipo() != null &&
                         documento.getCantidad() != null &&
                         documento.getPrecio() != null &&
-                        documento.getPrecioReferencia() != null &&
-                        documento.getTasaIsc() != null
+                        documento.getPrecioReferencia() != null
                 )
                 .orElse(false)
         );
@@ -50,15 +49,11 @@ public class IscBaseImponibleRule extends AbstractBodyRule {
         Consumer<DocumentoVentaDetalle> consumer = detalle -> {
             BigDecimal baseImponible;
 
-            if (detalle.getTasaIsc().compareTo(BigDecimal.ZERO) > 0) {
-                Catalog7 catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
-                if (catalog7.isOperacionOnerosa()) {
-                    baseImponible = detalle.getCantidad().multiply(detalle.getPrecio());
-                } else {
-                    baseImponible = detalle.getCantidad().multiply(detalle.getPrecioReferencia());
-                }
+            Catalog7 catalog7 = Catalog.valueOfCode(Catalog7.class, detalle.getIgvTipo()).orElseThrow(Catalog.invalidCatalogValue);
+            if (catalog7.isOperacionOnerosa()) {
+                baseImponible = detalle.getCantidad().multiply(detalle.getPrecio());
             } else {
-                baseImponible = BigDecimal.ZERO;
+                baseImponible = detalle.getCantidad().multiply(detalle.getPrecioReferencia());
             }
 
             detalle.setIscBaseImponible(baseImponible);

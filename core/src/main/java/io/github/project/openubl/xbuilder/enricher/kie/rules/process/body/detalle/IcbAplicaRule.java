@@ -31,16 +31,12 @@ public class IcbAplicaRule extends AbstractBodyRule {
 
     @Override
     public boolean test(Object object) {
-        return (
-                isSalesDocumentItem.test(object) &&
-                        whenSalesDocumentItem
-                                .apply(object)
-                                .map(documento ->
-                                        !documento.isIcbAplica() &&
-                                                documento.getIcb() != null &&
-                                                documento.getIcb().compareTo(BigDecimal.ZERO) > 0
-                                )
-                                .orElse(false)
+        return (isSalesDocumentItem.test(object) && whenSalesDocumentItem.apply(object)
+                .map(documento -> !documento.isIcbAplica() &&
+                        documento.getIcb() != null &&
+                        documento.getIcb().compareTo(BigDecimal.ZERO) > 0
+                )
+                .orElse(false)
         );
     }
 

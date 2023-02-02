@@ -121,7 +121,10 @@ public class DetalleTest extends AbstractTest {
     public void testEnrichPrecioReferenciaTipo_ValorReferencial() {
         // Given
         Invoice input = Invoice.builder()
-                .detalle(DocumentoVentaDetalle.builder().igvTipo(Catalog7.GRAVADO_RETIRO_POR_DONACION.getCode()).build())
+                .detalle(DocumentoVentaDetalle.builder()
+                        .igvTipo(Catalog7.GRAVADO_RETIRO_POR_DONACION.getCode())
+                        .build()
+                )
                 .build();
 
         // When

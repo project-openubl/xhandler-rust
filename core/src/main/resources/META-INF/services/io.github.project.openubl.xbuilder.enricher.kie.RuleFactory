@@ -3,6 +3,7 @@
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.MonedaRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.TasaIgvRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.TasaIcbRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.TasaIvapRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.FechaEmisionRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.FirmanteRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.TipoDocumentoIdentidadClienteRule
@@ -23,6 +24,9 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.note.Comprob
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.note.creditnote.TipoNotaCreditoRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.note.debitnote.TipoNotaDebitoRule
 
+## Summary
+io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.LeyendasRule
+
 ## Summary - Invoice
 io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.invoice.TotalImporteRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.invoice.TotalImpuestosRule
@@ -38,10 +42,10 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.note.TotalI
 ## Enrich - Detalle
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.UnidadDeMedidaRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.IgvTipoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.IscTipoRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.PrecioDeReferenciaTipoRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.TasaIgvRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.TasaIscRule
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.TasaIscRule1
 
 ## Enrich - Anticipos
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.anticipo.TipoAnticipoRule

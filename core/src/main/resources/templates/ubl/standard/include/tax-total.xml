@@ -69,6 +69,19 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         {/if}
+        {#if totalImpuestos.exportacionBaseImponible}
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{moneda}">{totalImpuestos.exportacionBaseImponible.scale(2)}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{moneda}">0</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>9995</cbc:ID>
+                    <cbc:Name>EXP</cbc:Name>
+                    <cbc:TaxTypeCode>FRE</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        {/if}
         {#if totalImpuestos.ivapBaseImponible}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{moneda}">{totalImpuestos.ivapBaseImponible.scale(2)}</cbc:TaxableAmount>

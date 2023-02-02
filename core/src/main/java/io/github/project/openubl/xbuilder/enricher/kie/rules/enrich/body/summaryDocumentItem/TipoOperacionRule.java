@@ -18,7 +18,6 @@ package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.summar
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog19;
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
@@ -27,7 +26,6 @@ import java.util.function.Consumer;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isSummaryDocumentsItem;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenSummaryDocumentsItem;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenVoidedDocumentsItem;
 
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
 public class TipoOperacionRule extends AbstractBodyRule {

@@ -18,14 +18,12 @@ package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretenc
 
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Document;
-import io.github.project.openubl.xbuilder.content.models.common.TipoCambio;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Data
 @SuperBuilder

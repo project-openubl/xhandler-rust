@@ -48,7 +48,9 @@ public class PrecioRule extends AbstractBodyRule {
             BigDecimal precio;
             if (catalog7.isOperacionOnerosa()) {
                 if (detalle.isPrecioConImpuestos()) {
-                    precio = detalle.getPrecioReferencia().divide(detalle.getTasaIgv().add(BigDecimal.ONE), 10, RoundingMode.HALF_EVEN);;
+                    precio = detalle.getPrecioReferencia()
+                            .divide(detalle.getTasaIgv().add(BigDecimal.ONE), 10, RoundingMode.HALF_EVEN)
+                            .divide(detalle.getTasaIsc().add(BigDecimal.ONE), 10, RoundingMode.HALF_EVEN);
                 } else {
                     precio = detalle.getPrecio();
                 }

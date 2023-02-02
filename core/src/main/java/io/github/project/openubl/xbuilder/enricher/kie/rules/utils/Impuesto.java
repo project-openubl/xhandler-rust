@@ -24,7 +24,10 @@ import java.math.BigDecimal;
 @Data
 @Builder
 public class Impuesto {
+    private BigDecimal baseImponible;
 
     private BigDecimal importe;
-    private BigDecimal baseImponible;
+    private BigDecimal importeIgv;
+    private BigDecimal importeIsc;
+    private BigDecimal importeIcb;
 }
