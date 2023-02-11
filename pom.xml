@@ -251,12 +251,6 @@
                                 </configuration>
                             </execution>
                         </executions>
-                        <configuration>
-                            <excludes>
-                                <exclude>pe/gob/sunat/**/*</exclude>
-                                <exclude>service/sunat/gob/pe/**/*</exclude>
-                            </excludes>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -268,7 +262,7 @@
                 <sonar.organization>project-openubl</sonar.organization>
                 <sonar.projectKey>project-openubl_xbuilder</sonar.projectKey>
                 <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
-                <sonar.projectName>XBuilder</sonar.projectName>
+                <sonar.projectName>xbuilder</sonar.projectName>
             </properties>
             <build>
                 <plugins>
