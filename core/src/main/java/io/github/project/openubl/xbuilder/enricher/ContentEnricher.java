@@ -48,14 +48,12 @@ public class ContentEnricher {
     }
 
     public void enrich(Invoice input) {
-        LocalDate systemLocalDate = dateProvider.now();
-
         Stream
                 .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
                 .forEach(phaseType -> {
                     // Header
                     HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
-                            .localDate(systemLocalDate)
+                            .localDate(dateProvider.now())
                             .build();
                     RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
                     ruleUnitHeader.modify(input);
@@ -83,14 +81,12 @@ public class ContentEnricher {
     }
 
     private void enrichNote(Note input) {
-        LocalDate systemLocalDate = dateProvider.now();
-
         Stream
                 .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
                 .forEach(phaseType -> {
                     // Header
                     HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
-                            .localDate(systemLocalDate)
+                            .localDate(dateProvider.now())
                             .build();
                     RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
                     ruleUnitHeader.modify(input);
@@ -106,14 +102,12 @@ public class ContentEnricher {
     }
 
     public void enrich(VoidedDocuments input) {
-        LocalDate systemLocalDate = dateProvider.now();
-
         Stream
                 .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
                 .forEach(phaseType -> {
                     // Header
                     HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
-                            .localDate(systemLocalDate)
+                            .localDate(dateProvider.now())
                             .build();
                     RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
                     ruleUnitHeader.modify(input);
@@ -128,14 +122,12 @@ public class ContentEnricher {
     }
 
     public void enrich(SummaryDocuments input) {
-        LocalDate systemLocalDate = dateProvider.now();
-
         Stream
                 .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
                 .forEach(phaseType -> {
                     // Header
                     HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
-                            .localDate(systemLocalDate)
+                            .localDate(dateProvider.now())
                             .build();
                     RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
                     ruleUnitHeader.modify(input);
@@ -150,14 +142,12 @@ public class ContentEnricher {
     }
 
     public void enrich(Perception input) {
-        LocalDate systemLocalDate = dateProvider.now();
-
         Stream
                 .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
                 .forEach(phaseType -> {
                     // Header
                     HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
-                            .localDate(systemLocalDate)
+                            .localDate(dateProvider.now())
                             .build();
                     RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
                     ruleUnitHeader.modify(input);
@@ -167,14 +157,12 @@ public class ContentEnricher {
     }
 
     public void enrich(Retention input) {
-        LocalDate systemLocalDate = dateProvider.now();
-
         Stream
                 .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
                 .forEach(phaseType -> {
                     // Header
                     HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
-                            .localDate(systemLocalDate)
+                            .localDate(dateProvider.now())
                             .build();
                     RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
                     ruleUnitHeader.modify(input);
@@ -184,14 +172,12 @@ public class ContentEnricher {
     }
 
     public void enrich(DespatchAdvice input) {
-        LocalDate systemLocalDate = dateProvider.now();
-
         Stream
                 .of(RulePhase.PhaseType.ENRICH, RulePhase.PhaseType.PROCESS, RulePhase.PhaseType.SUMMARY)
                 .forEach(phaseType -> {
                     // Header
                     HeaderRuleContext ruleContextHeader = HeaderRuleContext.builder()
-                            .localDate(systemLocalDate)
+                            .localDate(dateProvider.now())
                             .build();
                     RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
                     ruleUnitHeader.modify(input);
