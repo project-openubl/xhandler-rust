@@ -48,12 +48,6 @@
         <quarkus.version>2.16.2.Final</quarkus.version>
         <xmlunit.version>2.9.1</xmlunit.version>
         <xsender.version>4.1.1</xsender.version>
-
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.organization>project-openubl</sonar.organization>
-        <sonar.projectKey>project-openubl_xbuilder</sonar.projectKey>
-        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
-        <sonar.projectName>xbuilder</sonar.projectName>
     </properties>
 
     <url>https://project-openubl.github.io/</url>
@@ -269,6 +263,13 @@
         </profile>
         <profile>
             <id>sonar</id>
+            <properties>
+                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+                <sonar.organization>project-openubl</sonar.organization>
+                <sonar.projectKey>project-openubl_xbuilder</sonar.projectKey>
+                <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+                <sonar.projectName>XBuilder</sonar.projectName>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
