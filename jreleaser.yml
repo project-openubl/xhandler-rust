@@ -41,8 +41,6 @@ release:
     changelog:
       formatted: ALWAYS
       preset: conventional-commits
-      contributors:
-        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
       labelers:
         - label: 'feat'
           title: 'regex:^(?:\(feat\)(?:\(.*\))?!?):\s.*'
