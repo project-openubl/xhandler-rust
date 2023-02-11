@@ -14,47 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.descuento;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.anticipo;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
-import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_DescuentoGlobal;
-import io.github.project.openubl.xbuilder.content.models.standard.general.Descuento;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
+import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.util.function.Consumer;
 
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isDescuento;
-import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenDescuento;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isAnticipo;
+import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenAnticipo;
 
 /**
- * Rule for: {@link Descuento#tipoDescuento}
+ * Rule for: {@link Anticipo#tipo}
  *
  * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
  */
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class TipoDescuentoRule extends AbstractBodyRule {
+public class TipoAnticipoRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {
-        return isDescuento.test(object);
+        return isAnticipo.test(object);
     }
 
     @Override
     public void modify(Object object) {
-        Consumer<Descuento> consumer = descuento -> {
-            String tipoDescuento;
-            if (descuento.getTipoDescuento() == null) {
-                tipoDescuento = Catalog53_DescuentoGlobal.DESCUENTO_GLOBAL_NO_AFECTA_BASE_IMPONIBLE_IGV_IVAP.getCode();
+        Consumer<Anticipo> consumer = anticipo -> {
+            String tipoAnticipo;
+            if (anticipo.getComprobanteTipo() == null) {
+                tipoAnticipo =
+                        Catalog53_Anticipo.DESCUENTO_GLOBAL_POR_ANTICIPOS_GRAVADOS_AFECTA_BASE_IMPONIBLE_IGV_IVAP.getCode();
             } else {
-                Catalog53_DescuentoGlobal catalog53 = Catalog
-                        .valueOfCode(Catalog53_DescuentoGlobal.class, descuento.getTipoDescuento())
+                Catalog53_Anticipo catalog53 = Catalog
+                        .valueOfCode(Catalog53_Anticipo.class, anticipo.getTipo())
                         .orElseThrow(Catalog.invalidCatalogValue);
-                tipoDescuento = catalog53.getCode();
+                tipoAnticipo = catalog53.getCode();
             }
 
-            descuento.setTipoDescuento(tipoDescuento);
+            anticipo.setTipo(tipoAnticipo);
         };
-        whenDescuento.apply(object).ifPresent(consumer);
+        whenAnticipo.apply(object).ifPresent(consumer);
     }
 }

@@ -17,13 +17,18 @@
 package io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_DescuentoGlobal;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_DescuentoPorItem;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Descuento;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.isSalesDocumentItem;
 import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helpers.whenSalesDocumentItem;
@@ -56,6 +61,18 @@ public class IscBaseImponibleRule extends AbstractBodyRule {
                 baseImponible = detalle.getCantidad().multiply(detalle.getPrecioReferencia());
             }
 
+            // Descuentos
+            Map<Catalog53_DescuentoPorItem, BigDecimal> descuentos = detalle.getDescuentos().stream()
+                    .filter(descuento -> descuento.getTipoDescuento() != null && descuento.getMonto() != null)
+                    .collect(Collectors.groupingBy(
+                            descuento -> Catalog.valueOfCode(Catalog53_DescuentoPorItem.class, descuento.getTipoDescuento()).orElseThrow(Catalog.invalidCatalogValue),
+                            Collectors.reducing(BigDecimal.ZERO, Descuento::getMonto, BigDecimal::add)
+                    ));
+            BigDecimal descuentosQueAfectanBaseImponible_sinImpuestos = descuentos.getOrDefault(Catalog53_DescuentoPorItem.DESCUENTO_AFECTA_BASE_IMPONIBLE_IGV_IVAP, BigDecimal.ZERO);
+
+            baseImponible = baseImponible.subtract(descuentosQueAfectanBaseImponible_sinImpuestos);
+
+            // Set value
             detalle.setIscBaseImponible(baseImponible);
         };
         whenSalesDocumentItem.apply(object).ifPresent(consumer);

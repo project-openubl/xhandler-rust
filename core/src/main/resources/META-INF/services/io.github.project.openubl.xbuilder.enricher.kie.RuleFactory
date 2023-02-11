@@ -9,6 +9,15 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.FirmanteRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.TipoDocumentoIdentidadClienteRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.ProveedorDireccionRule
 
+## Enrich - Anticipos
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.anticipo.TipoAnticipoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.anticipo.ComprobanteTipoAnticipoRule
+
+## Enrich - Descuentos
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.descuento.TipoDescuentoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.descuento.FactorRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.descuento.MontoBaseRule
+
 ## Enrich - Invoice
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.FormaDePagoRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.invoice.FormaDePagoTipoRule
@@ -39,6 +48,11 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.summary.header.note.TotalI
 
 
 # Body
+## Enrich - Descuentos
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.descuento.TipoDescuentoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.descuento.FactorRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.descuento.MontoBaseRule
+
 ## Enrich - Detalle
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.UnidadDeMedidaRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.IgvTipoRule
@@ -46,15 +60,6 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.IscTip
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.PrecioDeReferenciaTipoRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.TasaIgvRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.TasaIscRule
-
-## Enrich - Anticipos
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.anticipo.TipoAnticipoRule
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.anticipo.ComprobanteTipoAnticipoRule
-
-## Enrich - Descuentos
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.descuento.TipoDescuentoRule
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.descuento.FactorRule
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.descuento.MontoBaseRule
 
 ## Process - Detalle
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.PrecioDeReferenciaRule

@@ -21,8 +21,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Builder
@@ -84,4 +86,7 @@ public class DocumentoVentaDetalle {
     // Totales
     @Schema(minimum = "0")
     private BigDecimal totalImpuestos;
+
+    @Singular
+    private List<Descuento> descuentos;
 }
