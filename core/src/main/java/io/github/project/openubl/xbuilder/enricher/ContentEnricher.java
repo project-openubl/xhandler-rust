@@ -18,6 +18,7 @@ package io.github.project.openubl.xbuilder.enricher;
 
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
+import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdvice;
@@ -56,6 +57,10 @@ public class ContentEnricher {
                             .localDate(dateProvider.now())
                             .build();
                     RuleUnit ruleUnitHeader = new HeaderRuleUnit(phaseType, defaults, ruleContextHeader);
+
+                    input.getAnticipos().forEach(ruleUnitHeader::modify);
+                    input.getDescuentos().forEach(ruleUnitHeader::modify);
+
                     ruleUnitHeader.modify(input);
 
                     // Body
@@ -66,9 +71,10 @@ public class ContentEnricher {
                             .build();
                     RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
 
+                    input.getDetalles().stream().flatMap(detalle -> detalle.getDescuentos().stream()).forEach(descuento -> {
+                        ruleUnitBody.modify(descuento);
+                    });
                     input.getDetalles().forEach(ruleUnitBody::modify);
-                    input.getAnticipos().forEach(ruleUnitBody::modify);
-                    input.getDescuentos().forEach(ruleUnitBody::modify);
                 });
     }
 
@@ -97,6 +103,8 @@ public class ContentEnricher {
                             .tasaIcb(input.getTasaIcb())
                             .build();
                     RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
+
+                    input.getDetalles().stream().flatMap(detalle -> detalle.getDescuentos().stream()).forEach(ruleUnitBody::modify);
                     input.getDetalles().forEach(ruleUnitBody::modify);
                 });
     }

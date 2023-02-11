@@ -17,12 +17,14 @@
 package io.github.project.openubl.xbuilder.enricher.kie.ruleunits;
 
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
+import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RuleFactory;
 import io.github.project.openubl.xbuilder.enricher.kie.RuleFactoryRegistry;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import io.github.project.openubl.xbuilder.enricher.kie.RuleUnit;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BodyRuleUnit implements RuleUnit {
 
@@ -33,7 +35,9 @@ public class BodyRuleUnit implements RuleUnit {
     public BodyRuleUnit(RulePhase.PhaseType phaseType, Defaults defaults, BodyRuleContext context) {
         this.defaults = defaults;
         this.context = context;
-        this.rules = RuleFactoryRegistry.getRuleFactories(phaseType);
+        this.rules = RuleFactoryRegistry.getRuleFactories(phaseType).stream()
+                .filter(ruleFactory -> ruleFactory instanceof AbstractBodyRule)
+                .collect(Collectors.toList());
     }
 
     @Override

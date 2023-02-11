@@ -9,6 +9,17 @@
                 <cbc:PriceTypeCode listAgencyName="PE:SUNAT" listName="Tipo de Precio" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo16">{item.precioReferenciaTipo}</cbc:PriceTypeCode>
             </cac:AlternativeConditionPrice>
         </cac:PricingReference>
+        {#each item.descuentos.orEmpty}
+        <cac:AllowanceCharge>
+            <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+            <cbc:AllowanceChargeReasonCode>{it.tipoDescuento}</cbc:AllowanceChargeReasonCode>
+            {#if it.factor}
+            <cbc:MultiplierFactorNumeric>{it.factor.scale(2)}</cbc:MultiplierFactorNumeric>
+            {/if}
+            <cbc:Amount currencyID="{moneda}">{it.monto.scale(2)}</cbc:Amount>
+            <cbc:BaseAmount currencyID="{moneda}">{it.montoBase.scale(2)}</cbc:BaseAmount>
+        </cac:AllowanceCharge>
+        {/each}
         <cac:TaxTotal>
             <cbc:TaxAmount currencyID="{moneda}">{item.totalImpuestos.scale(2)}</cbc:TaxAmount>
             {#if item.isc}

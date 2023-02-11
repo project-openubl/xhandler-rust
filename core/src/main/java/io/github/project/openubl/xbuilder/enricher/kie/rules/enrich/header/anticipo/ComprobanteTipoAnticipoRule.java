@@ -14,13 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.anticipo;
+package io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.header.anticipo;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog12;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
 import io.github.project.openubl.xbuilder.content.models.utils.UBLRegex;
 import io.github.project.openubl.xbuilder.enricher.kie.AbstractBodyRule;
+import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 
 import java.util.Optional;
@@ -35,7 +36,7 @@ import static io.github.project.openubl.xbuilder.enricher.kie.rules.utils.Helper
  * @author <a href="mailto:carlosthe19916@gmail.com">Carlos Feria</a>
  */
 @RulePhase(type = RulePhase.PhaseType.ENRICH)
-public class ComprobanteTipoAnticipoRule extends AbstractBodyRule {
+public class ComprobanteTipoAnticipoRule extends AbstractHeaderRule {
 
     @Override
     public boolean test(Object object) {

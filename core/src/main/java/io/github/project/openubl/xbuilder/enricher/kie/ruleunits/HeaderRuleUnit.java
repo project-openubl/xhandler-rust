@@ -17,12 +17,14 @@
 package io.github.project.openubl.xbuilder.enricher.kie.ruleunits;
 
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
+import io.github.project.openubl.xbuilder.enricher.kie.AbstractHeaderRule;
 import io.github.project.openubl.xbuilder.enricher.kie.RuleFactory;
 import io.github.project.openubl.xbuilder.enricher.kie.RuleFactoryRegistry;
 import io.github.project.openubl.xbuilder.enricher.kie.RulePhase;
 import io.github.project.openubl.xbuilder.enricher.kie.RuleUnit;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HeaderRuleUnit implements RuleUnit {
 
@@ -33,7 +35,9 @@ public class HeaderRuleUnit implements RuleUnit {
     public HeaderRuleUnit(RulePhase.PhaseType phaseType, Defaults defaults, HeaderRuleContext context) {
         this.defaults = defaults;
         this.context = context;
-        this.rules = RuleFactoryRegistry.getRuleFactories(phaseType);
+        this.rules = RuleFactoryRegistry.getRuleFactories(phaseType).stream()
+                .filter(ruleFactory -> ruleFactory instanceof AbstractHeaderRule)
+                .collect(Collectors.toList());
     }
 
     @Override
