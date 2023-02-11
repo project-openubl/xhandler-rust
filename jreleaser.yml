@@ -36,6 +36,67 @@ release:
     branch: master
     overwrite: true
     discussionCategoryName: Announcements
+    issues:
+      enabled: true
+    changelog:
+      formatted: ALWAYS
+      preset: conventional-commits
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+      labelers:
+        - label: 'feature'
+          title: 'regex:^(?:\(feat\)(?:\(.*\))?!?):\s.*'
+        - label: 'feature'
+          title: 'Resolves #'
+          body: 'Resolves #'
+
+        - label: 'issue'
+          title: 'regex:^(?:\(fix\)(?:\(.*\))?!?):\s.*'
+        - label: 'issue'
+          title: 'Fixes #'
+          body: 'Fixes #'
+        - label: 'issue'
+          title: 'Relates to #'
+          body: 'Relates to #'
+
+        - label: 'task'
+          title: '(chore)'
+
+        - label: 'dependencies'
+          title: '(deps)'
+        - label: 'dependencies'
+          title: 'regex:(?:\(deps\)(?:\(.*\))?!?):\s.*'
+        - label: 'dependencies'
+          title: 'regex:^Bump\s'
+
+        - label: 'docs'
+          title: '(docs)'
+        - label: 'build'
+          title: '(build)'
+      categories:
+        - title: '🚀 Features'
+          labels:
+            - 'feature'
+        - title: '✅ Issues'
+          labels:
+            - 'issue'
+        - title: '🧰 Tasks'
+          labels:
+            - 'task'
+        - title: '📝 Documentation'
+          labels:
+            - 'docs'
+        - title: '⚙️  Dependencies'
+          labels:
+            - 'dependencies'
+        - title: 'Build'
+          labels:
+            - 'build'
+      hide:
+        categories:
+          - 'Build'
+        contributors:
+          - 'GitHub'
 
 announce:
   zulip:
