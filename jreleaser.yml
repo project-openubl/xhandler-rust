@@ -44,22 +44,11 @@ release:
       contributors:
         format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
       labelers:
-        - label: 'feature'
+        - label: 'feat'
           title: 'regex:^(?:\(feat\)(?:\(.*\))?!?):\s.*'
-        - label: 'feature'
-          title: 'Resolves #'
-          body: 'Resolves #'
-
-        - label: 'issue'
+        - label: 'fix'
           title: 'regex:^(?:\(fix\)(?:\(.*\))?!?):\s.*'
-        - label: 'issue'
-          title: 'Fixes #'
-          body: 'Fixes #'
-        - label: 'issue'
-          title: 'Relates to #'
-          body: 'Relates to #'
-
-        - label: 'task'
+        - label: 'chore'
           title: '(chore)'
 
         - label: 'dependencies'
@@ -68,35 +57,19 @@ release:
           title: 'regex:(?:\(deps\)(?:\(.*\))?!?):\s.*'
         - label: 'dependencies'
           title: 'regex:^Bump\s'
-
-        - label: 'docs'
-          title: '(docs)'
-        - label: 'build'
-          title: '(build)'
       categories:
-        - title: '🚀 Features'
-          labels:
-            - 'feature'
-        - title: '✅ Issues'
-          labels:
-            - 'issue'
-        - title: '🧰 Tasks'
-          labels:
-            - 'task'
-        - title: '📝 Documentation'
-          labels:
-            - 'docs'
         - title: '⚙️  Dependencies'
+          key: 'dependencies'
           labels:
             - 'dependencies'
-        - title: 'Build'
-          labels:
-            - 'build'
       hide:
         categories:
-          - 'Build'
+          - 'merge'
+          - 'build'
+          - 'dependencies'
         contributors:
           - 'GitHub'
+          - 'dependabot'
 
 announce:
   zulip:

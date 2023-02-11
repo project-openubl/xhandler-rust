@@ -37,6 +37,24 @@ XBuilder esta diseñado para que puedas crear XMLs fácilmente.
 mvn clean test -Dxbuilder.snapshot.update
 ```
 
+### Create Pull Requests
+
+Create all Pull Requests using the prefixes of the following table:
+
+| Category      | Prefix    |
+|---------------|-----------|
+| Features      | feat:     |
+| Fixes         | fix:      |
+| Changes       | perf:     |
+| Changes       | refactor: |
+| Changes       | revert:   |
+| Changes       | style:    |
+| Tasks         | chore:    |
+| Build         | test:     |
+| Build         | build:    |
+| Build         | ci:       |
+| Documentation | docs:     |
+
 ## License
 
 - [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
