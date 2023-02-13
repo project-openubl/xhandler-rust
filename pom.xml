@@ -47,7 +47,7 @@
         <lombok.version>1.18.26</lombok.version>
         <quarkus.version>2.16.2.Final</quarkus.version>
         <xmlunit.version>2.9.1</xmlunit.version>
-        <xsender.version>4.1.1</xsender.version>
+        <xsender.version>4.1.2</xsender.version>
     </properties>
 
     <url>https://project-openubl.github.io/</url>
