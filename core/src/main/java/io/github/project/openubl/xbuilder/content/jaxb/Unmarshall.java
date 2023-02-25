@@ -18,6 +18,7 @@ package io.github.project.openubl.xbuilder.content.jaxb;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencion;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionInformation;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionSunatDocumentReference;
@@ -29,12 +30,23 @@ import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocumentVo
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocumentVoidedDocumentsLine;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Document;
+import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.common.TipoCambio;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdvice;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdviceItem;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.Destinatario;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.Destino;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.DocumentoBaja;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.DocumentoRelacionado;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.Envio;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.Partida;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.Remitente;
+import io.github.project.openubl.xbuilder.content.models.standard.guia.Transportista;
 import io.github.project.openubl.xbuilder.content.models.sunat.SunatDocument;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
 import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem;
@@ -283,15 +295,15 @@ public class Unmarshall {
                                                     XMLSunatDocumentSummaryDocumentsLine.TaxTotalSummaryDocuments::getTaxAmount
                                             ));
 
-                            io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado comprobanteAfectado = Optional.ofNullable(line.getBillingReference())
-                                    .map(billingReference -> io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado.builder()
-                                            .serieNumero(billingReference.getInvoiceDocumentReference_id())
-                                            .tipoComprobante(billingReference.getInvoiceDocumentReference_documentTypeCode())
-                                            .build()
-                                    )
-                                    .orElse(null);
+                                    io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado comprobanteAfectado = Optional.ofNullable(line.getBillingReference())
+                                            .map(billingReference -> io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado.builder()
+                                                    .serieNumero(billingReference.getInvoiceDocumentReference_id())
+                                                    .tipoComprobante(billingReference.getInvoiceDocumentReference_documentTypeCode())
+                                                    .build()
+                                            )
+                                            .orElse(null);
 
-                            return SummaryDocumentsItem.builder()
+                                    return SummaryDocumentsItem.builder()
                                             .tipoOperacion(line.getStatus_conditionCode())
                                             .comprobante(Comprobante.builder()
                                                     .moneda(line.getTotalAmount_currencyID())
@@ -325,6 +337,142 @@ public class Unmarshall {
                         .collect(Collectors.toList())
                 );
             }
+
+            return builder.build();
+        }
+    }
+
+    public static DespatchAdvice unmarshallDespatchAdvice(String xml) throws JAXBException, IOException {
+        try (
+                InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/despatch-advice.xml");
+                StringReader reader = new StringReader(xml);
+        ) {
+            XMLDespatchAdvice xmlDocument = unmarshall(documentOXM, new InputSource(reader));
+            DespatchAdvice.DespatchAdviceBuilder builder = DespatchAdvice.builder();
+
+            // Serie y numero
+            String[] split = xmlDocument.getDocumentId().split("-");
+            if (split.length == 2) {
+                builder.serie(split[0]);
+                builder.numero(Integer.parseInt(split[1]));
+            }
+
+            builder.fechaEmision(xmlDocument.getIssueDate());
+            builder.horaEmision(xmlDocument.getIssueTime());
+            builder.tipoComprobante(xmlDocument.getDespatchAdviceTypeCode());
+            builder.observaciones(xmlDocument.getNote());
+            builder.documentoBaja(Optional.ofNullable(xmlDocument.getOrderReference())
+                    .map(elem -> DocumentoBaja.builder()
+                            .serieNumero(elem.getId())
+                            .tipoDocumento(elem.getOrderTypeCode())
+                            .build()
+                    )
+                    .orElse(null)
+            );
+            builder.documentoRelacionado(Optional.ofNullable(xmlDocument.getAdditionalDocumentReference())
+                    .map(elem -> DocumentoRelacionado.builder()
+                            .serieNumero(elem.getId())
+                            .tipoDocumento(elem.getDocumentTypeCode())
+                            .build()
+                    )
+                    .orElse(null)
+            );
+            builder.firmante(Mapper.mapFirmante(xmlDocument.getSignature()));
+
+            builder.remitente(Optional.ofNullable(xmlDocument.getDespatchSupplierParty())
+                    .map(elem -> Remitente.builder()
+                            .ruc(elem.getCustomerAssignedAccountID())
+                            .razonSocial(elem.getRegistrationName())
+                            .build()
+                    )
+                    .orElse(null)
+            );
+
+            builder.destinatario(Optional.ofNullable(xmlDocument.getDeliveryCustomerParty())
+                    .map(elem -> Destinatario.builder()
+                            .numeroDocumentoIdentidad(elem.getPartyIdentification_id())
+                            .nombre(elem.getRegistrationName())
+                            .tipoDocumentoIdentidad(elem.getCustomerAssignedAccountID_schemeId())
+                            .build()
+                    )
+                    .orElse(null)
+            );
+
+            builder.proveedor(Optional.ofNullable(xmlDocument.getSellerSupplierParty())
+                    .map(elem -> Proveedor.builder()
+                            .ruc(elem.getCustomerAssignedAccountId())
+                            .nombreComercial(elem.getRegistrationName())
+                            .build()
+                    )
+                    .orElse(null)
+            );
+
+            builder.envio(Optional.ofNullable(xmlDocument.getShipment())
+                    .map(elem -> {
+                                Transportista transportista = null;
+                                if (elem.getCarrierParty() != null || elem.getTransportMeans() != null || elem.getDriverPerson() != null) {
+                                    Transportista.TransportistaBuilder transportistaBuilder = Transportista.builder();
+
+                                    Optional.ofNullable(elem.getCarrierParty())
+                                            .ifPresent(carrierParty -> transportistaBuilder
+                                                    .tipoDocumentoIdentidad(carrierParty.getPartyIdentification_schemeId())
+                                                    .numeroDocumentoIdentidad(carrierParty.getPartyIdentification_id())
+                                                    .nombre(carrierParty.getPartyName())
+                                            );
+                                    Optional.ofNullable(elem.getTransportMeans())
+                                            .ifPresent(transportMeans -> transportistaBuilder
+                                                    .placaDelVehiculo(transportMeans.getLicensePlateId())
+                                            );
+                                    Optional.ofNullable(elem.getDriverPerson())
+                                            .ifPresent(driverPerson -> transportistaBuilder
+                                                    .choferTipoDocumentoIdentidad(driverPerson.getId())
+                                                    .choferTipoDocumentoIdentidad(driverPerson.getId_schemeId())
+                                            );
+
+                                    transportista = transportistaBuilder.build();
+                                }
+
+                                return Envio.builder()
+                                        .tipoTraslado(elem.getHandlingCode())
+                                        .motivoTraslado(elem.getInformation())
+                                        .pesoTotal(elem.getGrossWeightMeasure())
+                                        .pesoTotalUnidadMedida(elem.getGrossWeightMeasure_unitCode())
+                                        .numeroDeBultos(elem.getTotalTransportHandlingUnitQuantity())
+                                        .transbordoProgramado(elem.getSplitConsignmentIndicator())
+                                        .tipoModalidadTraslado(elem.getTransportModeCode())
+                                        .fechaTraslado(elem.getStartDate())
+                                        .transportista(transportista)
+                                        .destino(Destino.builder()
+                                                .ubigeo(elem.getDeliveryAddress_id())
+                                                .direccion(elem.getDeliveryAddress_line())
+                                                .build()
+                                        )
+                                        .numeroDeContenedor(elem.getTransportEquipment_id())
+                                        .partida(Partida.builder()
+                                                .ubigeo(elem.getOriginAddress_id())
+                                                .direccion(elem.getOriginAddress_streetName())
+                                                .build()
+                                        )
+                                        .codigoDePuerto(elem.getFirstArrivalPortLocation_id())
+                                        .build();
+                            }
+                    )
+                    .orElse(null)
+            );
+
+            builder.detalles(Optional.ofNullable(xmlDocument.getLines())
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(elem -> DespatchAdviceItem.builder()
+                            .cantidad(elem.getDeliveredQuantity())
+                            .unidadMedida(elem.getDeliveredQuantity_unitCode())
+                            .descripcion(elem.getItemName())
+                            .codigo(elem.getSellersItemIdentification_id())
+                            .codigoSunat(elem.getItemClassificationCode())
+                            .build()
+                    )
+                    .collect(Collectors.toList())
+            );
 
             return builder.build();
         }

@@ -98,7 +98,7 @@ public class XMLAssertUtils {
         }
     }
 
-    public static void assertSnapshot(String expected, Class<?> clasz, String snapshotFile) throws SAXException {
+    private static void assertSnapshot(String expected, Class<?> clasz, String snapshotFile) throws SAXException {
         String rootDir = clasz.getName().replaceAll("\\.", "/");
 
         // Update snapshots and if updated do not verify since it doesn't make sense anymore

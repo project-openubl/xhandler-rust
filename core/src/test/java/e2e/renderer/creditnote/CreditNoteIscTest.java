@@ -20,11 +20,11 @@ import e2e.AbstractTest;
 import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog8;
+import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
-import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
 import io.quarkus.qute.Template;
@@ -129,8 +129,11 @@ public class CreditNoteIscTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getCreditNote();
         String xml = template.data(input).render();
 
+        CreditNote inputFromXml = Unmarshall.unmarshallCreditNote(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "isc_aplicacionAlMontoFijo.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "isc_aplicacionAlMontoFijo.xml");
         assertSendSunat(xml, XMLAssertUtils.CREDIT_NOTE_XSD);
     }
 
@@ -176,8 +179,11 @@ public class CreditNoteIscTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getCreditNote();
         String xml = template.data(input).render();
 
+        CreditNote inputFromXml = Unmarshall.unmarshallCreditNote(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "isc_sistemaDePreciosDeVentalAlPublico.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "isc_sistemaDePreciosDeVentalAlPublico.xml");
         assertSendSunat(xml, XMLAssertUtils.CREDIT_NOTE_XSD);
     }
 }

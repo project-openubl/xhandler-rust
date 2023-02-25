@@ -17,6 +17,7 @@
 package e2e;
 
 import e2e.renderer.XMLAssertUtils;
+import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
@@ -47,8 +48,11 @@ public class AbstractTest {
         Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
+        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        XMLAssertUtils.assertSnapshot(xml, getClass(), snapshot);
+        XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), snapshot);
         XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
@@ -60,8 +64,11 @@ public class AbstractTest {
         Template template = TemplateProducer.getInstance().getCreditNote();
         String xml = template.data(input).render();
 
+        CreditNote inputFromXml = Unmarshall.unmarshallCreditNote(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        XMLAssertUtils.assertSnapshot(xml, getClass(), snapshot);
+        XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), snapshot);
         XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.CREDIT_NOTE_XSD);
     }
 
@@ -73,8 +80,11 @@ public class AbstractTest {
         Template template = TemplateProducer.getInstance().getDebitNote();
         String xml = template.data(input).render();
 
+        DebitNote inputFromXml = Unmarshall.unmarshallDebitNote(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        XMLAssertUtils.assertSnapshot(xml, getClass(), snapshot);
+        XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), snapshot);
         XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.DEBIT_NOTE_XSD);
     }
 }

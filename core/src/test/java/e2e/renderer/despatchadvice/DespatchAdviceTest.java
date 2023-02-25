@@ -22,6 +22,7 @@ import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog18;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog20;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
+import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
 import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdvice;
 import io.github.project.openubl.xbuilder.content.models.standard.guia.DespatchAdviceItem;
 import io.github.project.openubl.xbuilder.content.models.standard.guia.Destinatario;
@@ -93,8 +94,11 @@ public class DespatchAdviceTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getDespatchAdvice();
         String xml = template.data(input).render();
 
+        DespatchAdvice inputFromXml = Unmarshall.unmarshallDespatchAdvice(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "minData.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "minData.xml");
         assertSendSunat(xml, XMLAssertUtils.DESPATCH_ADVICE_XSD);
     }
 

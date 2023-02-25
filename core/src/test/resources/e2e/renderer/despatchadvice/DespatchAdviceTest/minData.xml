@@ -72,8 +72,8 @@
             </cac:DeliveryAddress>
         </cac:Delivery>
         <cac:OriginAddress>
-            <cbc:ID>010101}</cbc:ID>
-            <cbc:StreetName>DireccionOrigen}</cbc:StreetName>
+            <cbc:ID>010101</cbc:ID>
+            <cbc:StreetName>DireccionOrigen</cbc:StreetName>
         </cac:OriginAddress>
     </cac:Shipment>
     <cac:DespatchLine>
