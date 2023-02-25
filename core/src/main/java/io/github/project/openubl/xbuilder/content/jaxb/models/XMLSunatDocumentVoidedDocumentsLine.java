@@ -14,20 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.enricher.kie.ruleunits;
+package io.github.project.openubl.xbuilder.content.jaxb.models;
 
-import io.github.project.openubl.xbuilder.enricher.kie.RuleContext;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.eclipse.persistence.oxm.annotations.XmlPath;
 
-import java.math.BigDecimal;
+@Data
+@NoArgsConstructor
+public class XMLSunatDocumentVoidedDocumentsLine {
 
-@Getter
-@Builder
-public class BodyRuleContext implements RuleContext {
+    @XmlPath("cbc:DocumentTypeCode/text()")
+    private String documentTypeCode;
 
-    private String moneda;
-    private BigDecimal tasaIgv;
-    private BigDecimal tasaIvap;
-    private BigDecimal tasaIcb;
+    @XmlPath("sac:DocumentSerialID/text()")
+    private String documentSerialID;
+
+    @XmlPath("sac:DocumentNumberID/text()")
+    private Integer documentNumberID;
+
+    @XmlPath("sac:VoidReasonDescription/text()")
+    private String voidReasonDescription;
 }

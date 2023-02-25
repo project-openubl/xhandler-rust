@@ -12,8 +12,8 @@
     </xml-java-type-adapters>
 
     <java-types>
-        <java-type name="XMLSunatDocumentVoidedDocuments" xml-accessor-type="NONE">
-            <xml-root-element name="VoidedDocuments" namespace="urn:sunat:names:specification:ubl:peru:schema:xsd:VoidedDocuments-1"/>
+        <java-type name="XMLSunatDocumentSummaryDocuments" xml-accessor-type="NONE">
+            <xml-root-element name="SummaryDocuments" namespace="urn:sunat:names:specification:ubl:peru:schema:xsd:SummaryDocuments-1"/>
         </java-type>
 
         <!-- Overwrite fields -->

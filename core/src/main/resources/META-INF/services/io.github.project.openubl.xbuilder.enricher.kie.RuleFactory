@@ -57,6 +57,13 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.descuento.Tipo
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.descuento.FactorRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.descuento.MontoBaseRule
 
+## Enrich - VoidedDocuments
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.voidedDocumentItem.TipoComprobanteRule
+
+## Enrich - SummaryDocuments
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.summaryDocumentItem.TipoOperacionRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.summaryDocumentItem.MonedaRule
+
 ## Process - Detalle
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.PrecioDeReferenciaRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.PrecioRule
@@ -67,9 +74,3 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.IgvRu
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.IscBaseImponibleRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.IscRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.process.body.detalle.TotalImpuestosRule
-
-# VoidedDocuments
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.voidedDocumentItem.TipoComprobanteRule
-
-# SummaryDocuments
-io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.summaryDocumentItem.TipoOperacionRule

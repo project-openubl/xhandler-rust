@@ -16,13 +16,18 @@
  */
 package io.github.project.openubl.xbuilder.content.jaxb;
 
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
+import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencion;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionInformation;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionSunatDocumentReference;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocument;
-import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocumentVoidedDocument;
-import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocumentVoidedDocumentLine;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocumentSummaryDocuments;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocumentSummaryDocumentsLine;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocumentVoidedDocuments;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocumentVoidedDocumentsLine;
+import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Document;
 import io.github.project.openubl.xbuilder.content.models.common.TipoCambio;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
@@ -38,6 +43,11 @@ import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretenci
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.PercepcionRetencionOperacion;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention;
+import io.github.project.openubl.xbuilder.content.models.sunat.resumen.Comprobante;
+import io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteImpuestos;
+import io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteValorVenta;
+import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments;
+import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.xml.sax.InputSource;
@@ -48,6 +58,8 @@ import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -211,13 +223,13 @@ public class Unmarshall {
                 InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/voided-documents.xml");
                 StringReader reader = new StringReader(xml);
         ) {
-            XMLSunatDocumentVoidedDocument xmlDocument = unmarshall(documentOXM, new InputSource(reader));
+            XMLSunatDocumentVoidedDocuments xmlDocument = unmarshall(documentOXM, new InputSource(reader));
             VoidedDocuments.VoidedDocumentsBuilder<?, ?> builder = VoidedDocuments.builder();
 
             enrichSunatDocument(xmlDocument, builder);
 
             // Detalles
-            List<XMLSunatDocumentVoidedDocumentLine> lines = xmlDocument.getLines();
+            List<XMLSunatDocumentVoidedDocumentsLine> lines = xmlDocument.getLines();
             if (lines != null) {
                 builder.comprobantes(lines.stream()
                         .map(line -> VoidedDocumentsItem.builder()
@@ -226,6 +238,89 @@ public class Unmarshall {
                                 .numero(line.getDocumentNumberID())
                                 .descripcionSustento(line.getVoidReasonDescription())
                                 .build()
+                        )
+                        .collect(Collectors.toList())
+                );
+            }
+
+            return builder.build();
+        }
+    }
+
+    public static SummaryDocuments unmarshallSummaryDocuments(String xml) throws JAXBException, IOException {
+        try (
+                InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/summary-documents.xml");
+                StringReader reader = new StringReader(xml);
+        ) {
+            XMLSunatDocumentSummaryDocuments xmlDocument = unmarshall(documentOXM, new InputSource(reader));
+            SummaryDocuments.SummaryDocumentsBuilder<?, ?> builder = SummaryDocuments.builder();
+
+            enrichSunatDocument(xmlDocument, builder);
+
+            // Detalles
+            List<XMLSunatDocumentSummaryDocumentsLine> lines = xmlDocument.getLines();
+            if (lines != null) {
+                builder.comprobantes(lines.stream()
+                        .map(line -> {
+                                    Map<String, BigDecimal> billingPayments = Optional.ofNullable(line.getBillingPayments())
+                                            .orElse(Collections.emptyList())
+                                            .stream()
+                                            .collect(Collectors.toMap(
+                                                    XMLSunatDocumentSummaryDocumentsLine.BillingPayment::getInstructionId,
+                                                    XMLSunatDocumentSummaryDocumentsLine.BillingPayment::getPaidAmount
+                                            ));
+
+                                    Map<Catalog5, BigDecimal> taxTotals = Optional.ofNullable(line.getTaxTotals())
+                                            .orElse(Collections.emptyList())
+                                            .stream()
+                                            .collect(Collectors.toMap(
+                                                    taxTotal -> {
+                                                        String code = taxTotal.getTaxSubtotals() != null ? taxTotal.getTaxSubtotals().getCode() : "";
+                                                        return Catalog
+                                                                .valueOfCode(Catalog5.class, code)
+                                                                .orElse(null);
+                                                    },
+                                                    XMLSunatDocumentSummaryDocumentsLine.TaxTotalSummaryDocuments::getTaxAmount
+                                            ));
+
+                            io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado comprobanteAfectado = Optional.ofNullable(line.getBillingReference())
+                                    .map(billingReference -> io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteAfectado.builder()
+                                            .serieNumero(billingReference.getInvoiceDocumentReference_id())
+                                            .tipoComprobante(billingReference.getInvoiceDocumentReference_documentTypeCode())
+                                            .build()
+                                    )
+                                    .orElse(null);
+
+                            return SummaryDocumentsItem.builder()
+                                            .tipoOperacion(line.getStatus_conditionCode())
+                                            .comprobante(Comprobante.builder()
+                                                    .moneda(line.getTotalAmount_currencyID())
+                                                    .tipoComprobante(line.getDocumentTypeCode())
+                                                    .serieNumero(line.getDocumentId())
+                                                    .cliente(Cliente.builder()
+                                                            .numeroDocumentoIdentidad(line.getAccountingCustomerParty_customerAssignedAccountId())
+                                                            .tipoDocumentoIdentidad(line.getAccountingCustomerParty_additionalAccountID())
+                                                            .build()
+                                                    )
+                                                    .comprobanteAfectado(comprobanteAfectado)
+                                                    .valorVenta(ComprobanteValorVenta.builder()
+                                                            .importeTotal(line.getTotalAmount())
+                                                            .gravado(billingPayments.get("01"))
+                                                            .exonerado(billingPayments.get("02"))
+                                                            .inafecto(billingPayments.get("03"))
+                                                            .gratuito(billingPayments.get("05"))
+                                                            .otrosCargos(line.getAllowanceCharge_amount())
+                                                            .build()
+                                                    )
+                                                    .impuestos(ComprobanteImpuestos.builder()
+                                                            .igv(taxTotals.get(Catalog5.IGV))
+                                                            .icb(taxTotals.get(Catalog5.ICBPER))
+                                                            .build()
+                                                    )
+                                                    .build()
+                                            )
+                                            .build();
+                                }
                         )
                         .collect(Collectors.toList())
                 );

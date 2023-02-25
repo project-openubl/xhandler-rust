@@ -60,6 +60,7 @@ public class ContentEnricher {
 
                     // Body
                     BodyRuleContext ruleContextBody = BodyRuleContext.builder()
+                            .moneda(input.getMoneda())
                             .tasaIgv(input.getTasaIgv())
                             .tasaIvap(input.getTasaIvap())
                             .tasaIcb(input.getTasaIcb())
@@ -93,6 +94,7 @@ public class ContentEnricher {
 
                     // Body
                     BodyRuleContext ruleContextBody = BodyRuleContext.builder()
+                            .moneda(input.getMoneda())
                             .tasaIgv(input.getTasaIgv())
                             .tasaIcb(input.getTasaIcb())
                             .build();
@@ -114,6 +116,7 @@ public class ContentEnricher {
 
                     // Body
                     BodyRuleContext ruleContextBody = BodyRuleContext.builder()
+                            .moneda(input.getMoneda())
                             .build();
 
                     RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);
@@ -134,6 +137,7 @@ public class ContentEnricher {
 
                     // Body
                     BodyRuleContext ruleContextBody = BodyRuleContext.builder()
+                            .moneda(input.getMoneda())
                             .build();
 
                     RuleUnit ruleUnitBody = new BodyRuleUnit(phaseType, defaults, ruleContextBody);

@@ -26,9 +26,9 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class XMLSunatDocumentVoidedDocument extends XMLSunatDocument {
+public class XMLSunatDocumentVoidedDocuments extends XMLSunatDocument {
 
     @XmlPath("sac:VoidedDocumentsLine")
-    private List<XMLSunatDocumentVoidedDocumentLine> lines;
+    private List<XMLSunatDocumentVoidedDocumentsLine> lines;
 
 }

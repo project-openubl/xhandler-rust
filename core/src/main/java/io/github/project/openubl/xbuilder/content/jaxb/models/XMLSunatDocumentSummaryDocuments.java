@@ -17,22 +17,18 @@
 package io.github.project.openubl.xbuilder.content.jaxb.models;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 
+import java.util.List;
+
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class XMLSunatDocumentVoidedDocumentLine {
+public class XMLSunatDocumentSummaryDocuments extends XMLSunatDocument {
 
-    @XmlPath("cbc:DocumentTypeCode/text()")
-    private String documentTypeCode;
+    @XmlPath("sac:SummaryDocumentsLine")
+    private List<XMLSunatDocumentSummaryDocumentsLine> lines;
 
-    @XmlPath("sac:DocumentSerialID/text()")
-    private String documentSerialID;
-
-    @XmlPath("sac:DocumentNumberID/text()")
-    private Integer documentNumberID;
-
-    @XmlPath("sac:VoidReasonDescription/text()")
-    private String voidReasonDescription;
 }

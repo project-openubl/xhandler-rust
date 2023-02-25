@@ -22,6 +22,7 @@ import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog19;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1_Invoice;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
+import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.Comprobante;
@@ -116,8 +117,11 @@ public class SummaryDocumentsTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getSummaryDocuments();
         String xml = template.data(input).render();
 
+        SummaryDocuments inputFromXml = Unmarshall.unmarshallSummaryDocuments(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "summaryDocuments.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "summaryDocuments.xml");
         assertSendSunat(xml, XMLAssertUtils.SUMMARY_DOCUMENTS_XSD);
     }
 
