@@ -20,14 +20,19 @@ import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionReten
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionInformation;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionSunatDocumentReference;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocument;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocumentVoidedDocument;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocumentVoidedDocumentLine;
 import io.github.project.openubl.xbuilder.content.models.common.Document;
 import io.github.project.openubl.xbuilder.content.models.common.TipoCambio;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
-import io.github.project.openubl.xbuilder.content.models.standard.general.Percepcion;
 import io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument;
+import io.github.project.openubl.xbuilder.content.models.sunat.SunatDocument;
+import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocuments;
+import io.github.project.openubl.xbuilder.content.models.sunat.baja.VoidedDocumentsItem;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.BasePercepcionRetencion;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.ComprobanteAfectado;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.PercepcionRetencionOperacion;
@@ -201,6 +206,35 @@ public class Unmarshall {
         }
     }
 
+    public static VoidedDocuments unmarshallVoidedDocuments(String xml) throws JAXBException, IOException {
+        try (
+                InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/voided-documents.xml");
+                StringReader reader = new StringReader(xml);
+        ) {
+            XMLSunatDocumentVoidedDocument xmlDocument = unmarshall(documentOXM, new InputSource(reader));
+            VoidedDocuments.VoidedDocumentsBuilder<?, ?> builder = VoidedDocuments.builder();
+
+            enrichSunatDocument(xmlDocument, builder);
+
+            // Detalles
+            List<XMLSunatDocumentVoidedDocumentLine> lines = xmlDocument.getLines();
+            if (lines != null) {
+                builder.comprobantes(lines.stream()
+                        .map(line -> VoidedDocumentsItem.builder()
+                                .tipoComprobante(line.getDocumentTypeCode())
+                                .serie(line.getDocumentSerialID())
+                                .numero(line.getDocumentNumberID())
+                                .descripcionSustento(line.getVoidReasonDescription())
+                                .build()
+                        )
+                        .collect(Collectors.toList())
+                );
+            }
+
+            return builder.build();
+        }
+    }
+
     public static <T> T unmarshall(InputStream documentOXML, InputSource inputSource) throws JAXBException {
         Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, List.of(
@@ -263,13 +297,6 @@ public class Unmarshall {
         builder.totalImporte(Mapper.mapTotalImporteNote(xmlSalesDocument.getMonetaryTotal()));
     }
 
-    public static void enrichDocument(XMLSalesDocument xmlSalesDocument, Document.DocumentBuilder<?, ?> builder) {
-        builder.moneda(xmlSalesDocument.getDocumentCurrencyCode());
-        builder.fechaEmision(xmlSalesDocument.getIssueDate());
-        builder.proveedor(Mapper.mapProveedor(xmlSalesDocument.getAccountingSupplierParty()));
-        builder.firmante(Mapper.mapFirmante(xmlSalesDocument.getSignature()));
-    }
-
     public static void enrichBasePercepcionRetencion(XMLPercepcionRetencion xmlDocument, BasePercepcionRetencion.BasePercepcionRetencionBuilder<?, ?> builder) {
         enrichDocument(xmlDocument, builder);
 
@@ -321,8 +348,35 @@ public class Unmarshall {
 
     }
 
+    public static void enrichSunatDocument(XMLSunatDocument xmlDocument, SunatDocument.SunatDocumentBuilder<?, ?> builder) {
+        enrichDocument(xmlDocument, builder);
+
+        // Numero
+        String[] split = xmlDocument.getDocumentId().split("-");
+        if (split.length == 3) {
+            builder.numero(Integer.parseInt(split[2]));
+        }
+
+        // Fecha emision comprobante
+        builder.fechaEmisionComprobantes(xmlDocument.getReferenceDate());
+    }
+
+    public static void enrichDocument(XMLSalesDocument xmlSalesDocument, Document.DocumentBuilder<?, ?> builder) {
+        builder.moneda(xmlSalesDocument.getDocumentCurrencyCode());
+        builder.fechaEmision(xmlSalesDocument.getIssueDate());
+        builder.proveedor(Mapper.mapProveedor(xmlSalesDocument.getAccountingSupplierParty()));
+        builder.firmante(Mapper.mapFirmante(xmlSalesDocument.getSignature()));
+    }
+
     public static void enrichDocument(XMLPercepcionRetencion xmlDocument, Document.DocumentBuilder<?, ?> builder) {
         builder.moneda(xmlDocument.getTotalInvoiceAmount_currencyId());
+        builder.fechaEmision(xmlDocument.getIssueDate());
+        builder.proveedor(Mapper.mapProveedor(xmlDocument.getAccountingSupplierParty()));
+        builder.firmante(Mapper.mapFirmante(xmlDocument.getSignature()));
+    }
+
+    public static void enrichDocument(XMLSunatDocument xmlDocument, Document.DocumentBuilder<?, ?> builder) {
+        builder.moneda(null);
         builder.fechaEmision(xmlDocument.getIssueDate());
         builder.proveedor(Mapper.mapProveedor(xmlDocument.getAccountingSupplierParty()));
         builder.firmante(Mapper.mapFirmante(xmlDocument.getSignature()));
