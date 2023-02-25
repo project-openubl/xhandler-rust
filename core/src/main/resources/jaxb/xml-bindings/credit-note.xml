@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="io.github.project.openubl.xbuilder.content.unmarshall">
+    <xml-schema element-form-default="QUALIFIED">
+        <xml-ns prefix="cbc" namespace-uri="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"/>
+        <xml-ns prefix="cac" namespace-uri="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"/>
+        <xml-ns prefix="sac" namespace-uri="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"/>
+        <xml-ns prefix="ext" namespace-uri="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"/>
+    </xml-schema>
+    <xml-java-type-adapters>
+        <xml-java-type-adapter type="java.time.LocalDate" value="io.github.project.openubl.xbuilder.content.unmarshall.LocalDateAdapter"/>
+        <xml-java-type-adapter type="java.time.LocalTime" value="io.github.project.openubl.xbuilder.content.unmarshall.LocalTimeAdapter"/>
+    </xml-java-type-adapters>
+
+    <java-types>
+        <java-type name="XMLSalesDocument" xml-accessor-type="NONE">
+            <xml-root-element name="CreditNote" namespace="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2"/>
+            <java-attributes>
+                <xml-element java-attribute="monetaryTotal" xml-path="cac:LegalMonetaryTotal" type="io.github.project.openubl.xbuilder.content.unmarshall.XMLSalesDocument.MonetaryTotal"/>
+                <xml-element java-attribute="lines" xml-path="cac:CreditNoteLine" container-type="java.util.ArrayList" type="io.github.project.openubl.xbuilder.content.unmarshall.XMLSalesDocumentLine"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="XMLSalesDocumentLine" xml-accessor-type="NONE">
+            <java-attributes>
+                <xml-element java-attribute="quantity" xml-path="cbc:CreditedQuantity/text()" type="java.math.BigDecimal"/>
+                <xml-element java-attribute="quantity_unitCode" xml-path="cbc:CreditedQuantity/@unitCode" type="java.lang.String"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

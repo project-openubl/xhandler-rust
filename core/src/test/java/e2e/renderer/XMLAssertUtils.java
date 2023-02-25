@@ -133,6 +133,11 @@ public class XMLAssertUtils {
         assertFalse(myDiff.hasDifferences(), expected + "\n" + myDiff);
     }
 
+    public static void assertSnapshot(String expected, String expectedReverse, Class<?> clasz, String snapshotFile) throws SAXException {
+        assertSnapshot(expected, clasz, snapshotFile);
+        assertSnapshot(expectedReverse, clasz, snapshotFile);
+    }
+
     public static void assertSendSunat(String xmlWithoutSignature, String xsdSchema, String... allowedNotes) throws Exception {
         String skipSunat = System.getProperty("skipSunat", "false");
         if (skipSunat != null && skipSunat.equals("false")) {

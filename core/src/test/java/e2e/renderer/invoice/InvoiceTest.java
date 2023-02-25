@@ -26,6 +26,7 @@ import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
+import io.github.project.openubl.xbuilder.content.unmarshall.Unmarshall;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
 import io.quarkus.qute.Template;
@@ -81,8 +82,11 @@ public class InvoiceTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
+        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "customUnidadMedida.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "customUnidadMedida.xml");
         assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
@@ -129,8 +133,11 @@ public class InvoiceTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
+        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "customFechaEmision.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "customFechaEmision.xml");
         assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
@@ -184,8 +191,11 @@ public class InvoiceTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
+        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "customClienteDireccionAndContacto.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "customClienteDireccionAndContacto.xml");
         assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
@@ -239,8 +249,11 @@ public class InvoiceTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
+        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "customProveedorDireccionAndContacto.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "customProveedorDireccionAndContacto.xml");
         assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
@@ -287,8 +300,11 @@ public class InvoiceTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
+        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "customFirmante.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "customFirmante.xml");
         assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
@@ -332,8 +348,11 @@ public class InvoiceTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
+        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "icb.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "icb.xml");
         assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
@@ -379,8 +398,11 @@ public class InvoiceTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
+        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "icb.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "icb.xml");
         assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 
@@ -423,8 +445,11 @@ public class InvoiceTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
+        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        assertSnapshot(xml, getClass(), "customCodigoLocal.xml");
+        assertSnapshot(xml, reconstructedXml, getClass(), "customCodigoLocal.xml");
         assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 }

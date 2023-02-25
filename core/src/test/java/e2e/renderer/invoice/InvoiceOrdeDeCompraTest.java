@@ -23,6 +23,7 @@ import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
+import io.github.project.openubl.xbuilder.content.unmarshall.Unmarshall;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
 import io.quarkus.qute.Template;
@@ -71,8 +72,11 @@ public class InvoiceOrdeDeCompraTest extends AbstractTest {
         Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
+        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
+        String reconstructedXml = template.data(inputFromXml).render();
+
         // Then
-        XMLAssertUtils.assertSnapshot(xml, getClass(), "ordenDeCompra.xml");
+        XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), "ordenDeCompra.xml");
         XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
     }
 }

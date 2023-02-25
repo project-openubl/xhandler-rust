@@ -14,33 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.content.models.standard.general;
+package io.github.project.openubl.xbuilder.content.models.common;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.eclipse.persistence.oxm.annotations.XmlPath;
+import lombok.experimental.SuperBuilder;
 
-@Data
-@Builder
+import java.util.HashMap;
+import java.util.Map;
+
+@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-public class Guia {
+public abstract class VirtualDocument {
 
-    @XmlPath("cbc:ID/text()")
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private String serieNumero;
+    private Map<String, Object> extensions = new HashMap<>();
 
-    /**
-     * Tipo de documento Guia.
-     * <p>
-     * Catalogo 01.
-     * <p>
-     * Valores válidos: "09", "31"
-     */
-    @XmlPath("cbc:DocumentTypeCode/text()")
-    @Schema(description = "Catalogo 01", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String tipoDocumento;
+    public <T> T get(String property) {
+        return (T) extensions.get(property);
+    }
+
+    public void set(String property, Object value) {
+        extensions.put(property, value);
+    }
+
 }

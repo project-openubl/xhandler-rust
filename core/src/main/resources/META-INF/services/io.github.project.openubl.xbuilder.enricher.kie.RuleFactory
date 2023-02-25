@@ -44,6 +44,7 @@ io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.Unidad
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.IgvTipoRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.IscTipoRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.PrecioDeReferenciaTipoRule
+io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.TasaIcbRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.TasaIgvRule
 io.github.project.openubl.xbuilder.enricher.kie.rules.enrich.body.detalle.TasaIscRule
 

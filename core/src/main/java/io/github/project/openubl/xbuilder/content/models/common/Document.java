@@ -49,9 +49,7 @@ public abstract class Document {
     /**
      * Persona que firma electrónicamente el comprobante. Si es NULL los datos del proveedor son usados.
      */
-    @Schema(
-            description = "Persona que firma electrónicamente el comprobante. Si NULL los datos del proveedor son usados."
-    )
+    @Schema(description = "Persona que firma el comprobante. Si NULL los datos del proveedor son usados.")
     private Firmante firmante;
 
 }
