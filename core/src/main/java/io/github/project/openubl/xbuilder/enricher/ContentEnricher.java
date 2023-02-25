@@ -34,7 +34,6 @@ import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.BodyRuleUnit;
 import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.HeaderRuleContext;
 import io.github.project.openubl.xbuilder.enricher.kie.ruleunits.HeaderRuleUnit;
 
-import java.time.LocalDate;
 import java.util.stream.Stream;
 
 public class ContentEnricher {

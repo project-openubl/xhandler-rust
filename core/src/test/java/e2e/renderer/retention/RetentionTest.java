@@ -26,7 +26,6 @@ import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.ComprobanteAfectado;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.PercepcionRetencionOperacion;
-import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention;
 import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;

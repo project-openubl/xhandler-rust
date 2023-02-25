@@ -26,10 +26,10 @@ import io.github.project.openubl.xbuilder.content.catalogs.CatalogContadoCredito
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLAddress;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLContact;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLCustomer;
-import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSignature;
-import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSupplier;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSignature;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSupplier;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Contacto;
 import io.github.project.openubl.xbuilder.content.models.common.Direccion;

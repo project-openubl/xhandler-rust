@@ -24,7 +24,6 @@ import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
-import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.ComprobanteAfectado;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.PercepcionRetencionOperacion;
 import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception;
