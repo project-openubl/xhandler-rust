@@ -63,16 +63,16 @@ public class XMLSalesDocument {
     private List<AdditionalDocumentReference> additionalDocumentReferences;
 
     @XmlPath("cac:Signature")
-    private Signature signature;
+    private XMLSignature signature;
 
     @XmlPath("cac:AccountingSupplierParty/cac:Party")
-    private Supplier accountingSupplierParty;
+    private XMLSupplier accountingSupplierParty;
 
     @XmlPath("cac:AccountingCustomerParty/cac:Party")
-    private Customer accountingCustomerParty;
+    private XMLCustomer accountingCustomerParty;
 
     @XmlPath("cac:Delivery/cac:DeliveryLocation/cac:Address")
-    private Address deliveryLocation;
+    private XMLAddress deliveryLocation;
 
     @XmlPath("cac:PaymentMeans")
     private PaymentMeans paymentMeans;

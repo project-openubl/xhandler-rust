@@ -48,13 +48,13 @@ public class XMLPercepcionRetencion {
     private BigDecimal sunatTotal;
 
     @XmlPath("cac:Signature")
-    private Signature signature;
+    private XMLSignature signature;
 
     @XmlPath("cac:AgentParty")
-    private Supplier accountingSupplierParty;
+    private XMLSupplier accountingSupplierParty;
 
     @XmlPath("cac:ReceiverParty")
-    private Customer accountingCustomerParty;
+    private XMLCustomer accountingCustomerParty;
 
     private XMLPercepcionRetencionSunatDocumentReference sunatDocumentReference;
 

@@ -22,7 +22,7 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 @Data
 @NoArgsConstructor
-public class Address {
+public class XMLAddress {
     @XmlPath("cbc:ID/text()")
     private String id;
 

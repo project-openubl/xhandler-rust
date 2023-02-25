@@ -22,10 +22,10 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 @Data
 @NoArgsConstructor
-public class Signature {
-    @XmlPath("cbc:ID/text()")
-    private String id;
+public class XMLContact {
+    @XmlPath("cbc:Telephone/text()")
+    private String telephone;
 
-    @XmlPath("cac:SignatoryParty/cac:PartyName/cbc:Name/text()")
-    private String partyName;
+    @XmlPath("cbc:ElectronicMail/text()")
+    private String electronicMail;
 }

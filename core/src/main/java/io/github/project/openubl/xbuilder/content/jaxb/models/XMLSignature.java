@@ -22,19 +22,10 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 @Data
 @NoArgsConstructor
-public class Supplier {
-    @XmlPath("cac:PartyIdentification/cbc:ID/text()")
-    private String partyIdentification_id;
+public class XMLSignature {
+    @XmlPath("cbc:ID/text()")
+    private String id;
 
-    @XmlPath("cac:PartyName/cbc:Name/text()")
+    @XmlPath("cac:SignatoryParty/cac:PartyName/cbc:Name/text()")
     private String partyName;
-
-    @XmlPath("cac:PartyLegalEntity/cbc:RegistrationName/text()")
-    private String registrationName;
-
-    @XmlPath("cac:PartyLegalEntity/cac:RegistrationAddress")
-    private Address address;
-
-    @XmlPath("cac:Contact")
-    private Contact contact;
 }

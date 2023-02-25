@@ -23,11 +23,11 @@ import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_DescuentoGlobal;
 import io.github.project.openubl.xbuilder.content.catalogs.CatalogContadoCredito;
-import io.github.project.openubl.xbuilder.content.jaxb.models.Address;
-import io.github.project.openubl.xbuilder.content.jaxb.models.Contact;
-import io.github.project.openubl.xbuilder.content.jaxb.models.Customer;
-import io.github.project.openubl.xbuilder.content.jaxb.models.Signature;
-import io.github.project.openubl.xbuilder.content.jaxb.models.Supplier;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLAddress;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLContact;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLCustomer;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSignature;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSupplier;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
@@ -66,7 +66,7 @@ public class Mapper {
                 .orElse(null);
     }
 
-    public static Proveedor mapProveedor(Supplier supplier) {
+    public static Proveedor mapProveedor(XMLSupplier supplier) {
         if (supplier == null) {
             return null;
         }
@@ -80,7 +80,7 @@ public class Mapper {
                 .build();
     }
 
-    public static Cliente mapCliente(Customer customer) {
+    public static Cliente mapCliente(XMLCustomer customer) {
         if (customer == null) {
             return null;
         }
@@ -94,7 +94,7 @@ public class Mapper {
                 .build();
     }
 
-    public static Direccion mapDireccion(Address address) {
+    public static Direccion mapDireccion(XMLAddress address) {
         if (address == null) {
             return null;
         }
@@ -111,7 +111,7 @@ public class Mapper {
                 .build();
     }
 
-    public static Contacto mapContacto(Contact contact) {
+    public static Contacto mapContacto(XMLContact contact) {
         if (contact == null) {
             return null;
         }
@@ -122,7 +122,7 @@ public class Mapper {
                 .build();
     }
 
-    public static Firmante mapFirmante(Signature signature) {
+    public static Firmante mapFirmante(XMLSignature signature) {
         if (signature == null) {
             return null;
         }
