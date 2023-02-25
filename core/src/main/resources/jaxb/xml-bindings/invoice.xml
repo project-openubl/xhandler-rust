@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="io.github.project.openubl.xbuilder.content.unmarshall">
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="io.github.project.openubl.xbuilder.content.jaxb.models">
     <xml-schema element-form-default="QUALIFIED">
         <xml-ns prefix="cbc" namespace-uri="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"/>
         <xml-ns prefix="cac" namespace-uri="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"/>
@@ -7,16 +7,16 @@
         <xml-ns prefix="ext" namespace-uri="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"/>
     </xml-schema>
     <xml-java-type-adapters>
-        <xml-java-type-adapter type="java.time.LocalDate" value="io.github.project.openubl.xbuilder.content.unmarshall.LocalDateAdapter"/>
-        <xml-java-type-adapter type="java.time.LocalTime" value="io.github.project.openubl.xbuilder.content.unmarshall.LocalTimeAdapter"/>
+        <xml-java-type-adapter type="java.time.LocalDate" value="io.github.project.openubl.xbuilder.content.jaxb.adapters.LocalDateAdapter"/>
+        <xml-java-type-adapter type="java.time.LocalTime" value="io.github.project.openubl.xbuilder.content.jaxb.adapters.LocalTimeAdapter"/>
     </xml-java-type-adapters>
 
     <java-types>
         <java-type name="XMLSalesDocument" xml-accessor-type="NONE">
             <xml-root-element name="Invoice" namespace="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"/>
             <java-attributes>
-                <xml-element java-attribute="monetaryTotal" xml-path="cac:LegalMonetaryTotal" type="io.github.project.openubl.xbuilder.content.unmarshall.XMLSalesDocument.MonetaryTotal"/>
-                <xml-element java-attribute="lines" xml-path="cac:InvoiceLine" container-type="java.util.ArrayList" type="io.github.project.openubl.xbuilder.content.unmarshall.XMLSalesDocumentLine"/>
+                <xml-element java-attribute="monetaryTotal" xml-path="cac:LegalMonetaryTotal" type="io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument.MonetaryTotal"/>
+                <xml-element java-attribute="lines" xml-path="cac:InvoiceLine" container-type="java.util.ArrayList" type="io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine"/>
             </java-attributes>
         </java-type>
         <java-type name="XMLSalesDocumentLine" xml-accessor-type="NONE">

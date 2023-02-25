@@ -1,4 +1,4 @@
-package io.github.project.openubl.xbuilder.content.unmarshall;
+package io.github.project.openubl.xbuilder.content.jaxb.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.LocalTime;

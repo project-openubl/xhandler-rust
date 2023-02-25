@@ -1,4 +1,4 @@
-package io.github.project.openubl.xbuilder.content.unmarshall;
+package io.github.project.openubl.xbuilder.content.jaxb.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

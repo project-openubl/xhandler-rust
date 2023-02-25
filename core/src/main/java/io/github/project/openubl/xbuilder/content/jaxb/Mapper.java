@@ -1,4 +1,4 @@
-package io.github.project.openubl.xbuilder.content.unmarshall;
+package io.github.project.openubl.xbuilder.content.jaxb;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog12;
@@ -7,203 +7,37 @@ import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_DescuentoGlobal;
 import io.github.project.openubl.xbuilder.content.catalogs.CatalogContadoCredito;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Contacto;
 import io.github.project.openubl.xbuilder.content.models.common.Direccion;
-import io.github.project.openubl.xbuilder.content.models.common.Document;
 import io.github.project.openubl.xbuilder.content.models.common.Firmante;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Anticipo;
-import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CuotaDePago;
-import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Descuento;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Detraccion;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoRelacionado;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.FormaDePago;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Guia;
-import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
-import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Percepcion;
-import io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument;
 import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteInvoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImporteNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.TotalImpuestos;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBContextProperties;
-import org.xml.sax.InputSource;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class Unmarshall {
-
-    public static Invoice unmarshallInvoice(String xml) throws JAXBException, IOException {
-        try (
-                InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/invoice.xml");
-                StringReader reader = new StringReader(xml);
-        ) {
-            XMLSalesDocument xmlSalesDocument = unmarshall(documentOXM, new InputSource(reader));
-            Invoice.InvoiceBuilder<?, ?> builder = Invoice.builder();
-
-            enrichSalesDocument(xmlSalesDocument, builder);
-
-            // Fecha de vencimiento
-            builder.fechaVencimiento(xmlSalesDocument.getDueDate());
-
-            // Tipo de comprobante
-            builder.tipoComprobante(xmlSalesDocument.getInvoiceTypeCode());
-
-            // Observaciones
-            if (xmlSalesDocument.getNotes() != null) {
-                xmlSalesDocument.getNotes().stream()
-                        .filter(e -> e.getLanguageLocaleId() == null)
-                        .findFirst().ifPresent(n -> {
-                            builder.observaciones(n.getValue());
-                        });
-            }
-
-            // Tipo de operacion
-            builder.tipoOperacion(xmlSalesDocument.getInvoiceTypeCode_listID());
-
-            // Forma de pago
-            builder.formaDePago(mapFormaDePago(xmlSalesDocument.getPaymentTerms()));
-
-            // Total importe
-            builder.totalImporte(mapTotalImporteInvoice(xmlSalesDocument.getMonetaryTotal()));
-
-            // Direccion entrega
-            builder.direccionEntrega(mapDireccion(xmlSalesDocument.getDeliveryLocation()));
-
-            // Detraccion
-            builder.detraccion(mapDetraccion(xmlSalesDocument.getPaymentMeans(), xmlSalesDocument.getPaymentTerms()));
-
-            // Percepcion
-            builder.percepcion(mapPercepcion(xmlSalesDocument.getPaymentTerms(), xmlSalesDocument.getAllowanceCharges()));
-
-            // Anticipos
-            builder.anticipos(mapAnticipos(xmlSalesDocument.getAdditionalDocumentReferences(), xmlSalesDocument.getPrepaidPayments(), xmlSalesDocument.getAllowanceCharges()));
-
-            // Descuentos
-            builder.descuentos(mapDescuentos(xmlSalesDocument.getAllowanceCharges()));
-
-            return builder.build();
-        }
-    }
-
-    public static CreditNote unmarshallCreditNote(String xml) throws JAXBException, IOException {
-        try (
-                InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/credit-note.xml");
-                StringReader reader = new StringReader(xml);
-        ) {
-            XMLSalesDocument xmlSalesDocument = unmarshall(documentOXM, new InputSource(reader));
-            CreditNote.CreditNoteBuilder<?, ?> builder = CreditNote.builder();
-
-            enrichSalesDocument(xmlSalesDocument, builder);
-            enrichNote(xmlSalesDocument, builder);
-
-            return builder.build();
-        }
-    }
-
-    public static DebitNote unmarshallDebitNote(String xml) throws JAXBException, IOException {
-        try (
-                InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/debit-note.xml");
-                StringReader reader = new StringReader(xml);
-        ) {
-            XMLSalesDocument xmlSalesDocument = unmarshall(documentOXM, new InputSource(reader));
-            DebitNote.DebitNoteBuilder<?, ?> builder = DebitNote.builder();
-
-            enrichSalesDocument(xmlSalesDocument, builder);
-            enrichNote(xmlSalesDocument, builder);
-
-            return builder.build();
-        }
-    }
-
-    public static void enrichNote(XMLSalesDocument xmlSalesDocument, Note.NoteBuilder<?, ?> builder) {
-        enrichDocument(xmlSalesDocument, builder);
-
-        // ComprobanteAfectado
-        builder.comprobanteAfectadoSerieNumero(xmlSalesDocument.getDiscrepancyResponse_referenceId());
-        builder.comprobanteAfectadoTipo(xmlSalesDocument.getDiscrepancyResponse_responseCode());
-        builder.sustentoDescripcion(xmlSalesDocument.getDiscrepancyResponse_description());
-
-        // Total importe
-        builder.totalImporte(mapTotalImporteNote(xmlSalesDocument.getMonetaryTotal()));
-    }
-
-    public static <T> T unmarshall(InputStream documentOXML, InputSource inputSource) throws JAXBException {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, List.of(
-                Objects.requireNonNull(documentOXML)
-        ));
-
-        JAXBContext jaxbContext = JAXBContextFactory.createContext(Unmarshall.class.getPackageName(), null, properties);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        return (T) unmarshaller.unmarshal(inputSource);
-    }
-
-    public static void enrichSalesDocument(XMLSalesDocument xmlSalesDocument, SalesDocument.SalesDocumentBuilder<?, ?> builder) {
-        enrichDocument(xmlSalesDocument, builder);
-
-        // Leyendas
-        Optional<Map<String, String>> notes = Optional
-                .ofNullable(xmlSalesDocument.getNotes())
-                .map(o -> o.stream()
-                        .filter(note -> note.getLanguageLocaleId() != null)
-                        .collect(Collectors.toMap(XMLSalesDocument.Note::getLanguageLocaleId, XMLSalesDocument.Note::getValue))
-                );
-        notes.ifPresent(builder::leyendas);
-
-        // Serie y numero
-        String[] split = xmlSalesDocument.getDocumentId().split("-");
-        if (split.length == 2) {
-            builder.serie(split[0]);
-            builder.numero(Integer.parseInt(split[1]));
-        }
-
-        //
-        builder.horaEmision(xmlSalesDocument.getIssueTime());
-        builder.ordenDeCompra(xmlSalesDocument.getOrderReferenceId());
-
-        // Cliente
-        builder.cliente(mapCliente(xmlSalesDocument.getAccountingCustomerParty()));
-
-        // Total impuestos
-        builder.totalImpuestos(mapTotalImpuestos(xmlSalesDocument.getTaxTotal()));
-
-        // Guias
-        builder.guias(mapGuias(xmlSalesDocument.getDespatchDocumentReferences()));
-
-        // Documentos relacionados
-        builder.documentosRelacionados(mapDocumentosRelacionados(xmlSalesDocument.getAdditionalDocumentReferences()));
-
-        // Detalles
-        builder.detalles(mapDetalles(xmlSalesDocument.getLines()));
-    }
-
-    public static void enrichDocument(XMLSalesDocument xmlSalesDocument, Document.DocumentBuilder<?, ?> builder) {
-        builder.moneda(xmlSalesDocument.getDocumentCurrencyCode());
-        builder.fechaEmision(xmlSalesDocument.getIssueDate());
-        builder.proveedor(mapProveedor(xmlSalesDocument.getAccountingSupplierParty()));
-        builder.firmante(mapFirmante(xmlSalesDocument.getSignature()));
-    }
+public class Mapper {
 
     public static BigDecimal mapPorcentaje(BigDecimal number) {
         return Optional.ofNullable(number)
@@ -351,7 +185,7 @@ public class Unmarshall {
                 .collect(Collectors.toList());
     }
 
-    private static List<DocumentoRelacionado> mapDocumentosRelacionados(List<XMLSalesDocument.AdditionalDocumentReference> additionalDocumentReferences) {
+    public static List<DocumentoRelacionado> mapDocumentosRelacionados(List<XMLSalesDocument.AdditionalDocumentReference> additionalDocumentReferences) {
         if (additionalDocumentReferences == null) {
             return Collections.emptyList();
         }
@@ -372,7 +206,7 @@ public class Unmarshall {
                 .collect(Collectors.toList());
     }
 
-    private static List<DocumentoVentaDetalle> mapDetalles(List<XMLSalesDocumentLine> lines) {
+    public static List<DocumentoVentaDetalle> mapDetalles(List<XMLSalesDocumentLine> lines) {
         if (lines == null) {
             return Collections.emptyList();
         }
@@ -430,7 +264,7 @@ public class Unmarshall {
                 .collect(Collectors.toList());
     }
 
-    private static FormaDePago mapFormaDePago(List<XMLSalesDocument.PaymentTerms> paymentTerms) {
+    public static FormaDePago mapFormaDePago(List<XMLSalesDocument.PaymentTerms> paymentTerms) {
         if (paymentTerms == null) {
             return null;
         }
@@ -466,7 +300,7 @@ public class Unmarshall {
                 .build();
     }
 
-    private static TotalImporteInvoice mapTotalImporteInvoice(XMLSalesDocument.MonetaryTotal monetaryTotal) {
+    public static TotalImporteInvoice mapTotalImporteInvoice(XMLSalesDocument.MonetaryTotal monetaryTotal) {
         if (monetaryTotal == null) {
             return null;
         }
@@ -480,7 +314,7 @@ public class Unmarshall {
                 .build();
     }
 
-    private static TotalImporteNote mapTotalImporteNote(XMLSalesDocument.MonetaryTotal monetaryTotal) {
+    public static TotalImporteNote mapTotalImporteNote(XMLSalesDocument.MonetaryTotal monetaryTotal) {
         if (monetaryTotal == null) {
             return null;
         }
@@ -492,7 +326,7 @@ public class Unmarshall {
                 .build();
     }
 
-    private static Detraccion mapDetraccion(XMLSalesDocument.PaymentMeans paymentMeans, List<XMLSalesDocument.PaymentTerms> paymentTerms) {
+    public static Detraccion mapDetraccion(XMLSalesDocument.PaymentMeans paymentMeans, List<XMLSalesDocument.PaymentTerms> paymentTerms) {
         if (paymentMeans == null || paymentTerms == null) {
             return null;
         }
@@ -513,7 +347,7 @@ public class Unmarshall {
         return builder.build();
     }
 
-    private static Percepcion mapPercepcion(List<XMLSalesDocument.PaymentTerms> paymentTerms, List<XMLSalesDocument.AllowanceCharge> allowanceCharges) {
+    public static Percepcion mapPercepcion(List<XMLSalesDocument.PaymentTerms> paymentTerms, List<XMLSalesDocument.AllowanceCharge> allowanceCharges) {
         if (paymentTerms == null || allowanceCharges == null) {
             return null;
         }
@@ -543,7 +377,7 @@ public class Unmarshall {
         return builder.build();
     }
 
-    private static List<Anticipo> mapAnticipos(List<XMLSalesDocument.AdditionalDocumentReference> additionalDocumentReferences, List<XMLSalesDocument.PrepaidPayment> prepaidPayments, List<XMLSalesDocument.AllowanceCharge> allowanceCharges) {
+    public static List<Anticipo> mapAnticipos(List<XMLSalesDocument.AdditionalDocumentReference> additionalDocumentReferences, List<XMLSalesDocument.PrepaidPayment> prepaidPayments, List<XMLSalesDocument.AllowanceCharge> allowanceCharges) {
         if (additionalDocumentReferences == null || prepaidPayments == null || allowanceCharges == null) {
             return Collections.emptyList();
         }
@@ -582,7 +416,7 @@ public class Unmarshall {
         return result;
     }
 
-    private static List<Descuento> mapDescuentos(List<XMLSalesDocument.AllowanceCharge> allowanceCharges) {
+    public static List<Descuento> mapDescuentos(List<XMLSalesDocument.AllowanceCharge> allowanceCharges) {
         if (allowanceCharges == null) {
             return Collections.emptyList();
         }
@@ -602,5 +436,5 @@ public class Unmarshall {
                 )
                 .collect(Collectors.toList());
     }
-
+    
 }
