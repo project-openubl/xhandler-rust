@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="io.github.project.openubl.xbuilder.content.jaxb.models">
+    <xml-schema element-form-default="QUALIFIED">
+        <xml-ns prefix="cbc" namespace-uri="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"/>
+        <xml-ns prefix="cac" namespace-uri="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"/>
+        <xml-ns prefix="sac" namespace-uri="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"/>
+        <xml-ns prefix="ext" namespace-uri="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"/>
+    </xml-schema>
+    <xml-java-type-adapters>
+        <xml-java-type-adapter type="java.time.LocalDate" value="io.github.project.openubl.xbuilder.content.jaxb.adapters.LocalDateAdapter"/>
+        <xml-java-type-adapter type="java.time.LocalTime" value="io.github.project.openubl.xbuilder.content.jaxb.adapters.LocalTimeAdapter"/>
+    </xml-java-type-adapters>
+
+    <java-types>
+        <java-type name="XMLPercepcionRetencion" xml-accessor-type="NONE">
+            <xml-root-element name="Retention" namespace="urn:sunat:names:specification:ubl:peru:schema:xsd:Retention-1"/>
+            <java-attributes>
+                <xml-element java-attribute="sunatSystemCode" xml-path="sac:SUNATRetentionSystemCode/text()" type="java.lang.String"/>
+                <xml-element java-attribute="sunatPercent" xml-path="sac:SUNATRetentionPercent/text()" type="java.math.BigDecimal"/>
+                <xml-element java-attribute="sunatTotal" xml-path="sac:SUNATTotalPaid/text()" type="java.math.BigDecimal"/>
+                <xml-element java-attribute="sunatDocumentReference" xml-path="sac:SUNATRetentionDocumentReference" type="io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionSunatDocumentReference"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="XMLPercepcionRetencionSunatDocumentReference" xml-accessor-type="NONE">
+            <java-attributes>
+                <xml-element java-attribute="sunatInformation" xml-path="sac:SUNATRetentionInformation" type="io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionInformation"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="XMLPercepcionRetencionInformation" xml-accessor-type="NONE">
+            <java-attributes>
+                <xml-element java-attribute="sunatAmount" xml-path="sac:SUNATRetentionAmount/text()" type="java.math.BigDecimal"/>
+                <xml-element java-attribute="sunatDate" xml-path="sac:SUNATRetentionDate/text()" type="java.time.LocalDate"/>
+                <xml-element java-attribute="sunatNetTotal" xml-path="sac:SUNATNetTotalPaid/text()" type="java.math.BigDecimal"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

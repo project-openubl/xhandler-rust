@@ -14,19 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.content.jaxb.adapters;
+package io.github.project.openubl.xbuilder.content.jaxb.models;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import java.time.LocalTime;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.eclipse.persistence.oxm.annotations.XmlPath;
 
-public class LocalTimeAdapter extends XmlAdapter<String, LocalTime> {
-    @Override
-    public LocalTime unmarshal(String v) throws Exception {
-        return LocalTime.parse(v);
-    }
+@Data
+@NoArgsConstructor
+public class Contact {
+    @XmlPath("cbc:Telephone/text()")
+    private String telephone;
 
-    @Override
-    public String marshal(LocalTime v) throws Exception {
-        return v.toString();
-    }
+    @XmlPath("cbc:ElectronicMail/text()")
+    private String electronicMail;
 }

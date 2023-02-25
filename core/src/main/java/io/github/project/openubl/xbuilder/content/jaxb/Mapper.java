@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019 Project OpenUBL, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License - 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.github.project.openubl.xbuilder.content.jaxb;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
@@ -7,6 +23,11 @@ import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_Anticipo;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog53_DescuentoGlobal;
 import io.github.project.openubl.xbuilder.content.catalogs.CatalogContadoCredito;
+import io.github.project.openubl.xbuilder.content.jaxb.models.Address;
+import io.github.project.openubl.xbuilder.content.jaxb.models.Contact;
+import io.github.project.openubl.xbuilder.content.jaxb.models.Customer;
+import io.github.project.openubl.xbuilder.content.jaxb.models.Signature;
+import io.github.project.openubl.xbuilder.content.jaxb.models.Supplier;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
@@ -45,7 +66,7 @@ public class Mapper {
                 .orElse(null);
     }
 
-    public static Proveedor mapProveedor(XMLSalesDocument.Supplier supplier) {
+    public static Proveedor mapProveedor(Supplier supplier) {
         if (supplier == null) {
             return null;
         }
@@ -59,7 +80,7 @@ public class Mapper {
                 .build();
     }
 
-    public static Cliente mapCliente(XMLSalesDocument.Customer customer) {
+    public static Cliente mapCliente(Customer customer) {
         if (customer == null) {
             return null;
         }
@@ -73,7 +94,7 @@ public class Mapper {
                 .build();
     }
 
-    public static Direccion mapDireccion(XMLSalesDocument.Address address) {
+    public static Direccion mapDireccion(Address address) {
         if (address == null) {
             return null;
         }
@@ -90,7 +111,7 @@ public class Mapper {
                 .build();
     }
 
-    public static Contacto mapContacto(XMLSalesDocument.Contact contact) {
+    public static Contacto mapContacto(Contact contact) {
         if (contact == null) {
             return null;
         }
@@ -101,7 +122,7 @@ public class Mapper {
                 .build();
     }
 
-    public static Firmante mapFirmante(XMLSalesDocument.Signature signature) {
+    public static Firmante mapFirmante(Signature signature) {
         if (signature == null) {
             return null;
         }

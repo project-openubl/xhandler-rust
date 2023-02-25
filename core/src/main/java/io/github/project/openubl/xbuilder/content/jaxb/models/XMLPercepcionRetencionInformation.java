@@ -14,19 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.content.jaxb.adapters;
+package io.github.project.openubl.xbuilder.content.jaxb.models;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class LocalDateAdapter extends XmlAdapter<String, LocalDate> {
-    @Override
-    public LocalDate unmarshal(String v) throws Exception {
-        return LocalDate.parse(v);
-    }
+@Data
+@NoArgsConstructor
+public class XMLPercepcionRetencionInformation {
 
-    @Override
-    public String marshal(LocalDate v) throws Exception {
-        return v.toString();
+    private BigDecimal sunatAmount;
+    private LocalDate sunatDate;
+    private BigDecimal sunatNetTotal;
+
+    @XmlPath("cac:ExchangeRate")
+    private ExchangeRate exchangeRate;
+
+    @Data
+    @NoArgsConstructor
+    public static class ExchangeRate {
+        @XmlPath("cbc:CalculationRate/text()")
+        private BigDecimal canculationRate;
+
+        @XmlPath("cbc:Date/text()")
+        private LocalDate date;
     }
 }

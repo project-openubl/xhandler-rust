@@ -1,12 +1,38 @@
+/*
+ * Copyright 2019 Project OpenUBL, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License - 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.github.project.openubl.xbuilder.content.jaxb;
 
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencion;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionInformation;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionSunatDocumentReference;
 import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument;
 import io.github.project.openubl.xbuilder.content.models.common.Document;
+import io.github.project.openubl.xbuilder.content.models.common.TipoCambio;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Note;
+import io.github.project.openubl.xbuilder.content.models.standard.general.Percepcion;
 import io.github.project.openubl.xbuilder.content.models.standard.general.SalesDocument;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.BasePercepcionRetencion;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.ComprobanteAfectado;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.PercepcionRetencionOperacion;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Perception;
+import io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.Retention;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.xml.sax.InputSource;
@@ -31,20 +57,20 @@ public class Unmarshall {
                 InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/invoice.xml");
                 StringReader reader = new StringReader(xml);
         ) {
-            XMLSalesDocument xmlSalesDocument = unmarshall(documentOXM, new InputSource(reader));
+            XMLSalesDocument xmlDocument = unmarshall(documentOXM, new InputSource(reader));
             Invoice.InvoiceBuilder<?, ?> builder = Invoice.builder();
 
-            enrichSalesDocument(xmlSalesDocument, builder);
+            enrichSalesDocument(xmlDocument, builder);
 
             // Fecha de vencimiento
-            builder.fechaVencimiento(xmlSalesDocument.getDueDate());
+            builder.fechaVencimiento(xmlDocument.getDueDate());
 
             // Tipo de comprobante
-            builder.tipoComprobante(xmlSalesDocument.getInvoiceTypeCode());
+            builder.tipoComprobante(xmlDocument.getInvoiceTypeCode());
 
             // Observaciones
-            if (xmlSalesDocument.getNotes() != null) {
-                xmlSalesDocument.getNotes().stream()
+            if (xmlDocument.getNotes() != null) {
+                xmlDocument.getNotes().stream()
                         .filter(e -> e.getLanguageLocaleId() == null)
                         .findFirst().ifPresent(n -> {
                             builder.observaciones(n.getValue());
@@ -52,28 +78,28 @@ public class Unmarshall {
             }
 
             // Tipo de operacion
-            builder.tipoOperacion(xmlSalesDocument.getInvoiceTypeCode_listID());
+            builder.tipoOperacion(xmlDocument.getInvoiceTypeCode_listID());
 
             // Forma de pago
-            builder.formaDePago(Mapper.mapFormaDePago(xmlSalesDocument.getPaymentTerms()));
+            builder.formaDePago(Mapper.mapFormaDePago(xmlDocument.getPaymentTerms()));
 
             // Total importe
-            builder.totalImporte(Mapper.mapTotalImporteInvoice(xmlSalesDocument.getMonetaryTotal()));
+            builder.totalImporte(Mapper.mapTotalImporteInvoice(xmlDocument.getMonetaryTotal()));
 
             // Direccion entrega
-            builder.direccionEntrega(Mapper.mapDireccion(xmlSalesDocument.getDeliveryLocation()));
+            builder.direccionEntrega(Mapper.mapDireccion(xmlDocument.getDeliveryLocation()));
 
             // Detraccion
-            builder.detraccion(Mapper.mapDetraccion(xmlSalesDocument.getPaymentMeans(), xmlSalesDocument.getPaymentTerms()));
+            builder.detraccion(Mapper.mapDetraccion(xmlDocument.getPaymentMeans(), xmlDocument.getPaymentTerms()));
 
             // Percepcion
-            builder.percepcion(Mapper.mapPercepcion(xmlSalesDocument.getPaymentTerms(), xmlSalesDocument.getAllowanceCharges()));
+            builder.percepcion(Mapper.mapPercepcion(xmlDocument.getPaymentTerms(), xmlDocument.getAllowanceCharges()));
 
             // Anticipos
-            builder.anticipos(Mapper.mapAnticipos(xmlSalesDocument.getAdditionalDocumentReferences(), xmlSalesDocument.getPrepaidPayments(), xmlSalesDocument.getAllowanceCharges()));
+            builder.anticipos(Mapper.mapAnticipos(xmlDocument.getAdditionalDocumentReferences(), xmlDocument.getPrepaidPayments(), xmlDocument.getAllowanceCharges()));
 
             // Descuentos
-            builder.descuentos(Mapper.mapDescuentos(xmlSalesDocument.getAllowanceCharges()));
+            builder.descuentos(Mapper.mapDescuentos(xmlDocument.getAllowanceCharges()));
 
             return builder.build();
         }
@@ -84,11 +110,11 @@ public class Unmarshall {
                 InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/credit-note.xml");
                 StringReader reader = new StringReader(xml);
         ) {
-            XMLSalesDocument xmlSalesDocument = unmarshall(documentOXM, new InputSource(reader));
+            XMLSalesDocument xmlDocument = unmarshall(documentOXM, new InputSource(reader));
             CreditNote.CreditNoteBuilder<?, ?> builder = CreditNote.builder();
 
-            enrichSalesDocument(xmlSalesDocument, builder);
-            enrichNote(xmlSalesDocument, builder);
+            enrichSalesDocument(xmlDocument, builder);
+            enrichNote(xmlDocument, builder);
 
             return builder.build();
         }
@@ -99,11 +125,77 @@ public class Unmarshall {
                 InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/debit-note.xml");
                 StringReader reader = new StringReader(xml);
         ) {
-            XMLSalesDocument xmlSalesDocument = unmarshall(documentOXM, new InputSource(reader));
+            XMLSalesDocument xmlDocument = unmarshall(documentOXM, new InputSource(reader));
             DebitNote.DebitNoteBuilder<?, ?> builder = DebitNote.builder();
 
-            enrichSalesDocument(xmlSalesDocument, builder);
-            enrichNote(xmlSalesDocument, builder);
+            enrichSalesDocument(xmlDocument, builder);
+            enrichNote(xmlDocument, builder);
+
+            return builder.build();
+        }
+    }
+
+    public static Perception unmarshallPerception(String xml) throws JAXBException, IOException {
+        try (
+                InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/perception.xml");
+                StringReader reader = new StringReader(xml);
+        ) {
+            XMLPercepcionRetencion xmlDocument = unmarshall(documentOXM, new InputSource(reader));
+            Perception.PerceptionBuilder<?, ?> builder = Perception.builder();
+
+            enrichBasePercepcionRetencion(xmlDocument, builder);
+
+            // Serie
+            String[] split = xmlDocument.getDocumentId().split("-");
+            if (split.length == 2) {
+                builder.serie(split[0]);
+            }
+
+            // Tipo de regimen
+            builder.tipoRegimen(xmlDocument.getSunatSystemCode());
+
+            // ImporteTotalPercibido, ImporteTotalCobrado
+            XMLPercepcionRetencionSunatDocumentReference sunatDocumentReference = xmlDocument.getSunatDocumentReference();
+            if (sunatDocumentReference != null) {
+                XMLPercepcionRetencionInformation sunatInformation = sunatDocumentReference.getSunatInformation();
+                if (sunatInformation != null) {
+                    builder.importeTotalPercibido(sunatInformation.getSunatAmount());
+                    builder.importeTotalCobrado(sunatInformation.getSunatNetTotal());
+                }
+            }
+
+            return builder.build();
+        }
+    }
+
+    public static Retention unmarshallRetention(String xml) throws JAXBException, IOException {
+        try (
+                InputStream documentOXM = Thread.currentThread().getContextClassLoader().getResourceAsStream("jaxb/xml-bindings/retention.xml");
+                StringReader reader = new StringReader(xml);
+        ) {
+            XMLPercepcionRetencion xmlDocument = unmarshall(documentOXM, new InputSource(reader));
+            Retention.RetentionBuilder<?, ?> builder = Retention.builder();
+
+            enrichBasePercepcionRetencion(xmlDocument, builder);
+
+            // Serie
+            String[] split = xmlDocument.getDocumentId().split("-");
+            if (split.length == 2) {
+                builder.serie(split[0]);
+            }
+
+            // Tipo de regimen
+            builder.tipoRegimen(xmlDocument.getSunatSystemCode());
+
+            // ImporteTotalPercibido, ImporteTotalCobrado
+            XMLPercepcionRetencionSunatDocumentReference sunatDocumentReference = xmlDocument.getSunatDocumentReference();
+            if (sunatDocumentReference != null) {
+                XMLPercepcionRetencionInformation sunatInformation = sunatDocumentReference.getSunatInformation();
+                if (sunatInformation != null) {
+                    builder.importeTotalRetenido(sunatInformation.getSunatAmount());
+                    builder.importeTotalPagado(sunatInformation.getSunatNetTotal());
+                }
+            }
 
             return builder.build();
         }
@@ -176,6 +268,64 @@ public class Unmarshall {
         builder.fechaEmision(xmlSalesDocument.getIssueDate());
         builder.proveedor(Mapper.mapProveedor(xmlSalesDocument.getAccountingSupplierParty()));
         builder.firmante(Mapper.mapFirmante(xmlSalesDocument.getSignature()));
+    }
+
+    public static void enrichBasePercepcionRetencion(XMLPercepcionRetencion xmlDocument, BasePercepcionRetencion.BasePercepcionRetencionBuilder<?, ?> builder) {
+        enrichDocument(xmlDocument, builder);
+
+        // Numero
+        String[] split = xmlDocument.getDocumentId().split("-");
+        if (split.length == 2) {
+            builder.numero(Integer.parseInt(split[1]));
+        }
+
+        // Tipo regimen porcentaje
+        builder.tipoRegimenPorcentaje(xmlDocument.getSunatPercent());
+
+        // Observacion
+        builder.observacion(xmlDocument.getNote());
+
+        // Cliente
+        builder.cliente(Mapper.mapCliente(xmlDocument.getAccountingCustomerParty()));
+
+        // Operacion
+        XMLPercepcionRetencionSunatDocumentReference sunatDocumentReference = xmlDocument.getSunatDocumentReference();
+
+        if (sunatDocumentReference != null) {
+            XMLPercepcionRetencionInformation sunatInformation = sunatDocumentReference.getSunatInformation();
+
+            TipoCambio tipoCambio = null;
+            if (sunatInformation != null && sunatInformation.getExchangeRate() != null) {
+                tipoCambio = TipoCambio.builder()
+                        .fecha(sunatInformation.getExchangeRate().getDate())
+                        .valor(sunatInformation.getExchangeRate().getCanculationRate())
+                        .build();
+            }
+
+            builder.operacion(PercepcionRetencionOperacion.builder()
+                    .numeroOperacion(sunatDocumentReference.getPayment_id())
+                    .fechaOperacion(sunatDocumentReference.getPayment_paidDate())
+                    .importeOperacion(sunatDocumentReference.getPayment_paidAmount())
+                    .comprobante(ComprobanteAfectado.builder()
+                            .moneda(sunatDocumentReference.getTotalInvoiceAmount_currencyId())
+                            .tipoComprobante(sunatDocumentReference.getId_schemeId())
+                            .serieNumero(sunatDocumentReference.getId())
+                            .fechaEmision(sunatDocumentReference.getIssueDate())
+                            .importeTotal(sunatDocumentReference.getTotalInvoiceAmount())
+                            .build()
+                    )
+                    .tipoCambio(tipoCambio)
+                    .build()
+            );
+        }
+
+    }
+
+    public static void enrichDocument(XMLPercepcionRetencion xmlDocument, Document.DocumentBuilder<?, ?> builder) {
+        builder.moneda(xmlDocument.getTotalInvoiceAmount_currencyId());
+        builder.fechaEmision(xmlDocument.getIssueDate());
+        builder.proveedor(Mapper.mapProveedor(xmlDocument.getAccountingSupplierParty()));
+        builder.firmante(Mapper.mapFirmante(xmlDocument.getSignature()));
     }
 
 }
