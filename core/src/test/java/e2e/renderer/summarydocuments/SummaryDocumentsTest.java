@@ -17,12 +17,10 @@
 package e2e.renderer.summarydocuments;
 
 import e2e.AbstractTest;
-import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog19;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1_Invoice;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
-import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.Comprobante;
@@ -31,15 +29,9 @@ import io.github.project.openubl.xbuilder.content.models.sunat.resumen.Comproban
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.ComprobanteValorVenta;
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocuments;
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem;
-import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
-import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
-import io.quarkus.qute.Template;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-
-import static e2e.renderer.XMLAssertUtils.assertSendSunat;
-import static e2e.renderer.XMLAssertUtils.assertSnapshot;
 
 public class SummaryDocumentsTest extends AbstractTest {
 
@@ -110,19 +102,7 @@ public class SummaryDocumentsTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getSummaryDocuments();
-        String xml = template.data(input).render();
-
-        SummaryDocuments inputFromXml = Unmarshall.unmarshallSummaryDocuments(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
-
-        // Then
-        assertSnapshot(xml, reconstructedXml, getClass(), "summaryDocuments.xml");
-        assertSendSunat(xml, XMLAssertUtils.SUMMARY_DOCUMENTS_XSD);
+        assertInput(input, "summaryDocuments.xml");
     }
 
 }

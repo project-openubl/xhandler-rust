@@ -17,16 +17,11 @@
 package e2e.renderer.invoice;
 
 import e2e.AbstractTest;
-import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
-import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
-import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
-import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
-import io.quarkus.qute.Template;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -54,19 +49,7 @@ public class InvoiceIssue30Test extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getInvoice();
-        String xml = template.data(input).render();
-
-        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
-
-        // Then
-        XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), "with-precioUnitario.xml");
-        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+        assertInput(input, "with-precioUnitario.xml");
     }
 
     @Test
@@ -91,19 +74,7 @@ public class InvoiceIssue30Test extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getInvoice();
-        String xml = template.data(input).render();
-
-        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
-
-        // Then
-        XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), "with-precioUnitarioConImpuestos.xml");
-        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+        assertInput(input, "with-precioUnitarioConImpuestos.xml");
     }
 
     @Test
@@ -128,19 +99,7 @@ public class InvoiceIssue30Test extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getInvoice();
-        String xml = template.data(input).render();
-
-        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
-
-        // Then
-        XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), "with-precioUnitario-ICB.xml");
-        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+        assertInput(input, "with-precioUnitario-ICB.xml");
     }
 
     @Test
@@ -166,18 +125,6 @@ public class InvoiceIssue30Test extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getInvoice();
-        String xml = template.data(input).render();
-
-        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
-
-        // Then
-        XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), "with-precioUnitario-conImpuestos-ICB.xml");
-        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+        assertInput(input, "with-precioUnitario-conImpuestos-ICB.xml");
     }
 }

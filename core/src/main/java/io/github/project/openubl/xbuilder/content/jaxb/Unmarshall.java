@@ -478,7 +478,7 @@ public class Unmarshall {
         }
     }
 
-    public static <T> T unmarshall(InputStream documentOXML, InputSource inputSource) throws JAXBException {
+    private static <T> T unmarshall(InputStream documentOXML, InputSource inputSource) throws JAXBException {
         Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, List.of(
                 Objects.requireNonNull(documentOXML)
@@ -489,7 +489,7 @@ public class Unmarshall {
         return (T) unmarshaller.unmarshal(inputSource);
     }
 
-    public static void enrichSalesDocument(XMLSalesDocument xmlSalesDocument, SalesDocument.SalesDocumentBuilder<?, ?> builder) {
+    private static void enrichSalesDocument(XMLSalesDocument xmlSalesDocument, SalesDocument.SalesDocumentBuilder<?, ?> builder) {
         enrichDocument(xmlSalesDocument, builder);
 
         // Leyendas
@@ -528,7 +528,7 @@ public class Unmarshall {
         builder.detalles(Mapper.mapDetalles(xmlSalesDocument.getLines()));
     }
 
-    public static void enrichNote(XMLSalesDocument xmlSalesDocument, Note.NoteBuilder<?, ?> builder) {
+    private static void enrichNote(XMLSalesDocument xmlSalesDocument, Note.NoteBuilder<?, ?> builder) {
         enrichDocument(xmlSalesDocument, builder);
 
         // ComprobanteAfectado
@@ -540,7 +540,7 @@ public class Unmarshall {
         builder.totalImporte(Mapper.mapTotalImporteNote(xmlSalesDocument.getMonetaryTotal()));
     }
 
-    public static void enrichBasePercepcionRetencion(XMLPercepcionRetencion xmlDocument, BasePercepcionRetencion.BasePercepcionRetencionBuilder<?, ?> builder) {
+    private static void enrichBasePercepcionRetencion(XMLPercepcionRetencion xmlDocument, BasePercepcionRetencion.BasePercepcionRetencionBuilder<?, ?> builder) {
         enrichDocument(xmlDocument, builder);
 
         // Numero
@@ -591,7 +591,7 @@ public class Unmarshall {
 
     }
 
-    public static void enrichSunatDocument(XMLSunatDocument xmlDocument, SunatDocument.SunatDocumentBuilder<?, ?> builder) {
+    private static void enrichSunatDocument(XMLSunatDocument xmlDocument, SunatDocument.SunatDocumentBuilder<?, ?> builder) {
         enrichDocument(xmlDocument, builder);
 
         // Numero
@@ -604,21 +604,21 @@ public class Unmarshall {
         builder.fechaEmisionComprobantes(xmlDocument.getReferenceDate());
     }
 
-    public static void enrichDocument(XMLSalesDocument xmlSalesDocument, Document.DocumentBuilder<?, ?> builder) {
+    private static void enrichDocument(XMLSalesDocument xmlSalesDocument, Document.DocumentBuilder<?, ?> builder) {
         builder.moneda(xmlSalesDocument.getDocumentCurrencyCode());
         builder.fechaEmision(xmlSalesDocument.getIssueDate());
         builder.proveedor(Mapper.mapProveedor(xmlSalesDocument.getAccountingSupplierParty()));
         builder.firmante(Mapper.mapFirmante(xmlSalesDocument.getSignature()));
     }
 
-    public static void enrichDocument(XMLPercepcionRetencion xmlDocument, Document.DocumentBuilder<?, ?> builder) {
+    private static void enrichDocument(XMLPercepcionRetencion xmlDocument, Document.DocumentBuilder<?, ?> builder) {
         builder.moneda(xmlDocument.getTotalInvoiceAmount_currencyId());
         builder.fechaEmision(xmlDocument.getIssueDate());
         builder.proveedor(Mapper.mapProveedor(xmlDocument.getAccountingSupplierParty()));
         builder.firmante(Mapper.mapFirmante(xmlDocument.getSignature()));
     }
 
-    public static void enrichDocument(XMLSunatDocument xmlDocument, Document.DocumentBuilder<?, ?> builder) {
+    private static void enrichDocument(XMLSunatDocument xmlDocument, Document.DocumentBuilder<?, ?> builder) {
         builder.moneda(null);
         builder.fechaEmision(xmlDocument.getIssueDate());
         builder.proveedor(Mapper.mapProveedor(xmlDocument.getAccountingSupplierParty()));

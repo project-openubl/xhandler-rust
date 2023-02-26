@@ -17,24 +17,16 @@
 package e2e.renderer.invoice;
 
 import e2e.AbstractTest;
-import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
-import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
-import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
-import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
-import io.quarkus.qute.Template;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.math.BigDecimal;
-
-import static e2e.renderer.XMLAssertUtils.assertSendSunat;
-import static e2e.renderer.XMLAssertUtils.assertSnapshot;
 
 public class InvoiceTipoIgvTest extends AbstractTest {
 
@@ -65,19 +57,7 @@ public class InvoiceTipoIgvTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getInvoice();
-        String xml = template.data(input).render();
-
-        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
-
-        // Then
-        assertSnapshot(xml, reconstructedXml, getClass(), "invoice_pu_" + tipoIgv + ".xml");
-        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+        assertInput(input, "invoice_pu_" + tipoIgv + ".xml");
     }
 
     @ParameterizedTest
@@ -108,19 +88,7 @@ public class InvoiceTipoIgvTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getInvoice();
-        String xml = template.data(input).render();
-
-        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
-
-        // Then
-        assertSnapshot(xml, reconstructedXml, getClass(), "invoice_pr_" + tipoIgv + ".xml");
-        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+        assertInput(input, "invoice_pr_" + tipoIgv + ".xml");
     }
 
     @ParameterizedTest
@@ -152,19 +120,7 @@ public class InvoiceTipoIgvTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getInvoice();
-        String xml = template.data(input).render();
-
-        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
-
-        // Then
-        assertSnapshot(xml, reconstructedXml, getClass(), "invoice_pr_icb_" + tipoIgv + ".xml");
-        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+        assertInput(input, "invoice_pr_icb_" + tipoIgv + ".xml");
     }
 
     @ParameterizedTest
@@ -202,18 +158,6 @@ public class InvoiceTipoIgvTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getInvoice();
-        String xml = template.data(input).render();
-
-        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
-
-        // Then
-        assertSnapshot(xml, reconstructedXml, getClass(), "invoice_pr_icb_isc_" + tipoIgv + ".xml");
-        assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+        assertInput(input, "invoice_pr_icb_isc_" + tipoIgv + ".xml");
     }
 }

@@ -17,6 +17,7 @@
 package io.github.project.openubl.quarkus.xbuilder.it;
 
 import io.github.project.openubl.quarkus.xbuilder.XBuilder;
+import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
@@ -36,6 +37,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.time.LocalDate;
 
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.CREDIT_NOTE;
@@ -47,18 +50,18 @@ import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.RETENTION
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.SUMMARY_DOCUMENTS;
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.VOIDED_DOCUMENTS;
 
-@ApplicationScoped
-@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.TEXT_PLAIN)
+@ApplicationScoped
 @Path("/quarkus-xbuilder")
 public class QuarkusXbuilderResource {
 
     @Inject
     XBuilder xBuilder;
 
+    @Consumes(MediaType.APPLICATION_JSON)
     @POST
-    @Path("invoice")
-    public String createInvoice(JsonObject json) {
+    @Path("Invoice/from-json")
+    public String createInvoiceXml(JsonObject json) {
         Invoice invoice = json.mapTo(Invoice.class);
 
         ContentEnricher enricher = new ContentEnricher(xBuilder.getDefaults(), () -> LocalDate.of(2022, 1, 25));
@@ -68,8 +71,18 @@ public class QuarkusXbuilderResource {
         return template.data(invoice).render();
     }
 
+    @Consumes(MediaType.TEXT_PLAIN)
     @POST
-    @Path("credit-note")
+    @Path("Invoice/from-xml")
+    public String createInvoicePojo(String xml) throws JAXBException, IOException {
+        Invoice invoice = Unmarshall.unmarshallInvoice(xml);
+
+        Template template = xBuilder.getTemplate(INVOICE);
+        return template.data(invoice).render();
+    }
+
+    @POST
+    @Path("CreditNote/from-json")
     public String createCreditNote(JsonObject json) {
         CreditNote creditNote = json.mapTo(CreditNote.class);
 
@@ -81,7 +94,7 @@ public class QuarkusXbuilderResource {
     }
 
     @POST
-    @Path("debit-note")
+    @Path("DebitNote/from-json")
     public String createDebitNote(JsonObject json) {
         DebitNote debitNote = json.mapTo(DebitNote.class);
 
@@ -93,7 +106,7 @@ public class QuarkusXbuilderResource {
     }
 
     @POST
-    @Path("voided-documents")
+    @Path("VoidedDocuments/from-json")
     public String createVoidedDocuments(JsonObject json) {
         VoidedDocuments voidedDocuments = json.mapTo(VoidedDocuments.class);
 
@@ -105,7 +118,7 @@ public class QuarkusXbuilderResource {
     }
 
     @POST
-    @Path("summary-documents")
+    @Path("SummaryDocuments/from-json")
     public String createSummaryDocuments(JsonObject json) {
         SummaryDocuments summaryDocuments = json.mapTo(SummaryDocuments.class);
 
@@ -117,7 +130,7 @@ public class QuarkusXbuilderResource {
     }
 
     @POST
-    @Path("perception")
+    @Path("Perception/from-json")
     public String createPerception(JsonObject json) {
         Perception perception = json.mapTo(Perception.class);
 
@@ -129,7 +142,7 @@ public class QuarkusXbuilderResource {
     }
 
     @POST
-    @Path("retention")
+    @Path("Retention/from-json")
     public String createRetention(JsonObject json) {
         Retention retention = json.mapTo(Retention.class);
 
@@ -141,7 +154,7 @@ public class QuarkusXbuilderResource {
     }
 
     @POST
-    @Path("despatch-advice")
+    @Path("DespatchAdvice/from-json")
     public String createDespatchAdvice(JsonObject json) {
         DespatchAdvice despatchAdvice = json.mapTo(DespatchAdvice.class);
 
@@ -149,8 +162,7 @@ public class QuarkusXbuilderResource {
         enricher.enrich(despatchAdvice);
 
         Template template = xBuilder.getTemplate(DESPATCH_ADVICE);
-        String xml = template.data(despatchAdvice).render();
-        return xml;
+        return template.data(despatchAdvice).render();
     }
 
 }
