@@ -17,7 +17,6 @@
 package io.github.project.openubl.quarkus.xbuilder.it;
 
 import io.github.project.openubl.quarkus.xbuilder.XBuilder;
-import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
@@ -37,8 +36,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.time.LocalDate;
 
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.CREDIT_NOTE;
@@ -66,16 +63,6 @@ public class QuarkusXbuilderResource {
 
         ContentEnricher enricher = new ContentEnricher(xBuilder.getDefaults(), () -> LocalDate.of(2022, 1, 25));
         enricher.enrich(invoice);
-
-        Template template = xBuilder.getTemplate(INVOICE);
-        return template.data(invoice).render();
-    }
-
-    @Consumes(MediaType.TEXT_PLAIN)
-    @POST
-    @Path("Invoice/from-xml")
-    public String createInvoicePojo(String xml) throws JAXBException, IOException {
-        Invoice invoice = Unmarshall.unmarshallInvoice(xml);
 
         Template template = xBuilder.getTemplate(INVOICE);
         return template.data(invoice).render();
