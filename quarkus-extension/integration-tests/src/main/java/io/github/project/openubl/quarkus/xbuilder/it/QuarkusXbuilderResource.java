@@ -50,6 +50,7 @@ import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.RETENTION
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.SUMMARY_DOCUMENTS;
 import static io.github.project.openubl.quarkus.xbuilder.XBuilder.Type.VOIDED_DOCUMENTS;
 
+@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.TEXT_PLAIN)
 @ApplicationScoped
 @Path("/quarkus-xbuilder")
@@ -58,7 +59,6 @@ public class QuarkusXbuilderResource {
     @Inject
     XBuilder xBuilder;
 
-    @Consumes(MediaType.APPLICATION_JSON)
     @POST
     @Path("Invoice/from-json")
     public String createInvoiceXml(JsonObject json) {
