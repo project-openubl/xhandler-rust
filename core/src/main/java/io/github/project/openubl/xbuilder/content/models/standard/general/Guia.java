@@ -21,7 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 @Data
 @Builder
@@ -29,7 +28,6 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 @AllArgsConstructor
 public class Guia {
 
-    @XmlPath("cbc:ID/text()")
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String serieNumero;
 
@@ -40,7 +38,6 @@ public class Guia {
      * <p>
      * Valores válidos: "09", "31"
      */
-    @XmlPath("cbc:DocumentTypeCode/text()")
     @Schema(description = "Catalogo 01", requiredMode = Schema.RequiredMode.REQUIRED)
     private String tipoDocumento;
 }
