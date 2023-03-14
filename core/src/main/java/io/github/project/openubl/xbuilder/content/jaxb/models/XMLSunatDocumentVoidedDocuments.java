@@ -19,7 +19,7 @@ package io.github.project.openubl.xbuilder.content.jaxb.models;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.eclipse.persistence.oxm.annotations.XmlPath;
+
 
 import java.util.List;
 

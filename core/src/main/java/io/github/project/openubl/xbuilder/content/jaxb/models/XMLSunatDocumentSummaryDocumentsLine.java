@@ -18,7 +18,7 @@ package io.github.project.openubl.xbuilder.content.jaxb.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.eclipse.persistence.oxm.annotations.XmlPath;
+
 
 import java.math.BigDecimal;
 import java.util.List;
