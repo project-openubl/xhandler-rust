@@ -19,6 +19,7 @@ package io.github.project.openubl.xbuilder.content.models.sunat.percepcionretenc
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -28,6 +29,7 @@ import java.math.BigDecimal;
 @Jacksonized
 @Data
 @SuperBuilder
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class Retention extends BasePercepcionRetencion {

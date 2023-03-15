@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -31,6 +32,7 @@ import java.util.List;
 @Jacksonized
 @Data
 @SuperBuilder
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class VoidedDocuments extends SunatDocument {
