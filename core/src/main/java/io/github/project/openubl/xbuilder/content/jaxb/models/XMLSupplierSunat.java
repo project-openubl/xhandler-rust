@@ -21,48 +21,46 @@ import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Customer.Party")
+@XmlType(name = "SupplierSunat")
 @Data
 @NoArgsConstructor
-public class XMLCustomer {
+public class XMLSupplierSunat {
 
-    @XmlElement(name = "PartyIdentification", namespace = XMLConstants.CAC)
-    private PartyIdentification partyIdentification;
+    @XmlElement(name = "CustomerAssignedAccountID", namespace = XMLConstants.CBC)
+    private String customerAssignedAccountID;
 
-    @XmlElement(name = "PartyLegalEntity", namespace = XMLConstants.CAC)
-    private PartyLegalEntity partyLegalEntity;
+    @XmlElement(name = "PartyName", namespace = XMLConstants.CAC)
+    private PartyName partyName;
+
+    @XmlElement(name = "Party", namespace = XMLConstants.CAC)
+    private Party party;
 
     @XmlElement(name = "Contact", namespace = XMLConstants.CAC)
     private XMLContact contact;
 
-    @XmlType(name = "Customer.PartyIdentification")
+    @XmlType(name = "SupplierSunat.PartyName")
     @XmlAccessorType(XmlAccessType.NONE)
     @Data
     @NoArgsConstructor
-    public static class PartyIdentification {
-        @XmlElement(name = "ID", namespace = XMLConstants.CBC)
-        private PartyIdentification_ID id;
+    public static class PartyName {
+        @XmlElement(name = "Name", namespace = XMLConstants.CBC)
+        private String name;
     }
 
-    @XmlType(name = "Customer.ID")
+    @XmlType(name = "SupplierSunat.Party")
     @XmlAccessorType(XmlAccessType.NONE)
     @Data
     @NoArgsConstructor
-    public static class PartyIdentification_ID {
-        @XmlValue
-        private String value;
-
-        @XmlAttribute(name = "schemeID")
-        private String schemeID;
+    public static class Party {
+        @XmlElement(name = "PartyLegalEntity", namespace = XMLConstants.CAC)
+        private PartyLegalEntity partyLegalEntity;
     }
 
-    @XmlType(name = "Customer.PartyLegalEntity")
+    @XmlType(name = "SupplierSunat.PartyLegalEntity")
     @XmlAccessorType(XmlAccessType.NONE)
     @Data
     @NoArgsConstructor

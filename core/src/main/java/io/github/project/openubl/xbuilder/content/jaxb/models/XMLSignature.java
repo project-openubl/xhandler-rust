@@ -19,13 +19,37 @@ package io.github.project.openubl.xbuilder.content.jaxb.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlType(name = "Signature")
 @Data
 @NoArgsConstructor
 public class XMLSignature {
-    @XmlPath("cbc:ID/text()")
+    @XmlElement(name = "ID", namespace = XMLConstants.CBC)
     private String id;
 
-    @XmlPath("cac:SignatoryParty/cac:PartyName/cbc:Name/text()")
-    private String partyName;
+    @XmlElement(name = "SignatoryParty", namespace = XMLConstants.CAC)
+    private SignatoryParty signatoryParty;
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "Signature.SignatoryParty")
+    @Data
+    @NoArgsConstructor
+    public static class SignatoryParty {
+        @XmlElement(name = "PartyName", namespace = XMLConstants.CAC)
+        private PartyName partyName;
+    }
+
+    @XmlType(name = "Signature.PartyName")
+    @XmlAccessorType(XmlAccessType.NONE)
+    @Data
+    @NoArgsConstructor
+    public static class PartyName {
+        @XmlElement(name = "Name", namespace = XMLConstants.CBC)
+        private String name;
+    }
 }

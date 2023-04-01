@@ -17,30 +17,36 @@
 package io.github.project.openubl.xbuilder.content.jaxb.models;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
+@XmlType(name = "CreditNoteDocumentLine")
+@XmlAccessorType(XmlAccessType.NONE)
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class XMLPercepcionRetencionInformation {
+public class XMLCreditNoteLine extends XMLSalesDocumentLine {
+    @XmlElement(name = "CreditedQuantity", namespace = XMLConstants.CBC)
+    private Quantity quantity;
 
-    private BigDecimal sunatAmount;
-    private LocalDate sunatDate;
-    private BigDecimal sunatNetTotal;
-
-    @XmlPath("cac:ExchangeRate")
-    private ExchangeRate exchangeRate;
-
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "CreditNoteDocumentLine.Quantity")
     @Data
     @NoArgsConstructor
-    public static class ExchangeRate {
-        @XmlPath("cbc:CalculationRate/text()")
-        private BigDecimal canculationRate;
+    public static class Quantity {
+        @XmlValue
+        private BigDecimal value;
 
-        @XmlPath("cbc:Date/text()")
-        private LocalDate date;
+        @XmlAttribute(name = "unitCode")
+        private String unitCode;
     }
+
 }

@@ -19,66 +19,127 @@ package io.github.project.openubl.xbuilder.content.jaxb.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import java.math.BigDecimal;
 import java.util.List;
 
+@XmlType(name = "SalesDocumentLine")
+@XmlAccessorType(XmlAccessType.NONE)
 @Data
 @NoArgsConstructor
 public class XMLSalesDocumentLine {
-    private BigDecimal quantity;
-    private String quantity_unitCode;
 
-    @XmlPath("cbc:LineExtensionAmount/text()")
+    @XmlElement(name = "LineExtensionAmount", namespace = XMLConstants.CBC)
     private BigDecimal lineExtensionAmount;
 
-    @XmlPath("cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceAmount/text()")
-    private BigDecimal alternativeConditionPrice_priceAmount;
+    @XmlElement(name = "PricingReference", namespace = XMLConstants.CAC)
+    private PricingReference pricingReference;
 
-    @XmlPath("cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceTypeCode/text()")
-    private String alternativeConditionPrice_priceTypeCode;
-
-    @XmlPath("cac:TaxTotal")
+    @XmlElement(name = "TaxTotal", namespace = XMLConstants.CAC)
     private TaxTotalLine taxTotal;
 
-    @XmlPath("cac:Item/cbc:Description/text()")
-    private String description;
+    @XmlElement(name = "Item", namespace = XMLConstants.CAC)
+    private Item item;
 
-    @XmlPath("cac:Price/cbc:PriceAmount/text()")
-    private BigDecimal priceAmount;
+    @XmlElement(name = "Price", namespace = XMLConstants.CAC)
+    private Price price;
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocumentLine.PricingReference")
+    @Data
+    @NoArgsConstructor
+    public static class PricingReference {
+        @XmlElement(name = "AlternativeConditionPrice", namespace = XMLConstants.CAC)
+        private AlternativeConditionPrice alternativeConditionPrice;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocumentLine.AlternativeConditionPrice")
+    @Data
+    @NoArgsConstructor
+    public static class AlternativeConditionPrice {
+        @XmlElement(name = "PriceAmount", namespace = XMLConstants.CBC)
+        private BigDecimal alternativeConditionPrice;
+
+        @XmlElement(name = "PriceTypeCode", namespace = XMLConstants.CBC)
+        private String priceTypeCode;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocumentLine.TaxTotalLine")
     @Data
     @NoArgsConstructor
     public static class TaxTotalLine {
-        @XmlPath("cbc:TaxAmount/text()")
+        @XmlElement(name = "TaxAmount", namespace = XMLConstants.CBC)
         BigDecimal taxAmount;
 
-        @XmlPath("cac:TaxSubtotal")
+        @XmlElement(name = "TaxSubtotal", namespace = XMLConstants.CAC)
         List<TaxSubtotalLine> taxSubtotals;
     }
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocumentLine.TaxSubtotalLine")
     @Data
     @NoArgsConstructor
     public static class TaxSubtotalLine {
-        @XmlPath("cbc:TaxableAmount/text()")
+        @XmlElement(name = "TaxableAmount", namespace = XMLConstants.CBC)
         private BigDecimal taxableAmount;
 
-        @XmlPath("cbc:TaxAmount/text()")
+        @XmlElement(name = "TaxAmount", namespace = XMLConstants.CBC)
         private BigDecimal taxAmount;
 
-        @XmlPath("cac:TaxCategory/cbc:Percent/text()")
+        @XmlElement(name = "TaxCategory", namespace = XMLConstants.CAC)
+        private TaxCategory taxCategory;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocumentLine.TaxCategory")
+    @Data
+    @NoArgsConstructor
+    public static class TaxCategory {
+        @XmlElement(name = "Percent", namespace = XMLConstants.CBC)
         private BigDecimal percent;
 
-        @XmlPath("cac:TaxCategory/cbc:TierRange/text()")
+        @XmlElement(name = "TierRange", namespace = XMLConstants.CBC)
         private String tierRange;
 
-        @XmlPath("cac:TaxCategory/cbc:PerUnitAmount/text()")
+        @XmlElement(name = "PerUnitAmount", namespace = XMLConstants.CBC)
         private BigDecimal perUnitAmount;
 
-        @XmlPath("cac:TaxCategory/cbc:TaxExemptionReasonCode/text()")
+        @XmlElement(name = "TaxExemptionReasonCode", namespace = XMLConstants.CBC)
         private String taxExemptionReasonCode;
 
-        @XmlPath("cac:TaxCategory/cac:TaxScheme/cbc:ID/text()")
-        private String code;
+        @XmlElement(name = "TaxScheme", namespace = XMLConstants.CAC)
+        private TaxScheme TaxScheme;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocumentLine.TaxScheme")
+    @Data
+    @NoArgsConstructor
+    public static class TaxScheme {
+        @XmlElement(name = "ID", namespace = XMLConstants.CBC)
+        private String id;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocumentLine.Item")
+    @Data
+    @NoArgsConstructor
+    public static class Item {
+        @XmlElement(name = "Description", namespace = XMLConstants.CBC)
+        private String description;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocumentLine.Price")
+    @Data
+    @NoArgsConstructor
+    public static class Price {
+        @XmlElement(name = "PriceAmount", namespace = XMLConstants.CBC)
+        private BigDecimal priceAmount;
     }
 }

@@ -23,7 +23,22 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import e2e.renderer.XMLAssertUtils;
-import io.github.project.openubl.xbuilder.content.jaxb.Unmarshall;
+import io.github.project.openubl.xbuilder.content.jaxb.mappers.CreditNoteMapper;
+import io.github.project.openubl.xbuilder.content.jaxb.mappers.DebitNoteMapper;
+import io.github.project.openubl.xbuilder.content.jaxb.mappers.DespatchAdviceMapper;
+import io.github.project.openubl.xbuilder.content.jaxb.mappers.InvoiceMapper;
+import io.github.project.openubl.xbuilder.content.jaxb.mappers.PerceptionMapper;
+import io.github.project.openubl.xbuilder.content.jaxb.mappers.RetentionMapper;
+import io.github.project.openubl.xbuilder.content.jaxb.mappers.SummaryDocumentsMapper;
+import io.github.project.openubl.xbuilder.content.jaxb.mappers.VoidedDocumentsMapper;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLCreditNote;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLDebitNote;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLVoidedDocuments;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLInvoice;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcion;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLRetention;
+import io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocuments;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
@@ -37,8 +52,12 @@ import io.github.project.openubl.xbuilder.enricher.config.DateProvider;
 import io.github.project.openubl.xbuilder.enricher.config.Defaults;
 import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
 import io.quarkus.qute.Template;
+import org.mapstruct.factory.Mappers;
+import org.xml.sax.InputSource;
 
+import javax.xml.bind.JAXBContext;
 import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -48,6 +67,15 @@ import java.time.LocalDate;
 import java.util.Map;
 
 public class AbstractTest {
+
+    private static final InvoiceMapper invoiceMapper = Mappers.getMapper(InvoiceMapper.class);
+    private static final CreditNoteMapper creditNoteMapper = Mappers.getMapper(CreditNoteMapper.class);
+    private static final DebitNoteMapper debitNoteMapper = Mappers.getMapper(DebitNoteMapper.class);
+    private static final VoidedDocumentsMapper voidedDocumentsMapper = Mappers.getMapper(VoidedDocumentsMapper.class);
+    private static final SummaryDocumentsMapper summaryDocumentsMapper = Mappers.getMapper(SummaryDocumentsMapper.class);
+    private static final PerceptionMapper perceptionMapper = Mappers.getMapper(PerceptionMapper.class);
+    private static final RetentionMapper retentionMapper = Mappers.getMapper(RetentionMapper.class);
+    private static final DespatchAdviceMapper despatchAdviceMapper = Mappers.getMapper(DespatchAdviceMapper.class);
 
     protected static final Defaults defaults = Defaults.builder()
             .icbTasa(new BigDecimal("0.2"))
@@ -90,8 +118,14 @@ public class AbstractTest {
         Template template = TemplateProducer.getInstance().getInvoice();
         String xml = template.data(input).render();
 
-        Invoice inputFromXml = Unmarshall.unmarshallInvoice(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
+        String reconstructedXml;
+        try (StringReader reader = new StringReader(xml);) {
+            XMLInvoice xmlPojo = (XMLInvoice) JAXBContext.newInstance(XMLInvoice.class)
+                    .createUnmarshaller()
+                    .unmarshal(new InputSource(reader));
+            Invoice inputFromXml = invoiceMapper.map(xmlPojo);
+            reconstructedXml = template.data(inputFromXml).render();
+        }
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), snapshotFilename);
@@ -108,8 +142,14 @@ public class AbstractTest {
         Template template = TemplateProducer.getInstance().getCreditNote();
         String xml = template.data(input).render();
 
-        CreditNote inputFromXml = Unmarshall.unmarshallCreditNote(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
+        String reconstructedXml;
+        try (StringReader reader = new StringReader(xml);) {
+            XMLCreditNote xmlPojo = (XMLCreditNote) JAXBContext.newInstance(XMLCreditNote.class)
+                    .createUnmarshaller()
+                    .unmarshal(new InputSource(reader));
+            CreditNote inputFromXml = creditNoteMapper.map(xmlPojo);
+            reconstructedXml = template.data(inputFromXml).render();
+        }
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), snapshotFilename);
@@ -126,8 +166,14 @@ public class AbstractTest {
         Template template = TemplateProducer.getInstance().getDebitNote();
         String xml = template.data(input).render();
 
-        DebitNote inputFromXml = Unmarshall.unmarshallDebitNote(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
+        String reconstructedXml;
+        try (StringReader reader = new StringReader(xml);) {
+            XMLDebitNote xmlPojo = (XMLDebitNote) JAXBContext.newInstance(XMLDebitNote.class)
+                    .createUnmarshaller()
+                    .unmarshal(new InputSource(reader));
+            DebitNote inputFromXml = debitNoteMapper.map(xmlPojo);
+            reconstructedXml = template.data(inputFromXml).render();
+        }
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), snapshotFilename);
@@ -144,8 +190,14 @@ public class AbstractTest {
         Template template = TemplateProducer.getInstance().getVoidedDocument();
         String xml = template.data(input).render();
 
-        VoidedDocuments inputFromXml = Unmarshall.unmarshallVoidedDocuments(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
+        String reconstructedXml;
+        try (StringReader reader = new StringReader(xml);) {
+            XMLVoidedDocuments xmlPojo = (XMLVoidedDocuments) JAXBContext.newInstance(XMLVoidedDocuments.class)
+                    .createUnmarshaller()
+                    .unmarshal(new InputSource(reader));
+            VoidedDocuments inputFromXml = voidedDocumentsMapper.map(xmlPojo);
+            reconstructedXml = template.data(inputFromXml).render();
+        }
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), snapshotFilename);
@@ -162,8 +214,14 @@ public class AbstractTest {
         Template template = TemplateProducer.getInstance().getSummaryDocuments();
         String xml = template.data(input).render();
 
-        SummaryDocuments inputFromXml = Unmarshall.unmarshallSummaryDocuments(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
+        String reconstructedXml;
+        try (StringReader reader = new StringReader(xml);) {
+            XMLSummaryDocuments xmlPojo = (XMLSummaryDocuments) JAXBContext.newInstance(XMLSummaryDocuments.class)
+                    .createUnmarshaller()
+                    .unmarshal(new InputSource(reader));
+            SummaryDocuments inputFromXml = summaryDocumentsMapper.map(xmlPojo);
+            reconstructedXml = template.data(inputFromXml).render();
+        }
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), snapshotFilename);
@@ -180,8 +238,14 @@ public class AbstractTest {
         Template template = TemplateProducer.getInstance().getPerception();
         String xml = template.data(input).render();
 
-        Perception inputFromXml = Unmarshall.unmarshallPerception(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
+        String reconstructedXml;
+        try (StringReader reader = new StringReader(xml);) {
+            XMLPercepcion xmlPojo = (XMLPercepcion) JAXBContext.newInstance(XMLPercepcion.class)
+                    .createUnmarshaller()
+                    .unmarshal(new InputSource(reader));
+            Perception inputFromXml = perceptionMapper.map(xmlPojo);
+            reconstructedXml = template.data(inputFromXml).render();
+        }
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), snapshotFilename);
@@ -198,8 +262,14 @@ public class AbstractTest {
         Template template = TemplateProducer.getInstance().getRetention();
         String xml = template.data(input).render();
 
-        Retention inputFromXml = Unmarshall.unmarshallRetention(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
+        String reconstructedXml;
+        try (StringReader reader = new StringReader(xml);) {
+            XMLRetention xmlPojo = (XMLRetention) JAXBContext.newInstance(XMLRetention.class)
+                    .createUnmarshaller()
+                    .unmarshal(new InputSource(reader));
+            Retention inputFromXml = retentionMapper.map(xmlPojo);
+            reconstructedXml = template.data(inputFromXml).render();
+        }
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), snapshotFilename);
@@ -216,8 +286,14 @@ public class AbstractTest {
         Template template = TemplateProducer.getInstance().getDespatchAdvice();
         String xml = template.data(input).render();
 
-        DespatchAdvice inputFromXml = Unmarshall.unmarshallDespatchAdvice(xml);
-        String reconstructedXml = template.data(inputFromXml).render();
+        String reconstructedXml;
+        try (StringReader reader = new StringReader(xml);) {
+            XMLDespatchAdvice xmlPojo = (XMLDespatchAdvice) JAXBContext.newInstance(XMLDespatchAdvice.class)
+                    .createUnmarshaller()
+                    .unmarshal(new InputSource(reader));
+            DespatchAdvice inputFromXml = despatchAdviceMapper.map(xmlPojo);
+            reconstructedXml = template.data(inputFromXml).render();
+        }
 
         // Then
         XMLAssertUtils.assertSnapshot(xml, reconstructedXml, getClass(), snapshotFilename);

@@ -14,25 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.project.openubl.xbuilder.content.jaxb.models;
+package io.github.project.openubl.xbuilder.content.jaxb.mappers.utils;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Optional;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+public class MapperUtils {
 
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Contact")
-@Data
-@NoArgsConstructor
-public class XMLContact {
+    public static BigDecimal mapPorcentaje(BigDecimal number) {
+        return Optional.ofNullable(number)
+                .map(bigDecimal -> bigDecimal.divide(new BigDecimal("100"), 10, RoundingMode.HALF_EVEN))
+                .orElse(null);
+    }
 
-    @XmlElement(name = "Telephone", namespace = XMLConstants.CBC)
-    private String telephone;
-
-    @XmlElement(name = "ElectronicMail", namespace = XMLConstants.CBC)
-    private String electronicMail;
 }

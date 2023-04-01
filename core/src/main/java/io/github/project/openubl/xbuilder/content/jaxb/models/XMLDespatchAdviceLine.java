@@ -19,26 +19,67 @@ package io.github.project.openubl.xbuilder.content.jaxb.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 
-import java.math.BigDecimal;
-
+@XmlType(name = "DespatchAdviceLine")
+@XmlAccessorType(XmlAccessType.NONE)
 @Data
 @NoArgsConstructor
 public class XMLDespatchAdviceLine {
 
-    @XmlPath("cbc:DeliveredQuantity/text()")
-    private BigDecimal deliveredQuantity;
+    @XmlElement(name = "DeliveredQuantity", namespace = XMLConstants.CBC)
+    private DeliveredQuantity deliveredQuantity;
 
-    @XmlPath("cbc:DeliveredQuantity/@unitCode")
-    private String deliveredQuantity_unitCode;
+    @XmlElement(name = "Item", namespace = XMLConstants.CAC)
+    private Item item;
 
-    @XmlPath("cac:Item/cbc:Name/text()")
-    private String itemName;
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "DespatchAdviceLine.DeliveredQuantity")
+    @Data
+    @NoArgsConstructor
+    public static class DeliveredQuantity {
+        @XmlValue
+        private String value;
 
-    @XmlPath("cac:Item/cac:SellersItemIdentification/cbc:ID/text()")
-    private String sellersItemIdentification_id;
+        @XmlAttribute(name = "unitCode")
+        private String unitCode;
+    }
 
-    @XmlPath("cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode/text()")
-    private String itemClassificationCode;
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "DespatchAdviceLine.Item")
+    @Data
+    @NoArgsConstructor
+    public static class Item {
+        @XmlElement(name = "Name", namespace = XMLConstants.CBC)
+        private String name;
 
+        @XmlElement(name = "SellersItemIdentification", namespace = XMLConstants.CAC)
+        private SellersItemIdentification sellersItemIdentification;
+
+        @XmlElement(name = "CommodityClassification", namespace = XMLConstants.CAC)
+        private CommodityClassification commodityClassification;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "DespatchAdviceLine.SellersItemIdentification")
+    @Data
+    @NoArgsConstructor
+    public static class SellersItemIdentification {
+        @XmlElement(name = "ID", namespace = XMLConstants.CBC)
+        private String id;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "DespatchAdviceLine.CommodityClassification")
+    @Data
+    @NoArgsConstructor
+    public static class CommodityClassification {
+        @XmlElement(name = "ItemClassificationCode", namespace = XMLConstants.CBC)
+        private String itemClassificationCode;
+    }
 }

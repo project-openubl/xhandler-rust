@@ -20,15 +20,21 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@Data
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name = "CreditNote", namespace = "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2")
 @EqualsAndHashCode(callSuper = true)
+@Data
 @NoArgsConstructor
-public class XMLSunatDocumentVoidedDocuments extends XMLSunatDocument {
+public class XMLCreditNote extends XMLSalesDocument {
+    @XmlElement(name = "LegalMonetaryTotal", namespace = XMLConstants.CAC)
+    private MonetaryTotal monetaryTotal;
 
-    @XmlPath("sac:VoidedDocumentsLine")
-    private List<XMLSunatDocumentVoidedDocumentsLine> lines;
-
+    @XmlElement(name = "CreditNoteLine", namespace = XMLConstants.CAC)
+    private List<XMLCreditNoteLine> lines;
 }

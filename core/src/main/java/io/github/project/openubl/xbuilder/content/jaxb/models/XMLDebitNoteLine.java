@@ -16,36 +16,37 @@
  */
 package io.github.project.openubl.xbuilder.content.jaxb.models;
 
-import io.github.project.openubl.xbuilder.content.jaxb.adapters.LocalDateAdapter;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalDate;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
+import java.math.BigDecimal;
 
+@XmlType(name = "DebitNoteDocumentLine")
 @XmlAccessorType(XmlAccessType.NONE)
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public abstract class XMLSunatDocument {
+public class XMLDebitNoteLine extends XMLSalesDocumentLine {
+    @XmlElement(name = "DebitedQuantity", namespace = XMLConstants.CBC)
+    private Quantity quantity;
 
-    @XmlElement(name = "ID", namespace = XMLConstants.CBC)
-    private String documentId;
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "DebitnOTEDocumentLine.Quantity")
+    @Data
+    @NoArgsConstructor
+    public static class Quantity {
+        @XmlValue
+        private BigDecimal value;
 
-    @XmlJavaTypeAdapter(LocalDateAdapter.class)
-    @XmlElement(name = "ReferenceDate", namespace = XMLConstants.CBC)
-    private LocalDate referenceDate;
-
-    @XmlJavaTypeAdapter(LocalDateAdapter.class)
-    @XmlElement(name = "IssueDate", namespace = XMLConstants.CBC)
-    private LocalDate issueDate;
-
-    @XmlElement(name = "Signature", namespace = XMLConstants.CAC)
-    private XMLSignature signature;
-
-    @XmlElement(name = "AccountingSupplierParty", namespace = XMLConstants.CAC)
-    private XMLSupplierSunat accountingSupplierParty;
+        @XmlAttribute(name = "unitCode")
+        private String unitCode;
+    }
 
 }

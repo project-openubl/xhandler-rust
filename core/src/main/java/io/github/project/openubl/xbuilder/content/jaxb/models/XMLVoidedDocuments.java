@@ -20,15 +20,20 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@Data
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name = "VoidedDocuments", namespace = "urn:sunat:names:specification:ubl:peru:schema:xsd:VoidedDocuments-1")
 @EqualsAndHashCode(callSuper = true)
+@Data
 @NoArgsConstructor
-public class XMLSunatDocumentSummaryDocuments extends XMLSunatDocument {
+public class XMLVoidedDocuments extends XMLSunatDocument {
 
-    @XmlPath("sac:SummaryDocumentsLine")
-    private List<XMLSunatDocumentSummaryDocumentsLine> lines;
+    @XmlElement(name = "VoidedDocumentsLine", namespace = XMLConstants.SAC)
+    private List<XMLVoidedDocumentsLine> lines;
 
 }

@@ -17,45 +17,31 @@
 package io.github.project.openubl.xbuilder.content.jaxb.models;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name = "Perception", namespace = "urn:sunat:names:specification:ubl:peru:schema:xsd:Perception-1")
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public class XMLPercepcionRetencion {
+public class XMLPercepcion extends XMLPercepcionRetencionBase {
 
-    @XmlPath("cbc:ID/text()")
-    private String documentId;
-
-    @XmlPath("cbc:IssueDate/text()")
-    private LocalDate issueDate;
-
+    @XmlElement(name = "SUNATPerceptionSystemCode", namespace = XMLConstants.SAC)
     private String sunatSystemCode;
+
+    @XmlElement(name = "SUNATPerceptionPercent", namespace = XMLConstants.SAC)
     private BigDecimal sunatPercent;
 
-    @XmlPath("cbc:Note/text()")
-    private String note;
-
-    @XmlPath("cbc:TotalInvoiceAmount/text()")
-    private BigDecimal totalInvoiceAmount;
-
-    @XmlPath("cbc:TotalInvoiceAmount/@currencyID")
-    private String totalInvoiceAmount_currencyId;
-
+    @XmlElement(name = "SUNATTotalCashed", namespace = XMLConstants.SAC)
     private BigDecimal sunatTotal;
 
-    @XmlPath("cac:Signature")
-    private XMLSignature signature;
-
-    @XmlPath("cac:AgentParty")
-    private XMLSupplier accountingSupplierParty;
-
-    @XmlPath("cac:ReceiverParty")
-    private XMLCustomer accountingCustomerParty;
-
-    private XMLPercepcionRetencionSunatDocumentReference sunatDocumentReference;
-
+    @XmlElement(name = "SUNATPerceptionDocumentReference", namespace = XMLConstants.SAC)
+    private XMLPercepcionSunatDocumentReference sunatDocumentReference;
 }

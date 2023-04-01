@@ -17,22 +17,24 @@
 package io.github.project.openubl.xbuilder.content.jaxb.models;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name = "Invoice", namespace = "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2")
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public class XMLSunatDocumentVoidedDocumentsLine {
+public class XMLInvoice extends XMLSalesDocument {
+    @XmlElement(name = "LegalMonetaryTotal", namespace = XMLConstants.CAC)
+    private MonetaryTotal monetaryTotal;
 
-    @XmlPath("cbc:DocumentTypeCode/text()")
-    private String documentTypeCode;
-
-    @XmlPath("sac:DocumentSerialID/text()")
-    private String documentSerialID;
-
-    @XmlPath("sac:DocumentNumberID/text()")
-    private Integer documentNumberID;
-
-    @XmlPath("sac:VoidReasonDescription/text()")
-    private String voidReasonDescription;
+    @XmlElement(name = "InvoiceLine", namespace = XMLConstants.CAC)
+    private List<XMLInvoiceLine> lines;
 }

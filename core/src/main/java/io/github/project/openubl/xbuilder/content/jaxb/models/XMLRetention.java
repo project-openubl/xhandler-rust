@@ -16,36 +16,31 @@
  */
 package io.github.project.openubl.xbuilder.content.jaxb.models;
 
-import io.github.project.openubl.xbuilder.content.jaxb.adapters.LocalDateAdapter;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalDate;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.math.BigDecimal;
 
 @XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name = "Retention", namespace = "urn:sunat:names:specification:ubl:peru:schema:xsd:Retention-1")
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public abstract class XMLSunatDocument {
+public class XMLRetention extends XMLPercepcionRetencionBase {
+    @XmlElement(name = "SUNATRetentionSystemCode", namespace = XMLConstants.SAC)
+    private String sunatSystemCode;
 
-    @XmlElement(name = "ID", namespace = XMLConstants.CBC)
-    private String documentId;
+    @XmlElement(name = "SUNATRetentionPercent", namespace = XMLConstants.SAC)
+    private BigDecimal sunatPercent;
 
-    @XmlJavaTypeAdapter(LocalDateAdapter.class)
-    @XmlElement(name = "ReferenceDate", namespace = XMLConstants.CBC)
-    private LocalDate referenceDate;
+    @XmlElement(name = "SUNATTotalPaid", namespace = XMLConstants.SAC)
+    private BigDecimal sunatTotal;
 
-    @XmlJavaTypeAdapter(LocalDateAdapter.class)
-    @XmlElement(name = "IssueDate", namespace = XMLConstants.CBC)
-    private LocalDate issueDate;
-
-    @XmlElement(name = "Signature", namespace = XMLConstants.CAC)
-    private XMLSignature signature;
-
-    @XmlElement(name = "AccountingSupplierParty", namespace = XMLConstants.CAC)
-    private XMLSupplierSunat accountingSupplierParty;
-
+    @XmlElement(name = "SUNATRetentionDocumentReference", namespace = XMLConstants.SAC)
+    private XMLRetentionSunatDocumentReference sunatDocumentReference;
 }

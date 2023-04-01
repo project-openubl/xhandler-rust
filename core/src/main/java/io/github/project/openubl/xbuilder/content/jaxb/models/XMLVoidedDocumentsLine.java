@@ -19,37 +19,26 @@ package io.github.project.openubl.xbuilder.content.jaxb.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
+@XmlType(name = "VoidedDocumentsLine")
+@XmlAccessorType(XmlAccessType.NONE)
 @Data
 @NoArgsConstructor
-public class XMLPercepcionRetencionSunatDocumentReference {
+public class XMLVoidedDocumentsLine {
 
-    @XmlPath("cbc:ID/text()")
-    private String id;
+    @XmlElement(name = "DocumentTypeCode", namespace = XMLConstants.CBC)
+    private String documentTypeCode;
 
-    @XmlPath("cbc:ID/@schemeID")
-    private String id_schemeId;
+    @XmlElement(name = "DocumentSerialID", namespace = XMLConstants.SAC)
+    private String documentSerialID;
 
-    @XmlPath("cbc:IssueDate/text()")
-    private LocalDate issueDate;
+    @XmlElement(name = "DocumentNumberID", namespace = XMLConstants.SAC)
+    private Integer documentNumberID;
 
-    @XmlPath("cbc:TotalInvoiceAmount/text()")
-    private BigDecimal totalInvoiceAmount;
-
-    @XmlPath("cbc:TotalInvoiceAmount/@currencyID")
-    private String totalInvoiceAmount_currencyId;
-
-    @XmlPath("cac:Payment/cbc:ID/text()")
-    private Integer payment_id;
-
-    @XmlPath("cac:Payment/cbc:PaidAmount/text()")
-    private BigDecimal payment_paidAmount;
-
-    @XmlPath("cac:Payment/cbc:PaidDate/text()")
-    private LocalDate payment_paidDate;
-
-    private XMLPercepcionRetencionInformation sunatInformation;
+    @XmlElement(name = "VoidReasonDescription", namespace = XMLConstants.SAC)
+    private String voidReasonDescription;
 }

@@ -19,31 +19,56 @@ package io.github.project.openubl.xbuilder.content.jaxb.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlType(name = "RegistrationAddress")
 @Data
 @NoArgsConstructor
 public class XMLAddress {
-    @XmlPath("cbc:ID/text()")
+
+    @XmlElement(name = "ID", namespace = XMLConstants.CBC)
     private String id;
 
-    @XmlPath("cbc:AddressTypeCode/text()")
+    @XmlElement(name = "AddressTypeCode", namespace = XMLConstants.CBC)
     private String addressTypeCode;
 
-    @XmlPath("cbc:CitySubdivisionName/text()")
+    @XmlElement(name = "CitySubdivisionName", namespace = XMLConstants.CBC)
     private String citySubdivisionName;
 
-    @XmlPath("cbc:CityName/text()")
+    @XmlElement(name = "CityName", namespace = XMLConstants.CBC)
     private String cityName;
 
-    @XmlPath("cbc:CountrySubentity/text()")
+    @XmlElement(name = "CountrySubentity", namespace = XMLConstants.CBC)
     private String countrySubEntity;
 
-    @XmlPath("cbc:District/text()")
+    @XmlElement(name = "District", namespace = XMLConstants.CBC)
     private String district;
 
-    @XmlPath("cac:AddressLine/cbc:Line/text()")
-    private String addressLine;
+    @XmlElement(name = "AddressLine", namespace = XMLConstants.CAC)
+    private AddressLine addressLine;
 
-    @XmlPath("cac:Country/cbc:IdentificationCode/text()")
-    private String identificationCode;
+    @XmlElement(name = "Country", namespace = XMLConstants.CAC)
+    private Country country;
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "Address.AddressLine")
+    @Data
+    @NoArgsConstructor
+    public static class AddressLine {
+        @XmlElement(name = "Line", namespace = XMLConstants.CBC)
+        private String line;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "Address.Country")
+    @Data
+    @NoArgsConstructor
+    public static class Country {
+        @XmlElement(name = "IdentificationCode", namespace = XMLConstants.CBC)
+        private String identificationCode;
+    }
 }

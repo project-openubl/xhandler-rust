@@ -16,229 +16,345 @@
  */
 package io.github.project.openubl.xbuilder.content.jaxb.models;
 
+import io.github.project.openubl.xbuilder.content.jaxb.adapters.LocalDateAdapter;
+import io.github.project.openubl.xbuilder.content.jaxb.adapters.LocalTimeAdapter;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+@XmlAccessorType(XmlAccessType.NONE)
 @Data
 @NoArgsConstructor
-public class XMLSalesDocument {
+public abstract class XMLSalesDocument {
 
-    @XmlPath("cbc:ID/text()")
+    @XmlElement(name = "ID", namespace = XMLConstants.CBC)
     private String documentId;
 
-    @XmlPath("cbc:IssueDate/text()")
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
+    @XmlElement(name = "IssueDate", namespace = XMLConstants.CBC)
     private LocalDate issueDate;
 
-    @XmlPath("cbc:IssueTime/text()")
+    @XmlJavaTypeAdapter(LocalTimeAdapter.class)
+    @XmlElement(name = "IssueTime", namespace = XMLConstants.CBC)
     private LocalTime issueTime;
 
-    @XmlPath("cbc:DueDate/text()")
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
+    @XmlElement(name = "DueDate", namespace = XMLConstants.CBC)
     private LocalDate dueDate;
 
-    @XmlPath("cbc:InvoiceTypeCode/text()")
-    private String invoiceTypeCode;
+    @XmlElement(name = "InvoiceTypeCode", namespace = XMLConstants.CBC)
+    private InvoiceTypeCode invoiceTypeCode;
 
-    @XmlPath("cbc:InvoiceTypeCode/@listID")
-    private String invoiceTypeCode_listID;
-
-    @XmlPath("cbc:Note")
+    @XmlElement(name = "Note", namespace = XMLConstants.CBC)
     private List<Note> notes;
 
-    @XmlPath("cbc:DocumentCurrencyCode/text()")
+    @XmlElement(name = "DocumentCurrencyCode", namespace = XMLConstants.CBC)
     private String documentCurrencyCode;
 
-    @XmlPath("cac:OrderReference/cbc:ID/text()")
-    private String orderReferenceId;
+    @XmlElement(name = "OrderReference", namespace = XMLConstants.CAC)
+    private OrderReference orderReference;
 
-    @XmlPath("cac:DespatchDocumentReference")
+    @XmlElement(name = "DespatchDocumentReference", namespace = XMLConstants.CAC)
     private List<DespatchDocumentReference> despatchDocumentReferences;
 
-    @XmlPath("cac:AdditionalDocumentReference")
+    @XmlElement(name = "AdditionalDocumentReference", namespace = XMLConstants.CAC)
     private List<AdditionalDocumentReference> additionalDocumentReferences;
 
-    @XmlPath("cac:Signature")
+    @XmlElement(name = "Signature", namespace = XMLConstants.CAC)
     private XMLSignature signature;
 
-    @XmlPath("cac:AccountingSupplierParty/cac:Party")
-    private XMLSupplier accountingSupplierParty;
+    @XmlElement(name = "AccountingSupplierParty", namespace = XMLConstants.CAC)
+    private AccountingSupplierParty accountingSupplierParty;
 
-    @XmlPath("cac:AccountingCustomerParty/cac:Party")
-    private XMLCustomer accountingCustomerParty;
+    @XmlElement(name = "AccountingCustomerParty", namespace = XMLConstants.CAC)
+    private AccountingCustomerParty accountingCustomerParty;
 
-    @XmlPath("cac:Delivery/cac:DeliveryLocation/cac:Address")
-    private XMLAddress deliveryLocation;
+    @XmlElement(name = "Delivery", namespace = XMLConstants.CAC)
+    private Delivery delivery;
 
-    @XmlPath("cac:PaymentMeans")
+    @XmlElement(name = "PaymentMeans", namespace = XMLConstants.CAC)
     private PaymentMeans paymentMeans;
 
-    @XmlPath("cac:PaymentTerms")
+    @XmlElement(name = "PaymentTerms", namespace = XMLConstants.CAC)
     private List<PaymentTerms> paymentTerms;
 
-    @XmlPath("cac:PrepaidPayment")
+    @XmlElement(name = "PrepaidPayment", namespace = XMLConstants.CAC)
     private List<PrepaidPayment> prepaidPayments;
 
-    @XmlPath("cac:AllowanceCharge")
+    @XmlElement(name = "AllowanceCharge", namespace = XMLConstants.CAC)
     private List<AllowanceCharge> allowanceCharges;
 
-    @XmlPath("cac:TaxTotal")
+    @XmlElement(name = "TaxTotal", namespace = XMLConstants.CAC)
     private TaxTotal taxTotal;
 
-    // When Invoice or CreditNote then @XmlPath("cac:LegalMonetaryTotal")
-    // When DebitNote @XmlPath("cac:RequestedMonetaryTotal")
-    // Therefore defining it in bindings/*.xml
-    private MonetaryTotal monetaryTotal;
-
-    private List<XMLSalesDocumentLine> lines;
-
     // Note
-    @XmlPath("cac:DiscrepancyResponse/cbc:ReferenceID/text()")
-    String discrepancyResponse_referenceId;
-
-    @XmlPath("cac:DiscrepancyResponse/cbc:ResponseCode/text()")
-    String discrepancyResponse_responseCode;
-
-    @XmlPath("cac:DiscrepancyResponse/cbc:Description/text()")
-    String discrepancyResponse_description;
+    @XmlElement(name = "DiscrepancyResponse", namespace = XMLConstants.CAC)
+    private DiscrepancyResponse discrepancyResponse;
 
     //
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.InvoiceTypeCode")
+    @Data
+    @NoArgsConstructor
+    public static class InvoiceTypeCode {
+        @XmlValue
+        private String value;
+
+        @XmlAttribute(name = "listID")
+        private String listID;
+    }
+
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.Note")
     @Data
     @NoArgsConstructor
     public static class Note {
-        @XmlPath("@languageLocaleID")
-        private String languageLocaleId;
-
-        @XmlPath("text()")
+        @XmlValue
         private String value;
+
+        @XmlAttribute(name = "languageLocaleID")
+        private String languageLocaleId;
     }
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.OrderReference")
+    @Data
+    @NoArgsConstructor
+    public static class OrderReference {
+        @XmlElement(name = "ID", namespace = XMLConstants.CBC)
+        private String id;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.DespatchDocumentReference")
     @Data
     @NoArgsConstructor
     public static class DespatchDocumentReference {
-        @XmlPath("cbc:ID/text()")
+        @XmlElement(name = "ID", namespace = XMLConstants.CBC)
         private String id;
 
-        @XmlPath("cbc:DocumentTypeCode/text()")
+        @XmlElement(name = "DocumentTypeCode", namespace = XMLConstants.CBC)
         private String documentTypeCode;
     }
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.AdditionalDocumentReference")
     @Data
     @NoArgsConstructor
     public static class AdditionalDocumentReference {
-        @XmlPath("cbc:ID/text()")
+        @XmlElement(name = "ID", namespace = XMLConstants.CBC)
         private String id;
 
-        @XmlPath("cbc:DocumentTypeCode/text()")
+        @XmlElement(name = "DocumentTypeCode", namespace = XMLConstants.CBC)
         private String documentTypeCode;
 
-        @XmlPath("cbc:DocumentStatusCode/text()")
+        @XmlElement(name = "DocumentStatusCode", namespace = XMLConstants.CBC)
         private String documentStatusCode;
     }
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.AccountingSupplierParty")
+    @Data
+    @NoArgsConstructor
+    public static class AccountingSupplierParty {
+        @XmlElement(name = "Party", namespace = XMLConstants.CAC)
+        private XMLSupplier party;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.AccountingCustomerParty")
+    @Data
+    @NoArgsConstructor
+    public static class AccountingCustomerParty {
+        @XmlElement(name = "Party", namespace = XMLConstants.CAC)
+        private XMLCustomer party;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.Delivery")
+    @Data
+    @NoArgsConstructor
+    public static class Delivery {
+        @XmlElement(name = "DeliveryLocation", namespace = XMLConstants.CAC)
+        private DeliveryLocation deliveryLocation;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.DeliveryLocation")
+    @Data
+    @NoArgsConstructor
+    public static class DeliveryLocation {
+        @XmlElement(name = "Address", namespace = XMLConstants.CAC)
+        private XMLAddress address;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.PaymentMeans")
     @Data
     @NoArgsConstructor
     public static class PaymentMeans {
-        @XmlPath("cbc:PaymentMeansCode/text()")
+        @XmlElement(name = "PaymentMeansCode", namespace = XMLConstants.CBC)
         private String paymentMeansCode;
 
-        @XmlPath("cac:PayeeFinancialAccount/cbc:ID/text()")
-        private String payeeFinancialAccount_id;
+        @XmlElement(name = "PayeeFinancialAccount", namespace = XMLConstants.CAC)
+        private PayeeFinancialAccount payeeFinancialAccount;
     }
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.PayeeFinancialAccount")
+    @Data
+    @NoArgsConstructor
+    public static class PayeeFinancialAccount {
+        @XmlElement(name = "ID", namespace = XMLConstants.CBC)
+        private String id;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.PaymentTerms")
     @Data
     @NoArgsConstructor
     public static class PaymentTerms {
-        @XmlPath("cbc:ID/text()")
+        @XmlElement(name = "ID", namespace = XMLConstants.CBC)
         private String id;
 
-        @XmlPath("cbc:PaymentMeansID/text()")
+        @XmlElement(name = "PaymentMeansID", namespace = XMLConstants.CBC)
         private String paymentMeansID;
 
-        @XmlPath("cbc:Amount/text()")
+        @XmlElement(name = "Amount", namespace = XMLConstants.CBC)
         private BigDecimal amount;
 
-        @XmlPath("cbc:PaymentDueDate/text()")
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
+        @XmlElement(name = "PaymentDueDate", namespace = XMLConstants.CBC)
         private LocalDate paymentDueDate;
 
-        @XmlPath("cbc:PaymentPercent/text()")
+        @XmlElement(name = "PaymentPercent", namespace = XMLConstants.CBC)
         private BigDecimal paymentPercent;
     }
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.PrepaidPayment")
     @Data
     @NoArgsConstructor
     public static class PrepaidPayment {
-        @XmlPath("cbc:ID/text()")
+        @XmlElement(name = "ID", namespace = XMLConstants.CBC)
         private String id;
 
-        @XmlPath("cbc:PaidAmount/text()")
+        @XmlElement(name = "PaidAmount", namespace = XMLConstants.CBC)
         private BigDecimal paidAmount;
     }
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.AllowanceCharge")
     @Data
     @NoArgsConstructor
     public static class AllowanceCharge {
-        @XmlPath("cbc:ChargeIndicator/text()")
+        @XmlElement(name = "ChargeIndicator", namespace = XMLConstants.CBC)
         private Boolean chargeIndicator;
 
-        @XmlPath("cbc:AllowanceChargeReasonCode/text()")
+        @XmlElement(name = "AllowanceChargeReasonCode", namespace = XMLConstants.CBC)
         private String allowanceChargeReasonCode;
 
-        @XmlPath("cbc:MultiplierFactorNumeric/text()")
+        @XmlElement(name = "MultiplierFactorNumeric", namespace = XMLConstants.CBC)
         private BigDecimal multiplierFactorNumeric;
 
-        @XmlPath("cbc:Amount/text()")
+        @XmlElement(name = "Amount", namespace = XMLConstants.CBC)
         private BigDecimal amount;
 
-        @XmlPath("cbc:BaseAmount/text()")
+        @XmlElement(name = "BaseAmount", namespace = XMLConstants.CBC)
         private BigDecimal baseAmount;
     }
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.TaxTotal")
     @Data
     @NoArgsConstructor
     public static class TaxTotal {
-        @XmlPath("cbc:TaxAmount/text()")
+        @XmlElement(name = "TaxAmount", namespace = XMLConstants.CBC)
         BigDecimal taxAmount;
 
-        @XmlPath("cac:TaxSubtotal")
+        @XmlElement(name = "TaxSubtotal", namespace = XMLConstants.CAC)
         List<TaxSubtotal> taxSubtotals;
     }
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.TaxSubtotal")
     @Data
     @NoArgsConstructor
     public static class TaxSubtotal {
-        @XmlPath("cbc:TaxableAmount/text()")
+        @XmlElement(name = "TaxableAmount", namespace = XMLConstants.CBC)
         private BigDecimal taxableAmount;
 
-        @XmlPath("cbc:TaxAmount/text()")
+        @XmlElement(name = "TaxAmount", namespace = XMLConstants.CBC)
         private BigDecimal taxAmount;
 
-        @XmlPath("cac:TaxCategory/cac:TaxScheme/cbc:ID/text()")
-        private String code;
+        @XmlElement(name = "TaxCategory", namespace = XMLConstants.CAC)
+        private TaxCategory taxCategory;
     }
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.TaxCategory")
+    @Data
+    @NoArgsConstructor
+    public static class TaxCategory {
+        @XmlElement(name = "TaxScheme", namespace = XMLConstants.CAC)
+        private TaxScheme taxScheme;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.TaxScheme")
+    @Data
+    @NoArgsConstructor
+    public static class TaxScheme {
+        @XmlElement(name = "ID", namespace = XMLConstants.CBC)
+        private String id;
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.MonetaryTotal")
     @Data
     @NoArgsConstructor
     public static class MonetaryTotal {
-        @XmlPath("cbc:LineExtensionAmount/text()")
+        @XmlElement(name = "LineExtensionAmount", namespace = XMLConstants.CBC)
         private BigDecimal lineExtensionAmount;
 
-        @XmlPath("cbc:TaxInclusiveAmount/text()")
+        @XmlElement(name = "TaxInclusiveAmount", namespace = XMLConstants.CBC)
         private BigDecimal taxInclusiveAmount;
 
-        @XmlPath("cbc:AllowanceTotalAmount/text()")
+        @XmlElement(name = "AllowanceTotalAmount", namespace = XMLConstants.CBC)
         private BigDecimal allowanceTotalAmount;
 
-        @XmlPath("cbc:PrepaidAmount/text()")
+        @XmlElement(name = "PrepaidAmount", namespace = XMLConstants.CBC)
         private BigDecimal prepaidAmount;
 
-        @XmlPath("cbc:PayableAmount/text()")
+        @XmlElement(name = "PayableAmount", namespace = XMLConstants.CBC)
         private BigDecimal payableAmount;
     }
 
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlType(name = "SalesDocument.DiscrepancyResponse")
+    @Data
+    @NoArgsConstructor
+    public static class DiscrepancyResponse {
+        @XmlElement(name = "ReferenceID", namespace = XMLConstants.CBC)
+        private String referenceID;
+
+        @XmlElement(name = "ResponseCode", namespace = XMLConstants.CBC)
+        private String responseCode;
+
+        @XmlElement(name = "Description", namespace = XMLConstants.CBC)
+        private String description;
+    }
 }
