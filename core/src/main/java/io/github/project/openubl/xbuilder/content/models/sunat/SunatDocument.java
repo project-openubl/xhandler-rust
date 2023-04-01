@@ -20,6 +20,7 @@ import io.github.project.openubl.xbuilder.content.models.common.Document;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
@@ -27,6 +28,7 @@ import java.time.LocalDate;
 
 @Data
 @SuperBuilder
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class SunatDocument extends Document {
