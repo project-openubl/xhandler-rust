@@ -16,6 +16,12 @@
  */
 package io.github.project.openubl.quarkus.xbuilder.it;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog1;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog18;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog19;
@@ -52,14 +58,68 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
 @QuarkusTest
 public class QuarkusXbuilderResourceTest {
+
+    public YAMLMapper getYamlMapper() {
+        YAMLMapper mapper = new YAMLMapper(new YAMLFactory());
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        mapper.configure(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE, true);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return mapper;
+    }
+
+    @Test
+    public void testAllYamlFilesFromSnapshot() throws URISyntaxException, IOException {
+        YAMLMapper yamlMapper = getYamlMapper();
+
+        URL url = getClass().getClassLoader().getResource("e2e");
+        Path path = Paths.get(url.toURI());
+        Files.walk(path, 5)
+                .filter(p -> !p.toFile().isDirectory())
+                .forEach(p -> {
+                    try {
+                        Map jsonObject = yamlMapper.readValue(p.toFile(), Map.class);
+                        String kind = (String) jsonObject.get("kind");
+                        String snapshot = (String) jsonObject.get("snapshot");
+                        Map input = (Map) jsonObject.get("input");
+
+                        given()
+                                .when()
+                                .contentType(ContentType.JSON)
+                                .body(input)
+                                .post("/quarkus-xbuilder/" + kind + "/from-json")
+                                .then()
+                                .statusCode(200)
+                                .body(is(snapshot));
+
+                        given()
+                                .when()
+                                .contentType(ContentType.TEXT)
+                                .body(snapshot)
+                                .post("/quarkus-xbuilder/" + kind + "/from-xml")
+                                .then()
+                                .statusCode(200)
+                                .body(is(snapshot));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
 
     @Test
     public void testInvoice() {
@@ -89,7 +149,7 @@ public class QuarkusXbuilderResourceTest {
                 .when()
                 .contentType(ContentType.JSON)
                 .body(invoice)
-                .post("/quarkus-xbuilder/invoice")
+                .post("/quarkus-xbuilder/Invoice/from-json")
                 .then()
                 .statusCode(200)
                 .body(is(
@@ -251,7 +311,7 @@ public class QuarkusXbuilderResourceTest {
                 .when()
                 .contentType(ContentType.JSON)
                 .body(creditNote)
-                .post("/quarkus-xbuilder/credit-note")
+                .post("/quarkus-xbuilder/CreditNote/from-json")
                 .then()
                 .statusCode(200)
                 .body(is(
@@ -417,7 +477,7 @@ public class QuarkusXbuilderResourceTest {
                 .when()
                 .contentType(ContentType.JSON)
                 .body(debitNote)
-                .post("/quarkus-xbuilder/debit-note")
+                .post("/quarkus-xbuilder/DebitNote/from-json")
                 .then()
                 .statusCode(200)
                 .body(is(
@@ -584,7 +644,7 @@ public class QuarkusXbuilderResourceTest {
                 .when()
                 .contentType(ContentType.JSON)
                 .body(voidedDocuments)
-                .post("/quarkus-xbuilder/voided-documents")
+                .post("/quarkus-xbuilder/VoidedDocuments/from-json")
                 .then()
                 .statusCode(200)
                 .body(is("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
@@ -718,7 +778,7 @@ public class QuarkusXbuilderResourceTest {
                 .when()
                 .contentType(ContentType.JSON)
                 .body(summaryDocuments)
-                .post("/quarkus-xbuilder/summary-documents")
+                .post("/quarkus-xbuilder/SummaryDocuments/from-json")
                 .then()
                 .statusCode(200)
                 .body(is("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
@@ -890,7 +950,7 @@ public class QuarkusXbuilderResourceTest {
                 .when()
                 .contentType(ContentType.JSON)
                 .body(perception)
-                .post("/quarkus-xbuilder/perception")
+                .post("/quarkus-xbuilder/Perception/from-json")
                 .then()
                 .statusCode(200)
                 .body(is("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
@@ -1008,7 +1068,7 @@ public class QuarkusXbuilderResourceTest {
                 .when()
                 .contentType(ContentType.JSON)
                 .body(retention)
-                .post("/quarkus-xbuilder/retention")
+                .post("/quarkus-xbuilder/Retention/from-json")
                 .then()
                 .statusCode(200)
                 .body(is("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
@@ -1133,7 +1193,7 @@ public class QuarkusXbuilderResourceTest {
                 .when()
                 .contentType(ContentType.JSON)
                 .body(despatchAdvice)
-                .post("/quarkus-xbuilder/despatch-advice")
+                .post("/quarkus-xbuilder/DespatchAdvice/from-json")
                 .then()
                 .statusCode(200)
                 .body(is("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -1210,8 +1270,8 @@ public class QuarkusXbuilderResourceTest {
                         "            </cac:DeliveryAddress>\n" +
                         "        </cac:Delivery>\n" +
                         "        <cac:OriginAddress>\n" +
-                        "            <cbc:ID>010101}</cbc:ID>\n" +
-                        "            <cbc:StreetName>DireccionOrigen}</cbc:StreetName>\n" +
+                        "            <cbc:ID>010101</cbc:ID>\n" +
+                        "            <cbc:StreetName>DireccionOrigen</cbc:StreetName>\n" +
                         "        </cac:OriginAddress>\n" +
                         "    </cac:Shipment>\n" +
                         "    <cac:DespatchLine>\n" +

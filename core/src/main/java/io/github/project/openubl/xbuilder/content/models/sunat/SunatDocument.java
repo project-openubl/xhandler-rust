@@ -17,8 +17,6 @@
 package io.github.project.openubl.xbuilder.content.models.sunat;
 
 import io.github.project.openubl.xbuilder.content.models.common.Document;
-import io.github.project.openubl.xbuilder.content.models.common.Firmante;
-import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,16 +40,8 @@ public class SunatDocument extends Document {
     private Integer numero;
 
     /**
-     * Fecha de emisión del comprobante. Ejemplo 2022-12-25 (YYYY-MM-SS)
-     */
-    @Schema(description = "Format: \"YYYY-MM-SS\". Ejemplo: 2022-12-25", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
-    private LocalDate fechaEmision;
-
-    /**
      * Fecha de emisión de los comprobantes dados de baja. Ejemplo 2022-12-25 (YYYY-MM-SS)
      */
     @Schema(description = "Format: \"YYYY-MM-SS\". Ejemplo: 2022-12-25", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
     private LocalDate fechaEmisionComprobantes;
-    private Firmante firmante;
-    private Proveedor proveedor;
 }

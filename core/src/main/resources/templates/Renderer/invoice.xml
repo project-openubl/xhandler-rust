@@ -8,9 +8,11 @@
     <cbc:DueDate>{fechaVencimiento}</cbc:DueDate>
     {/if}
     <cbc:InvoiceTypeCode listID="{tipoOperacion}" listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">{tipoComprobante}</cbc:InvoiceTypeCode>
+    {#if leyendas}
     {#for key in leyendas.keySet}
     <cbc:Note languageLocaleID="{key}"><![CDATA[{leyendas.get(key)}]]></cbc:Note>
     {/for}
+    {/if}
     {#if observaciones}
     <cbc:Note><![CDATA[{observaciones}]]></cbc:Note>
     {/if}

@@ -64,6 +64,9 @@ public class DocumentoVentaDetalle {
     private String igvTipo;
 
     @Schema(minimum = "0")
+    private BigDecimal tasaIcb;
+
+    @Schema(minimum = "0")
     private BigDecimal icb;
 
     @Schema(description = "'true' si ICB is aplicado a este bien o servicio")

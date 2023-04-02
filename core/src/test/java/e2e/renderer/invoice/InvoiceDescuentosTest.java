@@ -17,7 +17,6 @@
 package e2e.renderer.invoice;
 
 import e2e.AbstractTest;
-import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog53;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
@@ -25,9 +24,6 @@ import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Descuento;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
 import io.github.project.openubl.xbuilder.content.models.standard.general.Invoice;
-import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
-import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
-import io.quarkus.qute.Template;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -63,16 +59,7 @@ public class InvoiceDescuentosTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getInvoice();
-        String xml = template.data(input).render();
-
-        // Then
-        XMLAssertUtils.assertSnapshot(xml, getClass(), "descuentoGlobal.xml");
-        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+        assertInput(input, "descuentoGlobal.xml");
     }
 
     @Test
@@ -105,16 +92,7 @@ public class InvoiceDescuentosTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getInvoice();
-        String xml = template.data(input).render();
-
-        // Then
-        XMLAssertUtils.assertSnapshot(xml, getClass(), "descuentoGlobal_tipo02.xml");
-        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+        assertInput(input, "descuentoGlobal_tipo02.xml");
     }
 
     @Test
@@ -147,16 +125,7 @@ public class InvoiceDescuentosTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getInvoice();
-        String xml = template.data(input).render();
-
-        // Then
-        XMLAssertUtils.assertSnapshot(xml, getClass(), "descuentoGlobal_tipo03.xml");
-        XMLAssertUtils.assertSendSunat(xml, XMLAssertUtils.INVOICE_XSD);
+        assertInput(input, "descuentoGlobal_tipo03.xml");
     }
 
 }

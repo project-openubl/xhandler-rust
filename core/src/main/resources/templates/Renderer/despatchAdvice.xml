@@ -106,8 +106,8 @@
         </cac:TransportHandlingUnit>
         {/if}
         <cac:OriginAddress>
-            <cbc:ID>{envio.partida.ubigeo }}</cbc:ID>
-            <cbc:StreetName>{envio.partida.direccion }}</cbc:StreetName>
+            <cbc:ID>{envio.partida.ubigeo}</cbc:ID>
+            <cbc:StreetName>{envio.partida.direccion}</cbc:StreetName>
         </cac:OriginAddress>
         {#if envio.codigoDePuerto}
         <cac:FirstArrivalPortLocation>

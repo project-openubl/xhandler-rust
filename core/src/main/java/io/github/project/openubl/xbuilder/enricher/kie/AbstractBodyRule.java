@@ -35,10 +35,6 @@ public abstract class AbstractBodyRule implements RuleFactory, Rule {
         return this;
     }
 
-    public Defaults getDefaults() {
-        return defaults;
-    }
-
     public BodyRuleContext getRuleContext() {
         return ruleContext;
     }

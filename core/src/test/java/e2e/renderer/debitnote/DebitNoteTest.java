@@ -17,21 +17,14 @@
 package e2e.renderer.debitnote;
 
 import e2e.AbstractTest;
-import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
-import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
-import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
-import io.quarkus.qute.Template;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-
-import static e2e.renderer.XMLAssertUtils.assertSendSunat;
-import static e2e.renderer.XMLAssertUtils.assertSnapshot;
 
 public class DebitNoteTest extends AbstractTest {
 
@@ -68,15 +61,6 @@ public class DebitNoteTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getDebitNote();
-        String xml = template.data(input).render();
-
-        // Then
-        assertSnapshot(xml, getClass(), "MinData_RUC.xml");
-        assertSendSunat(xml, XMLAssertUtils.DEBIT_NOTE_XSD);
+        assertInput(input, "MinData_RUC.xml");
     }
 }

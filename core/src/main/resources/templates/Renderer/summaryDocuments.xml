@@ -41,42 +41,42 @@
         <cac:Status>
             <cbc:ConditionCode>{it.tipoOperacion}</cbc:ConditionCode>
         </cac:Status>
-        <sac:TotalAmount currencyID="{moneda}">{it.comprobante.valorVenta.importeTotal}</sac:TotalAmount>
+        <sac:TotalAmount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.importeTotal}</sac:TotalAmount>
         {#if it.comprobante.valorVenta.gravado}
         <sac:BillingPayment>
-            <cbc:PaidAmount currencyID="{moneda}">{it.comprobante.valorVenta.gravado}</cbc:PaidAmount>
+            <cbc:PaidAmount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.gravado}</cbc:PaidAmount>
             <cbc:InstructionID>01</cbc:InstructionID>
         </sac:BillingPayment>
         {/if}
         {#if it.comprobante.valorVenta.exonerado}
         <sac:BillingPayment>
-            <cbc:PaidAmount currencyID="{moneda}">{it.comprobante.valorVenta.exonerado}</cbc:PaidAmount>
+            <cbc:PaidAmount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.exonerado}</cbc:PaidAmount>
             <cbc:InstructionID>02</cbc:InstructionID>
         </sac:BillingPayment>
         {/if}
         {#if it.comprobante.valorVenta.inafecto}
         <sac:BillingPayment>
-            <cbc:PaidAmount currencyID="{moneda}">{it.comprobante.valorVenta.inafecto}</cbc:PaidAmount>
+            <cbc:PaidAmount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.inafecto}</cbc:PaidAmount>
             <cbc:InstructionID>03</cbc:InstructionID>
         </sac:BillingPayment>
         {/if}
         {#if it.comprobante.valorVenta.gratuito}
         <sac:BillingPayment>
-            <cbc:PaidAmount currencyID="{moneda}">{it.comprobante.valorVenta.gratuito}</cbc:PaidAmount>
+            <cbc:PaidAmount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.gratuito}</cbc:PaidAmount>
             <cbc:InstructionID>05</cbc:InstructionID>
         </sac:BillingPayment>
         {/if}
         {#if it.comprobante.valorVenta.otrosCargos}
         <cac:AllowanceCharge>
             <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
-            <cbc:Amount currencyID="{moneda}">{it.comprobante.valorVenta.otrosCargos}</cbc:Amount>
+            <cbc:Amount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.otrosCargos}</cbc:Amount>
         </cac:AllowanceCharge>
         {/if}
         {#if it.comprobante.impuestos.igv}
         <cac:TaxTotal>
-            <cbc:TaxAmount currencyID="{moneda}">{it.comprobante.impuestos.igv}</cbc:TaxAmount>
+            <cbc:TaxAmount currencyID="{it.comprobante.moneda}">{it.comprobante.impuestos.igv}</cbc:TaxAmount>
             <cac:TaxSubtotal>
-                <cbc:TaxAmount currencyID="{moneda}">{it.comprobante.impuestos.igv}</cbc:TaxAmount>
+                <cbc:TaxAmount currencyID="{it.comprobante.moneda}">{it.comprobante.impuestos.igv}</cbc:TaxAmount>
                 <cac:TaxCategory>
                     <cac:TaxScheme>
                         <cbc:ID>1000</cbc:ID>
@@ -89,9 +89,9 @@
         {/if}
         {#if it.comprobante.impuestos.icb}
         <cac:TaxTotal>
-            <cbc:TaxAmount currencyID="{moneda}">{it.comprobante.impuestos.icb}</cbc:TaxAmount>
+            <cbc:TaxAmount currencyID="{it.comprobante.moneda}">{it.comprobante.impuestos.icb}</cbc:TaxAmount>
             <cac:TaxSubtotal>
-                <cbc:TaxAmount currencyID="{moneda}">{it.comprobante.impuestos.icb}</cbc:TaxAmount>
+                <cbc:TaxAmount currencyID="{it.comprobante.moneda}">{it.comprobante.impuestos.icb}</cbc:TaxAmount>
                 <cac:TaxCategory>
                     <cac:TaxScheme>
                         <cbc:ID>7152</cbc:ID>

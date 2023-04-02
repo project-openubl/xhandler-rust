@@ -17,22 +17,15 @@
 package e2e.renderer.creditnote;
 
 import e2e.AbstractTest;
-import e2e.renderer.XMLAssertUtils;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog6;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog8;
 import io.github.project.openubl.xbuilder.content.models.common.Cliente;
 import io.github.project.openubl.xbuilder.content.models.common.Proveedor;
 import io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote;
 import io.github.project.openubl.xbuilder.content.models.standard.general.DocumentoVentaDetalle;
-import io.github.project.openubl.xbuilder.enricher.ContentEnricher;
-import io.github.project.openubl.xbuilder.renderer.TemplateProducer;
-import io.quarkus.qute.Template;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-
-import static e2e.renderer.XMLAssertUtils.assertSendSunat;
-import static e2e.renderer.XMLAssertUtils.assertSnapshot;
 
 public class CreditNoteIscTest extends AbstractTest {
 
@@ -71,16 +64,7 @@ public class CreditNoteIscTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getCreditNote();
-        String xml = template.data(input).render();
-
-        // Then
-        assertSnapshot(xml, getClass(), "isc_sistemaAlValor.xml");
-        assertSendSunat(xml, XMLAssertUtils.CREDIT_NOTE_XSD);
+        assertInput(input, "isc_sistemaAlValor.xml");
     }
 
     @Test
@@ -118,16 +102,7 @@ public class CreditNoteIscTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getCreditNote();
-        String xml = template.data(input).render();
-
-        // Then
-        assertSnapshot(xml, getClass(), "isc_aplicacionAlMontoFijo.xml");
-        assertSendSunat(xml, XMLAssertUtils.CREDIT_NOTE_XSD);
+        assertInput(input, "isc_aplicacionAlMontoFijo.xml");
     }
 
     @Test
@@ -165,15 +140,6 @@ public class CreditNoteIscTest extends AbstractTest {
                 )
                 .build();
 
-        ContentEnricher enricher = new ContentEnricher(defaults, dateProvider);
-        enricher.enrich(input);
-
-        // When
-        Template template = TemplateProducer.getInstance().getCreditNote();
-        String xml = template.data(input).render();
-
-        // Then
-        assertSnapshot(xml, getClass(), "isc_sistemaDePreciosDeVentalAlPublico.xml");
-        assertSendSunat(xml, XMLAssertUtils.CREDIT_NOTE_XSD);
+        assertInput(input, "isc_sistemaDePreciosDeVentalAlPublico.xml");
     }
 }
