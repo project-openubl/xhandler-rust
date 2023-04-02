@@ -99,7 +99,7 @@ public class AbstractTest {
 
         String snapshotFileContent = Files.readString(Paths.get(getClass().getClassLoader().getResource(rootDir + "/" + snapshotFilename).toURI()));
 
-        Path directoryPath = Paths.get("target", "openubl", "testcases").resolve(rootDir);
+        Path directoryPath = Paths.get("../quarkus-extension/integration-tests/src/test/resources").resolve(rootDir);
         Files.createDirectories(directoryPath);
         Path filePath = directoryPath.resolve(snapshotFilename.replaceAll(".xml", "") + ".yaml");
 
