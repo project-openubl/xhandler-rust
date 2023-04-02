@@ -28,9 +28,12 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.util.ServiceUtil;
+import io.quarkus.jaxb.deployment.JaxbClassesToBeBoundBuildItem;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 class QuarkusXbuilderProcessor {
@@ -106,7 +109,7 @@ class QuarkusXbuilderProcessor {
     }
 
     @BuildStep
-    ReflectiveClassBuildItem reflectionLombok() {
+    ReflectiveClassBuildItem reflectionModelsLombok() {
         return new ReflectiveClassBuildItem(true, false,
                 "io.github.project.openubl.xbuilder.content.models.standard.general.CreditNote$CreditNoteBuilderImpl",
                 "io.github.project.openubl.xbuilder.content.models.standard.general.DebitNote$DebitNoteBuilderImpl",
@@ -121,7 +124,119 @@ class QuarkusXbuilderProcessor {
     }
 
     @BuildStep
-    ReflectiveClassBuildItem reflection() {
+    ReflectiveClassBuildItem reflectionJaxbLombok() {
+        return new ReflectiveClassBuildItem(true, true,
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLAddress$AddressLine",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLAddress$Country",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLCreditNoteLine$Quantity",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLCustomer$PartyIdentification",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLCustomer$PartyIdentification_ID",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLCustomer$PartyLegalEntity",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDebitNoteLine$Quantity",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$AdditionalDocumentReference",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$AddressLine",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$CarrierParty",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$Delivery",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$DeliveryAddress",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$DeliveryCustomerParty",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$DespatchSupplierParty",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$DriverPerson",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$FirstArrivalPortLocation",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$GrossWeightMeasure",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$ID",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$OrderReference",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$OriginAddress",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$Party",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$PartyIdentification",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$PartyLegalEntity",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$PartyName",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$RoadTransport",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$SellerSupplierParty",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$Shipment",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$ShipmentStage",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$TransitPeriod",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$TransportEquipment",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$TransportHandlingUnit",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice$TransportMeans",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdviceLine$CommodityClassification",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdviceLine$DeliveredQuantity",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdviceLine$Item",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdviceLine$SellersItemIdentification",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLInvoiceLine$Quantity",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionBase$TotalInvoiceAmount",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionSunatDocumentReferenceBase$ID",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionSunatDocumentReferenceBase$Payment",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionSunatDocumentReferenceBase$TotalInvoiceAmount",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionSunatDocumentReference$ExchangeRate",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionSunatDocumentReference$XMLPercepcionInformation",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLRetentionSunatDocumentReference$ExchangeRate",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLRetentionSunatDocumentReference$XMLRetentionInformation",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$AccountingCustomerParty",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$AccountingSupplierParty",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$AdditionalDocumentReference",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$AllowanceCharge",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$Delivery",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$DeliveryLocation",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$DespatchDocumentReference",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$DiscrepancyResponse",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$InvoiceTypeCode",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$MonetaryTotal",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$Note",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$OrderReference",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$PayeeFinancialAccount",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$PaymentMeans",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$PaymentTerms",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$PrepaidPayment",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$TaxCategory",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$TaxScheme",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$TaxSubtotal",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument$TaxTotal",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine$AlternativeConditionPrice",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine$Item",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine$Price",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine$PricingReference",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine$TaxCategory",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine$TaxScheme",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine$TaxSubtotalLine",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine$TaxTotalLine",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSignature$PartyName",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSignature$SignatoryParty",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine$AccountingCustomerParty",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine$AllowanceCharge",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine$BillingPayment",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine$BillingReference",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine$InvoiceDocumentReference",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine$Status",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine$TaxCategory",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine$TaxScheme",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine$TaxSubtotal",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine$TaxTotal",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine$TotalAmount",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSupplier$PartyIdentification",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSupplier$PartyLegalEntity",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSupplier$PartyName",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSupplierSunat$Party",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSupplierSunat$PartyLegalEntity",
+                "io.github.project.openubl.xbuilder.content.jaxb.models.XMLSupplierSunat$PartyName"
+        );
+    }
+
+    @BuildStep
+    ReflectiveClassBuildItem reflectionModels() {
         return new ReflectiveClassBuildItem(true, false,
                 io.github.project.openubl.xbuilder.content.models.common.Cliente.class,
                 io.github.project.openubl.xbuilder.content.models.common.Cliente.ClienteBuilder.class,
@@ -266,5 +381,103 @@ class QuarkusXbuilderProcessor {
                 io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.PercepcionRetencionOperacion.class,
                 io.github.project.openubl.xbuilder.content.models.sunat.percepcionretencion.PercepcionRetencionOperacion.PercepcionRetencionOperacionBuilder.class
         );
+    }
+
+    @BuildStep
+    ReflectiveClassBuildItem reflectionJaxb() {
+        return new ReflectiveClassBuildItem(true, true,
+                io.github.project.openubl.xbuilder.content.jaxb.adapters.LocalDateAdapter.class,
+                io.github.project.openubl.xbuilder.content.jaxb.adapters.LocalTimeAdapter.class,
+
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.ClienteMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.ContactoMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.DireccionMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.FirmanteMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.GuiaMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.Numero2Translator.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.Numero3Translator.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.ProveedorMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.SalesDocumentHelperMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.SalesDocumentMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.SerieNumeroMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.SerieNumeroTranslator.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.common.SerieTranslator.class,
+
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.utils.MapperUtils.class,
+
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.CreditNoteMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.DebitNoteMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.DespatchAdviceMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.InvoiceMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.PerceptionMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.RetentionMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.SummaryDocumentsMapper.class,
+                io.github.project.openubl.xbuilder.content.jaxb.mappers.VoidedDocumentsMapper.class,
+
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLAddress.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLConstants.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLContact.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLCreditNote.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLCreditNoteLine.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLCustomer.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLDebitNote.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLDebitNoteLine.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdviceLine.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLInvoice.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLInvoiceLine.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcion.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionBase.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionRetencionSunatDocumentReferenceBase.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcionSunatDocumentReference.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLRetention.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLRetentionSunatDocumentReference.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocument.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLSalesDocumentLine.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLSignature.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocuments.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocumentsLine.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLSunatDocument.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLSupplier.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLSupplierSunat.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLVoidedDocuments.class,
+                io.github.project.openubl.xbuilder.content.jaxb.models.XMLVoidedDocumentsLine.class
+        );
+    }
+
+    @BuildStep
+    ReflectiveClassBuildItem mapstruct() {
+        return new ReflectiveClassBuildItem(true, false,
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.common.ClienteMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.common.ContactoMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.common.DireccionMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.common.FirmanteMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.common.GuiaMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.common.ProveedorMapperImpl",
+
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.CreditNoteMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.DebitNoteMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.DespatchAdviceMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.InvoiceMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.PerceptionMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.RetentionMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.SummaryDocumentsMapperImpl",
+                "io.github.project.openubl.xbuilder.content.jaxb.mappers.VoidedDocumentsMapperImpl"
+        );
+    }
+
+    @BuildStep
+    void jaxbRegisterClassesToBeBound(BuildProducer<JaxbClassesToBeBoundBuildItem> classesToBeBoundBuildItemProducer) {
+        List<String> classesToBeBound = new ArrayList<>();
+        classesToBeBound.add(io.github.project.openubl.xbuilder.content.jaxb.models.XMLInvoice.class.getName());
+        classesToBeBound.add(io.github.project.openubl.xbuilder.content.jaxb.models.XMLCreditNote.class.getName());
+        classesToBeBound.add(io.github.project.openubl.xbuilder.content.jaxb.models.XMLDebitNote.class.getName());
+        classesToBeBound.add(io.github.project.openubl.xbuilder.content.jaxb.models.XMLDespatchAdvice.class.getName());
+        classesToBeBound.add(io.github.project.openubl.xbuilder.content.jaxb.models.XMLVoidedDocuments.class.getName());
+        classesToBeBound.add(io.github.project.openubl.xbuilder.content.jaxb.models.XMLSummaryDocuments.class.getName());
+        classesToBeBound.add(io.github.project.openubl.xbuilder.content.jaxb.models.XMLPercepcion.class.getName());
+        classesToBeBound.add(io.github.project.openubl.xbuilder.content.jaxb.models.XMLRetention.class.getName());
+
+        classesToBeBoundBuildItemProducer.produce(new JaxbClassesToBeBoundBuildItem(classesToBeBound));
     }
 }

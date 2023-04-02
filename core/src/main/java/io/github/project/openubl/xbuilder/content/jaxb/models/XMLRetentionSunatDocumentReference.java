@@ -37,13 +37,13 @@ import java.time.LocalDate;
 public class XMLRetentionSunatDocumentReference extends XMLPercepcionRetencionSunatDocumentReferenceBase {
 
     @XmlElement(name = "SUNATRetentionInformation", namespace = XMLConstants.SAC)
-    private XMLRetencionInformation sunatInformation;
+    private XMLRetentionInformation sunatInformation;
 
     @XmlAccessorType(XmlAccessType.NONE)
     @XmlType(name = "XMLRetentionSunatDocumentReference.XMLRetencionInformation")
     @Data
     @NoArgsConstructor
-    public static class XMLRetencionInformation {
+    public static class XMLRetentionInformation {
         @XmlElement(name = "SUNATRetentionAmount", namespace = XMLConstants.SAC)
         private BigDecimal sunatAmount;
 

@@ -56,7 +56,6 @@ import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDo
 import io.github.project.openubl.xbuilder.content.models.sunat.resumen.SummaryDocumentsItem;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import io.vertx.core.json.JsonObject;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -104,6 +103,15 @@ public class QuarkusXbuilderResourceTest {
                                 .contentType(ContentType.JSON)
                                 .body(input)
                                 .post("/quarkus-xbuilder/" + kind + "/from-json")
+                                .then()
+                                .statusCode(200)
+                                .body(is(snapshot));
+
+                        given()
+                                .when()
+                                .contentType(ContentType.TEXT)
+                                .body(snapshot)
+                                .post("/quarkus-xbuilder/" + kind + "/from-xml")
                                 .then()
                                 .statusCode(200)
                                 .body(is(snapshot));

@@ -27,18 +27,6 @@ import java.util.Optional;
 public class XBuilderConfig {
 
     /**
-     * Default moneda
-     */
-    @ConfigItem
-    public Optional<String> moneda;
-
-    /**
-     * Default unidadMedida
-     */
-    @ConfigItem
-    public Optional<String> unidadMedida;
-
-    /**
      * Default igvTasa
      */
     @ConfigItem

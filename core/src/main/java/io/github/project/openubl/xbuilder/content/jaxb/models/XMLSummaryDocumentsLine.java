@@ -59,7 +59,7 @@ public class XMLSummaryDocumentsLine {
     private AllowanceCharge allowanceCharge;
 
     @XmlElement(name = "TaxTotal", namespace = XMLConstants.CAC)
-    private List<TaxTotalSummaryDocuments> taxTotals;
+    private List<TaxTotal> taxTotals;
 
     @XmlAccessorType(XmlAccessType.NONE)
     @XmlType(name = "SummaryDocumentsLine.AccountingCustomerParty")
@@ -140,19 +140,19 @@ public class XMLSummaryDocumentsLine {
     @XmlType(name = "SummaryDocumentsLine.TaxTotalSummaryDocuments")
     @Data
     @NoArgsConstructor
-    public static class TaxTotalSummaryDocuments {
+    public static class TaxTotal {
         @XmlElement(name = "TaxAmount", namespace = XMLConstants.CBC)
         BigDecimal taxAmount;
 
         @XmlElement(name = "TaxSubtotal", namespace = XMLConstants.CAC)
-        TaxSubtotalTaxTotalSummaryDocuments taxSubtotals;
+        TaxSubtotal taxSubtotals;
     }
 
     @XmlAccessorType(XmlAccessType.NONE)
     @XmlType(name = "SummaryDocumentsLine.TaxSubtotalTaxTotalSummaryDocuments")
     @Data
     @NoArgsConstructor
-    public static class TaxSubtotalTaxTotalSummaryDocuments {
+    public static class TaxSubtotal {
         @XmlElement(name = "TaxAmount", namespace = XMLConstants.CBC)
         private BigDecimal taxAmount;
 

@@ -18,7 +18,6 @@ package io.github.project.openubl.xbuilder.content.jaxb.mappers;
 
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog5;
-import io.github.project.openubl.xbuilder.content.jaxb.mappers.common.ClienteMapper;
 import io.github.project.openubl.xbuilder.content.jaxb.mappers.common.FirmanteMapper;
 import io.github.project.openubl.xbuilder.content.jaxb.mappers.common.Numero3Translator;
 import io.github.project.openubl.xbuilder.content.jaxb.mappers.common.ProveedorMapper;
@@ -120,7 +119,7 @@ public interface SummaryDocumentsMapper {
                                 .flatMap(taxScheme -> Optional.ofNullable(taxScheme.getId()))
                                 .flatMap(code -> Catalog.valueOfCode(Catalog5.class, code))
                                 .orElse(null),
-                        XMLSummaryDocumentsLine.TaxTotalSummaryDocuments::getTaxAmount
+                        XMLSummaryDocumentsLine.TaxTotal::getTaxAmount
                 ));
 
         return ComprobanteImpuestos.builder()
