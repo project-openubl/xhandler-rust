@@ -113,9 +113,6 @@ public class QuarkusXbuilderResource {
         try (StringReader reader = new StringReader(xml)) {
             XMLInvoice xmlPojo = (XMLInvoice) unmarshaller.unmarshal(new InputSource(reader));
             Invoice inputFromXml = invoiceMapper.map(xmlPojo);
-
-            Files.writeString(Paths.get("/home/cferiavi/Downloads/carlos1"), xmlPojo.toString());
-
             return template.data(inputFromXml).render();
         } catch (JAXBException e) {
             throw new RuntimeException(e);
