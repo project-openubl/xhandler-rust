@@ -38,7 +38,7 @@ public class XMLDebitNoteLine extends XMLSalesDocumentLine {
     private Quantity quantity;
 
     @XmlAccessorType(XmlAccessType.NONE)
-    @XmlType(name = "DebitnOTEDocumentLine.Quantity")
+    @XmlType(name = "DebitNoteDocumentLine.Quantity")
     @Data
     @NoArgsConstructor
     public static class Quantity {
