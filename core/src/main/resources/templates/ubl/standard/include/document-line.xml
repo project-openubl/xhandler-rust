@@ -16,7 +16,7 @@
                 <cbc:TaxableAmount currencyID="{moneda}">{item.iscBaseImponible.scale(2)}</cbc:TaxableAmount>
                 <cbc:TaxAmount currencyID="{moneda}">{item.isc.scale(2)}</cbc:TaxAmount>
                 <cac:TaxCategory>
-                    <cbc:Percent>{item.tasaIsc.multiplyByInt(100).scale(2)}</cbc:Percent>
+                    <cbc:Percent>{item.tasaIsc.multiply(100).scale(2)}</cbc:Percent>
                     <cbc:TierRange>{item.iscTipo}</cbc:TierRange>
                     <cac:TaxScheme>
                         <cbc:ID>2000</cbc:ID>
