@@ -18,7 +18,7 @@
                     {/if}
                     {#if direccion.direccion}
                     <cac:AddressLine>
-                        <cbc:Line><![CDATA[{direccion.direccion}]]></cbc:Line>
+                        <cbc:Line><![CDATA[{direccion.direccion.raw}]]></cbc:Line>
                     </cac:AddressLine>
                     {/if}
                     {#if direccion.codigoPais}

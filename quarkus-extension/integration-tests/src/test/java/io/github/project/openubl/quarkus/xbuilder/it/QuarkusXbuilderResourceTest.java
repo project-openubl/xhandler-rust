@@ -1281,7 +1281,6 @@ public class QuarkusXbuilderResourceTest {
                         "            <cbc:LineID>1</cbc:LineID>\n" +
                         "        </cac:OrderLineReference>\n" +
                         "        <cac:Item>\n" +
-                        "            <cbc:Name><![CDATA[]]></cbc:Name>\n" +
                         "            <cac:SellersItemIdentification>\n" +
                         "                <cbc:ID>123456</cbc:ID>\n" +
                         "            </cac:SellersItemIdentification>\n" +

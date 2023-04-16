@@ -9,7 +9,7 @@
             </cac:PartyName>
             {/if}
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName><![CDATA[{proveedor.razonSocial}]]></cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[{proveedor.razonSocial.raw}]]></cbc:RegistrationName>
                 {#if proveedor.direccion}
                 <cac:RegistrationAddress>
                     {#include ubl/standard/include/address.xml direccion=proveedor.direccion /}

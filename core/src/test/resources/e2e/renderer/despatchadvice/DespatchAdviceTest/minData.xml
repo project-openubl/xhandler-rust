@@ -83,7 +83,6 @@
             <cbc:LineID>1</cbc:LineID>
         </cac:OrderLineReference>
         <cac:Item>
-            <cbc:Name><![CDATA[]]></cbc:Name>
             <cac:SellersItemIdentification>
                 <cbc:ID>123456</cbc:ID>
             </cac:SellersItemIdentification>

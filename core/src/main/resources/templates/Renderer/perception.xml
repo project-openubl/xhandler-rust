@@ -24,7 +24,7 @@
     <sac:SUNATPerceptionSystemCode>{tipoRegimen}</sac:SUNATPerceptionSystemCode>
     <sac:SUNATPerceptionPercent>{tipoRegimenPorcentaje}</sac:SUNATPerceptionPercent>
     {#if observacion}
-    <cbc:Note><![CDATA[{observacion}]]></cbc:Note>
+    <cbc:Note><![CDATA[{observacion.raw}]]></cbc:Note>
     {/if}
     <cbc:TotalInvoiceAmount currencyID="{moneda}">{importeTotalPercibido}</cbc:TotalInvoiceAmount>
     <sac:SUNATTotalCashed currencyID="{moneda}">{importeTotalCobrado}</sac:SUNATTotalCashed>
