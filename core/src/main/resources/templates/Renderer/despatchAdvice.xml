@@ -123,7 +123,9 @@
             <cbc:LineID>{it_index.add(1)}</cbc:LineID>
         </cac:OrderLineReference>
         <cac:Item>
+            {#if it.descripcion}
             <cbc:Name><![CDATA[{it.descripcion.raw}]]></cbc:Name>
+            {/if}
             <cac:SellersItemIdentification>
                 <cbc:ID>{it.codigo}</cbc:ID>
             </cac:SellersItemIdentification>

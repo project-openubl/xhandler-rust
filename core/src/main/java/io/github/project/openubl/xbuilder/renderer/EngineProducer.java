@@ -20,6 +20,7 @@ import io.github.project.openubl.xbuilder.content.catalogs.Catalog;
 import io.github.project.openubl.xbuilder.content.catalogs.Catalog7;
 import io.quarkus.qute.Engine;
 import io.quarkus.qute.HtmlEscaper;
+import io.quarkus.qute.RawString;
 import io.quarkus.qute.ReflectionValueResolver;
 import io.quarkus.qute.TemplateLocator.TemplateLocation;
 import io.quarkus.qute.ValueResolver;
@@ -54,6 +55,15 @@ public class EngineProducer {
             .removeStandaloneLines(true)
             .addResultMapper(new HtmlEscaper(List.of("text/html", "text/xml", "application/xml", "application/xhtml+xml")))
             .addValueResolver(new ReflectionValueResolver())
+            .addValueResolver(ValueResolver.builder()
+                    .applyToBaseClass(String.class)
+                    .applyToName("raw")
+                    .resolveSync(ctx -> {
+                        String value = ((String) ctx.getBase());
+                        return new RawString(value);
+                    })
+                    .build()
+            )
             .addValueResolver(ValueResolver.builder()
                     .applyToBaseClass(LocalDate.class)
                     .applyToName("format")
