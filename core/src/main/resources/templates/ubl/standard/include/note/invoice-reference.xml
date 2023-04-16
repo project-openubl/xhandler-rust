@@ -1,7 +1,7 @@
     <cac:DiscrepancyResponse>
         <cbc:ReferenceID>{item.comprobanteAfectadoSerieNumero}</cbc:ReferenceID>
         <cbc:ResponseCode>{item.comprobanteAfectadoTipo}</cbc:ResponseCode>
-        <cbc:Description><![CDATA[{item.sustentoDescripcion}]]></cbc:Description>
+        <cbc:Description><![CDATA[{item.sustentoDescripcion.raw}]]></cbc:Description>
     </cac:DiscrepancyResponse>
     {#if item.ordenDeCompra}
     <cac:OrderReference>

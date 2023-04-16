@@ -4,10 +4,10 @@
         </cac:PartyIdentification>
         {#if proveedor.nombreComercial}
         <cac:PartyName>
-            <cbc:Name><![CDATA[{proveedor.nombreComercial}]]></cbc:Name>
+            <cbc:Name><![CDATA[{proveedor.nombreComercial.raw}]]></cbc:Name>
         </cac:PartyName>
         {/if}
         <cac:PartyLegalEntity>
-            <cbc:RegistrationName><![CDATA[{proveedor.razonSocial}]]></cbc:RegistrationName>
+            <cbc:RegistrationName><![CDATA[{proveedor.razonSocial.raw}]]></cbc:RegistrationName>
         </cac:PartyLegalEntity>
     </cac:AgentParty>
