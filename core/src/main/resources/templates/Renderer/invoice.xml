@@ -59,7 +59,7 @@
     <cac:PaymentTerms>
         <cbc:ID>Detraccion</cbc:ID>
         <cbc:PaymentMeansID>{detraccion.tipoBienDetraido}</cbc:PaymentMeansID>
-        <cbc:PaymentPercent>{detraccion.porcentaje.multiply(100).scale(2)}</cbc:PaymentPercent>
+        <cbc:PaymentPercent>{detraccion.porcentaje.multiplyByInt(100).scale(2)}</cbc:PaymentPercent>
         <cbc:Amount currencyID="{moneda}">{detraccion.monto.scale(2)}</cbc:Amount>
     </cac:PaymentTerms>
     {/if}
