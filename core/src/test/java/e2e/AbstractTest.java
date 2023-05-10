@@ -55,7 +55,7 @@ import io.quarkus.qute.Template;
 import org.mapstruct.factory.Mappers;
 import org.xml.sax.InputSource;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;

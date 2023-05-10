@@ -18,7 +18,8 @@ jobs:
     name: JDK ${{matrix.java-version}} JVM Tests
     strategy:
       matrix:
-        java-version: [ 11, 17 ]
+        java-version: [ 17 ]
+      fail-fast: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -34,13 +35,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 11
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 11
+          java-version: 17
           distribution: temurin
           cache: maven
       - name: Build with Maven
         run: mvn -Pnative install
       - name: Build with Maven
         run: mvn -Pnative-image install -f quarkus-extension/integration-tests/
+
+  quarkus-supported-v:
+    needs: [ quarkus-extension ]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        quarkus-version: [ 3.0.1.Final ]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: maven
+      - name: Maven tests
+        run: mvn -Pnative install
+      - name: Maven IT tests
+        run: mvn -Pnative-image install -f quarkus-extension/integration-tests/ -Dquarkus.version=${{ matrix.quarkus-version }}
