@@ -24,9 +24,9 @@ import io.quarkus.qute.EngineBuilder;
 import io.quarkus.qute.HtmlEscaper;
 import io.quarkus.qute.Template;
 
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.math.BigDecimal;
 import java.util.List;
 
