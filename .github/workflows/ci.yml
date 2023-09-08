@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        quarkus-version: [ 3.0.1.Final, 3.2.2.Final ]
+        quarkus-version: [ 3.0.1.Final, 3.2.2.Final, 3.3.2 ]
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
