@@ -109,6 +109,23 @@ impl Catalog for Catalog10 {
 }
 
 #[derive(Clone, Debug)]
+pub enum Catalog51 {
+    VentaInterna,
+    OperacionSujetaADetraccion,
+    OperacionSujetaAPercepcion,
+}
+
+impl Catalog for Catalog51 {
+    fn code(&self) -> &str {
+        match &self {
+            Self::VentaInterna => "0101",
+            Self::OperacionSujetaADetraccion => "1001",
+            Self::OperacionSujetaAPercepcion => "2001",
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum Catalog52 {
     MontoEnLetras,
     ComprobanteDePercepcion,

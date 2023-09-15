@@ -4,7 +4,12 @@ use crate::enricher::rules::fecha_emision::FechaEmisionRule;
 use crate::enricher::rules::firmante::FirmanteRule;
 use crate::enricher::rules::icb::ICBRule;
 use crate::enricher::rules::igv::IGVRule;
-use crate::enricher::rules::invoice::leyenda::LeyendaDetraccionRule;
+use crate::enricher::rules::invoice::formadepago::{FormaDePagoRule, FormaDePagoTotalRule};
+use crate::enricher::rules::invoice::leyenda::{
+    LeyendaDetraccionRule, LeyendaDireccionEntregaRule, LeyendaPercepcionRule,
+};
+use crate::enricher::rules::invoice::tipocomprobante::TipoComprobanteRule;
+use crate::enricher::rules::invoice::tipooperacion::TipoOperacionRule;
 use crate::enricher::rules::ivap::IVAPRule;
 use crate::enricher::rules::moneda::MonedaRule;
 use crate::enricher::rules::note::creditnote::tiponota::TipoNotaCreditoRule;
@@ -69,8 +74,8 @@ impl EnrichTrait for DebitNote {
 }
 
 impl<T> EnrichCommonTrait for T
-    where
-        T: FechaEmisionRule + FirmanteRule + ICBRule + IGVRule + IVAPRule + MonedaRule + ProveedorRule,
+where
+    T: FechaEmisionRule + FirmanteRule + ICBRule + IGVRule + IVAPRule + MonedaRule + ProveedorRule,
 {
     fn enrich_common(&mut self, defaults: &Defaults) {
         let mut changed = true;
@@ -93,8 +98,14 @@ impl<T> EnrichCommonTrait for T
 
 // Invoice
 impl<T> EnrichInvoiceTrait for T
-    where
-        T: LeyendaDetraccionRule,
+where
+    T: LeyendaDetraccionRule
+        + LeyendaDireccionEntregaRule
+        + LeyendaPercepcionRule
+        + FormaDePagoRule
+        + FormaDePagoTotalRule
+        + TipoComprobanteRule
+        + TipoOperacionRule,
 {
     fn enrich_invoice(&mut self, _: &Defaults) {
         let mut changed = true;
@@ -102,6 +113,12 @@ impl<T> EnrichInvoiceTrait for T
         while changed {
             let results = vec![
                 self.enrich_leyenda_detraccion(),
+                self.enrich_leyenda_direccionentrega(),
+                self.enrich_leyenda_percepcion(),
+                self.enrich_formadepago(),
+                self.enrich_formadepago_total(),
+                self.enrich_tipocomprobante(),
+                self.enrich_tipooperacion(),
             ];
 
             changed = results.contains(&true);
@@ -111,8 +128,8 @@ impl<T> EnrichInvoiceTrait for T
 
 // Note
 impl<T> EnrichCreditNoteTrait for T
-    where
-        T: TipoComprobanteAfectadoRule + TipoNotaCreditoRule,
+where
+    T: TipoComprobanteAfectadoRule + TipoNotaCreditoRule,
 {
     fn enrich_creditnote(&mut self, _: &Defaults) {
         let mut changed = true;
@@ -129,8 +146,8 @@ impl<T> EnrichCreditNoteTrait for T
 }
 
 impl<T> EnrichDebitNoteTrait for T
-    where
-        T: TipoComprobanteAfectadoRule + TipoNotaDebitoRule,
+where
+    T: TipoComprobanteAfectadoRule + TipoNotaDebitoRule,
 {
     fn enrich_debitnote(&mut self, _: &Defaults) {
         let mut changed = true;

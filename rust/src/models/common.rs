@@ -1,5 +1,7 @@
 use std::fmt::Debug;
 
+use chrono::NaiveDate;
+
 #[derive(Clone, Debug)]
 pub struct Proveedor {
     pub ruc: &'static str,
@@ -58,4 +60,29 @@ pub struct Detraccion {
     /// Catalog54
     pub tipo_bien_detraido: &'static str,
     pub porcentaje_monto: PorcentajeMonto,
+}
+
+#[derive(Clone, Debug)]
+pub enum TipoFormaDePago {
+    Credito,
+    Contado,
+}
+
+#[derive(Clone, Debug)]
+pub struct FormaDePago {
+    pub tipo: TipoFormaDePago,
+    pub cuotas: Vec<CuotaDePago>,
+    pub total: Option<f64>,
+}
+
+#[derive(Clone, Debug)]
+pub struct CuotaDePago {
+    pub importe: f64,
+    pub fecha_pago: NaiveDate,
+}
+
+#[derive(Clone, Debug)]
+pub struct Percepcion {
+    /// Catalog53
+    pub tipo: &'static str,
 }

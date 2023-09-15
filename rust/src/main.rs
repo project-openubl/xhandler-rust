@@ -40,6 +40,11 @@ fn main() {
             contacto: None,
         },
         detraccion: None,
+        percepcion: None,
+        direccion_entrega: None,
+        forma_de_pago: None,
+        tipo_comprobante: None,
+        tipo_operacion: None,
     };
 
     let mut credit_note = CreditNote {

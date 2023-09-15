@@ -1,11 +1,11 @@
 use regex::Regex;
 
-use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 use crate::catalogs::{Catalog, Catalog1};
 use crate::models::traits::note::tipocomprobanteafectado::{
     TipoComprobanteAfectadoGetter, TipoComprobanteAfectadoSetter,
 };
 use crate::models::traits::serienumero::SerieNumeroGetter;
+use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 
 pub trait TipoComprobanteAfectadoRule {
     fn enrich_tipo_comprobante_afectado(&mut self) -> bool;
