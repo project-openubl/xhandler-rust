@@ -1,35 +1,21 @@
-use chrono::NaiveDate;
-use crate::content::models::invoice::Invoice;
-use crate::enricher::enricher::Defaults;
+use crate::enricher::enrich::Defaults;
+use crate::models::traits::fechaemision::{FechaEmisionGetter, FechaEmisionSetter};
 
 pub trait FechaEmisionRule {
     fn enrich_fechaemision(&mut self, defaults: &Defaults) -> bool;
 }
 
-pub trait FechaEmision {
-    fn get_fechaemision(&self) -> &Option<NaiveDate>;
-    fn set_fechaemision(&mut self, val: Option<NaiveDate>);
-}
-
 impl<T> FechaEmisionRule for T
-    where T: FechaEmision, {
+where
+    T: FechaEmisionGetter + FechaEmisionSetter,
+{
     fn enrich_fechaemision(&mut self, defaults: &Defaults) -> bool {
         match &self.get_fechaemision() {
             Some(..) => false,
             None => {
-                self.set_fechaemision(Some(defaults.date));
+                self.set_fechaemision(defaults.date);
                 true
             }
         }
-    }
-}
-
-impl FechaEmision for Invoice {
-    fn get_fechaemision(&self) -> &Option<NaiveDate> {
-        &self.fecha_emision
-    }
-
-    fn set_fechaemision(&mut self, val: Option<NaiveDate>) {
-        self.fecha_emision = val;
     }
 }

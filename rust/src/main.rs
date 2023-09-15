@@ -1,32 +1,85 @@
+use std::collections::HashMap;
+
 use chrono::NaiveDate;
-use rust::content::models::common::{ProveedorBuilder};
-use rust::content::models::invoice::InvoiceBuilder;
-use rust::enricher::enricher::{Defaults, enrich};
+
+use rust::catalogs::{Catalog, Catalog6};
+use rust::enricher::enrich::{Defaults, EnrichTrait};
+use rust::models::common::{Cliente, Proveedor};
+use rust::models::credit_note::CreditNote;
+use rust::models::invoice::Invoice;
 
 fn main() {
-    println!("Hello, world!");
-    let invoice = InvoiceBuilder::default()
-        .proveedor(ProveedorBuilder::default()
-            .ruc("123456789012".to_string())
-            .razon_social("OpenUBL".to_string())
-            .build()
-            .unwrap()
-        )
-        .build();
-    match invoice {
-        Ok(mut invoice) => {
-            let defaults = Defaults {
-                date: NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
-                icb_tasa: 1,
-                igv_tasa: 1,
-                ivap_tasa: 1,
-            };
-            enrich(&mut invoice, defaults);
-            println!("Moneda {}", invoice.moneda.unwrap());
-            println!("Fecha {}", invoice.fecha_emision.unwrap());
-        }
-        Err(error) => {
-            println!("Error {}", error)
-        }
+    let defaults = Defaults {
+        date: NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+        icb_tasa: 0.3,
+        igv_tasa: 0.18,
+        ivap_tasa: 0.04,
     };
+
+    let mut invoice = Invoice {
+        leyendas: HashMap::new(),
+        serie_numero: "F001-1",
+        icb_tasa: None,
+        igv_tasa: None,
+        ivap_tasa: None,
+        moneda: None,
+        fecha_emision: None,
+        firmante: None,
+        proveedor: Proveedor {
+            ruc: "123456789012",
+            razon_social: "OpenUBL S.A.C.",
+            nombre_comercial: None,
+            direccion: None,
+            contacto: None,
+        },
+        cliente: Cliente {
+            tipo_documento_identidad: Catalog6::DNI.code(),
+            numero_documento_identidad: "1234568",
+            nombre: "Carlos Feria",
+            direccion: None,
+            contacto: None,
+        },
+        detraccion: None,
+    };
+
+    let mut credit_note = CreditNote {
+        leyendas: HashMap::new(),
+        serie_numero: "FC01-1",
+        icb_tasa: None,
+        igv_tasa: None,
+        ivap_tasa: None,
+        moneda: None,
+        fecha_emision: None,
+        firmante: None,
+        proveedor: Proveedor {
+            ruc: "123456789012",
+            razon_social: "OpenUBL S.A.C.",
+            nombre_comercial: None,
+            direccion: None,
+            contacto: None,
+        },
+        cliente: Cliente {
+            tipo_documento_identidad: Catalog6::DNI.code(),
+            numero_documento_identidad: "1234568",
+            nombre: "Carlos Feria",
+            direccion: None,
+            contacto: None,
+        },
+
+        tipo_nota: None,
+        comprobante_afectado_serie_numero: "F001-1",
+        comprobante_afectado_tipo: None,
+        sustento_descripcion: "mis razones",
+    };
+
+    invoice.enrich(&defaults);
+    credit_note.enrich(&defaults);
+
+    println!("ICB {}", invoice.icb_tasa.unwrap());
+    println!("IGV {}", invoice.igv_tasa.unwrap());
+    println!("IVAP {}", invoice.ivap_tasa.unwrap());
+    println!("Moneda {}", invoice.moneda.unwrap());
+    println!("Fecha {}", invoice.fecha_emision.unwrap());
+    println!("Proveedor {:?}", invoice.proveedor);
+    println!("Firmante {:?}", invoice.firmante.unwrap());
 }

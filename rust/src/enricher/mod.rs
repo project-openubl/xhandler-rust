@@ -1,2 +1,2 @@
-pub mod enricher;
+pub mod enrich;
 pub mod rules;
