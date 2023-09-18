@@ -1,4 +1,4 @@
-use crate::models::common::{FormaDePago, TipoFormaDePago};
+use crate::models::general::{FormaDePago, TipoFormaDePago};
 use crate::models::traits::invoice::formadepago::{FormaDePagoGetter, FormaDePagoSetter};
 
 pub trait FormaDePagoRule {

@@ -1,3 +1,5 @@
+pub mod anticipos;
+pub mod descuentos;
 pub mod detraccion;
 pub mod direccionentrega;
 pub mod formadepago;

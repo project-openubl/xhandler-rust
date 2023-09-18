@@ -1,4 +1,4 @@
-use crate::models::common::Detraccion;
+use crate::models::general::Detraccion;
 use crate::models::invoice::Invoice;
 
 pub trait DetraccionGetter {

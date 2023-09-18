@@ -1,4 +1,4 @@
-use crate::models::common::Percepcion;
+use crate::models::general::Percepcion;
 use crate::models::invoice::Invoice;
 
 pub trait PercepcionGetter {

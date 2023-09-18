@@ -109,6 +109,39 @@ impl Catalog for Catalog10 {
 }
 
 #[derive(Clone, Debug)]
+pub enum Catalog12 {
+    FacturaEmitidaParaCorregirErrorEnElRuc,
+    FacturaEmitidaPorAnticipos,
+    BoletaDeVentaEmitidaPorAnticipos,
+    TicketDeSalida,
+    CodigoScop,
+    FacturaElectronicaRemitente,
+    GuiaDeRemisionRemitente,
+    DeclaracionDeSalidaDelDepositoFranco,
+    DeclaracionSimplificadaDeImportacion,
+    LiquidacionDeCompraEmitidaPorAnticipos,
+    Otros,
+}
+
+impl Catalog for Catalog12 {
+    fn code(&self) -> &str {
+        match &self {
+            Self::FacturaEmitidaParaCorregirErrorEnElRuc => "01",
+            Self::FacturaEmitidaPorAnticipos => "02",
+            Self::BoletaDeVentaEmitidaPorAnticipos => "03",
+            Self::TicketDeSalida => "04",
+            Self::CodigoScop => "05",
+            Self::FacturaElectronicaRemitente => "06",
+            Self::GuiaDeRemisionRemitente => "07",
+            Self::DeclaracionDeSalidaDelDepositoFranco => "08",
+            Self::DeclaracionSimplificadaDeImportacion => "09",
+            Self::LiquidacionDeCompraEmitidaPorAnticipos => "10",
+            Self::Otros => "99",
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum Catalog51 {
     VentaInterna,
     OperacionSujetaADetraccion,
@@ -151,6 +184,61 @@ impl Label for Catalog52 {
             Self::ComprobanteDePercepcion => "COMPROBANTE DE PERCEPCION",
             Self::VentaRealizadaPorEmisorItinerante => "VENTA REALIZADA POR EMISOR ITINERANTE",
             Self::OperacionSujetaADetraccion => "OPERACION SUJETA A DETRACCION",
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum Catalog53 {
+    DescuentoAfectaBaseImponibleIgvIvap,
+    DescuentoNoAfectaBaseImponibleIgvIvap,
+    DescuentoGlobalAfectaBaseImponibleIgvIvap,
+    DescuentoGlobalNoAfectaBaseImponibleIgvIvap,
+    DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap,
+    DescuentoGlobalPorAnticiposExonerados,
+    DescuentoGlobalPorAnticiposInafectos,
+    FactorDeCompensacion,
+    AnticipoDeIsc,
+    FISE,
+    RecargoAlConsumoYOPropinas,
+    CargosQueAfectanBaseImponibleIgvIvap,
+    CargosQueNoAfectanBaseImponibleIgvIvap,
+    CargosGlobalesQueAfectanBaseImponibleIgvIvap,
+    CargosGlobalesQueNoAfectanBaseImponibleIgvIvap,
+    PercepcionVentaInterna,
+    PercepcionALaAdquisicionDeCombustible,
+    PercepcionRealizadaAlAgenteDePercepcionConTasaEspecial,
+    FactorDeAportacion,
+    RetencionDeRentaPorAnticipos,
+    RetencionDelIgv,
+    RetencionDeRentaDeSegundaCategoria,
+}
+
+impl Catalog for Catalog53 {
+    fn code(&self) -> &str {
+        match &self {
+            Self::DescuentoAfectaBaseImponibleIgvIvap => "00",
+            Self::DescuentoNoAfectaBaseImponibleIgvIvap => "01",
+            Self::DescuentoGlobalAfectaBaseImponibleIgvIvap => "02",
+            Self::DescuentoGlobalNoAfectaBaseImponibleIgvIvap => "03",
+            Self::DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap => "04",
+            Self::DescuentoGlobalPorAnticiposExonerados => "05",
+            Self::DescuentoGlobalPorAnticiposInafectos => "06",
+            Self::FactorDeCompensacion => "07",
+            Self::AnticipoDeIsc => "20",
+            Self::FISE => "45",
+            Self::RecargoAlConsumoYOPropinas => "46",
+            Self::CargosQueAfectanBaseImponibleIgvIvap => "47",
+            Self::CargosQueNoAfectanBaseImponibleIgvIvap => "48",
+            Self::CargosGlobalesQueAfectanBaseImponibleIgvIvap => "49",
+            Self::CargosGlobalesQueNoAfectanBaseImponibleIgvIvap => "50",
+            Self::PercepcionVentaInterna => "51",
+            Self::PercepcionALaAdquisicionDeCombustible => "52",
+            Self::PercepcionRealizadaAlAgenteDePercepcionConTasaEspecial => "53",
+            Self::FactorDeAportacion => "61",
+            Self::RetencionDeRentaPorAnticipos => "62",
+            Self::RetencionDelIgv => "63",
+            Self::RetencionDeRentaDeSegundaCategoria => "64",
         }
     }
 }

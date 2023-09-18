@@ -45,6 +45,8 @@ fn main() {
         forma_de_pago: None,
         tipo_comprobante: None,
         tipo_operacion: None,
+        anticipos: vec![],
+        descuentos: vec![],
     };
 
     let mut credit_note = CreditNote {
