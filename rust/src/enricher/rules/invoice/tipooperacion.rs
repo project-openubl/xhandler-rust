@@ -3,15 +3,15 @@ use crate::models::traits::invoice::detraccion::DetraccionGetter;
 use crate::models::traits::invoice::percepcion::PercepcionGetter;
 use crate::models::traits::invoice::tipooperacion::{TipoOperacionGetter, TipoOperacionSetter};
 
-pub trait TipoOperacionRule {
-    fn enrich_tipooperacion(&mut self) -> bool;
+pub trait InvoiceTipoOperacionRule {
+    fn enrich(&mut self) -> bool;
 }
 
-impl<T> TipoOperacionRule for T
+impl<T> InvoiceTipoOperacionRule for T
 where
     T: TipoOperacionGetter + TipoOperacionSetter + DetraccionGetter + PercepcionGetter,
 {
-    fn enrich_tipooperacion(&mut self) -> bool {
+    fn enrich(&mut self) -> bool {
         match &self.get_tipooperacion() {
             Some(..) => false,
             None => {

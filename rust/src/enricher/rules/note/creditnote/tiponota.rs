@@ -3,15 +3,15 @@ use crate::models::traits::note::creditnote::tiponota::{
     TipoNotaCreditoGetter, TipoNotaCreditoSetter,
 };
 
-pub trait TipoNotaCreditoRule {
-    fn enrich_tipo_nota_credito(&mut self) -> bool;
+pub trait CreditNoteTipoRule {
+    fn enrich(&mut self) -> bool;
 }
 
-impl<T> TipoNotaCreditoRule for T
+impl<T> CreditNoteTipoRule for T
 where
     T: TipoNotaCreditoGetter + TipoNotaCreditoSetter,
 {
-    fn enrich_tipo_nota_credito(&mut self) -> bool {
+    fn enrich(&mut self) -> bool {
         match &self.get_tipo_nota_credito() {
             Some(..) => false,
             None => {

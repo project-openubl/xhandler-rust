@@ -2,14 +2,14 @@ use crate::models::common::Direccion;
 use crate::models::traits::proveedor::{ProveedorGetter, ProveedorSetter};
 
 pub trait ProveedorRule {
-    fn enrich_proveedor(&mut self) -> bool;
+    fn enrich(&mut self) -> bool;
 }
 
 impl<T> ProveedorRule for T
-where
-    T: ProveedorGetter + ProveedorSetter,
+    where
+        T: ProveedorGetter + ProveedorSetter,
 {
-    fn enrich_proveedor(&mut self) -> bool {
+    fn enrich(&mut self) -> bool {
         match &self.get_proveedor().direccion {
             Some(..) => false,
             None => {

@@ -1,3 +1,4 @@
+pub mod detalle;
 pub mod fechaemision;
 pub mod firmante;
 pub mod icb;

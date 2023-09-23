@@ -7,15 +7,15 @@ use crate::models::traits::note::tipocomprobanteafectado::{
 use crate::models::traits::serienumero::SerieNumeroGetter;
 use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 
-pub trait TipoComprobanteAfectadoRule {
-    fn enrich_tipo_comprobante_afectado(&mut self) -> bool;
+pub trait NoteTipoComprobanteAfectadoRule {
+    fn enrich(&mut self) -> bool;
 }
 
-impl<T> TipoComprobanteAfectadoRule for T
+impl<T> NoteTipoComprobanteAfectadoRule for T
 where
     T: TipoComprobanteAfectadoGetter + TipoComprobanteAfectadoSetter + SerieNumeroGetter,
 {
-    fn enrich_tipo_comprobante_afectado(&mut self) -> bool {
+    fn enrich(&mut self) -> bool {
         match &self.get_tipo_comprobante_afectado() {
             Some(..) => false,
             None => {

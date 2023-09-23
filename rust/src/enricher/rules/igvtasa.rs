@@ -1,15 +1,15 @@
 use crate::enricher::enrich::Defaults;
 use crate::models::traits::igv::{IGVTasaGetter, IGVTasaSetter};
 
-pub trait IGVRule {
-    fn enrich_igv(&mut self, defaults: &Defaults) -> bool;
+pub trait IGVTasaRule {
+    fn enrich(&mut self, defaults: &Defaults) -> bool;
 }
 
-impl<T> IGVRule for T
+impl<T> IGVTasaRule for T
 where
     T: IGVTasaGetter + IGVTasaSetter,
 {
-    fn enrich_igv(&mut self, defaults: &Defaults) -> bool {
+    fn enrich(&mut self, defaults: &Defaults) -> bool {
         match &self.get_igv_tasa() {
             Some(..) => false,
             None => {

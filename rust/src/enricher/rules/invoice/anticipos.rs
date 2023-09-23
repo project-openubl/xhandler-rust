@@ -5,21 +5,21 @@ use crate::catalogs::{Catalog, Catalog12, Catalog53};
 use crate::models::traits::invoice::anticipos::{AnticipoGetter, AnticipoSetter, AnticiposGetter};
 use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 
-pub trait AnticiposRule {
-    fn enrich_anticipos(&mut self) -> bool;
+pub trait InvoiceAnticiposRule {
+    fn enrich(&mut self) -> bool;
 }
 
-impl<T> AnticiposRule for T
+impl<T> InvoiceAnticiposRule for T
 where
     T: AnticiposGetter,
 {
-    fn enrich_anticipos(&mut self) -> bool {
+    fn enrich(&mut self) -> bool {
         self.get_anticipos()
             .iter_mut()
             .map(|anticipo| {
                 let results = vec![
-                    anticipo.enrich_anticipo_tipo(),
-                    anticipo.enrich_anticipo_comprobantetipo(),
+                    AnticipoTipoRule::enrich(anticipo),
+                    AnticipoComprobanteTipoRule::enrich(anticipo),
                 ];
                 results.contains(&true)
             })
@@ -29,16 +29,19 @@ where
 
 //
 
-pub trait AnticipoRule {
-    fn enrich_anticipo_tipo(&mut self) -> bool;
-    fn enrich_anticipo_comprobantetipo(&mut self) -> bool;
+pub trait AnticipoTipoRule {
+    fn enrich(&mut self) -> bool;
 }
 
-impl<T> AnticipoRule for T
+pub trait AnticipoComprobanteTipoRule {
+    fn enrich(&mut self) -> bool;
+}
+
+impl<T> AnticipoTipoRule for T
 where
     T: AnticipoGetter + AnticipoSetter,
 {
-    fn enrich_anticipo_tipo(&mut self) -> bool {
+    fn enrich(&mut self) -> bool {
         match self.get_tipo() {
             Some(..) => false,
             None => {
@@ -49,8 +52,13 @@ where
             }
         }
     }
+}
 
-    fn enrich_anticipo_comprobantetipo(&mut self) -> bool {
+impl<T> AnticipoComprobanteTipoRule for T
+where
+    T: AnticipoGetter + AnticipoSetter,
+{
+    fn enrich(&mut self) -> bool {
         match self.get_comprobante_tipo() {
             Some(..) => false,
             None => {
@@ -67,7 +75,7 @@ where
                     self.set_comprobante_tipo(Catalog12::BoletaDeVentaEmitidaPorAnticipos.code());
                     return true;
                 } else {
-                    warn!("No se pudo determinar el tipocomprobante de anticipo")
+                    warn!("No se pudo determinar el tipocomprobante de detalle")
                 }
 
                 false

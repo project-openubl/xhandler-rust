@@ -1,15 +1,15 @@
 use crate::enricher::enrich::Defaults;
 use crate::models::traits::icb::{ICBTasaGetter, ICBTasaSetter};
 
-pub trait ICBRule {
-    fn enrich_icb(&mut self, defaults: &Defaults) -> bool;
+pub trait ICBTasaRule {
+    fn enrich(&mut self, defaults: &Defaults) -> bool;
 }
 
-impl<T> ICBRule for T
+impl<T> ICBTasaRule for T
 where
     T: ICBTasaGetter + ICBTasaSetter,
 {
-    fn enrich_icb(&mut self, defaults: &Defaults) -> bool {
+    fn enrich(&mut self, defaults: &Defaults) -> bool {
         match &self.get_icb_tasa() {
             Some(..) => false,
             None => {

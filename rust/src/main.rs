@@ -47,6 +47,7 @@ fn main() {
         tipo_operacion: None,
         anticipos: vec![],
         descuentos: vec![],
+        detalles: vec![],
     };
 
     let mut credit_note = CreditNote {
@@ -77,6 +78,8 @@ fn main() {
         comprobante_afectado_serie_numero: "F001-1",
         comprobante_afectado_tipo: None,
         sustento_descripcion: "mis razones",
+
+        detalles: vec![],
     };
 
     invoice.enrich(&defaults);

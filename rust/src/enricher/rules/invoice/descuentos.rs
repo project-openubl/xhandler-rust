@@ -3,22 +3,22 @@ use crate::models::traits::invoice::descuentos::{
     DescuentoGetter, DescuentoSetter, DescuentosGetter,
 };
 
-pub trait DescuentosRule {
-    fn enrich_descuentos(&mut self) -> bool;
+pub trait InvoiceDescuentosRule {
+    fn enrich(&mut self) -> bool;
 }
 
-impl<T> DescuentosRule for T
+impl<T> InvoiceDescuentosRule for T
 where
     T: DescuentosGetter,
 {
-    fn enrich_descuentos(&mut self) -> bool {
+    fn enrich(&mut self) -> bool {
         self.get_descuentos()
             .iter_mut()
             .map(|descuento| {
                 let results = vec![
-                    descuento.enrich_factor(),
-                    descuento.enrich_monto_base(),
-                    descuento.enrich_tipo(),
+                    DescuentoFactorRule::enrich(descuento),
+                    DescuentoMontoBaseRule::enrich(descuento),
+                    DescuentoTipoRule::enrich(descuento),
                 ];
                 results.contains(&true)
             })
@@ -28,17 +28,23 @@ where
 
 //
 
-pub trait DescuentoRule {
-    fn enrich_factor(&mut self) -> bool;
-    fn enrich_monto_base(&mut self) -> bool;
-    fn enrich_tipo(&mut self) -> bool;
+pub trait DescuentoFactorRule {
+    fn enrich(&mut self) -> bool;
 }
 
-impl<T> DescuentoRule for T
+pub trait DescuentoMontoBaseRule {
+    fn enrich(&mut self) -> bool;
+}
+
+pub trait DescuentoTipoRule {
+    fn enrich(&mut self) -> bool;
+}
+
+impl<T> DescuentoFactorRule for T
 where
     T: DescuentoGetter + DescuentoSetter,
 {
-    fn enrich_factor(&mut self) -> bool {
+    fn enrich(&mut self) -> bool {
         match self.get_factor() {
             Some(..) => false,
             None => {
@@ -47,8 +53,13 @@ where
             }
         }
     }
+}
 
-    fn enrich_monto_base(&mut self) -> bool {
+impl<T> DescuentoMontoBaseRule for T
+where
+    T: DescuentoGetter + DescuentoSetter,
+{
+    fn enrich(&mut self) -> bool {
         match self.get_monto_base() {
             Some(..) => false,
             None => {
@@ -57,8 +68,13 @@ where
             }
         }
     }
+}
 
-    fn enrich_tipo(&mut self) -> bool {
+impl<T> DescuentoTipoRule for T
+where
+    T: DescuentoGetter + DescuentoSetter,
+{
+    fn enrich(&mut self) -> bool {
         match self.get_tipo() {
             Some(..) => false,
             None => {

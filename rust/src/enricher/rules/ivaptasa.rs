@@ -1,15 +1,15 @@
 use crate::enricher::enrich::Defaults;
 use crate::models::traits::ivap::{IVAPTasaGetter, IVAPTasaSetter};
 
-pub trait IVAPRule {
-    fn enrich_ivap(&mut self, defaults: &Defaults) -> bool;
+pub trait IVAPTasaRule {
+    fn enrich(&mut self, defaults: &Defaults) -> bool;
 }
 
-impl<T> IVAPRule for T
+impl<T> IVAPTasaRule for T
 where
     T: IVAPTasaGetter + IVAPTasaSetter,
 {
-    fn enrich_ivap(&mut self, defaults: &Defaults) -> bool {
+    fn enrich(&mut self, defaults: &Defaults) -> bool {
         match &self.get_ivap_tasa() {
             Some(..) => false,
             None => {

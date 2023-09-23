@@ -4,16 +4,16 @@ use crate::models::traits::invoice::direccionentrega::DireccionEntregaGetter;
 use crate::models::traits::invoice::percepcion::PercepcionGetter;
 use crate::models::traits::leyendas::{LeyendasGetter, LeyendasSetter};
 
-pub trait LeyendaDetraccionRule {
-    fn enrich_leyenda_detraccion(&mut self) -> bool;
+pub trait InvoiceLeyendaDetraccionRule {
+    fn enrich(&mut self) -> bool;
 }
 
-pub trait LeyendaDireccionEntregaRule {
-    fn enrich_leyenda_direccionentrega(&mut self) -> bool;
+pub trait InvoiceLeyendaDireccionEntregaRule {
+    fn enrich(&mut self) -> bool;
 }
 
-pub trait LeyendaPercepcionRule {
-    fn enrich_leyenda_percepcion(&mut self) -> bool;
+pub trait InvoiceLeyendaPercepcionRule {
+    fn enrich(&mut self) -> bool;
 }
 
 fn insert_leyenda<T>(obj: &mut T, code: &'static str, label: &'static str) -> bool
@@ -28,11 +28,11 @@ where
     }
 }
 
-impl<T> LeyendaDetraccionRule for T
+impl<T> InvoiceLeyendaDetraccionRule for T
 where
     T: DetraccionGetter + LeyendasGetter + LeyendasSetter,
 {
-    fn enrich_leyenda_detraccion(&mut self) -> bool {
+    fn enrich(&mut self) -> bool {
         match &self.get_detraccion() {
             Some(..) => false,
             None => {
@@ -43,11 +43,11 @@ where
     }
 }
 
-impl<T> LeyendaDireccionEntregaRule for T
+impl<T> InvoiceLeyendaDireccionEntregaRule for T
 where
     T: DireccionEntregaGetter + LeyendasGetter + LeyendasSetter,
 {
-    fn enrich_leyenda_direccionentrega(&mut self) -> bool {
+    fn enrich(&mut self) -> bool {
         match &self.get_direccionentrega() {
             Some(..) => false,
             None => {
@@ -58,11 +58,11 @@ where
     }
 }
 
-impl<T> LeyendaPercepcionRule for T
+impl<T> InvoiceLeyendaPercepcionRule for T
 where
     T: PercepcionGetter + LeyendasGetter + LeyendasSetter,
 {
-    fn enrich_leyenda_percepcion(&mut self) -> bool {
+    fn enrich(&mut self) -> bool {
         match &self.get_percepcion() {
             Some(..) => false,
             None => {
