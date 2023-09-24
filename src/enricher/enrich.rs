@@ -1,26 +1,28 @@
 use chrono::NaiveDate;
 
-use crate::enricher::rules::detalle::detalles::DetallesRule;
-use crate::enricher::rules::fecha_emision::FechaEmisionRule;
-use crate::enricher::rules::firmante::FirmanteRule;
-use crate::enricher::rules::icbtasa::ICBTasaRule;
-use crate::enricher::rules::igvtasa::IGVTasaRule;
-use crate::enricher::rules::invoice::anticipos::InvoiceAnticiposRule;
-use crate::enricher::rules::invoice::descuentos::InvoiceDescuentosRule;
-use crate::enricher::rules::invoice::formadepago::{
-    InvoiceFormaDePagoRule, InvoiceFormaDePagoTotalRule,
+use crate::enricher::rules::phase1enrich::detalle::detalles::DetallesEnrichRule;
+use crate::enricher::rules::phase1enrich::fecha_emision::FechaEmisionEnrichRule;
+use crate::enricher::rules::phase1enrich::firmante::FirmanteEnrichRule;
+use crate::enricher::rules::phase1enrich::icbtasa::ICBTasaEnrichRule;
+use crate::enricher::rules::phase1enrich::igvtasa::IGVTasaEnrichRule;
+use crate::enricher::rules::phase1enrich::invoice::anticipos::InvoiceAnticiposEnrichRule;
+use crate::enricher::rules::phase1enrich::invoice::descuentos::InvoiceDescuentosEnrichRule;
+use crate::enricher::rules::phase1enrich::invoice::formadepago::{
+    InvoiceFormaDePagoEnrichRule, InvoiceFormaDePagoTotalRule,
 };
-use crate::enricher::rules::invoice::leyenda::{
-    InvoiceLeyendaDetraccionRule, InvoiceLeyendaDireccionEntregaRule, InvoiceLeyendaPercepcionRule,
+use crate::enricher::rules::phase1enrich::invoice::leyenda::{
+    InvoiceLeyendaDetraccionEnrichRule, InvoiceLeyendaDireccionEntregaEnrichRule,
+    InvoiceLeyendaPercepcionEnrichRule,
 };
-use crate::enricher::rules::invoice::tipocomprobante::InvoiceTipoComprobanteRule;
-use crate::enricher::rules::invoice::tipooperacion::InvoiceTipoOperacionRule;
-use crate::enricher::rules::ivaptasa::IVAPTasaRule;
-use crate::enricher::rules::moneda::MonedaRule;
-use crate::enricher::rules::note::creditnote::tiponota::CreditNoteTipoRule;
-use crate::enricher::rules::note::debitnote::tiponota::DebitNoteTipoRule;
-use crate::enricher::rules::note::tipocomprobanteafectado::NoteTipoComprobanteAfectadoRule;
-use crate::enricher::rules::proveedor::ProveedorRule;
+use crate::enricher::rules::phase1enrich::invoice::tipocomprobante::InvoiceTipoComprobanteEnrichRule;
+use crate::enricher::rules::phase1enrich::invoice::tipooperacion::InvoiceTipoOperacionEnrichRule;
+use crate::enricher::rules::phase1enrich::ivaptasa::IVAPTasaEnrichRule;
+use crate::enricher::rules::phase1enrich::moneda::MonedaEnrichRule;
+use crate::enricher::rules::phase1enrich::note::creditnote::tiponota::CreditNoteTipoEnrichRule;
+use crate::enricher::rules::phase1enrich::note::debitnote::tiponota::DebitNoteTipoEnrichRule;
+use crate::enricher::rules::phase1enrich::note::tipocomprobanteafectado::NoteTipoComprobanteAfectadoEnrichRule;
+use crate::enricher::rules::phase1enrich::proveedor::ProveedorEnrichRule;
+use crate::enricher::rules::phase2process::detalle::detalles::DetallesProcessRule;
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
@@ -57,10 +59,34 @@ trait EnrichDebitNoteTrait {
 
 //
 
+pub trait ProcessTrait {
+    fn process(&mut self);
+}
+
+trait ProcessCommonTrait {
+    fn process_common(&mut self);
+}
+
+trait ProcessInvoiceTrait {
+    fn process_invoice(&mut self);
+}
+
+trait ProcessCreditNoteTrait {
+    fn process_creditnote(&mut self);
+}
+
+trait ProcessDebitNoteTrait {
+    fn process_debitnote(&mut self);
+}
+
+// Enrich implementations
+
 impl EnrichTrait for Invoice {
     fn enrich(&mut self, defaults: &Defaults) {
         self.enrich_common(defaults);
         self.enrich_invoice(defaults);
+
+        self.process_common();
     }
 }
 
@@ -68,6 +94,8 @@ impl EnrichTrait for CreditNote {
     fn enrich(&mut self, defaults: &Defaults) {
         self.enrich_common(defaults);
         self.enrich_creditnote(defaults);
+
+        self.process_common();
     }
 }
 
@@ -75,69 +103,35 @@ impl EnrichTrait for DebitNote {
     fn enrich(&mut self, defaults: &Defaults) {
         self.enrich_common(defaults);
         self.enrich_debitnote(defaults);
-    }
-}
 
-// Invoice
-impl<T> EnrichInvoiceTrait for T
-where
-    T: InvoiceAnticiposRule
-        + InvoiceDescuentosRule
-        + InvoiceFormaDePagoRule
-        + InvoiceFormaDePagoTotalRule
-        + InvoiceLeyendaDetraccionRule
-        + InvoiceLeyendaDireccionEntregaRule
-        + InvoiceLeyendaPercepcionRule
-        + InvoiceFormaDePagoRule
-        + InvoiceFormaDePagoTotalRule
-        + InvoiceTipoComprobanteRule
-        + InvoiceTipoOperacionRule,
-{
-    fn enrich_invoice(&mut self, _: &Defaults) {
-        let mut changed = true;
-
-        while changed {
-            let results = vec![
-                InvoiceAnticiposRule::enrich(self),
-                InvoiceDescuentosRule::enrich(self),
-                InvoiceFormaDePagoRule::enrich(self),
-                InvoiceFormaDePagoTotalRule::enrich(self),
-                InvoiceLeyendaDetraccionRule::enrich(self),
-                InvoiceLeyendaDireccionEntregaRule::enrich(self),
-                InvoiceLeyendaPercepcionRule::enrich(self),
-                InvoiceTipoComprobanteRule::enrich(self),
-                InvoiceTipoOperacionRule::enrich(self),
-            ];
-
-            changed = results.contains(&true);
-        }
+        self.process_common();
     }
 }
 
 impl<T> EnrichCommonTrait for T
 where
-    T: DetallesRule
-        + FechaEmisionRule
-        + FirmanteRule
-        + ICBTasaRule
-        + IGVTasaRule
-        + IVAPTasaRule
-        + MonedaRule
-        + ProveedorRule,
+    T: DetallesEnrichRule
+        + FechaEmisionEnrichRule
+        + FirmanteEnrichRule
+        + ICBTasaEnrichRule
+        + IGVTasaEnrichRule
+        + IVAPTasaEnrichRule
+        + MonedaEnrichRule
+        + ProveedorEnrichRule,
 {
     fn enrich_common(&mut self, defaults: &Defaults) {
         let mut changed = true;
 
         while changed {
             let results = vec![
-                FechaEmisionRule::enrich(self, defaults),
-                FirmanteRule::enrich(self),
-                ICBTasaRule::enrich(self, defaults),
-                IGVTasaRule::enrich(self, defaults),
-                IVAPTasaRule::enrich(self, defaults),
-                MonedaRule::enrich(self),
-                ProveedorRule::enrich(self),
-                DetallesRule::enrich(self),
+                FechaEmisionEnrichRule::enrich(self, defaults),
+                FirmanteEnrichRule::enrich(self),
+                ICBTasaEnrichRule::enrich(self, defaults),
+                IGVTasaEnrichRule::enrich(self, defaults),
+                IVAPTasaEnrichRule::enrich(self, defaults),
+                MonedaEnrichRule::enrich(self),
+                ProveedorEnrichRule::enrich(self),
+                DetallesEnrichRule::enrich(self),
             ];
 
             changed = results.contains(&true);
@@ -145,18 +139,52 @@ where
     }
 }
 
-// Note
+impl<T> EnrichInvoiceTrait for T
+where
+    T: InvoiceAnticiposEnrichRule
+        + InvoiceDescuentosEnrichRule
+        + InvoiceFormaDePagoEnrichRule
+        + InvoiceFormaDePagoTotalRule
+        + InvoiceLeyendaDetraccionEnrichRule
+        + InvoiceLeyendaDireccionEntregaEnrichRule
+        + InvoiceLeyendaPercepcionEnrichRule
+        + InvoiceFormaDePagoEnrichRule
+        + InvoiceFormaDePagoTotalRule
+        + InvoiceTipoComprobanteEnrichRule
+        + InvoiceTipoOperacionEnrichRule,
+{
+    fn enrich_invoice(&mut self, _: &Defaults) {
+        let mut changed = true;
+
+        while changed {
+            let results = vec![
+                InvoiceAnticiposEnrichRule::enrich(self),
+                InvoiceDescuentosEnrichRule::enrich(self),
+                InvoiceFormaDePagoEnrichRule::enrich(self),
+                InvoiceFormaDePagoTotalRule::enrich(self),
+                InvoiceLeyendaDetraccionEnrichRule::enrich(self),
+                InvoiceLeyendaDireccionEntregaEnrichRule::enrich(self),
+                InvoiceLeyendaPercepcionEnrichRule::enrich(self),
+                InvoiceTipoComprobanteEnrichRule::enrich(self),
+                InvoiceTipoOperacionEnrichRule::enrich(self),
+            ];
+
+            changed = results.contains(&true);
+        }
+    }
+}
+
 impl<T> EnrichCreditNoteTrait for T
 where
-    T: NoteTipoComprobanteAfectadoRule + CreditNoteTipoRule,
+    T: NoteTipoComprobanteAfectadoEnrichRule + CreditNoteTipoEnrichRule,
 {
     fn enrich_creditnote(&mut self, _: &Defaults) {
         let mut changed = true;
 
         while changed {
             let results = vec![
-                NoteTipoComprobanteAfectadoRule::enrich(self),
-                CreditNoteTipoRule::enrich(self),
+                NoteTipoComprobanteAfectadoEnrichRule::enrich(self),
+                CreditNoteTipoEnrichRule::enrich(self),
             ];
 
             changed = results.contains(&true);
@@ -166,16 +194,51 @@ where
 
 impl<T> EnrichDebitNoteTrait for T
 where
-    T: NoteTipoComprobanteAfectadoRule + DebitNoteTipoRule,
+    T: NoteTipoComprobanteAfectadoEnrichRule + DebitNoteTipoEnrichRule,
 {
     fn enrich_debitnote(&mut self, _: &Defaults) {
         let mut changed = true;
 
         while changed {
             let results = vec![
-                NoteTipoComprobanteAfectadoRule::enrich(self),
-                DebitNoteTipoRule::enrich(self),
+                NoteTipoComprobanteAfectadoEnrichRule::enrich(self),
+                DebitNoteTipoEnrichRule::enrich(self),
             ];
+
+            changed = results.contains(&true);
+        }
+    }
+}
+
+// Process implementations
+
+impl ProcessTrait for Invoice {
+    fn process(&mut self) {
+        self.process_common();
+    }
+}
+
+impl ProcessTrait for CreditNote {
+    fn process(&mut self) {
+        self.process_common();
+    }
+}
+
+impl ProcessTrait for DebitNote {
+    fn process(&mut self) {
+        self.process_common();
+    }
+}
+
+impl<T> ProcessCommonTrait for T
+where
+    T: DetallesProcessRule,
+{
+    fn process_common(&mut self) {
+        let mut changed = true;
+
+        while changed {
+            let results = vec![DetallesProcessRule::process(self)];
 
             changed = results.contains(&true);
         }

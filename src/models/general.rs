@@ -69,8 +69,15 @@ pub struct Descuento {
 }
 
 #[derive(Clone, Debug)]
+pub enum ICBTipo {
+    IcbAplica(bool),
+    IcbMonto(f64),
+}
+
+#[derive(Clone, Debug)]
 pub struct Detalle {
     pub descripcion: &'static str,
+    pub cantidad: f64,
     pub unidad_medida: Option<&'static str>,
 
     /// Precio + bool. True si el precio incluye impuestos, false si no incluye impuestos
@@ -82,8 +89,11 @@ pub struct Detalle {
     pub igv_tasa: Option<f32>,
     pub icb_tasa: Option<f32>,
     pub isc_tasa: Option<f32>,
+
     /// Catalog7
     pub igv_tipo: Option<&'static str>,
     /// Catalog8
     pub isc_tipo: Option<&'static str>,
+
+    pub icb: ICBTipo,
 }

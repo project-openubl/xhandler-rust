@@ -3,6 +3,8 @@ use crate::models::debit_note::DebitNote;
 use crate::models::general::Detalle;
 use crate::models::invoice::Invoice;
 
+pub mod cantidad;
+pub mod icb;
 pub mod icbtasa;
 pub mod igvtasa;
 pub mod igvtipo;
