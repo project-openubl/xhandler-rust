@@ -1,11 +1,11 @@
 use crate::models::general::Percepcion;
 use crate::models::invoice::Invoice;
 
-pub trait PercepcionGetter {
+pub trait InvoicePercepcionGetter {
     fn get_percepcion(&self) -> &Option<Percepcion>;
 }
 
-impl PercepcionGetter for Invoice {
+impl InvoicePercepcionGetter for Invoice {
     fn get_percepcion(&self) -> &Option<Percepcion> {
         &self.percepcion
     }

@@ -1,7 +1,7 @@
 use crate::catalogs::{Catalog, Catalog52, Label};
-use crate::models::traits::invoice::detraccion::DetraccionGetter;
-use crate::models::traits::invoice::direccionentrega::DireccionEntregaGetter;
-use crate::models::traits::invoice::percepcion::PercepcionGetter;
+use crate::models::traits::invoice::detraccion::InvoiceDetraccionGetter;
+use crate::models::traits::invoice::direccionentrega::InvoiceDireccionEntregaGetter;
+use crate::models::traits::invoice::percepcion::InvoicePercepcionGetter;
 use crate::models::traits::leyendas::{LeyendasGetter, LeyendasSetter};
 
 pub trait InvoiceLeyendaDetraccionRule {
@@ -30,7 +30,7 @@ where
 
 impl<T> InvoiceLeyendaDetraccionRule for T
 where
-    T: DetraccionGetter + LeyendasGetter + LeyendasSetter,
+    T: InvoiceDetraccionGetter + LeyendasGetter + LeyendasSetter,
 {
     fn enrich(&mut self) -> bool {
         match &self.get_detraccion() {
@@ -45,7 +45,7 @@ where
 
 impl<T> InvoiceLeyendaDireccionEntregaRule for T
 where
-    T: DireccionEntregaGetter + LeyendasGetter + LeyendasSetter,
+    T: InvoiceDireccionEntregaGetter + LeyendasGetter + LeyendasSetter,
 {
     fn enrich(&mut self) -> bool {
         match &self.get_direccionentrega() {
@@ -60,7 +60,7 @@ where
 
 impl<T> InvoiceLeyendaPercepcionRule for T
 where
-    T: PercepcionGetter + LeyendasGetter + LeyendasSetter,
+    T: InvoicePercepcionGetter + LeyendasGetter + LeyendasSetter,
 {
     fn enrich(&mut self) -> bool {
         match &self.get_percepcion() {

@@ -1,7 +1,9 @@
 use crate::catalogs::{Catalog, Catalog51};
-use crate::models::traits::invoice::detraccion::DetraccionGetter;
-use crate::models::traits::invoice::percepcion::PercepcionGetter;
-use crate::models::traits::invoice::tipooperacion::{TipoOperacionGetter, TipoOperacionSetter};
+use crate::models::traits::invoice::detraccion::InvoiceDetraccionGetter;
+use crate::models::traits::invoice::percepcion::InvoicePercepcionGetter;
+use crate::models::traits::invoice::tipooperacion::{
+    InvoiceTipoOperacionGetter, InvoiceTipoOperacionSetter,
+};
 
 pub trait InvoiceTipoOperacionRule {
     fn enrich(&mut self) -> bool;
@@ -9,7 +11,10 @@ pub trait InvoiceTipoOperacionRule {
 
 impl<T> InvoiceTipoOperacionRule for T
 where
-    T: TipoOperacionGetter + TipoOperacionSetter + DetraccionGetter + PercepcionGetter,
+    T: InvoiceTipoOperacionGetter
+        + InvoiceTipoOperacionSetter
+        + InvoiceDetraccionGetter
+        + InvoicePercepcionGetter,
 {
     fn enrich(&mut self) -> bool {
         match &self.get_tipooperacion() {

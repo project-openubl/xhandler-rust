@@ -1,11 +1,11 @@
 use crate::models::common::Direccion;
 use crate::models::invoice::Invoice;
 
-pub trait DireccionEntregaGetter {
+pub trait InvoiceDireccionEntregaGetter {
     fn get_direccionentrega(&self) -> &Option<Direccion>;
 }
 
-impl DireccionEntregaGetter for Invoice {
+impl InvoiceDireccionEntregaGetter for Invoice {
     fn get_direccionentrega(&self) -> &Option<Direccion> {
         &self.direccion_entrega
     }

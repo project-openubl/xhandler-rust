@@ -1,5 +1,7 @@
 use crate::models::general::{FormaDePago, TipoFormaDePago};
-use crate::models::traits::invoice::formadepago::{FormaDePagoGetter, FormaDePagoSetter};
+use crate::models::traits::invoice::formadepago::{
+    InvoiceFormaDePagoGetter, InvoiceFormaDePagoSetter,
+};
 
 pub trait InvoiceFormaDePagoRule {
     fn enrich(&mut self) -> bool;
@@ -11,7 +13,7 @@ pub trait InvoiceFormaDePagoTotalRule {
 
 impl<T> InvoiceFormaDePagoRule for T
 where
-    T: FormaDePagoGetter + FormaDePagoSetter,
+    T: InvoiceFormaDePagoGetter + InvoiceFormaDePagoSetter,
 {
     fn enrich(&mut self) -> bool {
         match &self.get_formadepago() {
@@ -30,7 +32,7 @@ where
 
 impl<T> InvoiceFormaDePagoTotalRule for T
 where
-    T: FormaDePagoGetter + FormaDePagoSetter,
+    T: InvoiceFormaDePagoGetter + InvoiceFormaDePagoSetter,
 {
     fn enrich(&mut self) -> bool {
         if let Some(forma_de_pago) = self.get_formadepago() {

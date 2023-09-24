@@ -1,11 +1,11 @@
 use crate::models::general::Anticipo;
 use crate::models::invoice::Invoice;
 
-pub trait AnticiposGetter {
+pub trait InvoiceAnticiposGetter {
     fn get_anticipos(&mut self) -> &mut Vec<Anticipo>;
 }
 
-impl AnticiposGetter for Invoice {
+impl InvoiceAnticiposGetter for Invoice {
     fn get_anticipos(&mut self) -> &mut Vec<Anticipo> {
         &mut self.anticipos
     }

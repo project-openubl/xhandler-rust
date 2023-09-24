@@ -1,6 +1,6 @@
 use crate::catalogs::{Catalog, Catalog9};
 use crate::models::traits::note::creditnote::tiponota::{
-    TipoNotaCreditoGetter, TipoNotaCreditoSetter,
+    CreditNoteTipoGetter, CreditNoteTipoSetter,
 };
 
 pub trait CreditNoteTipoRule {
@@ -9,7 +9,7 @@ pub trait CreditNoteTipoRule {
 
 impl<T> CreditNoteTipoRule for T
 where
-    T: TipoNotaCreditoGetter + TipoNotaCreditoSetter,
+    T: CreditNoteTipoGetter + CreditNoteTipoSetter,
 {
     fn enrich(&mut self) -> bool {
         match &self.get_tipo_nota_credito() {

@@ -1,20 +1,20 @@
 use crate::models::invoice::Invoice;
 
-pub trait TipoOperacionGetter {
+pub trait InvoiceTipoOperacionGetter {
     fn get_tipooperacion(&self) -> &Option<&'static str>;
 }
 
-pub trait TipoOperacionSetter {
+pub trait InvoiceTipoOperacionSetter {
     fn set_tipooperacion(&mut self, val: &'static str);
 }
 
-impl TipoOperacionGetter for Invoice {
+impl InvoiceTipoOperacionGetter for Invoice {
     fn get_tipooperacion(&self) -> &Option<&'static str> {
         &self.tipo_operacion
     }
 }
 
-impl TipoOperacionSetter for Invoice {
+impl InvoiceTipoOperacionSetter for Invoice {
     fn set_tipooperacion(&mut self, val: &'static str) {
         self.tipo_operacion = Some(val);
     }

@@ -1,21 +1,21 @@
 use crate::models::general::Detalle;
 
-pub trait ICBTasaGetter {
-    fn get_icbtasa(&self) -> &Option<f64>;
+pub trait DetalleICBTasaGetter {
+    fn get_icbtasa(&self) -> &Option<f32>;
 }
 
-pub trait ICBTasaSetter {
-    fn set_icbtasa(&mut self, val: f64);
+pub trait DetalleICBTasaSetter {
+    fn set_icbtasa(&mut self, val: f32);
 }
 
-impl ICBTasaGetter for Detalle {
-    fn get_icbtasa(&self) -> &Option<f64> {
+impl DetalleICBTasaGetter for Detalle {
+    fn get_icbtasa(&self) -> &Option<f32> {
         &self.icb_tasa
     }
 }
 
-impl ICBTasaSetter for Detalle {
-    fn set_icbtasa(&mut self, val: f64) {
+impl DetalleICBTasaSetter for Detalle {
+    fn set_icbtasa(&mut self, val: f32) {
         self.icb_tasa = Some(val);
     }
 }

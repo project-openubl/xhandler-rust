@@ -2,7 +2,9 @@ use log::warn;
 use regex::Regex;
 
 use crate::catalogs::{Catalog, Catalog12, Catalog53};
-use crate::models::traits::invoice::anticipos::{AnticipoGetter, AnticipoSetter, AnticiposGetter};
+use crate::models::traits::invoice::anticipos::{
+    AnticipoGetter, AnticipoSetter, InvoiceAnticiposGetter,
+};
 use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 
 pub trait InvoiceAnticiposRule {
@@ -11,7 +13,7 @@ pub trait InvoiceAnticiposRule {
 
 impl<T> InvoiceAnticiposRule for T
 where
-    T: AnticiposGetter,
+    T: InvoiceAnticiposGetter,
 {
     fn enrich(&mut self) -> bool {
         self.get_anticipos()

@@ -1,20 +1,20 @@
 use crate::models::credit_note::CreditNote;
 
-pub trait TipoNotaCreditoGetter {
+pub trait CreditNoteTipoGetter {
     fn get_tipo_nota_credito(&self) -> &Option<&'static str>;
 }
 
-pub trait TipoNotaCreditoSetter {
+pub trait CreditNoteTipoSetter {
     fn set_tipo_nota_credito(&mut self, val: &'static str);
 }
 
-impl TipoNotaCreditoGetter for CreditNote {
+impl CreditNoteTipoGetter for CreditNote {
     fn get_tipo_nota_credito(&self) -> &Option<&'static str> {
         &self.tipo_nota
     }
 }
 
-impl TipoNotaCreditoSetter for CreditNote {
+impl CreditNoteTipoSetter for CreditNote {
     fn set_tipo_nota_credito(&mut self, val: &'static str) {
         self.tipo_nota = Some(val);
     }

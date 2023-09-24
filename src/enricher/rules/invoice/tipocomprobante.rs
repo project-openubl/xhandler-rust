@@ -2,7 +2,7 @@ use regex::Regex;
 
 use crate::catalogs::{Catalog, Catalog1};
 use crate::models::traits::invoice::tipocomprobante::{
-    TipoComprobanteGetter, TipoComprobanteSetter,
+    InvoiceTipoComprobanteGetter, InvoiceTipoComprobanteSetter,
 };
 use crate::models::traits::serienumero::SerieNumeroGetter;
 use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
@@ -13,7 +13,7 @@ pub trait InvoiceTipoComprobanteRule {
 
 impl<T> InvoiceTipoComprobanteRule for T
 where
-    T: TipoComprobanteGetter + TipoComprobanteSetter + SerieNumeroGetter,
+    T: InvoiceTipoComprobanteGetter + InvoiceTipoComprobanteSetter + SerieNumeroGetter,
 {
     fn enrich(&mut self) -> bool {
         match &self.get_tipocomprobante() {

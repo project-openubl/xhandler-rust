@@ -1,6 +1,6 @@
-use crate::enricher::rules::detalle::detalles::DetallesRule;
 use chrono::NaiveDate;
 
+use crate::enricher::rules::detalle::detalles::DetallesRule;
 use crate::enricher::rules::fecha_emision::FechaEmisionRule;
 use crate::enricher::rules::firmante::FirmanteRule;
 use crate::enricher::rules::icbtasa::ICBTasaRule;
@@ -130,7 +130,6 @@ where
 
         while changed {
             let results = vec![
-                DetallesRule::enrich(self),
                 FechaEmisionRule::enrich(self, defaults),
                 FirmanteRule::enrich(self),
                 ICBTasaRule::enrich(self, defaults),
@@ -138,6 +137,7 @@ where
                 IVAPTasaRule::enrich(self, defaults),
                 MonedaRule::enrich(self),
                 ProveedorRule::enrich(self),
+                DetallesRule::enrich(self),
             ];
 
             changed = results.contains(&true);

@@ -4,6 +4,11 @@ use crate::models::general::Detalle;
 use crate::models::invoice::Invoice;
 
 pub mod icbtasa;
+pub mod igvtasa;
+pub mod igvtipo;
+pub mod isctasa;
+pub mod isctipo;
+pub mod precioreferenciatipo;
 pub mod unidadmedida;
 
 pub trait DetallesGetter {

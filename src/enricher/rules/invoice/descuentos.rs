@@ -1,6 +1,6 @@
 use crate::catalogs::{Catalog, Catalog53};
 use crate::models::traits::invoice::descuentos::{
-    DescuentoGetter, DescuentoSetter, DescuentosGetter,
+    DescuentoGetter, DescuentoSetter, InvoiceDescuentosGetter,
 };
 
 pub trait InvoiceDescuentosRule {
@@ -9,7 +9,7 @@ pub trait InvoiceDescuentosRule {
 
 impl<T> InvoiceDescuentosRule for T
 where
-    T: DescuentosGetter,
+    T: InvoiceDescuentosGetter,
 {
     fn enrich(&mut self) -> bool {
         self.get_descuentos()

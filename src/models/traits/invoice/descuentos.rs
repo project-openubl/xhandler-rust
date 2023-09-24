@@ -1,11 +1,11 @@
 use crate::models::general::Descuento;
 use crate::models::invoice::Invoice;
 
-pub trait DescuentosGetter {
+pub trait InvoiceDescuentosGetter {
     fn get_descuentos(&mut self) -> &mut Vec<Descuento>;
 }
 
-impl DescuentosGetter for Invoice {
+impl InvoiceDescuentosGetter for Invoice {
     fn get_descuentos(&mut self) -> &mut Vec<Descuento> {
         &mut self.descuentos
     }

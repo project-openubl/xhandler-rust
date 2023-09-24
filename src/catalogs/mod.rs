@@ -6,6 +6,33 @@ pub trait Label {
     fn label(&self) -> &str;
 }
 
+pub fn catalog7_value_of_code(code: &'static str) -> Option<Catalog7> {
+    match code {
+        "10" => Some(Catalog7::GravadoOperacionOnerosa),
+        "11" => Some(Catalog7::GravadoRetiroPorPremio),
+        "12" => Some(Catalog7::GravadoRetiroPorDonacion),
+        "13" => Some(Catalog7::GravadoRetiro),
+        "14" => Some(Catalog7::GravadoRetiroPorPublicidad),
+        "15" => Some(Catalog7::GravadoBonificaciones),
+        "16" => Some(Catalog7::GravadoRetiroPorEntregaATrabajadores),
+        "17" => Some(Catalog7::GravadoIvap),
+
+        "20" => Some(Catalog7::ExoneradoOperacionOnerosa),
+        "21" => Some(Catalog7::ExoneradoTransferenciaGratuita),
+
+        "30" => Some(Catalog7::InafectoOperacionOnerosa),
+        "31" => Some(Catalog7::InafectoRetiroPorBonificacion),
+        "32" => Some(Catalog7::InafectoRetiro),
+        "33" => Some(Catalog7::InafectoRetiroPorMuestrasMedicas),
+        "34" => Some(Catalog7::InafectoRetiroPorConvenioColectivo),
+        "35" => Some(Catalog7::InafectoRetiroPorPremio),
+        "36" => Some(Catalog7::InafectoRetiroPorPublicidad),
+
+        "40" => Some(Catalog7::Exportacion),
+        _ => None,
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum Catalog1 {
     Factura,
@@ -56,6 +83,151 @@ impl Catalog for Catalog6 {
             Self::TamTarjetaAndinaDeMigracion => "E",
             Self::PermisoTemporalDePermanenciaPtp => "F",
             Self::SalvoConducto => "G",
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Catalog7 {
+    GravadoOperacionOnerosa,
+    GravadoRetiroPorPremio,
+    GravadoRetiroPorDonacion,
+    GravadoRetiro,
+    GravadoRetiroPorPublicidad,
+    GravadoBonificaciones,
+    GravadoRetiroPorEntregaATrabajadores,
+    GravadoIvap,
+
+    ExoneradoOperacionOnerosa,
+    ExoneradoTransferenciaGratuita,
+
+    InafectoOperacionOnerosa,
+    InafectoRetiroPorBonificacion,
+    InafectoRetiro,
+    InafectoRetiroPorMuestrasMedicas,
+    InafectoRetiroPorConvenioColectivo,
+    InafectoRetiroPorPremio,
+    InafectoRetiroPorPublicidad,
+
+    Exportacion,
+}
+
+impl Catalog for Catalog7 {
+    fn code(&self) -> &str {
+        match &self {
+            Self::GravadoOperacionOnerosa => "10",
+            Self::GravadoRetiroPorPremio => "11",
+            Self::GravadoRetiroPorDonacion => "12",
+            Self::GravadoRetiro => "13",
+            Self::GravadoRetiroPorPublicidad => "14",
+            Self::GravadoBonificaciones => "15",
+            Self::GravadoRetiroPorEntregaATrabajadores => "16",
+            Self::GravadoIvap => "17",
+
+            Self::ExoneradoOperacionOnerosa => "20",
+            Self::ExoneradoTransferenciaGratuita => "21",
+
+            Self::InafectoOperacionOnerosa => "30",
+            Self::InafectoRetiroPorBonificacion => "31",
+            Self::InafectoRetiro => "32",
+            Self::InafectoRetiroPorMuestrasMedicas => "33",
+            Self::InafectoRetiroPorConvenioColectivo => "34",
+            Self::InafectoRetiroPorPremio => "35",
+            Self::InafectoRetiroPorPublicidad => "36",
+
+            Self::Exportacion => "40",
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum Catalog7Group {
+    Gravado,
+    Exonerado,
+    Inafecto,
+    Exportacion,
+    Gratuita,
+}
+
+impl Catalog for Catalog7Group {
+    fn code(&self) -> &str {
+        match &self {
+            Self::Gravado => "01",
+            Self::Exonerado => "02",
+            Self::Inafecto => "03",
+            Self::Exportacion => "04",
+            Self::Gratuita => "05",
+        }
+    }
+}
+
+impl Catalog7 {
+    pub fn group(&self) -> Catalog7Group {
+        match &self {
+            Catalog7::GravadoOperacionOnerosa => Catalog7Group::Gravado,
+            Catalog7::GravadoRetiroPorPremio => Catalog7Group::Gravado,
+            Catalog7::GravadoRetiroPorDonacion => Catalog7Group::Gravado,
+            Catalog7::GravadoRetiro => Catalog7Group::Gravado,
+            Catalog7::GravadoRetiroPorPublicidad => Catalog7Group::Gravado,
+            Catalog7::GravadoBonificaciones => Catalog7Group::Gravado,
+            Catalog7::GravadoRetiroPorEntregaATrabajadores => Catalog7Group::Gravado,
+            Catalog7::GravadoIvap => Catalog7Group::Gravado,
+
+            Catalog7::ExoneradoOperacionOnerosa => Catalog7Group::Exonerado,
+            Catalog7::ExoneradoTransferenciaGratuita => Catalog7Group::Exonerado,
+
+            Catalog7::InafectoOperacionOnerosa => Catalog7Group::Inafecto,
+            Catalog7::InafectoRetiroPorBonificacion => Catalog7Group::Inafecto,
+            Catalog7::InafectoRetiro => Catalog7Group::Inafecto,
+            Catalog7::InafectoRetiroPorMuestrasMedicas => Catalog7Group::Inafecto,
+            Catalog7::InafectoRetiroPorConvenioColectivo => Catalog7Group::Inafecto,
+            Catalog7::InafectoRetiroPorPremio => Catalog7Group::Inafecto,
+            Catalog7::InafectoRetiroPorPublicidad => Catalog7Group::Inafecto,
+
+            Catalog7::Exportacion => Catalog7Group::Exonerado,
+        }
+    }
+
+    pub fn onerosa(&self) -> bool {
+        match &self {
+            Catalog7::GravadoOperacionOnerosa => true,
+            Catalog7::GravadoRetiroPorPremio => false,
+            Catalog7::GravadoRetiroPorDonacion => false,
+            Catalog7::GravadoRetiro => false,
+            Catalog7::GravadoRetiroPorPublicidad => false,
+            Catalog7::GravadoBonificaciones => false,
+            Catalog7::GravadoRetiroPorEntregaATrabajadores => false,
+            Catalog7::GravadoIvap => true,
+
+            Catalog7::ExoneradoOperacionOnerosa => true,
+            Catalog7::ExoneradoTransferenciaGratuita => false,
+
+            Catalog7::InafectoOperacionOnerosa => true,
+            Catalog7::InafectoRetiroPorBonificacion => false,
+            Catalog7::InafectoRetiro => false,
+            Catalog7::InafectoRetiroPorMuestrasMedicas => false,
+            Catalog7::InafectoRetiroPorConvenioColectivo => false,
+            Catalog7::InafectoRetiroPorPremio => false,
+            Catalog7::InafectoRetiroPorPublicidad => false,
+
+            Catalog7::Exportacion => true,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum Catalog8 {
+    SistemaAlValor,
+    AplicacionAlMontoFijo,
+    SistemaDePreciosDeVentaAlPublico,
+}
+
+impl Catalog for Catalog8 {
+    fn code(&self) -> &str {
+        match &self {
+            Self::SistemaAlValor => "01",
+            Self::AplicacionAlMontoFijo => "02",
+            Self::SistemaDePreciosDeVentaAlPublico => "03",
         }
     }
 }
@@ -137,6 +309,21 @@ impl Catalog for Catalog12 {
             Self::DeclaracionSimplificadaDeImportacion => "09",
             Self::LiquidacionDeCompraEmitidaPorAnticipos => "10",
             Self::Otros => "99",
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum Catalog16 {
+    PrecioUnitarioIncluyeIgv,
+    ValorReferencialUnitarioEnOperacionesNoOnerosas,
+}
+
+impl Catalog for Catalog16 {
+    fn code(&self) -> &str {
+        match &self {
+            Self::PrecioUnitarioIncluyeIgv => "01",
+            Self::ValorReferencialUnitarioEnOperacionesNoOnerosas => "02",
         }
     }
 }
