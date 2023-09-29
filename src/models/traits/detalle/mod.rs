@@ -5,12 +5,21 @@ use crate::models::invoice::Invoice;
 
 pub mod cantidad;
 pub mod icb;
+pub mod icbaplica;
 pub mod icbtasa;
+pub mod igv;
+pub mod igvbaseimponible;
 pub mod igvtasa;
 pub mod igvtipo;
+pub mod isc;
+pub mod iscbaseimponible;
 pub mod isctasa;
 pub mod isctipo;
+pub mod precio;
+pub mod precioconimpuestos;
+pub mod precioreferencia;
 pub mod precioreferenciatipo;
+pub mod totalimpuestos;
 pub mod unidadmedida;
 
 pub trait DetallesGetter {
