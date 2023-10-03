@@ -48,6 +48,8 @@ fn main() {
         anticipos: vec![],
         descuentos: vec![],
         detalles: vec![],
+        total_impuestos: None,
+        total_importe: None,
     };
 
     let mut credit_note = CreditNote {
@@ -80,6 +82,9 @@ fn main() {
         sustento_descripcion: "mis razones",
 
         detalles: vec![],
+
+        total_impuestos: None,
+        total_importe: None,
     };
 
     invoice.enrich(&defaults);

@@ -3,13 +3,6 @@ use std::fmt::Debug;
 use chrono::NaiveDate;
 
 #[derive(Clone, Debug)]
-pub enum PorcentajeMonto {
-    PorcentajeMonto(f32, f64),
-    Porcentaje(f32),
-    Monto(f64),
-}
-
-#[derive(Clone, Debug)]
 pub struct Detraccion {
     /// Catalog59
     pub medio_de_pago: &'static str,
@@ -17,7 +10,8 @@ pub struct Detraccion {
 
     /// Catalog54
     pub tipo_bien_detraido: &'static str,
-    pub porcentaje_monto: PorcentajeMonto,
+    pub porcentaje: f64,
+    pub monto: Option<f64>,
 }
 
 #[derive(Clone, Debug)]
@@ -43,6 +37,11 @@ pub struct CuotaDePago {
 pub struct Percepcion {
     /// Catalog53
     pub tipo: &'static str,
+
+    pub porcentaje: f64,
+    pub monto: Option<f64>,
+    pub monto_base: Option<f64>,
+    pub monto_total: Option<f64>,
 }
 
 #[derive(Clone, Debug)]
@@ -100,4 +99,33 @@ pub struct Detalle {
     pub isc_base_imponible: Option<f64>,
 
     pub total_impuestos: Option<f64>,
+}
+
+#[derive(Clone, Debug)]
+pub struct TotalImporte {
+    pub anticipos: f64,
+    pub descuentos: f64,
+    pub importe: f64,
+    pub importe_sin_impuestos: f64,
+    pub importe_con_impuestos: f64,
+}
+
+#[derive(Clone, Debug)]
+pub struct TotalImpuestos {
+    pub total: f64,
+    pub ivap_importe: f64,
+    pub ivap_base_imponible: f64,
+    pub exportacion_importe: f64,
+    pub exportacion_base_imponible: f64,
+    pub gravado_importe: f64,
+    pub gravado_base_imponible: f64,
+    pub inafecto_importe: f64,
+    pub inafecto_base_imponible: f64,
+    pub exonerado_importe: f64,
+    pub exonerado_base_imponible: f64,
+    pub gratuito_importe: f64,
+    pub gratuito_base_imponible: f64,
+    pub icb_importe: f64,
+    pub isc_importe: f64,
+    pub isc_base_imponible: f64,
 }

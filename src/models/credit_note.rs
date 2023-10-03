@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use chrono::NaiveDate;
 
 use crate::models::common::{Cliente, Firmante, Proveedor};
-use crate::models::general::Detalle;
+use crate::models::general::{Detalle, TotalImporte, TotalImpuestos};
 
 pub struct CreditNote {
     pub leyendas: HashMap<&'static str, &'static str>,
@@ -26,4 +26,7 @@ pub struct CreditNote {
     pub sustento_descripcion: &'static str,
 
     pub detalles: Vec<Detalle>,
+
+    pub total_importe: Option<TotalImporte>,
+    pub total_impuestos: Option<TotalImpuestos>,
 }

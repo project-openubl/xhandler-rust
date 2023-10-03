@@ -5,6 +5,6 @@ pub mod igvbaseimponible;
 pub mod isc;
 pub mod iscbaseimponible;
 pub mod precio;
+pub mod precioconimpuestos;
 pub mod precioreferencia;
 pub mod totalimpuestos;
-pub mod precioconimpuestos;

@@ -22,7 +22,7 @@ where
             None => {
                 if self.get_detraccion().is_some() {
                     self.set_tipooperacion(Catalog51::OperacionSujetaADetraccion.code());
-                } else if self.get_percepcion().is_some() {
+                } else if self.get_detraccion().is_some() {
                     self.set_tipooperacion(Catalog51::OperacionSujetaAPercepcion.code());
                 } else {
                     self.set_tipooperacion(Catalog51::VentaInterna.code());

@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use chrono::NaiveDate;
 
 use crate::models::common::{Cliente, Direccion, Firmante, Proveedor};
-use crate::models::general::{Anticipo, Descuento, Detalle, Detraccion, FormaDePago, Percepcion};
+use crate::models::general::{
+    Anticipo, Descuento, Detalle, Detraccion, FormaDePago, Percepcion, TotalImporte, TotalImpuestos,
+};
 
 pub struct Invoice {
     pub leyendas: HashMap<&'static str, &'static str>,
@@ -26,6 +28,7 @@ pub struct Invoice {
 
     pub detraccion: Option<Detraccion>,
     pub percepcion: Option<Percepcion>,
+
     pub direccion_entrega: Option<Direccion>,
     pub forma_de_pago: Option<FormaDePago>,
 
@@ -33,4 +36,7 @@ pub struct Invoice {
     pub descuentos: Vec<Descuento>,
 
     pub detalles: Vec<Detalle>,
+
+    pub total_importe: Option<TotalImporte>,
+    pub total_impuestos: Option<TotalImpuestos>,
 }

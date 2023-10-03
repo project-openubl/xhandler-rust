@@ -2,16 +2,18 @@ use crate::catalogs::catalog7_value_of_code;
 use crate::models::traits::detalle::igvtasa::DetalleIGVTasaGetter;
 use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
 use crate::models::traits::detalle::isctasa::DetalleISCTasaGetter;
-use crate::models::traits::detalle::precio::{DetallePrecioGetter};
-use crate::models::traits::detalle::precioconimpuestos::{DetallePrecioConImpuestosGetter, DetallePrecioConImpuestosSetter};
+use crate::models::traits::detalle::precio::DetallePrecioGetter;
+use crate::models::traits::detalle::precioconimpuestos::{
+    DetallePrecioConImpuestosGetter, DetallePrecioConImpuestosSetter,
+};
 
 pub trait DetallePrecioConImpuestosProcessRule {
     fn process(&mut self) -> bool;
 }
 
 impl<T> DetallePrecioConImpuestosProcessRule for T
-    where
-        T: DetallePrecioConImpuestosGetter
+where
+    T: DetallePrecioConImpuestosGetter
         + DetallePrecioConImpuestosSetter
         + DetalleIGVTipoGetter
         + DetallePrecioGetter

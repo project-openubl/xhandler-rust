@@ -33,6 +33,34 @@ pub fn catalog7_value_of_code(code: &'static str) -> Option<Catalog7> {
     }
 }
 
+pub fn catalog53_value_of_code(code: &'static str) -> Option<Catalog53> {
+    match code {
+        "00" => Some(Catalog53::DescuentoAfectaBaseImponibleIgvIvap),
+        "01" => Some(Catalog53::DescuentoNoAfectaBaseImponibleIgvIvap),
+        "02" => Some(Catalog53::DescuentoGlobalAfectaBaseImponibleIgvIvap),
+        "03" => Some(Catalog53::DescuentoGlobalNoAfectaBaseImponibleIgvIvap),
+        "04" => Some(Catalog53::DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap),
+        "05" => Some(Catalog53::DescuentoGlobalPorAnticiposExonerados),
+        "06" => Some(Catalog53::DescuentoGlobalPorAnticiposInafectos),
+        "07" => Some(Catalog53::FactorDeCompensacion),
+        "20" => Some(Catalog53::AnticipoDeIsc),
+        "45" => Some(Catalog53::FISE),
+        "46" => Some(Catalog53::RecargoAlConsumoYOPropinas),
+        "47" => Some(Catalog53::CargosQueAfectanBaseImponibleIgvIvap),
+        "48" => Some(Catalog53::CargosQueNoAfectanBaseImponibleIgvIvap),
+        "49" => Some(Catalog53::CargosGlobalesQueAfectanBaseImponibleIgvIvap),
+        "50" => Some(Catalog53::CargosGlobalesQueNoAfectanBaseImponibleIgvIvap),
+        "51" => Some(Catalog53::PercepcionVentaInterna),
+        "52" => Some(Catalog53::PercepcionALaAdquisicionDeCombustible),
+        "53" => Some(Catalog53::PercepcionRealizadaAlAgenteDePercepcionConTasaEspecial),
+        "61" => Some(Catalog53::FactorDeAportacion),
+        "62" => Some(Catalog53::RetencionDeRentaPorAnticipos),
+        "63" => Some(Catalog53::RetencionDelIgv),
+        "64" => Some(Catalog53::RetencionDeRentaDeSegundaCategoria),
+        _ => None,
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum Catalog1 {
     Factura,
@@ -48,6 +76,35 @@ impl Catalog for Catalog1 {
             Self::Boleta => "03",
             Self::NotaCredito => "07",
             Self::NotaDebito => "08",
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Catalog5 {
+    Igv,
+    ImpuestoArrozPilado,
+    Isc,
+    Exportacion,
+    Gratuito,
+    Exonerado,
+    Inafecto,
+    IcbPer,
+    Otros,
+}
+
+impl Catalog for Catalog5 {
+    fn code(&self) -> &str {
+        match &self {
+            Self::Igv => "1000",
+            Self::ImpuestoArrozPilado => "1016",
+            Self::Isc => "2000",
+            Self::Exportacion => "9995",
+            Self::Gratuito => "9996",
+            Self::Exonerado => "9997",
+            Self::Inafecto => "9998",
+            Self::IcbPer => "7152",
+            Self::Otros => "9999",
         }
     }
 }
@@ -213,6 +270,32 @@ impl Catalog7 {
             Catalog7::Exportacion => true,
         }
     }
+
+    pub fn tax_category(&self) -> Catalog5 {
+        match &self {
+            Catalog7::GravadoOperacionOnerosa => Catalog5::Igv,
+            Catalog7::GravadoRetiroPorPremio => Catalog5::Gratuito,
+            Catalog7::GravadoRetiroPorDonacion => Catalog5::Gratuito,
+            Catalog7::GravadoRetiro => Catalog5::Gratuito,
+            Catalog7::GravadoRetiroPorPublicidad => Catalog5::Gratuito,
+            Catalog7::GravadoBonificaciones => Catalog5::Gratuito,
+            Catalog7::GravadoRetiroPorEntregaATrabajadores => Catalog5::Gratuito,
+            Catalog7::GravadoIvap => Catalog5::ImpuestoArrozPilado,
+
+            Catalog7::ExoneradoOperacionOnerosa => Catalog5::Exonerado,
+            Catalog7::ExoneradoTransferenciaGratuita => Catalog5::Gratuito,
+
+            Catalog7::InafectoOperacionOnerosa => Catalog5::Inafecto,
+            Catalog7::InafectoRetiroPorBonificacion => Catalog5::Gratuito,
+            Catalog7::InafectoRetiro => Catalog5::Gratuito,
+            Catalog7::InafectoRetiroPorMuestrasMedicas => Catalog5::Gratuito,
+            Catalog7::InafectoRetiroPorConvenioColectivo => Catalog5::Gratuito,
+            Catalog7::InafectoRetiroPorPremio => Catalog5::Gratuito,
+            Catalog7::InafectoRetiroPorPublicidad => Catalog5::Gratuito,
+
+            Catalog7::Exportacion => Catalog5::Exportacion,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -375,7 +458,7 @@ impl Label for Catalog52 {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Hash, Eq)]
 pub enum Catalog53 {
     DescuentoAfectaBaseImponibleIgvIvap,
     DescuentoNoAfectaBaseImponibleIgvIvap,

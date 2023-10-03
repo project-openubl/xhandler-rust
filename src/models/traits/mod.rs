@@ -10,3 +10,5 @@ pub mod moneda;
 pub mod note;
 pub mod proveedor;
 pub mod serienumero;
+pub mod totalimporte;
+pub mod totalimpuestos;
