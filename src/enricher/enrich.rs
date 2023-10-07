@@ -23,6 +23,8 @@ use crate::enricher::rules::phase1enrich::note::debitnote::tiponota::DebitNoteTi
 use crate::enricher::rules::phase1enrich::note::tipocomprobanteafectado::NoteTipoComprobanteAfectadoEnrichRule;
 use crate::enricher::rules::phase1enrich::proveedor::ProveedorEnrichRule;
 use crate::enricher::rules::phase2process::detalle::detalles::DetallesProcessRule;
+use crate::enricher::rules::phase3summary::invoice::totalimporte::InvoiceTotalImporteSummaryRule;
+use crate::enricher::rules::phase3summary::invoice::totalimpuestos::InvoiceTotalImpuestosSummaryRule;
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
@@ -35,7 +37,7 @@ pub struct Defaults {
     pub date: NaiveDate,
 }
 
-//
+// ENRICH
 
 pub trait EnrichTrait {
     fn enrich(&mut self, defaults: &Defaults);
@@ -57,7 +59,7 @@ trait EnrichDebitNoteTrait {
     fn enrich_debitnote(&mut self, defaults: &Defaults);
 }
 
-//
+// PROCESS
 
 pub trait ProcessTrait {
     fn process(&mut self);
@@ -77,6 +79,28 @@ trait ProcessCreditNoteTrait {
 
 trait ProcessDebitNoteTrait {
     fn process_debitnote(&mut self);
+}
+
+// SUMMARY
+
+pub trait SummaryTrait {
+    fn summary(&mut self);
+}
+
+trait SummaryCommonTrait {
+    fn summary_common(&mut self);
+}
+
+trait SummaryInvoiceTrait {
+    fn summary_invoice(&mut self);
+}
+
+trait SummaryCreditNoteTrait {
+    fn summary_creditnote(&mut self);
+}
+
+trait SummaryDebitNoteTrait {
+    fn summary_debitnote(&mut self);
 }
 
 // Enrich implementations
@@ -239,6 +263,44 @@ where
 
         while changed {
             let results = vec![DetallesProcessRule::process(self)];
+
+            changed = results.contains(&true);
+        }
+    }
+}
+
+// Summary implementations
+
+impl SummaryTrait for Invoice {
+    fn summary(&mut self) {
+        self.summary_common();
+    }
+}
+
+impl SummaryTrait for CreditNote {
+    fn summary(&mut self) {
+        // self.summary_common();
+    }
+}
+
+impl SummaryTrait for DebitNote {
+    fn summary(&mut self) {
+        // self.summary_common();
+    }
+}
+
+impl<T> SummaryCommonTrait for T
+where
+    T: InvoiceTotalImpuestosSummaryRule + InvoiceTotalImporteSummaryRule,
+{
+    fn summary_common(&mut self) {
+        let mut changed = true;
+
+        while changed {
+            let results = vec![
+                InvoiceTotalImpuestosSummaryRule::summary(self),
+                InvoiceTotalImporteSummaryRule::summary(self),
+            ];
 
             changed = results.contains(&true);
         }

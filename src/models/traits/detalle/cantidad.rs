@@ -1,7 +1,7 @@
 use crate::models::general::Detalle;
 
 pub trait DetalleCantidadGetter {
-    fn get_cantidad(&self) -> &f64;
+    fn get_cantidad(&self) -> f64;
 }
 
 pub trait DetalleCantidadSetter {
@@ -9,8 +9,8 @@ pub trait DetalleCantidadSetter {
 }
 
 impl DetalleCantidadGetter for Detalle {
-    fn get_cantidad(&self) -> &f64 {
-        &self.cantidad
+    fn get_cantidad(&self) -> f64 {
+        self.cantidad
     }
 }
 

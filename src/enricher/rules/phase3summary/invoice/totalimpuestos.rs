@@ -6,19 +6,19 @@ use crate::models::traits::invoice::descuentos::InvoiceDescuentosGetter;
 use crate::models::traits::totalimpuestos::{TotalImpuestosGetter, TotalImpuestosSetter};
 use std::collections::HashMap;
 
-pub trait TotalImpuestosEnrichRule {
-    fn enrich(&mut self) -> bool;
+pub trait InvoiceTotalImpuestosSummaryRule {
+    fn summary(&mut self) -> bool;
 }
 
-impl<T> TotalImpuestosEnrichRule for T
-    where
-        T: TotalImpuestosGetter
+impl<T> InvoiceTotalImpuestosSummaryRule for T
+where
+    T: TotalImpuestosGetter
         + TotalImpuestosSetter
         + DetallesGetter
         + InvoiceDescuentosGetter
         + InvoiceAnticiposGetter,
 {
-    fn enrich(&mut self) -> bool {
+    fn summary(&mut self) -> bool {
         match &self.get_totalimpuestos() {
             Some(..) => false,
             None => {
@@ -38,8 +38,8 @@ impl<T> TotalImpuestosEnrichRule for T
                     exonerado.importe_icb,
                     gratuito.importe_icb,
                 ]
-                    .iter()
-                    .fold(0f64, |a, b| a + b);
+                .iter()
+                .fold(0f64, |a, b| a + b);
 
                 // ISC
                 let isc_importe = vec![
@@ -50,8 +50,8 @@ impl<T> TotalImpuestosEnrichRule for T
                     exonerado.importe_isc,
                     gratuito.importe_isc,
                 ]
-                    .iter()
-                    .fold(0f64, |a, b| a + b);
+                .iter()
+                .fold(0f64, |a, b| a + b);
 
                 let isc_base_imponible = &self
                     .get_detalles()
