@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::catalogs::{catalog53_value_of_code, catalog7_value_of_code, Catalog5, Catalog53};
 use crate::models::general::TotalImporte;
 use crate::models::traits::detalle::DetallesGetter;
@@ -5,7 +7,6 @@ use crate::models::traits::igv::IGVTasaGetter;
 use crate::models::traits::invoice::anticipos::InvoiceAnticiposGetter;
 use crate::models::traits::invoice::descuentos::InvoiceDescuentosGetter;
 use crate::models::traits::totalimporte::{TotalImporteGetter, TotalImporteSetter};
-use std::collections::HashMap;
 
 pub trait InvoiceTotalImporteSummaryRule {
     fn summary(&mut self) -> bool;

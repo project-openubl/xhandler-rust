@@ -1,8 +1,9 @@
 use std::fmt::Debug;
 
 use chrono::NaiveDate;
+use serde::Serialize;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Detraccion {
     /// Catalog59
     pub medio_de_pago: &'static str,
@@ -14,26 +15,26 @@ pub struct Detraccion {
     pub monto: Option<f64>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub enum TipoFormaDePago {
     Credito,
     Contado,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct FormaDePago {
     pub tipo: TipoFormaDePago,
     pub cuotas: Vec<CuotaDePago>,
     pub total: Option<f64>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct CuotaDePago {
     pub importe: f64,
     pub fecha_pago: NaiveDate,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Percepcion {
     /// Catalog53
     pub tipo: &'static str,
@@ -44,7 +45,7 @@ pub struct Percepcion {
     pub monto_total: Option<f64>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Anticipo {
     /// Catalog53. Valores válidos: "04", "05", "06"
     pub tipo: Option<&'static str>,
@@ -58,7 +59,7 @@ pub struct Anticipo {
     pub monto: f64,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Descuento {
     /// Catalog53.
     pub tipo: Option<&'static str>,
@@ -67,7 +68,21 @@ pub struct Descuento {
     pub factor: Option<f64>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
+pub struct Guia {
+    /// Catalog1. Valores válidos: "09", "31"
+    pub tipo_documento: f64,
+    pub serie_numero: &'static str,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct DocumentoRelacionado {
+    /// Catalog12.
+    pub tipo_documento: f64,
+    pub serie_numero: &'static str,
+}
+
+#[derive(Clone, Debug, Serialize)]
 pub struct Detalle {
     pub descripcion: &'static str,
     pub cantidad: f64,
@@ -101,7 +116,7 @@ pub struct Detalle {
     pub total_impuestos: Option<f64>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct TotalImporte {
     pub anticipos: f64,
     pub descuentos: f64,
@@ -110,7 +125,7 @@ pub struct TotalImporte {
     pub importe_con_impuestos: f64,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct TotalImpuestos {
     pub total: f64,
     pub ivap_importe: f64,

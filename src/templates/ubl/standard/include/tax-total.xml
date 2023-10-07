@@ -1,0 +1,112 @@
+    <cac:TaxTotal>
+        <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.total | round(method="ceil", precision=2)}</cbc:TaxAmount>
+        {% if totalImpuestos.iscImporte -%}
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.iscBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.iscImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>2000</cbc:ID>
+                    <cbc:Name>ISC</cbc:Name>
+                    <cbc:TaxTypeCode>EXC</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        {% endif -%}
+        {% if totalImpuestos.gravadoBaseImponible -%}
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.gravadoBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.gravadoImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
+                <cac:TaxScheme>
+                    <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">1000</cbc:ID>
+                    <cbc:Name>IGV</cbc:Name>
+                    <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        {% endif -%}
+        {% if totalImpuestos.inafectoBaseImponible -%}
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.inafectoBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.inafectoImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
+                <cac:TaxScheme>
+                    <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">9998</cbc:ID>
+                    <cbc:Name>INA</cbc:Name>
+                    <cbc:TaxTypeCode>FRE</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        {% endif -%}
+        {% if totalImpuestos.exoneradoBaseImponible -%}
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.exoneradoBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.exoneradoImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
+                <cac:TaxScheme>
+                    <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">9997</cbc:ID>
+                    <cbc:Name>EXO</cbc:Name>
+                    <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        {% endif -%}
+        {% if totalImpuestos.gratuitoBaseImponible -%}
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.gratuitoBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.gratuitoImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
+                <cac:TaxScheme>
+                    <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">9996</cbc:ID>
+                    <cbc:Name>GRA</cbc:Name>
+                    <cbc:TaxTypeCode>FRE</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        {% endif -%}
+        {% if totalImpuestos.exportacionBaseImponible -%}
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.exportacionBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">0</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>9995</cbc:ID>
+                    <cbc:Name>EXP</cbc:Name>
+                    <cbc:TaxTypeCode>FRE</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        {% endif -%}
+        {% if totalImpuestos.ivapBaseImponible -%}
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.ivapBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.ivapImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
+                <cac:TaxScheme>
+                    <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">1016</cbc:ID>
+                    <cbc:Name>IVAP</cbc:Name>
+                    <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        {% endif -%}
+        {% if totalImpuestos.icbImporte -%}
+        <cac:TaxSubtotal>
+            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.icbImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
+                <cac:TaxScheme>
+                    <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">7152</cbc:ID>
+                    <cbc:Name>ICBPER</cbc:Name>
+                    <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        {% endif -%}
+    </cac:TaxTotal>

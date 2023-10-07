@@ -1,6 +1,8 @@
 use std::fmt::Debug;
 
-#[derive(Clone, Debug)]
+use serde::Serialize;
+
+#[derive(Clone, Debug, Serialize)]
 pub struct Proveedor {
     pub ruc: &'static str,
     pub razon_social: &'static str,
@@ -9,13 +11,13 @@ pub struct Proveedor {
     pub contacto: Option<Contacto>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Firmante {
     pub ruc: &'static str,
     pub razon_social: &'static str,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Cliente {
     /// Catalog6
     pub tipo_documento_identidad: &'static str,
@@ -25,7 +27,7 @@ pub struct Cliente {
     pub contacto: Option<Contacto>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Direccion {
     pub ubigeo: Option<&'static str>,
     pub codigo_local: &'static str,
@@ -37,7 +39,7 @@ pub struct Direccion {
     pub codigo_pais: Option<&'static str>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Contacto {
     pub telefono: &'static str,
     pub email: &'static str,

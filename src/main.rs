@@ -7,6 +7,7 @@ use rust::enricher::enrich::{Defaults, EnrichTrait};
 use rust::models::common::{Cliente, Proveedor};
 use rust::models::credit_note::CreditNote;
 use rust::models::invoice::Invoice;
+use rust::renderer::render_invoice;
 
 fn main() {
     let defaults = Defaults {
@@ -24,6 +25,7 @@ fn main() {
         ivap_tasa: None,
         moneda: None,
         fecha_emision: None,
+        fecha_vencimiento: None,
         firmante: None,
         proveedor: Proveedor {
             ruc: "123456789012",
@@ -50,6 +52,11 @@ fn main() {
         detalles: vec![],
         total_impuestos: None,
         total_importe: None,
+
+        guias: vec![],
+        documentos_relacionados: vec![],
+        observaciones: None,
+        orden_de_compra: None,
     };
 
     let mut credit_note = CreditNote {
@@ -85,6 +92,11 @@ fn main() {
 
         total_impuestos: None,
         total_importe: None,
+
+        guias: vec![],
+        documentos_relacionados: vec![],
+
+        orden_de_compra: None,
     };
 
     invoice.enrich(&defaults);
@@ -96,5 +108,9 @@ fn main() {
     println!("Moneda {}", invoice.moneda.unwrap());
     println!("Fecha {}", invoice.fecha_emision.unwrap());
     println!("Proveedor {:?}", invoice.proveedor);
-    println!("Firmante {:?}", invoice.firmante.unwrap());
+    // println!("Firmante {:?}", invoice.firmante.unwrap());
+
+    let a = &invoice;
+    let xml = render_invoice(a).unwrap();
+    println!("xml {}", xml);
 }

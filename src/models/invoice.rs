@@ -1,18 +1,19 @@
 use std::collections::HashMap;
 
 use chrono::NaiveDate;
+use serde::Serialize;
 
 use crate::models::common::{Cliente, Direccion, Firmante, Proveedor};
-use crate::models::general::{
-    Anticipo, Descuento, Detalle, Detraccion, FormaDePago, Percepcion, TotalImporte, TotalImpuestos,
-};
+use crate::models::general::{Anticipo, Descuento, Detalle, Detraccion, DocumentoRelacionado, FormaDePago, Guia, Percepcion, TotalImporte, TotalImpuestos};
 
+#[derive(Debug, Serialize)]
 pub struct Invoice {
     pub leyendas: HashMap<&'static str, &'static str>,
 
     pub serie_numero: &'static str,
     pub moneda: Option<&'static str>,
     pub fecha_emision: Option<NaiveDate>,
+    pub fecha_vencimiento: Option<NaiveDate>,
     pub proveedor: Proveedor,
     pub cliente: Cliente,
     pub firmante: Option<Firmante>,
@@ -39,4 +40,10 @@ pub struct Invoice {
 
     pub total_importe: Option<TotalImporte>,
     pub total_impuestos: Option<TotalImpuestos>,
+
+    pub guias: Vec<Guia>,
+    pub documentos_relacionados: Vec<DocumentoRelacionado>,
+
+    pub observaciones: Option<&'static str>,
+    pub orden_de_compra: Option<&'static str>,
 }
