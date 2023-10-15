@@ -1,28 +1,30 @@
-                    {% if direccion.ubigeo -%}
+{% macro address(direccion) %}
+                    {% if direccion.ubigeo %}
                     <cbc:ID>{{direccion.ubigeo}}</cbc:ID>
-                    {% endif -%}
-                    {% if direccion.codigoLocal -%}
+                    {% endif %}
+                    {% if direccion.codigo_local %}
                     <cbc:AddressTypeCode>{{direccion.codigo_local}}</cbc:AddressTypeCode>
-                    {% endif -%}
-                    {% if direccion.urbanizacion -%}
+                    {% endif %}
+                    {% if direccion.urbanizacion %}
                     <cbc:CitySubdivisionName>{{direccion.urbanizacion}}</cbc:CitySubdivisionName>
-                    {% endif -%}
-                    {% if direccion.provincia -%}
+                    {% endif %}
+                    {% if direccion.provincia %}
                     <cbc:CityName>{{direccion.provincia}}</cbc:CityName>
-                    {% endif -%}
-                    {% if direccion.departamento -%}
+                    {% endif %}
+                    {% if direccion.departamento %}
                     <cbc:CountrySubentity>{{direccion.departamento}}</cbc:CountrySubentity>
-                    {% endif -%}
-                    {% if direccion.distrito -%}
+                    {% endif %}
+                    {% if direccion.distrito %}
                     <cbc:District>{{direccion.distrito}}</cbc:District>
-                    {% endif -%}
-                    {% if direccion.direccion -%}
+                    {% endif %}
+                    {% if direccion.direccion %}
                     <cac:AddressLine>
                         <cbc:Line><![CDATA[{{direccion.direccion | escape}}]]></cbc:Line>
                     </cac:AddressLine>
-                    {% endif -%}
-                    {% if direccion.codigoPais -%}
+                    {% endif %}
+                    {% if direccion.codigoPais %}
                     <cac:Country>
                         <cbc:IdentificationCode>{{direccion.codigo_pais}}</cbc:IdentificationCode>
                     </cac:Country>
-                    {% endif -%}
+                    {% endif %}
+{% endmacro address %}

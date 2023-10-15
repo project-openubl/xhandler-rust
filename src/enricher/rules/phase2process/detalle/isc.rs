@@ -17,7 +17,7 @@ where
             &self.get_isctasa(),
         ) {
             (None, Some(isc_base_imponible), Some(isc_tasa)) => {
-                let isc = isc_base_imponible * *isc_tasa as f64;
+                let isc = isc_base_imponible * *isc_tasa;
                 self.set_isc(isc);
                 true
             }

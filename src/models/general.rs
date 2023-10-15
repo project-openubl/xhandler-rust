@@ -95,9 +95,9 @@ pub struct Detalle {
     /// Catalog16
     pub precio_referencia_tipo: Option<&'static str>,
 
-    pub igv_tasa: Option<f32>,
-    pub icb_tasa: Option<f32>,
-    pub isc_tasa: Option<f32>,
+    pub igv_tasa: Option<f64>,
+    pub icb_tasa: Option<f64>,
+    pub isc_tasa: Option<f64>,
 
     /// Catalog7
     pub igv_tipo: Option<&'static str>,

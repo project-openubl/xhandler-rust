@@ -4,7 +4,10 @@ use chrono::NaiveDate;
 use serde::Serialize;
 
 use crate::models::common::{Cliente, Direccion, Firmante, Proveedor};
-use crate::models::general::{Anticipo, Descuento, Detalle, Detraccion, DocumentoRelacionado, FormaDePago, Guia, Percepcion, TotalImporte, TotalImpuestos};
+use crate::models::general::{
+    Anticipo, Descuento, Detalle, Detraccion, DocumentoRelacionado, FormaDePago, Guia, Percepcion,
+    TotalImporte, TotalImpuestos,
+};
 
 #[derive(Debug, Serialize)]
 pub struct Invoice {
@@ -17,9 +20,9 @@ pub struct Invoice {
     pub proveedor: Proveedor,
     pub cliente: Cliente,
     pub firmante: Option<Firmante>,
-    pub icb_tasa: Option<f32>,
-    pub igv_tasa: Option<f32>,
-    pub ivap_tasa: Option<f32>,
+    pub icb_tasa: Option<f64>,
+    pub igv_tasa: Option<f64>,
+    pub ivap_tasa: Option<f64>,
 
     /// Catalog1
     pub tipo_comprobante: Option<&'static str>,

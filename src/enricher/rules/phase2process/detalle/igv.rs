@@ -17,7 +17,7 @@ where
             &self.get_igvtasa(),
         ) {
             (None, Some(igv_base_imponible), Some(igv_tasa)) => {
-                let igv = igv_base_imponible * *igv_tasa as f64;
+                let igv = igv_base_imponible * *igv_tasa;
                 self.set_igv(igv);
                 true
             }

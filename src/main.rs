@@ -2,12 +2,12 @@ use std::collections::HashMap;
 
 use chrono::NaiveDate;
 
-use rust::catalogs::{Catalog, Catalog6};
-use rust::enricher::enrich::{Defaults, EnrichTrait};
-use rust::models::common::{Cliente, Proveedor};
-use rust::models::credit_note::CreditNote;
-use rust::models::invoice::Invoice;
-use rust::renderer::render_invoice;
+use xbuilder::catalogs::{Catalog, Catalog6};
+use xbuilder::enricher::enrich::{Defaults, EnrichTrait};
+use xbuilder::models::common::{Cliente, Proveedor};
+use xbuilder::models::credit_note::CreditNote;
+use xbuilder::models::invoice::Invoice;
+use xbuilder::renderer::render_invoice;
 
 fn main() {
     let defaults = Defaults {

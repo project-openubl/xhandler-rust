@@ -59,7 +59,7 @@ where
                     .iter()
                     .filter(|e| {
                         if let Some(isc_tasa) = e.isc_tasa {
-                            isc_tasa > 0f32
+                            isc_tasa > 0f64
                         } else {
                             false
                         }

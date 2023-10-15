@@ -1,9 +1,10 @@
+
     <cac:TaxTotal>
-        <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.total | round(method="ceil", precision=2)}</cbc:TaxAmount>
-        {% if totalImpuestos.iscImporte -%}
+        <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.total | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
+        {% if total_impuestos.isc_importe %}
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.iscBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.iscImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.isc_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.isc_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cac:TaxScheme>
                     <cbc:ID>2000</cbc:ID>
@@ -12,11 +13,11 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif -%}
-        {% if totalImpuestos.gravadoBaseImponible -%}
+        {% endif %}
+        {% if total_impuestos.gravado_base_imponible %}
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.gravadoBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.gravadoImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.gravado_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.gravado_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
                 <cac:TaxScheme>
@@ -26,11 +27,11 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif -%}
-        {% if totalImpuestos.inafectoBaseImponible -%}
+        {% endif %}
+        {% if total_impuestos.inafecto_base_imponible %}
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.inafectoBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.inafectoImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.inafecto_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.inafecto_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
                 <cac:TaxScheme>
@@ -40,11 +41,11 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif -%}
-        {% if totalImpuestos.exoneradoBaseImponible -%}
+        {% endif %}
+        {% if total_impuestos.exonerado_base_imponible %}
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.exoneradoBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.exoneradoImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.exonerado_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.exonerado_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
                 <cac:TaxScheme>
@@ -54,11 +55,11 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif -%}
-        {% if totalImpuestos.gratuitoBaseImponible -%}
+        {% endif %}
+        {% if total_impuestos.gratuito_base_imponible %}
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.gratuitoBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.gratuitoImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.gratuito_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.gratuito_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
                 <cac:TaxScheme>
@@ -68,10 +69,10 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif -%}
-        {% if totalImpuestos.exportacionBaseImponible -%}
+        {% endif %}
+        {% if total_impuestos.exportacion_base_imponible %}
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.exportacionBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.exportacion_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{{moneda}}">0</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cac:TaxScheme>
@@ -81,11 +82,11 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif -%}
-        {% if totalImpuestos.ivapBaseImponible -%}
+        {% endif %}
+        {% if total_impuestos.ivap_base_imponible %}
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="{{moneda}}">{totalImpuestos.ivapBaseImponible | round(method="ceil", precision=2)}</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.ivapImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.ivap_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.ivapImporte | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
                 <cac:TaxScheme>
@@ -95,10 +96,10 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif -%}
-        {% if totalImpuestos.icbImporte -%}
+        {% endif %}
+        {% if total_impuestos.icbImporte %}
         <cac:TaxSubtotal>
-            <cbc:TaxAmount currencyID="{{moneda}}">{totalImpuestos.icbImporte | round(method="ceil", precision=2)}</cbc:TaxAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.icbImporte | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
                 <cac:TaxScheme>
@@ -108,5 +109,5 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif -%}
+        {% endif %}
     </cac:TaxTotal>

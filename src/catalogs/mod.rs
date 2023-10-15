@@ -6,7 +6,7 @@ pub trait Label {
     fn label(&self) -> &str;
 }
 
-pub fn catalog7_value_of_code(code: &'static str) -> Option<Catalog7> {
+pub fn catalog7_value_of_code(code: &str) -> Option<Catalog7> {
     match code {
         "10" => Some(Catalog7::GravadoOperacionOnerosa),
         "11" => Some(Catalog7::GravadoRetiroPorPremio),
@@ -105,6 +105,36 @@ impl Catalog for Catalog5 {
             Self::Inafecto => "9998",
             Self::IcbPer => "7152",
             Self::Otros => "9999",
+        }
+    }
+}
+
+impl Catalog5 {
+    pub fn tipo(&self) -> &'static str {
+        match self {
+            Catalog5::Igv => "VAT",
+            Catalog5::ImpuestoArrozPilado => "VAT",
+            Catalog5::Isc => "EXC",
+            Catalog5::Exportacion => "FREE",
+            Catalog5::Gratuito => "FREE",
+            Catalog5::Exonerado => "VAT",
+            Catalog5::Inafecto => "FREE",
+            Catalog5::IcbPer => "OTH",
+            Catalog5::Otros => "OTH",
+        }
+    }
+
+    pub fn nombre(&self) -> &'static str {
+        match self {
+            Catalog5::Igv => "IGV",
+            Catalog5::ImpuestoArrozPilado => "IVAP",
+            Catalog5::Isc => "ISC",
+            Catalog5::Exportacion => "EXP",
+            Catalog5::Gratuito => "GRA",
+            Catalog5::Exonerado => "EXO",
+            Catalog5::Inafecto => "INA",
+            Catalog5::IcbPer => "ICBPER",
+            Catalog5::Otros => "OTROS",
         }
     }
 }

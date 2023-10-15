@@ -1,8 +1,9 @@
+
             <cac:Contact>
-                {% if contacto.telefono -%}
+                {% if contacto.telefono %}
                 <cbc:Telephone>{contacto.telefono}</cbc:Telephone>
-                {% endif -%}
-                {% if contacto.email -%}
+                {% endif %}
+                {% if contacto.email %}
                 <cbc:ElectronicMail>{contacto.email}</cbc:ElectronicMail>
-                {% endif -%}
+                {% endif %}
             </cac:Contact>

@@ -1,27 +1,27 @@
 use chrono::NaiveDate;
 
-use crate::enricher::rules::phase1enrich::detalle::detalles::DetallesEnrichRule;
-use crate::enricher::rules::phase1enrich::fecha_emision::FechaEmisionEnrichRule;
-use crate::enricher::rules::phase1enrich::firmante::FirmanteEnrichRule;
-use crate::enricher::rules::phase1enrich::icbtasa::ICBTasaEnrichRule;
-use crate::enricher::rules::phase1enrich::igvtasa::IGVTasaEnrichRule;
-use crate::enricher::rules::phase1enrich::invoice::anticipos::InvoiceAnticiposEnrichRule;
-use crate::enricher::rules::phase1enrich::invoice::descuentos::InvoiceDescuentosEnrichRule;
-use crate::enricher::rules::phase1enrich::invoice::formadepago::{
+use crate::enricher::rules::phase1fill::detalle::detalles::DetallesEnrichRule;
+use crate::enricher::rules::phase1fill::fecha_emision::FechaEmisionEnrichRule;
+use crate::enricher::rules::phase1fill::firmante::FirmanteEnrichRule;
+use crate::enricher::rules::phase1fill::icbtasa::ICBTasaEnrichRule;
+use crate::enricher::rules::phase1fill::igvtasa::IGVTasaEnrichRule;
+use crate::enricher::rules::phase1fill::invoice::anticipos::InvoiceAnticiposEnrichRule;
+use crate::enricher::rules::phase1fill::invoice::descuentos::InvoiceDescuentosEnrichRule;
+use crate::enricher::rules::phase1fill::invoice::formadepago::{
     InvoiceFormaDePagoEnrichRule, InvoiceFormaDePagoTotalRule,
 };
-use crate::enricher::rules::phase1enrich::invoice::leyenda::{
+use crate::enricher::rules::phase1fill::invoice::leyenda::{
     InvoiceLeyendaDetraccionEnrichRule, InvoiceLeyendaDireccionEntregaEnrichRule,
     InvoiceLeyendaPercepcionEnrichRule,
 };
-use crate::enricher::rules::phase1enrich::invoice::tipocomprobante::InvoiceTipoComprobanteEnrichRule;
-use crate::enricher::rules::phase1enrich::invoice::tipooperacion::InvoiceTipoOperacionEnrichRule;
-use crate::enricher::rules::phase1enrich::ivaptasa::IVAPTasaEnrichRule;
-use crate::enricher::rules::phase1enrich::moneda::MonedaEnrichRule;
-use crate::enricher::rules::phase1enrich::note::creditnote::tiponota::CreditNoteTipoEnrichRule;
-use crate::enricher::rules::phase1enrich::note::debitnote::tiponota::DebitNoteTipoEnrichRule;
-use crate::enricher::rules::phase1enrich::note::tipocomprobanteafectado::NoteTipoComprobanteAfectadoEnrichRule;
-use crate::enricher::rules::phase1enrich::proveedor::ProveedorEnrichRule;
+use crate::enricher::rules::phase1fill::invoice::tipocomprobante::InvoiceTipoComprobanteEnrichRule;
+use crate::enricher::rules::phase1fill::invoice::tipooperacion::InvoiceTipoOperacionEnrichRule;
+use crate::enricher::rules::phase1fill::ivaptasa::IVAPTasaEnrichRule;
+use crate::enricher::rules::phase1fill::moneda::MonedaEnrichRule;
+use crate::enricher::rules::phase1fill::note::creditnote::tiponota::CreditNoteTipoEnrichRule;
+use crate::enricher::rules::phase1fill::note::debitnote::tiponota::DebitNoteTipoEnrichRule;
+use crate::enricher::rules::phase1fill::note::tipocomprobanteafectado::NoteTipoComprobanteAfectadoEnrichRule;
+use crate::enricher::rules::phase1fill::proveedor::ProveedorEnrichRule;
 use crate::enricher::rules::phase2process::detalle::detalles::DetallesProcessRule;
 use crate::enricher::rules::phase3summary::invoice::totalimporte::InvoiceTotalImporteSummaryRule;
 use crate::enricher::rules::phase3summary::invoice::totalimpuestos::InvoiceTotalImpuestosSummaryRule;
@@ -30,9 +30,9 @@ use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
 
 pub struct Defaults {
-    pub icb_tasa: f32,
-    pub igv_tasa: f32,
-    pub ivap_tasa: f32,
+    pub icb_tasa: f64,
+    pub igv_tasa: f64,
+    pub ivap_tasa: f64,
 
     pub date: NaiveDate,
 }
@@ -111,6 +111,8 @@ impl EnrichTrait for Invoice {
         self.enrich_invoice(defaults);
 
         self.process_common();
+
+        self.summary_common();
     }
 }
 
@@ -148,14 +150,14 @@ where
 
         while changed {
             let results = vec![
-                FechaEmisionEnrichRule::enrich(self, defaults),
-                FirmanteEnrichRule::enrich(self),
-                ICBTasaEnrichRule::enrich(self, defaults),
-                IGVTasaEnrichRule::enrich(self, defaults),
-                IVAPTasaEnrichRule::enrich(self, defaults),
-                MonedaEnrichRule::enrich(self),
-                ProveedorEnrichRule::enrich(self),
-                DetallesEnrichRule::enrich(self),
+                FechaEmisionEnrichRule::fill(self, defaults),
+                FirmanteEnrichRule::fill(self),
+                ICBTasaEnrichRule::fill(self, defaults),
+                IGVTasaEnrichRule::fill(self, defaults),
+                IVAPTasaEnrichRule::fill(self, defaults),
+                MonedaEnrichRule::fill(self),
+                ProveedorEnrichRule::fill(self),
+                DetallesEnrichRule::fill(self),
             ];
 
             changed = results.contains(&true);
@@ -182,15 +184,15 @@ where
 
         while changed {
             let results = vec![
-                InvoiceAnticiposEnrichRule::enrich(self),
-                InvoiceDescuentosEnrichRule::enrich(self),
-                InvoiceFormaDePagoEnrichRule::enrich(self),
-                InvoiceFormaDePagoTotalRule::enrich(self),
-                InvoiceLeyendaDetraccionEnrichRule::enrich(self),
-                InvoiceLeyendaDireccionEntregaEnrichRule::enrich(self),
-                InvoiceLeyendaPercepcionEnrichRule::enrich(self),
-                InvoiceTipoComprobanteEnrichRule::enrich(self),
-                InvoiceTipoOperacionEnrichRule::enrich(self),
+                InvoiceAnticiposEnrichRule::fill(self),
+                InvoiceDescuentosEnrichRule::fill(self),
+                InvoiceFormaDePagoEnrichRule::fill(self),
+                InvoiceFormaDePagoTotalRule::fill(self),
+                InvoiceLeyendaDetraccionEnrichRule::fill(self),
+                InvoiceLeyendaDireccionEntregaEnrichRule::fill(self),
+                InvoiceLeyendaPercepcionEnrichRule::fill(self),
+                InvoiceTipoComprobanteEnrichRule::fill(self),
+                InvoiceTipoOperacionEnrichRule::fill(self),
             ];
 
             changed = results.contains(&true);
@@ -207,8 +209,8 @@ where
 
         while changed {
             let results = vec![
-                NoteTipoComprobanteAfectadoEnrichRule::enrich(self),
-                CreditNoteTipoEnrichRule::enrich(self),
+                NoteTipoComprobanteAfectadoEnrichRule::fill(self),
+                CreditNoteTipoEnrichRule::fill(self),
             ];
 
             changed = results.contains(&true);
@@ -225,8 +227,8 @@ where
 
         while changed {
             let results = vec![
-                NoteTipoComprobanteAfectadoEnrichRule::enrich(self),
-                DebitNoteTipoEnrichRule::enrich(self),
+                NoteTipoComprobanteAfectadoEnrichRule::fill(self),
+                DebitNoteTipoEnrichRule::fill(self),
             ];
 
             changed = results.contains(&true);

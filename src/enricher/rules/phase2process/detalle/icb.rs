@@ -21,7 +21,7 @@ where
             None => {
                 if self.get_icbaplica() {
                     if let Some(icb_tasa) = self.get_icbtasa() {
-                        let icb = self.get_cantidad() * *icb_tasa as f64;
+                        let icb = self.get_cantidad() * *icb_tasa;
                         self.set_icb(icb);
                         true
                     } else {

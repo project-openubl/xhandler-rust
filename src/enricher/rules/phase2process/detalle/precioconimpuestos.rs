@@ -31,7 +31,7 @@ where
             (None, Some(igv_tipo), Some(igv_tasa), Some(isc_tasa), Some(precio)) => {
                 if let Some(catalog) = catalog7_value_of_code(igv_tipo) {
                     let precio_con_impuestos = if catalog.onerosa() {
-                        precio * (1f64 + *igv_tasa as f64) * (1f64 + *isc_tasa as f64)
+                        precio * (1f64 + *igv_tasa) * (1f64 + *isc_tasa)
                     } else {
                         0f64
                     };

@@ -2,13 +2,9 @@
 <SummaryDocuments xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:SummaryDocuments-1"
                   xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
                   xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
-                  xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
                   xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
-                  xmlns:ns11="urn:sunat:names:specification:ubl:peru:schema:xsd:Perception-1"
-                  xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2"
                   xmlns:sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
-                  xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+>
     <ext:UBLExtensions>
         <ext:UBLExtension>
             <ext:ExtensionContent />
@@ -19,9 +15,9 @@
     <cbc:ID>RC-{fechaEmision.format('yyyyMMdd')}-{numero}</cbc:ID>
     <cbc:ReferenceDate>{fechaEmisionComprobantes}</cbc:ReferenceDate>
     <cbc:IssueDate>{fechaEmision}</cbc:IssueDate>
-    {% include "ubl/common/signature.xml" -%}
-    {% include "ubl/sunat/include/supplier.xml" -%}
-    {% for it in comprobantes -%}
+    {% include "ubl/common/signature.xml" %}
+    {% include "ubl/sunat/include/supplier.xml" %}
+    {% for it in comprobantes %}
     <sac:SummaryDocumentsLine>
         <cbc:LineID>{{loop.index}}</cbc:LineID>
         <cbc:DocumentTypeCode>{it.comprobante.tipo_comprobante}</cbc:DocumentTypeCode>
@@ -30,49 +26,49 @@
             <cbc:CustomerAssignedAccountID>{it.comprobante.cliente.numeroDocumentoIdentidad}</cbc:CustomerAssignedAccountID>
             <cbc:AdditionalAccountID>{it.comprobante.cliente.tipoDocumentoIdentidad}</cbc:AdditionalAccountID>
         </cac:AccountingCustomerParty>
-        {% if it.comprobante.comprobanteAfectado -%}
+        {% if it.comprobante.comprobanteAfectado %}
         <cac:BillingReference>
             <cac:InvoiceDocumentReference>
                 <cbc:ID>{it.comprobante.comprobanteAfectado.serieNumero}</cbc:ID>
                 <cbc:DocumentTypeCode>{it.comprobante.comprobanteAfectado.tipo_comprobante}</cbc:DocumentTypeCode>
             </cac:InvoiceDocumentReference>
         </cac:BillingReference>
-        {% endif -%}
+        {% endif %}
         <cac:Status>
             <cbc:ConditionCode>{it.tipo_operacion}</cbc:ConditionCode>
         </cac:Status>
         <sac:TotalAmount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.importeTotal}</sac:TotalAmount>
-        {% if it.comprobante.valorVenta.gravado -%}
+        {% if it.comprobante.valorVenta.gravado %}
         <sac:BillingPayment>
             <cbc:PaidAmount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.gravado}</cbc:PaidAmount>
             <cbc:InstructionID>01</cbc:InstructionID>
         </sac:BillingPayment>
-        {% endif -%}
-        {% if it.comprobante.valorVenta.exonerado -%}
+        {% endif %}
+        {% if it.comprobante.valorVenta.exonerado %}
         <sac:BillingPayment>
             <cbc:PaidAmount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.exonerado}</cbc:PaidAmount>
             <cbc:InstructionID>02</cbc:InstructionID>
         </sac:BillingPayment>
-        {% endif -%}
-        {% if it.comprobante.valorVenta.inafecto -%}
+        {% endif %}
+        {% if it.comprobante.valorVenta.inafecto %}
         <sac:BillingPayment>
             <cbc:PaidAmount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.inafecto}</cbc:PaidAmount>
             <cbc:InstructionID>03</cbc:InstructionID>
         </sac:BillingPayment>
-        {% endif -%}
-        {% if it.comprobante.valorVenta.gratuito -%}
+        {% endif %}
+        {% if it.comprobante.valorVenta.gratuito %}
         <sac:BillingPayment>
             <cbc:PaidAmount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.gratuito}</cbc:PaidAmount>
             <cbc:InstructionID>05</cbc:InstructionID>
         </sac:BillingPayment>
-        {% endif -%}
-        {% if it.comprobante.valorVenta.otrosCargos -%}
+        {% endif %}
+        {% if it.comprobante.valorVenta.otrosCargos %}
         <cac:AllowanceCharge>
             <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
             <cbc:Amount currencyID="{it.comprobante.moneda}">{it.comprobante.valorVenta.otrosCargos}</cbc:Amount>
         </cac:AllowanceCharge>
-        {% endif -%}
-        {% if it.comprobante.impuestos.igv -%}
+        {% endif %}
+        {% if it.comprobante.impuestos.igv %}
         <cac:TaxTotal>
             <cbc:TaxAmount currencyID="{it.comprobante.moneda}">{it.comprobante.impuestos.igv}</cbc:TaxAmount>
             <cac:TaxSubtotal>
@@ -86,8 +82,8 @@
                 </cac:TaxCategory>
             </cac:TaxSubtotal>
         </cac:TaxTotal>
-        {% endif -%}
-        {% if it.comprobante.impuestos.icb -%}
+        {% endif %}
+        {% if it.comprobante.impuestos.icb %}
         <cac:TaxTotal>
             <cbc:TaxAmount currencyID="{it.comprobante.moneda}">{it.comprobante.impuestos.icb}</cbc:TaxAmount>
             <cac:TaxSubtotal>
@@ -101,7 +97,7 @@
                 </cac:TaxCategory>
             </cac:TaxSubtotal>
         </cac:TaxTotal>
-        {% endif -%}
+        {% endif %}
     </sac:SummaryDocumentsLine>
-    {% endfor -%}
+    {% endfor %}
 </SummaryDocuments>

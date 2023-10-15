@@ -14,9 +14,9 @@ pub struct DebitNote {
     pub proveedor: Proveedor,
     pub cliente: Cliente,
     pub firmante: Option<Firmante>,
-    pub icb_tasa: Option<f32>,
-    pub igv_tasa: Option<f32>,
-    pub ivap_tasa: Option<f32>,
+    pub icb_tasa: Option<f64>,
+    pub igv_tasa: Option<f64>,
+    pub ivap_tasa: Option<f64>,
 
     // Catalog10
     pub tipo_nota: Option<&'static str>,

@@ -36,7 +36,7 @@ where
                     .iter()
                     .filter(|e| {
                         if let Some(catalog7) = catalog7_value_of_code(e.igv_tipo.unwrap_or("")) {
-                            catalog7.tax_category() == Catalog5::Gratuito
+                            catalog7.tax_category() != Catalog5::Gratuito
                         } else {
                             false
                         }
@@ -84,7 +84,7 @@ where
                     .unwrap_or(&0f64);
                 let descuentos_que_afectan_base_imponible_con_impuestos =
                     descuentos_que_afectan_base_imponible_sin_impuestos
-                        * (self.get_igv_tasa().unwrap_or(0f32) + 1f32) as f64;
+                        * (self.get_igv_tasa().unwrap_or(0f64) + 1f64);
                 let descuentos_que_no_afectan_base_imponible_sin_impuestos = descuentos
                     .get(&Catalog53::DescuentoGlobalNoAfectaBaseImponibleIgvIvap)
                     .unwrap_or(&0f64);
