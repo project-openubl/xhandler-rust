@@ -1,7 +1,7 @@
 
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.total | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
-        {% if total_impuestos.isc_importe %}
+        {%- if total_impuestos.isc_importe %}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.isc_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.isc_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
@@ -13,8 +13,8 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif %}
-        {% if total_impuestos.gravado_base_imponible %}
+        {%- endif %}
+        {%- if total_impuestos.gravado_base_imponible %}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.gravado_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.gravado_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
@@ -27,8 +27,8 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif %}
-        {% if total_impuestos.inafecto_base_imponible %}
+        {%- endif %}
+        {%- if total_impuestos.inafecto_base_imponible %}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.inafecto_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.inafecto_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
@@ -41,8 +41,8 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif %}
-        {% if total_impuestos.exonerado_base_imponible %}
+        {%- endif %}
+        {%- if total_impuestos.exonerado_base_imponible %}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.exonerado_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.exonerado_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
@@ -55,8 +55,8 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif %}
-        {% if total_impuestos.gratuito_base_imponible %}
+        {%- endif %}
+        {%- if total_impuestos.gratuito_base_imponible %}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.gratuito_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.gratuito_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
@@ -69,8 +69,8 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif %}
-        {% if total_impuestos.exportacion_base_imponible %}
+        {%- endif %}
+        {%- if total_impuestos.exportacion_base_imponible %}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.exportacion_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{{moneda}}">0</cbc:TaxAmount>
@@ -82,8 +82,8 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif %}
-        {% if total_impuestos.ivap_base_imponible %}
+        {%- endif %}
+        {%- if total_impuestos.ivap_base_imponible %}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.ivap_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.ivapImporte | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
@@ -96,8 +96,8 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif %}
-        {% if total_impuestos.icbImporte %}
+        {%- endif %}
+        {%- if total_impuestos.icbImporte %}
         <cac:TaxSubtotal>
             <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.icbImporte | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
             <cac:TaxCategory>
@@ -109,5 +109,5 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
-        {% endif %}
+        {%- endif %}
     </cac:TaxTotal>

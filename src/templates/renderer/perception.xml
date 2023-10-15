@@ -19,9 +19,9 @@
     {% include "ubl/sunat/include/receiver-party.xml" %}
     <sac:SUNATPerceptionSystemCode>{tipoRegimen}</sac:SUNATPerceptionSystemCode>
     <sac:SUNATPerceptionPercent>{tipoRegimenPorcentaje}</sac:SUNATPerceptionPercent>
-    {% if observacion %}
+    {%- if observacion %}
     <cbc:Note><![CDATA[{observacion | escape}]]></cbc:Note>
-    {% endif %}
+    {%- endif %}
     <cbc:TotalInvoiceAmount currencyID="{{moneda}}">{importeTotalPercibido}</cbc:TotalInvoiceAmount>
     <sac:SUNATTotalCashed currencyID="{{moneda}}">{importeTotalCobrado}</sac:SUNATTotalCashed>
     <sac:SUNATPerceptionDocumentReference>
@@ -37,14 +37,14 @@
             <sac:SUNATPerceptionAmount currencyID="{{moneda}}">{importeTotalPercibido}</sac:SUNATPerceptionAmount>
             <sac:SUNATPerceptionDate>{fechaEmision}</sac:SUNATPerceptionDate>
             <sac:SUNATNetTotalCashed currencyID="{{moneda}}">{importeTotalCobrado}</sac:SUNATNetTotalCashed>
-            {% if operacion.tipoCambio %}
+            {%- if operacion.tipoCambio %}
             <cac:ExchangeRate>
                 <cbc:SourceCurrencyCode>{{moneda}}</cbc:SourceCurrencyCode>
                 <cbc:TargetCurrencyCode>{operacion.comprobante.moneda}</cbc:TargetCurrencyCode>
                 <cbc:CalculationRate>{operacion.tipoCambio.valor}</cbc:CalculationRate>
                 <cbc:Date>{operacion.tipoCambio.fecha}</cbc:Date>
             </cac:ExchangeRate>
-            {% endif %}
+            {%- endif %}
         </sac:SUNATPerceptionInformation>
     </sac:SUNATPerceptionDocumentReference>
 </Perception>

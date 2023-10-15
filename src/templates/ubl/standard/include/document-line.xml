@@ -1,10 +1,9 @@
-
-{% macro line(item) %}
-        {% if item.isc_base_imponible %}
+{%- macro line(item) -%}
+        {%- if item.isc_base_imponible %}
         <cbc:LineExtensionAmount currencyID="{{moneda}}">{{item.isc_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:LineExtensionAmount>
-        {% else %}
+        {%- else %}
         <cbc:LineExtensionAmount currencyID="{{moneda}}">{{item.igv_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:LineExtensionAmount>
-        {% endif %}
+        {%- endif %}
         <cac:PricingReference>
             <cac:AlternativeConditionPrice>
                 <cbc:PriceAmount currencyID="{{moneda}}">{{item.precio_referencia | round(method="ceil", precision=2) | currency}}</cbc:PriceAmount>
@@ -13,7 +12,7 @@
         </cac:PricingReference>
         <cac:TaxTotal>
             <cbc:TaxAmount currencyID="{{moneda}}">{{item.total_impuestos | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
-            {% if item.isc %}
+            {%- if item.isc %}
             <cac:TaxSubtotal>
                 <cbc:TaxableAmount currencyID="{{moneda}}">{{item.isc_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
                 <cbc:TaxAmount currencyID="{{moneda}}">{{item.isc | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
@@ -27,7 +26,7 @@
                     </cac:TaxScheme>
                 </cac:TaxCategory>
             </cac:TaxSubtotal>
-            {% endif %}
+            {%- endif %}
             <cac:TaxSubtotal>
                 <cbc:TaxableAmount currencyID="{{moneda}}">{{item.igv_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
                 <cbc:TaxAmount currencyID="{{moneda}}">{{item.igv | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
@@ -42,7 +41,7 @@
                     </cac:TaxScheme>
                 </cac:TaxCategory>
             </cac:TaxSubtotal>
-            {% if item.icb %}
+            {%- if item.icb %}
             <cac:TaxSubtotal>
                 <cbc:TaxAmount currencyID="{{moneda}}">{{item.icb | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
                 <cbc:BaseUnitMeasure unitCode="{{item.unidad_medida}}">{{item.cantidad}}</cbc:BaseUnitMeasure>
@@ -55,7 +54,7 @@
                     </cac:TaxScheme>
                 </cac:TaxCategory>
             </cac:TaxSubtotal>
-            {% endif %}
+            {%- endif %}
         </cac:TaxTotal>
         <cac:Item>
             <cbc:Description><![CDATA[{{item.descripcion | escape}}]]></cbc:Description>
@@ -63,4 +62,4 @@
         <cac:Price>
             <cbc:PriceAmount currencyID="{{moneda}}">{{item.precio | round(method="ceil", precision=2) | currency}}</cbc:PriceAmount>
         </cac:Price>
-{% endmacro line %}
+{%- endmacro line -%}

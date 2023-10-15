@@ -6,14 +6,14 @@
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName><![CDATA[{{cliente.nombre | escape}}]]></cbc:RegistrationName>
-                {% if cliente.direccion %}
+                {%- if cliente.direccion %}
                 <cac:RegistrationAddress>
                     {% include "ubl/standard/include/address.xml" %}
                 </cac:RegistrationAddress>
-                {% endif %}
+                {%- endif %}
             </cac:PartyLegalEntity>
-            {% if cliente.contacto %}
+            {%- if cliente.contacto %}
             {% include "ubl/standard/include/contact.xml" %}
-            {% endif %}
+            {%- endif %}
         </cac:Party>
     </cac:AccountingCustomerParty>

@@ -3,11 +3,11 @@
         <cbc:ResponseCode>{item.comprobanteAfectadoTipo}</cbc:ResponseCode>
         <cbc:Description><![CDATA[{item.sustentoDescripcion | escape}]]></cbc:Description>
     </cac:DiscrepancyResponse>
-    {% if item.orden_de_compra %}
+    {%- if item.orden_de_compra %}
     <cac:OrderReference>
         <cbc:ID>{item.orden_de_compra}</cbc:ID>
     </cac:OrderReference>
-    {% endif %}
+    {%- endif %}
     <cac:BillingReference>
         <cac:InvoiceDocumentReference>
             <cbc:ID>{item.comprobanteAfectadoSerieNumero}</cbc:ID>

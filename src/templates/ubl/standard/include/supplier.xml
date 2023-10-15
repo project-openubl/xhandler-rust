@@ -1,25 +1,24 @@
+{%- import "ubl/standard/include/address.xml" as macros -%}
 
-    {% import "ubl/standard/include/address.xml" as macros %}
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cac:PartyIdentification>
                 <cbc:ID schemeID="6" schemeAgencyName="PE:SUNAT" schemeName="Documento de Identidad" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">{{proveedor.ruc}}</cbc:ID>
             </cac:PartyIdentification>
-            {% if proveedor.nombre_comercial %}
+            {%- if proveedor.nombre_comercial %}
             <cac:PartyName>
                 <cbc:Name>{{proveedor.nombre_comercial}}</cbc:Name>
             </cac:PartyName>
-            {% endif %}
+            {%- endif %}
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName><![CDATA[{{proveedor.razon_social | escape}}]]></cbc:RegistrationName>
-                {% if proveedor.direccion %}
-                <cac:RegistrationAddress>
-                    {{ macros::address(direccion=proveedor.direccion) }}
+                {%- if proveedor.direccion %}
+                <cac:RegistrationAddress>{{ macros::address(direccion=proveedor.direccion) }}
                 </cac:RegistrationAddress>
-                {% endif %}
+                {%- endif %}
             </cac:PartyLegalEntity>
-            {% if proveedor.contacto %}
-            {% include "ubl/standard/include/contact.xml" %}
-            {% endif %}
+            {%- if proveedor.contacto %}
+            {%- include "ubl/standard/include/contact.xml" -%}
+            {%- endif %}
         </cac:Party>
     </cac:AccountingSupplierParty>

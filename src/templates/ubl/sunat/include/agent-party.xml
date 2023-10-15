@@ -2,11 +2,11 @@
         <cac:PartyIdentification>
             <cbc:ID schemeID="6">{proveedor.ruc}</cbc:ID>
         </cac:PartyIdentification>
-        {% if proveedor.nombreComercial %}
+        {%- if proveedor.nombreComercial %}
         <cac:PartyName>
             <cbc:Name><![CDATA[{proveedor.nombreComercial | escape}]]></cbc:Name>
         </cac:PartyName>
-        {% endif %}
+        {%- endif %}
         <cac:PartyLegalEntity>
             <cbc:RegistrationName><![CDATA[{proveedor.razonSocial | escape}]]></cbc:RegistrationName>
         </cac:PartyLegalEntity>

@@ -1,10 +1,11 @@
-mod common;
+use xbuilder::models::general::Detalle;
+use xbuilder::prelude::*;
 
 use crate::common::assert_invoice;
 use crate::common::detalle_base;
 use crate::common::invoice_base;
-use xbuilder::models::general::Detalle;
-use xbuilder::prelude::*;
+
+mod common;
 
 #[test]
 fn custom_unidad_medida() {

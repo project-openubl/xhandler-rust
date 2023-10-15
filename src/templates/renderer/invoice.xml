@@ -1,31 +1,31 @@
-{% import "ubl/standard/include/document-line.xml" as macro %}
+{%- import "ubl/standard/include/document-line.xml" as macro -%}
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
-         {% include "ubl/standard/include/namespaces.xml" %}
+    {%- include "ubl/standard/include/namespaces.xml" -%}
 >
-    {% include "ubl/standard/include/ubl-extensions.xml" %}
-    {% include "ubl/standard/include/general-data.xml" %}
-    {% if fecha_vencimiento %}
+    {%- include "ubl/standard/include/ubl-extensions.xml" -%}
+    {%- include "ubl/standard/include/general-data.xml" -%}
+    {%- if fecha_vencimiento %}
     <cbc:DueDate>{{fecha_vencimiento}}</cbc:DueDate>
-    {% endif %}
+    {%- endif %}
     <cbc:InvoiceTypeCode listID="{{tipo_operacion}}" listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">{{tipo_comprobante}}</cbc:InvoiceTypeCode>
-    {% if leyendas %}
-    {% for key,value in leyendas %}
+    {%- if leyendas %}
+    {%- for key,value in leyendas %}
     <cbc:Note languageLocaleID="{key}"><![CDATA[{{value | escape}}]]></cbc:Note>
-    {% endfor %}
-    {% endif %}
-    {% if observaciones %}
+    {%- endfor %}
+    {%- endif %}
+    {%- if observaciones %}
     <cbc:Note><![CDATA[{observaciones | escape}]]></cbc:Note>
-    {% endif %}
+    {%- endif %}
     <cbc:DocumentCurrencyCode listID="ISO 4217 Alpha" listAgencyName="United Nations Economic Commission for Europe" listName="Currency">{{moneda}}</cbc:DocumentCurrencyCode>
-    {% if orden_de_compra %}
+    {%- if orden_de_compra %}
     <cac:OrderReference>
         <cbc:ID>{orden_de_compra}</cbc:ID>
     </cac:OrderReference>
-    {% endif %}
-    {% include "ubl/standard/include/guias.xml" %}
-    {% include "ubl/standard/include/documentos-relacionados.xml" %}
-    {% for it in anticipos %}
+    {%- endif %}
+    {%- include "ubl/standard/include/guias.xml" -%}
+    {%- include "ubl/standard/include/documentos-relacionados.xml" -%}
+    {%- for it in anticipos %}
     <cac:AdditionalDocumentReference>
         <cbc:ID>{{it.comprobante_serie_numero}}</cbc:ID>
         <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="Documento Relacionado" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo12">{{it.comprobante_tipo}}</cbc:DocumentTypeCode>
@@ -36,11 +36,11 @@
             </cac:PartyIdentification>
         </cac:IssuerParty>
     </cac:AdditionalDocumentReference>
-    {% endfor %}
-    {% include "ubl/common/signature.xml" %}
-    {% include "ubl/standard/include/supplier.xml" %}
-    {% include "ubl/standard/include/customer.xml" %}
-    {% if direccionEntrega %}
+    {%- endfor %}
+    {%- include "ubl/common/signature.xml" %}
+    {% include "ubl/standard/include/supplier.xml" -%}
+    {%- include "ubl/standard/include/customer.xml" -%}
+    {%- if direccionEntrega %}
     <cac:Delivery>
         <cac:DeliveryLocation>
             <cac:Address>
@@ -48,8 +48,8 @@
             </cac:Address>
         </cac:DeliveryLocation>
     </cac:Delivery>
-    {% endif %}
-    {% if detraccion %}
+    {%- endif %}
+    {%- if detraccion %}
     <cac:PaymentMeans>
         <cbc:ID>Detraccion</cbc:ID>
         <cbc:PaymentMeansCode>{{detraccion.medio_de_pago}}</cbc:PaymentMeansCode>
@@ -63,21 +63,21 @@
         <cbc:PaymentPercent>{detraccion.porcentaje.multiplyByInt(100) | round(method="ceil", precision=2) | currency}</cbc:PaymentPercent>
         <cbc:Amount currencyID="{{moneda}}">{detraccion.monto | round(method="ceil", precision=2) | currency}</cbc:Amount>
     </cac:PaymentTerms>
-    {% endif %}
-    {% if percepcion %}
+    {%- endif %}
+    {%- if percepcion %}
     <cac:PaymentTerms>
         <cbc:ID>Percepcion</cbc:ID>
         <cbc:Amount currencyID="PEN">{percepcion.montoTotal | round(method="ceil", precision=2) | currency}</cbc:Amount>
     </cac:PaymentTerms>
-    {% endif %}
-    {% include "ubl/standard/include/payment-terms.xml" %}
-    {% for it in anticipos %}
+    {%- endif %}
+    {%- include "ubl/standard/include/payment-terms.xml" -%}
+    {%- for it in anticipos %}
     <cac:PrepaidPayment>
         <cbc:ID>{{loop.index}}</cbc:ID>
         <cbc:PaidAmount currencyID="{{moneda}}">{{it.monto}}</cbc:PaidAmount>
     </cac:PrepaidPayment>
-    {% endfor %}
-    {% for it in anticipos %}
+    {%- endfor %}
+    {%- for it in anticipos %}
     <cac:AllowanceCharge>
         <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
         <cbc:AllowanceChargeReasonCode>{{it.tipo}}</cbc:AllowanceChargeReasonCode>
@@ -85,19 +85,19 @@
         <cbc:Amount currencyID="{{moneda}}">{{it.monto}}</cbc:Amount>
         <cbc:BaseAmount currencyID="{{moneda}}">{{it.monto}}</cbc:BaseAmount>
     </cac:AllowanceCharge>
-    {% endfor %}
-    {% for it in descuentos %}
+    {%- endfor %}
+    {%- for it in descuentos %}
     <cac:AllowanceCharge>
         <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
         <cbc:AllowanceChargeReasonCode>{it.tipoDescuento}</cbc:AllowanceChargeReasonCode>
-        {% if it.factor %}
+        {%- if it.factor %}
         <cbc:MultiplierFactorNumeric>{it.factor | round(method="ceil", precision=2) | currency}</cbc:MultiplierFactorNumeric>
-        {% endif %}
+        {%- endif %}
         <cbc:Amount currencyID="{{moneda}}">{it.monto | round(method="ceil", precision=2) | currency}</cbc:Amount>
         <cbc:BaseAmount currencyID="{{moneda}}">{it.montoBase | round(method="ceil", precision=2) | currency}</cbc:BaseAmount>
     </cac:AllowanceCharge>
-    {% endfor %}
-    {% if percepcion %}
+    {%- endfor %}
+    {%- if percepcion %}
     <cac:AllowanceCharge>
         <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
         <cbc:AllowanceChargeReasonCode>{percepcion.tipo}</cbc:AllowanceChargeReasonCode>
@@ -105,8 +105,8 @@
         <cbc:Amount currencyID="PEN">{percepcion.monto | round(method="ceil", precision=2) | currency}</cbc:Amount>
         <cbc:BaseAmount currencyID="PEN">{percepcion.montoBase | round(method="ceil", precision=2) | currency}</cbc:BaseAmount>
     </cac:AllowanceCharge>
-    {% endif %}
-    {% include "ubl/standard/include/tax-total.xml" %}
+    {%- endif %}
+    {%- include "ubl/standard/include/tax-total.xml" %}
     <cac:LegalMonetaryTotal>
         <cbc:LineExtensionAmount currencyID="{{moneda}}">{{total_importe.importe_sin_impuestos | round(method="ceil", precision=2) | currency}}</cbc:LineExtensionAmount>
         <cbc:TaxInclusiveAmount currencyID="{{moneda}}">{{total_importe.importe_con_impuestos | round(method="ceil", precision=2) | currency}}</cbc:TaxInclusiveAmount>
@@ -114,11 +114,10 @@
         <cbc:PrepaidAmount currencyID="{{moneda}}">{{total_importe.anticipos}}</cbc:PrepaidAmount>
         <cbc:PayableAmount currencyID="{{moneda}}">{{total_importe.importe | round(method="ceil", precision=2) | currency}}</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
-    {% for it in detalles %}
+    {%- for it in detalles %}
     <cac:InvoiceLine>
         <cbc:ID>{{loop.index}}</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="{{it.unidad_medida}}" unitCodeListAgencyName="United Nations Economic Commission for Europe" unitCodeListID="UN/ECE rec 20">{{it.cantidad}}</cbc:InvoicedQuantity>
-        {{ macro::line(item=it) }}
+        <cbc:InvoicedQuantity unitCode="{{it.unidad_medida}}" unitCodeListAgencyName="United Nations Economic Commission for Europe" unitCodeListID="UN/ECE rec 20">{{it.cantidad}}</cbc:InvoicedQuantity>{{ macro::line(item=it) }}
     </cac:InvoiceLine>
-    {% endfor %}
+    {%- endfor %}
 </Invoice>

@@ -11,7 +11,7 @@
     <cbc:IssueDate>{fechaEmision}</cbc:IssueDate>
     {% include "ubl/common/signature.xml" %}
     {% include "ubl/sunat/include/supplier.xml" %}
-    {% for it in comprobantes %}
+    {%- for it in comprobantes %}
     <sac:VoidedDocumentsLine>
         <cbc:LineID>{{loop.index}}</cbc:LineID>
         <cbc:DocumentTypeCode>{it.tipo_comprobante}</cbc:DocumentTypeCode>
@@ -19,5 +19,5 @@
         <sac:DocumentNumberID>{it.numero}</sac:DocumentNumberID>
         <sac:VoidReasonDescription>{it.descripcionSustento}</sac:VoidReasonDescription>
     </sac:VoidedDocumentsLine>
-    {% endfor %}
+    {%- endfor %}
 </VoidedDocuments>
