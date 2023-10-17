@@ -38,8 +38,8 @@
     </cac:AdditionalDocumentReference>
     {%- endfor %}
     {%- include "ubl/common/signature.xml" %}
-    {% include "ubl/standard/include/supplier.xml" -%}
-    {%- include "ubl/standard/include/customer.xml" -%}
+    {% include "ubl/standard/include/supplier.xml" %}
+    {% include "ubl/standard/include/customer.xml" -%}
     {%- if direccionEntrega %}
     <cac:Delivery>
         <cac:DeliveryLocation>

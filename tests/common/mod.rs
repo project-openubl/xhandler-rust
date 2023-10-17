@@ -28,6 +28,7 @@ pub fn invoice_base() -> Invoice {
 
         moneda: None,
         fecha_emision: None,
+        hora_emision: None,
         fecha_vencimiento: None,
         forma_de_pago: None,
         direccion_entrega: None,
@@ -37,32 +38,49 @@ pub fn invoice_base() -> Invoice {
         total_importe: None,
 
         firmante: None,
-        proveedor: Proveedor {
-            ruc: "12345678912",
-            razon_social: "Softgreen S.A.C.",
-            nombre_comercial: None,
-            direccion: None,
-            contacto: None,
-        },
-        cliente: Cliente {
-            tipo_documento_identidad: Catalog6::RUC.code(),
-            numero_documento_identidad: "12121212121",
-            nombre: "Carlos Feria",
-            direccion: None,
-            contacto: None,
-        },
+        proveedor: proveedor_base(),
+        cliente: cliente_base(),
 
         percepcion: None,
         detraccion: None,
 
         anticipos: vec![],
         descuentos: vec![],
-        detalles: vec![],
+        detalles: vec![
+            Detalle {
+                precio: Some(100f64),
+                ..detalle_base("Item1", 10f64)
+            },
+            Detalle {
+                precio: Some(100f64),
+                ..detalle_base("Item2", 10f64)
+            },
+        ],
 
         guias: vec![],
         documentos_relacionados: vec![],
 
         orden_de_compra: None,
+    }
+}
+
+pub fn proveedor_base() -> Proveedor {
+    Proveedor {
+        ruc: "12345678912",
+        razon_social: "Softgreen S.A.C.",
+        nombre_comercial: None,
+        direccion: None,
+        contacto: None,
+    }
+}
+
+pub fn cliente_base() -> Cliente {
+    Cliente {
+        tipo_documento_identidad: Catalog6::RUC.code(),
+        numero_documento_identidad: "12121212121",
+        nombre: "Carlos Feria",
+        direccion: None,
+        contacto: None,
     }
 }
 
@@ -97,7 +115,7 @@ pub fn detalle_base(descripcion: &'static str, cantidad: f64) -> Detalle {
     }
 }
 
-pub fn assert_invoice(invoice: &mut Invoice, snapshot_filename: &'static str) {
+pub fn assert_invoice(invoice: &mut Invoice, snapshot_filename: &str) {
     let defaults = defaults_base();
     invoice.enrich(&defaults);
 
@@ -107,7 +125,7 @@ pub fn assert_invoice(invoice: &mut Invoice, snapshot_filename: &'static str) {
     assert_snapshot(result.ok().unwrap(), snapshot_filename)
 }
 
-fn assert_snapshot(expected: String, snapshot_filename: &'static str) {
+fn assert_snapshot(expected: String, snapshot_filename: &str) {
     let snapshot_file_content = fs::read_to_string(snapshot_filename);
     assert!(snapshot_file_content.is_ok());
 

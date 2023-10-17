@@ -25,6 +25,7 @@ fn main() {
         ivap_tasa: None,
         moneda: None,
         fecha_emision: None,
+        hora_emision: None,
         fecha_vencimiento: None,
         firmante: None,
         proveedor: Proveedor {

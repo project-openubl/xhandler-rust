@@ -97,9 +97,9 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         {%- endif %}
-        {%- if total_impuestos.icbImporte %}
+        {%- if total_impuestos.icb_importe %}
         <cac:TaxSubtotal>
-            <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.icbImporte | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.icb_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
                 <cac:TaxScheme>

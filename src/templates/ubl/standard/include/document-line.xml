@@ -46,7 +46,7 @@
                 <cbc:TaxAmount currencyID="{{moneda}}">{{item.icb | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
                 <cbc:BaseUnitMeasure unitCode="{{item.unidad_medida}}">{{item.cantidad}}</cbc:BaseUnitMeasure>
                 <cac:TaxCategory>
-                    <cbc:PerUnitAmount currencyID="{{moneda}}">{{item.tasaIcb | round(method="ceil", precision=2) | currency}}</cbc:PerUnitAmount>
+                    <cbc:PerUnitAmount currencyID="{{moneda}}">{{item.icb_tasa | round(method="ceil", precision=2) | currency}}</cbc:PerUnitAmount>
                     <cac:TaxScheme>
                         <cbc:ID schemeAgencyName="PE:SUNAT" schemeID="UN/ECE 5153" schemeName="Codigo de tributos">7152</cbc:ID>
                         <cbc:Name>ICBPER</cbc:Name>

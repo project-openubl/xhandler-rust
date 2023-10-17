@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::NaiveDate;
+use chrono::{NaiveDate, NaiveTime};
 use serde::Serialize;
 
 use crate::models::common::{Cliente, Direccion, Firmante, Proveedor};
@@ -16,6 +16,7 @@ pub struct Invoice {
     pub serie_numero: &'static str,
     pub moneda: Option<&'static str>,
     pub fecha_emision: Option<NaiveDate>,
+    pub hora_emision: Option<NaiveTime>,
     pub fecha_vencimiento: Option<NaiveDate>,
     pub proveedor: Proveedor,
     pub cliente: Cliente,

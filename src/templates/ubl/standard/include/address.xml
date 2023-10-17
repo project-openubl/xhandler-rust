@@ -22,7 +22,7 @@
                         <cbc:Line><![CDATA[{{direccion.direccion | escape}}]]></cbc:Line>
                     </cac:AddressLine>
                     {%- endif %}
-                    {%- if direccion.codigoPais %}
+                    {%- if direccion.codigo_pais %}
                     <cac:Country>
                         <cbc:IdentificationCode>{{direccion.codigo_pais}}</cbc:IdentificationCode>
                     </cac:Country>
