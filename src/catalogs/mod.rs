@@ -1,3 +1,6 @@
+use std::fmt;
+use std::fmt::{Display, Formatter};
+
 pub trait Catalog {
     fn code(&self) -> &str;
 }
@@ -115,10 +118,10 @@ impl Catalog5 {
             Catalog5::Igv => "VAT",
             Catalog5::ImpuestoArrozPilado => "VAT",
             Catalog5::Isc => "EXC",
-            Catalog5::Exportacion => "FREE",
-            Catalog5::Gratuito => "FREE",
+            Catalog5::Exportacion => "FRE",
+            Catalog5::Gratuito => "FRE",
             Catalog5::Exonerado => "VAT",
-            Catalog5::Inafecto => "FREE",
+            Catalog5::Inafecto => "FRE",
             Catalog5::IcbPer => "OTH",
             Catalog5::Otros => "OTH",
         }
@@ -324,6 +327,40 @@ impl Catalog7 {
             Catalog7::InafectoRetiroPorPublicidad => Catalog5::Gratuito,
 
             Catalog7::Exportacion => Catalog5::Exportacion,
+        }
+    }
+}
+
+impl Display for Catalog7 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match &self {
+            Self::GravadoOperacionOnerosa => write!(f, "GRAVADO_OPERACION_ONEROSA"),
+            Self::GravadoRetiroPorPremio => write!(f, "GRAVADO_RETIRO_POR_PREMIO"),
+            Self::GravadoRetiroPorDonacion => write!(f, "GRAVADO_RETIRO_POR_DONACION"),
+            Self::GravadoRetiro => write!(f, "GRAVADO_RETIRO"),
+            Self::GravadoRetiroPorPublicidad => write!(f, "GRAVADO_RETIRO_POR_PUBLICIDAD"),
+            Self::GravadoBonificaciones => write!(f, "GRAVADO_BONIFICACIONES"),
+            Self::GravadoRetiroPorEntregaATrabajadores => {
+                write!(f, "GRAVADO_RETIRO_POR_ENTREGA_A_TRABAJADORES")
+            }
+            Self::GravadoIvap => write!(f, "GRAVADO_IVAP"),
+
+            Self::ExoneradoOperacionOnerosa => write!(f, "EXONERADO_OPERACION_ONEROSA"),
+            Self::ExoneradoTransferenciaGratuita => write!(f, "EXONERADO_TRANSFERENCIA_GRATUITA"),
+
+            Self::InafectoOperacionOnerosa => write!(f, "INAFECTO_OPERACION_ONEROSA"),
+            Self::InafectoRetiroPorBonificacion => write!(f, "INAFECTO_RETIRO_POR_BONIFICACION"),
+            Self::InafectoRetiro => write!(f, "INAFECTO_RETIRO"),
+            Self::InafectoRetiroPorMuestrasMedicas => {
+                write!(f, "INAFECTO_RETIRO_POR_MUESTRAS_MEDICAS")
+            }
+            Self::InafectoRetiroPorConvenioColectivo => {
+                write!(f, "INAFECTO_RETIRO_POR_CONVENIO_COLECTIVO")
+            }
+            Self::InafectoRetiroPorPremio => write!(f, "INAFECTO_RETIRO_POR_PREMIO"),
+            Self::InafectoRetiroPorPublicidad => write!(f, "INAFECTO_RETIRO_POR_PUBLICIDAD"),
+
+            Self::Exportacion => write!(f, "EXPORTACION"),
         }
     }
 }

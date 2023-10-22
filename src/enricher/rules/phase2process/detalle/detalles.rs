@@ -24,15 +24,21 @@ where
                 let results = vec![
                     DetallePrecioProcessRule::process(detalle),
                     DetallePrecioConImpuestosProcessRule::process(detalle),
-                    DetalleICBProcessRule::process(detalle),
-                    DetalleIGVProcessRule::process(detalle),
-                    DetalleISCProcessRule::process(detalle),
-                    DetalleTotalImpuestosProcessRule::process(detalle),
                     DetallePrecioReferenciaProcessRule::process(detalle),
-                    DetalleIGVBaseImponibleProcessRule::process(detalle),
-                    DetalleISCBaseImponibleProcessRule::process(detalle),
                 ];
-                results.contains(&true)
+                if results.contains(&true) {
+                    true
+                } else {
+                    let results = vec![
+                        DetalleICBProcessRule::process(detalle),
+                        DetalleIGVProcessRule::process(detalle),
+                        DetalleISCProcessRule::process(detalle),
+                        DetalleTotalImpuestosProcessRule::process(detalle),
+                        DetalleIGVBaseImponibleProcessRule::process(detalle),
+                        DetalleISCBaseImponibleProcessRule::process(detalle),
+                    ];
+                    results.contains(&true)
+                }
             })
             .any(|changed| changed)
     }

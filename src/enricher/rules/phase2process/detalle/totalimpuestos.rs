@@ -28,7 +28,7 @@ where
             &self.get_icb(),
             &self.get_isc(),
         ) {
-            (None, Some(igv_tipo), Some(icb), Some(isc), Some(igv)) => {
+            (None, Some(igv_tipo), Some(igv), Some(icb), Some(isc)) => {
                 if let Some(catalog) = catalog7_value_of_code(igv_tipo) {
                     let igv_isc = if catalog.onerosa() {
                         (*igv, *isc)

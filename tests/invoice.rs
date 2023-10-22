@@ -51,7 +51,7 @@ fn invoice_custom_cliente_direccion_and_contacto() {
                 telefono: "+123456789",
             }),
             direccion: Some(Direccion {
-                codigo_local: "0101",
+                codigo_local: Some("0101"),
                 ubigeo: Some("050101"),
                 departamento: Some("Ayacucho"),
                 provincia: Some("Huamanga"),
@@ -80,7 +80,7 @@ fn invoice_custom_proveedor_direccion_and_contacto() {
                 telefono: "+123456789",
             }),
             direccion: Some(Direccion {
-                codigo_local: "0101",
+                codigo_local: Some("0101"),
                 ubigeo: Some("050101"),
                 departamento: Some("Ayacucho"),
                 provincia: Some("Huamanga"),
@@ -134,4 +134,61 @@ fn invoice_with_icb_precio_unitario() {
     };
 
     assert_invoice(&mut invoice, &format!("{BASE}/icb.xml"));
+}
+
+#[test]
+fn invoice_with_icb_precio_con_igv() {
+    let mut invoice = Invoice {
+        detalles: vec![
+            Detalle {
+                cantidad: 10f64,
+                precio_con_impuestos: Some(118f64),
+                icb_aplica: true,
+                ..detalle_base("Item1", 10f64)
+            },
+            Detalle {
+                cantidad: 10f64,
+                precio_con_impuestos: Some(118f64),
+                icb_aplica: true,
+                ..detalle_base("Item2", 10f64)
+            },
+        ],
+        ..invoice_base()
+    };
+
+    assert_invoice(&mut invoice, &format!("{BASE}/icb.xml"));
+}
+
+#[test]
+fn invoice_with_custom_proveedor_direccion_not_null_and_codigo_local_null() {
+    let mut invoice = Invoice {
+        proveedor: Proveedor {
+            direccion: Some(Direccion {
+                direccion: Some("Jr. las flores 123"),
+                codigo_local: None,
+                ubigeo: None,
+                departamento: None,
+                provincia: None,
+                distrito: None,
+                urbanizacion: None,
+                codigo_pais: None,
+            }),
+            ..proveedor_base()
+        },
+        detalles: vec![
+            Detalle {
+                cantidad: 10f64,
+                precio: Some(118f64),
+                ..detalle_base("Item1", 10f64)
+            },
+            Detalle {
+                cantidad: 10f64,
+                precio: Some(118f64),
+                ..detalle_base("Item2", 10f64)
+            },
+        ],
+        ..invoice_base()
+    };
+
+    assert_invoice(&mut invoice, &format!("{BASE}/customCodigoLocal.xml"));
 }

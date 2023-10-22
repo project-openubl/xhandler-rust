@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+
 use tera::{from_value, to_value, Context, Function, Tera, Value};
 
 use crate::models::invoice::Invoice;

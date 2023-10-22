@@ -129,5 +129,10 @@ fn assert_snapshot(expected: String, snapshot_filename: &str) {
     let snapshot_file_content = fs::read_to_string(snapshot_filename);
     assert!(snapshot_file_content.is_ok());
 
-    assert_eq!(expected, snapshot_file_content.unwrap());
+    assert_eq!(
+        expected,
+        snapshot_file_content.unwrap(),
+        "File {} does not match",
+        snapshot_filename
+    );
 }

@@ -30,7 +30,7 @@ pub struct Cliente {
 #[derive(Clone, Debug, Serialize)]
 pub struct Direccion {
     pub ubigeo: Option<&'static str>,
-    pub codigo_local: &'static str,
+    pub codigo_local: Option<&'static str>,
     pub urbanizacion: Option<&'static str>,
     pub departamento: Option<&'static str>,
     pub provincia: Option<&'static str>,

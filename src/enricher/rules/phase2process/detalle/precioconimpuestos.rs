@@ -42,6 +42,25 @@ where
                     false
                 }
             }
+            // Si operacion onerosa y precio es diferente de cero => modificarlo
+            (
+                Some(precio_con_impuestos),
+                Some(igv_tipo),
+                Some(_),
+                Some(_),
+                Some(_),
+            ) => {
+                if let Some(catalog) = catalog7_value_of_code(igv_tipo) {
+                    if !catalog.onerosa() && precio_con_impuestos > &0f64 {
+                        self.set_precioconimpuestos(0f64);
+                        true
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                }
+            }
             _ => false,
         }
     }

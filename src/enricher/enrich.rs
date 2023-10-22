@@ -25,6 +25,7 @@ use crate::enricher::rules::phase1fill::proveedor::ProveedorEnrichRule;
 use crate::enricher::rules::phase2process::detalle::detalles::DetallesProcessRule;
 use crate::enricher::rules::phase3summary::invoice::totalimporte::InvoiceTotalImporteSummaryRule;
 use crate::enricher::rules::phase3summary::invoice::totalimpuestos::InvoiceTotalImpuestosSummaryRule;
+use crate::enricher::rules::phase3summary::leyenda::LeyendaIVAPSummaryRule;
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
@@ -293,7 +294,7 @@ impl SummaryTrait for DebitNote {
 
 impl<T> SummaryCommonTrait for T
 where
-    T: InvoiceTotalImpuestosSummaryRule + InvoiceTotalImporteSummaryRule,
+    T: InvoiceTotalImpuestosSummaryRule + InvoiceTotalImporteSummaryRule + LeyendaIVAPSummaryRule,
 {
     fn summary_common(&mut self) {
         let mut changed = true;
@@ -302,6 +303,7 @@ where
             let results = vec![
                 InvoiceTotalImpuestosSummaryRule::summary(self),
                 InvoiceTotalImporteSummaryRule::summary(self),
+                LeyendaIVAPSummaryRule::summary(self),
             ];
 
             changed = results.contains(&true);

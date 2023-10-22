@@ -86,7 +86,7 @@
         {%- if total_impuestos.ivap_base_imponible %}
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{moneda}}">{{total_impuestos.ivap_base_imponible | round(method="ceil", precision=2) | currency}}</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.ivapImporte | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
+            <cbc:TaxAmount currencyID="{{moneda}}">{{total_impuestos.ivap_importe | round(method="ceil", precision=2) | currency}}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifie">S</cbc:ID>
                 <cac:TaxScheme>

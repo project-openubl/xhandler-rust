@@ -11,7 +11,16 @@ where
 {
     fn fill(&mut self) -> bool {
         match &self.get_proveedor().direccion {
-            Some(..) => false,
+            Some(direccion) => match direccion.codigo_local {
+                None => {
+                    self.set_proveedor_direccion(Direccion {
+                        codigo_local: Some("0000"),
+                        ..*direccion
+                    });
+                    true
+                }
+                Some(_) => false,
+            },
             None => {
                 self.set_proveedor_direccion(Direccion {
                     codigo_pais: None,
@@ -21,7 +30,7 @@ where
                     direccion: None,
                     urbanizacion: None,
                     ubigeo: None,
-                    codigo_local: "0000",
+                    codigo_local: Some("0000"),
                 });
                 true
             }
