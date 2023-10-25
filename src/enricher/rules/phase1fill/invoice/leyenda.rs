@@ -20,7 +20,7 @@ fn insert_leyenda<T>(obj: &mut T, code: &'static str, label: &'static str) -> bo
 where
     T: LeyendasGetter + LeyendasSetter,
 {
-    if obj.get_leyendas().contains_key(code) {
+    if !obj.get_leyendas().contains_key(code) {
         obj.insert_leyendas(code, label);
         true
     } else {
@@ -34,8 +34,8 @@ where
 {
     fn fill(&mut self) -> bool {
         match &self.get_detraccion() {
-            Some(..) => false,
-            None => {
+            None => false,
+            Some(..) => {
                 let catalog = &Catalog52::OperacionSujetaADetraccion;
                 insert_leyenda(self, catalog.code(), catalog.label())
             }
@@ -49,8 +49,8 @@ where
 {
     fn fill(&mut self) -> bool {
         match &self.get_direccionentrega() {
-            Some(..) => false,
-            None => {
+            None => false,
+            Some(..) => {
                 let catalog = &Catalog52::VentaRealizadaPorEmisorItinerante;
                 insert_leyenda(self, catalog.code(), catalog.label())
             }
@@ -64,8 +64,8 @@ where
 {
     fn fill(&mut self) -> bool {
         match &self.get_percepcion() {
-            Some(..) => false,
-            None => {
+            None => false,
+            Some(..) => {
                 let catalog = &Catalog52::ComprobanteDePercepcion;
                 insert_leyenda(self, catalog.code(), catalog.label())
             }

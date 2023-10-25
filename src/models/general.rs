@@ -39,7 +39,7 @@ pub struct Percepcion {
     /// Catalog53
     pub tipo: &'static str,
 
-    pub porcentaje: f64,
+    pub porcentaje: Option<f64>,
     pub monto: Option<f64>,
     pub monto_base: Option<f64>,
     pub monto_total: Option<f64>,

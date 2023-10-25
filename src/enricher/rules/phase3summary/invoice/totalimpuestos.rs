@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::catalogs::{catalog53_value_of_code, catalog7_value_of_code, Catalog5, Catalog53};
+use crate::catalogs::{Catalog5, Catalog53, catalog53_value_of_code, catalog7_value_of_code};
 use crate::models::general::{Detalle, TotalImpuestos};
 use crate::models::traits::detalle::DetallesGetter;
 use crate::models::traits::invoice::anticipos::InvoiceAnticiposGetter;

@@ -67,7 +67,7 @@
     {%- if percepcion %}
     <cac:PaymentTerms>
         <cbc:ID>Percepcion</cbc:ID>
-        <cbc:Amount currencyID="PEN">{percepcion.montoTotal | round(method="ceil", precision=2) | currency}</cbc:Amount>
+        <cbc:Amount currencyID="PEN">{{percepcion.monto_total | round(method="ceil", precision=2) | currency}}</cbc:Amount>
     </cac:PaymentTerms>
     {%- endif %}
     {%- include "ubl/standard/include/payment-terms.xml" -%}
@@ -100,10 +100,10 @@
     {%- if percepcion %}
     <cac:AllowanceCharge>
         <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
-        <cbc:AllowanceChargeReasonCode>{percepcion.tipo}</cbc:AllowanceChargeReasonCode>
-        <cbc:MultiplierFactorNumeric>{percepcion.porcentaje | round(method="ceil", precision=2) | currency}</cbc:MultiplierFactorNumeric>
-        <cbc:Amount currencyID="PEN">{percepcion.monto | round(method="ceil", precision=2) | currency}</cbc:Amount>
-        <cbc:BaseAmount currencyID="PEN">{percepcion.montoBase | round(method="ceil", precision=2) | currency}</cbc:BaseAmount>
+        <cbc:AllowanceChargeReasonCode>{{percepcion.tipo}}</cbc:AllowanceChargeReasonCode>
+        <cbc:MultiplierFactorNumeric>{{percepcion.porcentaje | round(method="ceil", precision=2) | currency}}</cbc:MultiplierFactorNumeric>
+        <cbc:Amount currencyID="PEN">{{percepcion.monto | round(method="ceil", precision=2) | currency}}</cbc:Amount>
+        <cbc:BaseAmount currencyID="PEN">{{percepcion.monto_base | round(method="ceil", precision=2) | currency}}</cbc:BaseAmount>
     </cac:AllowanceCharge>
     {%- endif %}
     {%- include "ubl/standard/include/tax-total.xml" %}

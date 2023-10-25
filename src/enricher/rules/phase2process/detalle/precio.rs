@@ -41,13 +41,7 @@ where
                 }
             }
             // Si operacion onerosa y precio es diferente de cero => modificarlo
-            (
-                Some(precio),
-                Some(igv_tipo),
-                Some(_),
-                Some(_),
-                Some(_),
-            ) => {
+            (Some(precio), Some(igv_tipo), Some(_), Some(_), Some(_)) => {
                 if let Some(catalog) = catalog7_value_of_code(igv_tipo) {
                     if !catalog.onerosa() && precio > &0f64 {
                         self.set_precio(0f64);

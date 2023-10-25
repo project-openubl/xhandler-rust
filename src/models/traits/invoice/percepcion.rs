@@ -13,6 +13,28 @@ impl InvoicePercepcionGetter for Invoice {
 
 // Monto Base
 
+pub trait InvoicePercepcionPorcentajeGetter {
+    fn get_porcentaje(&self) -> &Option<f64>;
+}
+
+pub trait InvoicePercepcionPorcentajeSetter {
+    fn set_porcentaje(&mut self, val: f64);
+}
+
+impl InvoicePercepcionPorcentajeGetter for Percepcion {
+    fn get_porcentaje(&self) -> &Option<f64> {
+        &self.porcentaje
+    }
+}
+
+impl InvoicePercepcionPorcentajeSetter for Percepcion {
+    fn set_porcentaje(&mut self, val: f64) {
+        self.porcentaje = Some(val);
+    }
+}
+
+// Monto Base
+
 pub trait InvoicePercepcionMontoBaseGetter {
     fn get_montobase(&self) -> &Option<f64>;
 }

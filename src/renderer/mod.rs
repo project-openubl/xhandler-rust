@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use tera::{from_value, to_value, Context, Function, Tera, Value};
+use tera::{Context, from_value, Function, Tera, to_value, Value};
 
 use crate::models::invoice::Invoice;
-use crate::prelude::{catalog7_value_of_code, Catalog};
+use crate::prelude::{Catalog, catalog7_value_of_code};
 
 fn catalog7_taxcategory() -> impl Function {
     Box::new(

@@ -1,4 +1,4 @@
-use crate::catalogs::{catalog7_value_of_code, Catalog, Catalog16};
+use crate::catalogs::{Catalog, Catalog16, catalog7_value_of_code};
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
 use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
 use crate::models::traits::detalle::precioreferenciatipo::{
