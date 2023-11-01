@@ -20,7 +20,7 @@
     <cbc:DocumentCurrencyCode listID="ISO 4217 Alpha" listAgencyName="United Nations Economic Commission for Europe" listName="Currency">{{moneda}}</cbc:DocumentCurrencyCode>
     {%- if orden_de_compra %}
     <cac:OrderReference>
-        <cbc:ID>{orden_de_compra}</cbc:ID>
+        <cbc:ID>{{orden_de_compra}}</cbc:ID>
     </cac:OrderReference>
     {%- endif %}
     {%- include "ubl/standard/include/guias.xml" -%}

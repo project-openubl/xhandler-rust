@@ -8,9 +8,9 @@ use xbuilder::prelude::*;
 pub fn defaults_base() -> Defaults {
     Defaults {
         date: NaiveDate::from_ymd_opt(2019, 12, 24).unwrap(),
-        icb_tasa: 0.2,
-        igv_tasa: 0.18,
-        ivap_tasa: 0.04,
+        icb_tasa: 0.2f64,
+        igv_tasa: 0.18f64,
+        ivap_tasa: 0.04f64,
     }
 }
 
