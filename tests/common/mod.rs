@@ -2,15 +2,17 @@ use std::collections::HashMap;
 use std::fs;
 
 use chrono::NaiveDate;
+use rust_decimal::Decimal;
+use rust_decimal_macros::dec;
 
 use xbuilder::prelude::*;
 
 pub fn defaults_base() -> Defaults {
     Defaults {
         date: NaiveDate::from_ymd_opt(2019, 12, 24).unwrap(),
-        icb_tasa: 0.2f64,
-        igv_tasa: 0.18f64,
-        ivap_tasa: 0.04f64,
+        icb_tasa: dec!(0.2),
+        igv_tasa: dec!(0.18),
+        ivap_tasa: dec!(0.04),
     }
 }
 
@@ -48,12 +50,12 @@ pub fn invoice_base() -> Invoice {
         descuentos: vec![],
         detalles: vec![
             Detalle {
-                precio: Some(100f64),
-                ..detalle_base("Item1", 10f64)
+                precio: Some(dec!(100)),
+                ..detalle_base("Item1", dec!(10))
             },
             Detalle {
-                precio: Some(100f64),
-                ..detalle_base("Item2", 10f64)
+                precio: Some(dec!(100)),
+                ..detalle_base("Item2", dec!(10))
             },
         ],
 
@@ -84,7 +86,7 @@ pub fn cliente_base() -> Cliente {
     }
 }
 
-pub fn detalle_base(descripcion: &'static str, cantidad: f64) -> Detalle {
+pub fn detalle_base(descripcion: &'static str, cantidad: Decimal) -> Detalle {
     Detalle {
         descripcion,
         cantidad,

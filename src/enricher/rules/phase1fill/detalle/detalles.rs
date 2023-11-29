@@ -9,11 +9,12 @@ use crate::models::traits::detalle::DetallesGetter;
 use crate::models::traits::icb::ICBTasaGetter;
 use crate::models::traits::igv::IGVTasaGetter;
 use crate::models::traits::ivap::IVAPTasaGetter;
+use rust_decimal::Decimal;
 
 pub struct DetalleDefaults {
-    pub igv_tasa: f64,
-    pub icb_tasa: f64,
-    pub ivap_tasa: f64,
+    pub igv_tasa: Decimal,
+    pub icb_tasa: Decimal,
+    pub ivap_tasa: Decimal,
 }
 
 pub trait DetallesEnrichRule {

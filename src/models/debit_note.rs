@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use chrono::NaiveDate;
+use rust_decimal::Decimal;
 
 use crate::models::common::{Cliente, Firmante, Proveedor};
 use crate::models::general::{Detalle, DocumentoRelacionado, Guia, TotalImporte, TotalImpuestos};
@@ -14,9 +15,9 @@ pub struct DebitNote {
     pub proveedor: Proveedor,
     pub cliente: Cliente,
     pub firmante: Option<Firmante>,
-    pub icb_tasa: Option<f64>,
-    pub igv_tasa: Option<f64>,
-    pub ivap_tasa: Option<f64>,
+    pub icb_tasa: Option<Decimal>,
+    pub igv_tasa: Option<Decimal>,
+    pub ivap_tasa: Option<Decimal>,
 
     // Catalog10
     pub tipo_nota: Option<&'static str>,

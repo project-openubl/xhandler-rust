@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use chrono::NaiveDate;
+use rust_decimal_macros::dec;
 
 use xbuilder::catalogs::{Catalog, Catalog6};
 use xbuilder::enricher::enrich::{Defaults, EnrichTrait};
@@ -12,9 +13,9 @@ use xbuilder::renderer::render_invoice;
 fn main() {
     let defaults = Defaults {
         date: NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
-        icb_tasa: 0.3,
-        igv_tasa: 0.18,
-        ivap_tasa: 0.04,
+        icb_tasa: dec!(0.3),
+        igv_tasa: dec!(0.18),
+        ivap_tasa: dec!(0.04),
     };
 
     let mut invoice = Invoice {

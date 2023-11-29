@@ -6,6 +6,7 @@ use crate::models::traits::invoice::percepcion::{
 };
 use crate::models::traits::totalimporte::TotalImporteGetter;
 use crate::prelude::TotalImporte;
+use rust_decimal_macros::dec;
 
 pub trait PercepcionSummaryRule {
     fn summary(&mut self) -> bool;
@@ -44,7 +45,7 @@ where
         match &self.get_porcentaje() {
             Some(_) => false,
             None => {
-                self.set_porcentaje(1f64);
+                self.set_porcentaje(dec!(1));
                 true
             }
         }

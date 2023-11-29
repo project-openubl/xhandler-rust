@@ -1,5 +1,6 @@
 use crate::models::general::Percepcion;
 use crate::models::invoice::Invoice;
+use rust_decimal::Decimal;
 
 pub trait InvoicePercepcionGetter {
     fn get_percepcion(&mut self) -> &mut Option<Percepcion>;
@@ -14,21 +15,21 @@ impl InvoicePercepcionGetter for Invoice {
 // Monto Base
 
 pub trait InvoicePercepcionPorcentajeGetter {
-    fn get_porcentaje(&self) -> &Option<f64>;
+    fn get_porcentaje(&self) -> &Option<Decimal>;
 }
 
 pub trait InvoicePercepcionPorcentajeSetter {
-    fn set_porcentaje(&mut self, val: f64);
+    fn set_porcentaje(&mut self, val: Decimal);
 }
 
 impl InvoicePercepcionPorcentajeGetter for Percepcion {
-    fn get_porcentaje(&self) -> &Option<f64> {
+    fn get_porcentaje(&self) -> &Option<Decimal> {
         &self.porcentaje
     }
 }
 
 impl InvoicePercepcionPorcentajeSetter for Percepcion {
-    fn set_porcentaje(&mut self, val: f64) {
+    fn set_porcentaje(&mut self, val: Decimal) {
         self.porcentaje = Some(val);
     }
 }
@@ -36,21 +37,21 @@ impl InvoicePercepcionPorcentajeSetter for Percepcion {
 // Monto Base
 
 pub trait InvoicePercepcionMontoBaseGetter {
-    fn get_montobase(&self) -> &Option<f64>;
+    fn get_montobase(&self) -> &Option<Decimal>;
 }
 
 pub trait InvoicePercepcionMontoBaseSetter {
-    fn set_montobase(&mut self, val: f64);
+    fn set_montobase(&mut self, val: Decimal);
 }
 
 impl InvoicePercepcionMontoBaseGetter for Percepcion {
-    fn get_montobase(&self) -> &Option<f64> {
+    fn get_montobase(&self) -> &Option<Decimal> {
         &self.monto_base
     }
 }
 
 impl InvoicePercepcionMontoBaseSetter for Percepcion {
-    fn set_montobase(&mut self, val: f64) {
+    fn set_montobase(&mut self, val: Decimal) {
         self.monto_base = Some(val);
     }
 }
@@ -58,21 +59,21 @@ impl InvoicePercepcionMontoBaseSetter for Percepcion {
 // Monto
 
 pub trait InvoicePercepcionMontoGetter {
-    fn get_monto(&self) -> &Option<f64>;
+    fn get_monto(&self) -> &Option<Decimal>;
 }
 
 pub trait InvoicePercepcionMontoSetter {
-    fn set_monto(&mut self, val: f64);
+    fn set_monto(&mut self, val: Decimal);
 }
 
 impl InvoicePercepcionMontoGetter for Percepcion {
-    fn get_monto(&self) -> &Option<f64> {
+    fn get_monto(&self) -> &Option<Decimal> {
         &self.monto
     }
 }
 
 impl InvoicePercepcionMontoSetter for Percepcion {
-    fn set_monto(&mut self, val: f64) {
+    fn set_monto(&mut self, val: Decimal) {
         self.monto = Some(val);
     }
 }
@@ -80,21 +81,21 @@ impl InvoicePercepcionMontoSetter for Percepcion {
 // Monto total
 
 pub trait InvoicePercepcionMontoTotalGetter {
-    fn get_montototal(&self) -> &Option<f64>;
+    fn get_montototal(&self) -> &Option<Decimal>;
 }
 
 pub trait InvoicePercepcionMontoTotalSetter {
-    fn set_montototal(&mut self, val: f64);
+    fn set_montototal(&mut self, val: Decimal);
 }
 
 impl InvoicePercepcionMontoTotalGetter for Percepcion {
-    fn get_montototal(&self) -> &Option<f64> {
+    fn get_montototal(&self) -> &Option<Decimal> {
         &self.monto_total
     }
 }
 
 impl InvoicePercepcionMontoTotalSetter for Percepcion {
-    fn set_montototal(&mut self, val: f64) {
+    fn set_montototal(&mut self, val: Decimal) {
         self.monto_total = Some(val);
     }
 }

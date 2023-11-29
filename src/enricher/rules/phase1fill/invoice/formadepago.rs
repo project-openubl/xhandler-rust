@@ -2,6 +2,7 @@ use crate::models::general::{FormaDePago, TipoFormaDePago};
 use crate::models::traits::invoice::formadepago::{
     InvoiceFormaDePagoGetter, InvoiceFormaDePagoSetter,
 };
+use rust_decimal_macros::dec;
 
 pub trait InvoiceFormaDePagoEnrichRule {
     fn fill(&mut self) -> bool;
@@ -41,7 +42,7 @@ where
                     .cuotas
                     .iter()
                     .map(|e| e.importe)
-                    .fold(0f64, |accumulator, current| accumulator + current);
+                    .fold(dec!(0), |accumulator, current| accumulator + current);
 
                 self.set_formadepago(FormaDePago {
                     total: Some(total),

@@ -6,6 +6,7 @@ use crate::models::traits::detalle::precio::DetallePrecioGetter;
 use crate::models::traits::detalle::precioconimpuestos::{
     DetallePrecioConImpuestosGetter, DetallePrecioConImpuestosSetter,
 };
+use rust_decimal_macros::dec;
 
 pub trait DetallePrecioConImpuestosProcessRule {
     fn process(&mut self) -> bool;
@@ -31,9 +32,9 @@ where
             (None, Some(igv_tipo), Some(igv_tasa), Some(isc_tasa), Some(precio)) => {
                 if let Some(catalog) = catalog7_value_of_code(igv_tipo) {
                     let precio_con_impuestos = if catalog.onerosa() {
-                        precio * (1f64 + *igv_tasa) * (1f64 + *isc_tasa)
+                        precio * (dec!(1) + *igv_tasa) * (dec!(1) + *isc_tasa)
                     } else {
-                        0f64
+                        dec!(0)
                     };
 
                     self.set_precioconimpuestos(precio_con_impuestos);
@@ -45,8 +46,8 @@ where
             // Si operacion onerosa y precio es diferente de cero => modificarlo
             (Some(precio_con_impuestos), Some(igv_tipo), Some(_), Some(_), Some(_)) => {
                 if let Some(catalog) = catalog7_value_of_code(igv_tipo) {
-                    if !catalog.onerosa() && precio_con_impuestos > &0f64 {
-                        self.set_precioconimpuestos(0f64);
+                    if !catalog.onerosa() && precio_con_impuestos > &dec!(0) {
+                        self.set_precioconimpuestos(dec!(0));
                         true
                     } else {
                         false

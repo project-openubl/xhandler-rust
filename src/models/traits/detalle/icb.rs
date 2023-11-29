@@ -1,21 +1,22 @@
 use crate::models::general::Detalle;
+use rust_decimal::Decimal;
 
 pub trait DetalleICBGetter {
-    fn get_icb(&self) -> &Option<f64>;
+    fn get_icb(&self) -> &Option<Decimal>;
 }
 
 pub trait DetalleICBSetter {
-    fn set_icb(&mut self, val: f64);
+    fn set_icb(&mut self, val: Decimal);
 }
 
 impl DetalleICBGetter for Detalle {
-    fn get_icb(&self) -> &Option<f64> {
+    fn get_icb(&self) -> &Option<Decimal> {
         &self.icb
     }
 }
 
 impl DetalleICBSetter for Detalle {
-    fn set_icb(&mut self, val: f64) {
+    fn set_icb(&mut self, val: Decimal) {
         self.icb = Some(val);
     }
 }

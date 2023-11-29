@@ -1,4 +1,5 @@
 use chrono::NaiveDate;
+use rust_decimal::Decimal;
 
 use crate::enricher::rules::phase1fill::detalle::detalles::DetallesEnrichRule;
 use crate::enricher::rules::phase1fill::fecha_emision::FechaEmisionEnrichRule;
@@ -32,9 +33,9 @@ use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
 
 pub struct Defaults {
-    pub icb_tasa: f64,
-    pub igv_tasa: f64,
-    pub ivap_tasa: f64,
+    pub icb_tasa: Decimal,
+    pub igv_tasa: Decimal,
+    pub ivap_tasa: Decimal,
 
     pub date: NaiveDate,
 }

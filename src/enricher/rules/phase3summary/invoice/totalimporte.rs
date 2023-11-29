@@ -1,6 +1,7 @@
+use rust_decimal_macros::dec;
 use std::collections::HashMap;
 
-use crate::catalogs::{Catalog5, Catalog53, catalog53_value_of_code, catalog7_value_of_code};
+use crate::catalogs::{catalog53_value_of_code, catalog7_value_of_code, Catalog5, Catalog53};
 use crate::models::general::TotalImporte;
 use crate::models::traits::detalle::DetallesGetter;
 use crate::models::traits::igv::IGVTasaGetter;
@@ -29,7 +30,7 @@ where
                     .get_detalles()
                     .iter()
                     .filter_map(|e| e.total_impuestos)
-                    .fold(0f64, |a, b| a + b);
+                    .fold(dec!(0), |a, b| a + b);
 
                 let importe_sin_impuestos = self
                     .get_detalles()
@@ -44,14 +45,14 @@ where
                     .filter_map(|detalle| {
                         if detalle
                             .isc_base_imponible
-                            .is_some_and(|base_imponible| base_imponible > 0f64)
+                            .is_some_and(|base_imponible| base_imponible > dec!(0))
                         {
                             detalle.isc_base_imponible
                         } else {
                             detalle.igv_base_imponible
                         }
                     })
-                    .fold(0f64, |a, b| a + b);
+                    .fold(dec!(0), |a, b| a + b);
 
                 let importe_con_impuestos = importe_sin_impuestos + total_impuestos;
 
@@ -60,7 +61,7 @@ where
                     .get_anticipos()
                     .iter()
                     .map(|e| e.monto)
-                    .fold(0f64, |a, b| a + b);
+                    .fold(dec!(0), |a, b| a + b);
 
                 let importe_total = importe_con_impuestos - anticipos;
 
@@ -72,22 +73,30 @@ where
                             if let Some(tipo) = current.tipo {
                                 if let Some(catalog53) = catalog53_value_of_code(tipo) {
                                     let monto =
-                                        acc.get(&catalog53).unwrap_or(&0f64) + current.monto;
+                                        acc.get(&catalog53).unwrap_or(&dec!(0)) + current.monto;
                                     acc.insert(catalog53, monto);
                                 }
                             }
                             acc
                         });
 
-                let descuentos_que_afectan_base_imponible_sin_impuestos = descuentos
-                    .get(&Catalog53::DescuentoGlobalAfectaBaseImponibleIgvIvap)
-                    .unwrap_or(&0f64);
+                let descuentos_que_afectan_base_imponible_sin_impuestos = if let Some(val) =
+                    descuentos.get(&Catalog53::DescuentoGlobalAfectaBaseImponibleIgvIvap)
+                {
+                    *val
+                } else {
+                    dec!(0)
+                };
                 let descuentos_que_afectan_base_imponible_con_impuestos =
                     descuentos_que_afectan_base_imponible_sin_impuestos
-                        * (self.get_igv_tasa().unwrap_or(0f64) + 1f64);
-                let descuentos_que_no_afectan_base_imponible_sin_impuestos = descuentos
-                    .get(&Catalog53::DescuentoGlobalNoAfectaBaseImponibleIgvIvap)
-                    .unwrap_or(&0f64);
+                        * (self.get_igv_tasa().unwrap_or(dec!(0)) + dec!(1));
+                let descuentos_que_no_afectan_base_imponible_sin_impuestos = if let Some(val) =
+                    descuentos.get(&Catalog53::DescuentoGlobalNoAfectaBaseImponibleIgvIvap)
+                {
+                    *val
+                } else {
+                    dec!(0)
+                };
 
                 //
                 let importe_sin_impuestos =
@@ -102,7 +111,7 @@ where
                 self.set_totalimporte(TotalImporte {
                     importe_sin_impuestos,
                     importe_con_impuestos,
-                    descuentos: *descuentos_que_no_afectan_base_imponible_sin_impuestos,
+                    descuentos: descuentos_que_no_afectan_base_imponible_sin_impuestos,
                     anticipos,
                     importe: importe_total,
                 });

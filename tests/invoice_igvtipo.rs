@@ -1,3 +1,4 @@
+use rust_decimal_macros::dec;
 use xbuilder::models::general::Detalle;
 use xbuilder::prelude::*;
 
@@ -35,10 +36,10 @@ fn invoice_precio_unitario() {
     for catalog7 in CATALOG7_VARIANTS {
         let mut invoice = Invoice {
             detalles: vec![Detalle {
-                cantidad: 1f64,
-                precio: Some(100f64),
+                cantidad: dec!(1),
+                precio: Some(dec!(100)),
                 igv_tipo: Some(catalog7.code()),
-                ..detalle_base("Item1", 10f64)
+                ..detalle_base("Item1", dec!(10))
             }],
             ..invoice_base()
         };

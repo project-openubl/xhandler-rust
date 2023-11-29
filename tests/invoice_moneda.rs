@@ -1,3 +1,4 @@
+use rust_decimal_macros::dec;
 use xbuilder::prelude::*;
 
 use crate::common::invoice_base;
@@ -12,9 +13,9 @@ fn invoice_custom_moneda() {
     let mut invoice = Invoice {
         moneda: Some("USD"),
         detalles: vec![Detalle {
-            cantidad: 1f64,
-            precio: Some(100f64),
-            ..detalle_base("Item1", 10f64)
+            cantidad: dec!(1),
+            precio: Some(dec!(100)),
+            ..detalle_base("Item1", dec!(10))
         }],
         ..invoice_base()
     };

@@ -6,6 +6,7 @@ use crate::models::traits::detalle::isc::DetalleISCGetter;
 use crate::models::traits::detalle::totalimpuestos::{
     DetalleTotalImpuestosGetter, DetalleTotalImpuestosSetter,
 };
+use rust_decimal_macros::dec;
 
 pub trait DetalleTotalImpuestosProcessRule {
     fn process(&mut self) -> bool;
@@ -33,7 +34,7 @@ where
                     let igv_isc = if catalog.onerosa() {
                         (*igv, *isc)
                     } else {
-                        (0f64, 00f64)
+                        (dec!(0), dec!(0))
                     };
 
                     let total = icb + igv_isc.0 + igv_isc.1;

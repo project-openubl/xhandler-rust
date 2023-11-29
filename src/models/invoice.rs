@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use chrono::{NaiveDate, NaiveTime};
+use rust_decimal::Decimal;
 use serde::Serialize;
 
 use crate::models::common::{Cliente, Direccion, Firmante, Proveedor};
@@ -21,9 +22,9 @@ pub struct Invoice {
     pub proveedor: Proveedor,
     pub cliente: Cliente,
     pub firmante: Option<Firmante>,
-    pub icb_tasa: Option<f64>,
-    pub igv_tasa: Option<f64>,
-    pub ivap_tasa: Option<f64>,
+    pub icb_tasa: Option<Decimal>,
+    pub igv_tasa: Option<Decimal>,
+    pub ivap_tasa: Option<Decimal>,
 
     /// Catalog1
     pub tipo_comprobante: Option<&'static str>,

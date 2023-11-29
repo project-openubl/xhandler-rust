@@ -1,21 +1,22 @@
 use crate::models::general::Detalle;
+use rust_decimal::Decimal;
 
 pub trait DetalleIGVTasaGetter {
-    fn get_igvtasa(&self) -> &Option<f64>;
+    fn get_igvtasa(&self) -> &Option<Decimal>;
 }
 
 pub trait DetalleIGVTasaSetter {
-    fn set_igvtasa(&mut self, val: f64);
+    fn set_igvtasa(&mut self, val: Decimal);
 }
 
 impl DetalleIGVTasaGetter for Detalle {
-    fn get_igvtasa(&self) -> &Option<f64> {
+    fn get_igvtasa(&self) -> &Option<Decimal> {
         &self.igv_tasa
     }
 }
 
 impl DetalleIGVTasaSetter for Detalle {
-    fn set_igvtasa(&mut self, val: f64) {
+    fn set_igvtasa(&mut self, val: Decimal) {
         self.igv_tasa = Some(val);
     }
 }

@@ -1,6 +1,8 @@
+use rust_decimal::Decimal;
+use rust_decimal_macros::dec;
 use std::collections::HashMap;
 
-use crate::catalogs::{Catalog5, Catalog53, catalog53_value_of_code, catalog7_value_of_code};
+use crate::catalogs::{catalog53_value_of_code, catalog7_value_of_code, Catalog5, Catalog53};
 use crate::models::general::{Detalle, TotalImpuestos};
 use crate::models::traits::detalle::DetallesGetter;
 use crate::models::traits::invoice::anticipos::InvoiceAnticiposGetter;
@@ -40,7 +42,7 @@ where
                     gratuito.importe_icb,
                 ]
                 .iter()
-                .fold(0f64, |a, b| a + b);
+                .fold(dec!(0), |a, b| a + b);
 
                 // ISC
                 let isc_importe = vec![
@@ -52,20 +54,20 @@ where
                     gratuito.importe_isc,
                 ]
                 .iter()
-                .fold(0f64, |a, b| a + b);
+                .fold(dec!(0), |a, b| a + b);
 
                 let isc_base_imponible = &self
                     .get_detalles()
                     .iter()
                     .filter(|e| {
                         if let Some(isc_tasa) = e.isc_tasa {
-                            isc_tasa > 0f64
+                            isc_tasa > dec!(0)
                         } else {
                             false
                         }
                     })
                     .filter_map(|e| e.isc_base_imponible)
-                    .fold(0f64, |a, b| a + b);
+                    .fold(dec!(0), |a, b| a + b);
 
                 // Anticipos
                 let total_anticipos_gravados = &self.get_anticipos().iter()
@@ -81,7 +83,7 @@ where
                         }
                     })
                     .map(|e| e.monto)
-                    .fold(0f64, |a, b| a + b);
+                    .fold(dec!(0), |a, b| a + b);
 
                 // Descuentos
                 let descuentos =
@@ -92,25 +94,30 @@ where
                             if let Some(tipo) = current.tipo {
                                 if let Some(catalog53) = catalog53_value_of_code(tipo) {
                                     let monto =
-                                        acc.get(&catalog53).unwrap_or(&0f64) + current.monto;
+                                        acc.get(&catalog53).unwrap_or(&dec!(0)) + current.monto;
                                     acc.insert(catalog53, monto);
                                 }
                             }
                             acc
                         });
-                let descuentos_que_afectan_base_imponible_sin_impuestos = descuentos
-                    .get(&Catalog53::DescuentoGlobalAfectaBaseImponibleIgvIvap)
-                    .unwrap_or(&0f64);
+
+                let descuentos_que_afectan_base_imponible_sin_impuestos = if let Some(val) =
+                    descuentos.get(&Catalog53::DescuentoGlobalAfectaBaseImponibleIgvIvap)
+                {
+                    *val
+                } else {
+                    dec!(0)
+                };
 
                 // Aplicar ANTICIPOS Y DESCUENTOS
                 let gravado_base_imponible = gravado.base_imponible
                     - total_anticipos_gravados
                     - descuentos_que_afectan_base_imponible_sin_impuestos;
 
-                let factor = if gravado.base_imponible > 0f64 {
+                let factor = if gravado.base_imponible > dec!(0) {
                     gravado_base_imponible / gravado.base_imponible
                 } else {
-                    1f64
+                    dec!(1)
                 };
 
                 let total = (gravado.importe + ivap.importe + exportacion.importe) * factor;
@@ -148,12 +155,12 @@ where
 }
 
 struct Impuesto {
-    pub base_imponible: f64,
+    pub base_imponible: Decimal,
 
-    pub importe: f64,
-    pub importe_igv: f64,
-    pub importe_isc: f64,
-    pub importe_icb: f64,
+    pub importe: Decimal,
+    pub importe_igv: Decimal,
+    pub importe_isc: Decimal,
+    pub importe_icb: Decimal,
 }
 
 fn cal_impuesto_by_tipo(detalles: &[Detalle], categoria: Catalog5) -> Impuesto {
@@ -173,28 +180,28 @@ fn cal_impuesto_by_tipo(detalles: &[Detalle], categoria: Catalog5) -> Impuesto {
         .iter()
         .map(|e| e.isc_base_imponible)
         .filter(|e| e.is_some())
-        .fold(0f64, |a, b| a + b.unwrap());
+        .fold(dec!(0), |a, b| a + b.unwrap());
     let importe = stream
         .iter()
         .map(|e| e.total_impuestos)
         .filter(|e| e.is_some())
-        .fold(0f64, |a, b| a + b.unwrap());
+        .fold(dec!(0), |a, b| a + b.unwrap());
 
     let importe_isc = stream
         .iter()
         .map(|e| e.isc)
         .filter(|e| e.is_some())
-        .fold(0f64, |a, b| a + b.unwrap());
+        .fold(dec!(0), |a, b| a + b.unwrap());
     let importe_igv = stream
         .iter()
         .map(|e| e.igv)
         .filter(|e| e.is_some())
-        .fold(0f64, |a, b| a + b.unwrap());
+        .fold(dec!(0), |a, b| a + b.unwrap());
     let importe_icb = stream
         .iter()
         .map(|e| e.icb)
         .filter(|e| e.is_some())
-        .fold(0f64, |a, b| a + b.unwrap());
+        .fold(dec!(0), |a, b| a + b.unwrap());
 
     Impuesto {
         base_imponible,

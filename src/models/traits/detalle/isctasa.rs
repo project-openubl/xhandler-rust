@@ -1,21 +1,22 @@
 use crate::models::general::Detalle;
+use rust_decimal::Decimal;
 
 pub trait DetalleISCTasaGetter {
-    fn get_isctasa(&self) -> &Option<f64>;
+    fn get_isctasa(&self) -> &Option<Decimal>;
 }
 
 pub trait DetalleISCTasaSetter {
-    fn set_isctasa(&mut self, val: f64);
+    fn set_isctasa(&mut self, val: Decimal);
 }
 
 impl DetalleISCTasaGetter for Detalle {
-    fn get_isctasa(&self) -> &Option<f64> {
+    fn get_isctasa(&self) -> &Option<Decimal> {
         &self.isc_tasa
     }
 }
 
 impl DetalleISCTasaSetter for Detalle {
-    fn set_isctasa(&mut self, val: f64) {
+    fn set_isctasa(&mut self, val: Decimal) {
         self.isc_tasa = Some(val);
     }
 }

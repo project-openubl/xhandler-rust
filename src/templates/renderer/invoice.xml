@@ -60,14 +60,14 @@
     <cac:PaymentTerms>
         <cbc:ID>Detraccion</cbc:ID>
         <cbc:PaymentMeansID>{{detraccion.tipo_bienD_detraido}}</cbc:PaymentMeansID>
-        <cbc:PaymentPercent>{detraccion.porcentaje.multiplyByInt(100) | round(method="ceil", precision=2) | currency}</cbc:PaymentPercent>
-        <cbc:Amount currencyID="{{moneda}}">{detraccion.monto | round(method="ceil", precision=2) | currency}</cbc:Amount>
+        <cbc:PaymentPercent>{detraccion.porcentaje.multiplyByInt(100) | round_decimal}</cbc:PaymentPercent>
+        <cbc:Amount currencyID="{{moneda}}">{detraccion.monto | round_decimal}</cbc:Amount>
     </cac:PaymentTerms>
     {%- endif %}
     {%- if percepcion %}
     <cac:PaymentTerms>
         <cbc:ID>Percepcion</cbc:ID>
-        <cbc:Amount currencyID="PEN">{{percepcion.monto_total | round(method="ceil", precision=2) | currency}}</cbc:Amount>
+        <cbc:Amount currencyID="PEN">{{percepcion.monto_total | round_decimal}}</cbc:Amount>
     </cac:PaymentTerms>
     {%- endif %}
     {%- include "ubl/standard/include/payment-terms.xml" -%}
@@ -91,28 +91,28 @@
         <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
         <cbc:AllowanceChargeReasonCode>{it.tipoDescuento}</cbc:AllowanceChargeReasonCode>
         {%- if it.factor %}
-        <cbc:MultiplierFactorNumeric>{it.factor | round(method="ceil", precision=2) | currency}</cbc:MultiplierFactorNumeric>
+        <cbc:MultiplierFactorNumeric>{it.factor | round_decimal}</cbc:MultiplierFactorNumeric>
         {%- endif %}
-        <cbc:Amount currencyID="{{moneda}}">{it.monto | round(method="ceil", precision=2) | currency}</cbc:Amount>
-        <cbc:BaseAmount currencyID="{{moneda}}">{it.montoBase | round(method="ceil", precision=2) | currency}</cbc:BaseAmount>
+        <cbc:Amount currencyID="{{moneda}}">{it.monto | round_decimal}</cbc:Amount>
+        <cbc:BaseAmount currencyID="{{moneda}}">{it.montoBase | round_decimal}</cbc:BaseAmount>
     </cac:AllowanceCharge>
     {%- endfor %}
     {%- if percepcion %}
     <cac:AllowanceCharge>
         <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
         <cbc:AllowanceChargeReasonCode>{{percepcion.tipo}}</cbc:AllowanceChargeReasonCode>
-        <cbc:MultiplierFactorNumeric>{{percepcion.porcentaje | round(method="ceil", precision=2) | currency}}</cbc:MultiplierFactorNumeric>
-        <cbc:Amount currencyID="PEN">{{percepcion.monto | round(method="ceil", precision=2) | currency}}</cbc:Amount>
-        <cbc:BaseAmount currencyID="PEN">{{percepcion.monto_base | round(method="ceil", precision=2) | currency}}</cbc:BaseAmount>
+        <cbc:MultiplierFactorNumeric>{{percepcion.porcentaje | round_decimal}}</cbc:MultiplierFactorNumeric>
+        <cbc:Amount currencyID="PEN">{{percepcion.monto | round_decimal}}</cbc:Amount>
+        <cbc:BaseAmount currencyID="PEN">{{percepcion.monto_base | round_decimal}}</cbc:BaseAmount>
     </cac:AllowanceCharge>
     {%- endif %}
     {%- include "ubl/standard/include/tax-total.xml" %}
     <cac:LegalMonetaryTotal>
-        <cbc:LineExtensionAmount currencyID="{{moneda}}">{{total_importe.importe_sin_impuestos | round(method="ceil", precision=2) | currency}}</cbc:LineExtensionAmount>
-        <cbc:TaxInclusiveAmount currencyID="{{moneda}}">{{total_importe.importe_con_impuestos | round(method="ceil", precision=2) | currency}}</cbc:TaxInclusiveAmount>
+        <cbc:LineExtensionAmount currencyID="{{moneda}}">{{total_importe.importe_sin_impuestos | round_decimal}}</cbc:LineExtensionAmount>
+        <cbc:TaxInclusiveAmount currencyID="{{moneda}}">{{total_importe.importe_con_impuestos | round_decimal}}</cbc:TaxInclusiveAmount>
         <cbc:AllowanceTotalAmount currencyID="{{moneda}}">{{total_importe.descuentos}}</cbc:AllowanceTotalAmount>
         <cbc:PrepaidAmount currencyID="{{moneda}}">{{total_importe.anticipos}}</cbc:PrepaidAmount>
-        <cbc:PayableAmount currencyID="{{moneda}}">{{total_importe.importe | round(method="ceil", precision=2) | currency}}</cbc:PayableAmount>
+        <cbc:PayableAmount currencyID="{{moneda}}">{{total_importe.importe | round_decimal}}</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
     {%- for it in detalles %}
     <cac:InvoiceLine>

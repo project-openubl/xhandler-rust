@@ -1,4 +1,5 @@
 use chrono::{NaiveDate, NaiveTime};
+use rust_decimal_macros::dec;
 use xbuilder::models::general::Detalle;
 use xbuilder::prelude::*;
 
@@ -15,14 +16,14 @@ fn invoice_custom_unidad_medida() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
-                precio: Some(100f64),
+                precio: Some(dec!(100)),
                 unidad_medida: Some("KGM"),
-                ..detalle_base("Item1", 10f64)
+                ..detalle_base("Item1", dec!(10))
             },
             Detalle {
-                precio: Some(100f64),
+                precio: Some(dec!(100)),
                 unidad_medida: Some("KGM"),
-                ..detalle_base("Item2", 10f64)
+                ..detalle_base("Item2", dec!(10))
             },
         ],
         ..invoice_base()
@@ -118,16 +119,16 @@ fn invoice_with_icb_precio_unitario() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
-                cantidad: 10f64,
-                precio: Some(100f64),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
                 icb_aplica: true,
-                ..detalle_base("Item1", 10f64)
+                ..detalle_base("Item1", dec!(10))
             },
             Detalle {
-                cantidad: 10f64,
-                precio: Some(100f64),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
                 icb_aplica: true,
-                ..detalle_base("Item2", 10f64)
+                ..detalle_base("Item2", dec!(10))
             },
         ],
         ..invoice_base()
@@ -141,16 +142,16 @@ fn invoice_with_icb_precio_con_igv() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
-                cantidad: 10f64,
-                precio_con_impuestos: Some(118f64),
+                cantidad: dec!(10),
+                precio_con_impuestos: Some(dec!(118)),
                 icb_aplica: true,
-                ..detalle_base("Item1", 10f64)
+                ..detalle_base("Item1", dec!(10))
             },
             Detalle {
-                cantidad: 10f64,
-                precio_con_impuestos: Some(118f64),
+                cantidad: dec!(10),
+                precio_con_impuestos: Some(dec!(118)),
                 icb_aplica: true,
-                ..detalle_base("Item2", 10f64)
+                ..detalle_base("Item2", dec!(10))
             },
         ],
         ..invoice_base()
@@ -177,14 +178,14 @@ fn invoice_with_custom_proveedor_direccion_not_null_and_codigo_local_null() {
         },
         detalles: vec![
             Detalle {
-                cantidad: 10f64,
-                precio: Some(118f64),
-                ..detalle_base("Item1", 10f64)
+                cantidad: dec!(10),
+                precio: Some(dec!(118)),
+                ..detalle_base("Item1", dec!(10))
             },
             Detalle {
-                cantidad: 10f64,
-                precio: Some(118f64),
-                ..detalle_base("Item2", 10f64)
+                cantidad: dec!(10),
+                precio: Some(dec!(118)),
+                ..detalle_base("Item2", dec!(10))
             },
         ],
         ..invoice_base()

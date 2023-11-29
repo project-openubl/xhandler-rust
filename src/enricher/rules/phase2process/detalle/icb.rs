@@ -2,6 +2,7 @@ use crate::models::traits::detalle::cantidad::DetalleCantidadGetter;
 use crate::models::traits::detalle::icb::{DetalleICBGetter, DetalleICBSetter};
 use crate::models::traits::detalle::icbaplica::DetalleICBAplicaGetter;
 use crate::models::traits::detalle::icbtasa::DetalleICBTasaGetter;
+use rust_decimal_macros::dec;
 
 pub trait DetalleICBProcessRule {
     fn process(&mut self) -> bool;
@@ -28,7 +29,7 @@ where
                         false
                     }
                 } else {
-                    self.set_icb(0f64);
+                    self.set_icb(dec!(0));
                     true
                 }
             }
