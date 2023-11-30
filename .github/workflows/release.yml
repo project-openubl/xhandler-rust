@@ -34,7 +34,7 @@ jobs:
           git push origin HEAD:master
 
       # OSSRH
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: 17
@@ -51,7 +51,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
 
 #      # GitHub
-#      - uses: actions/setup-java@v3
+#      - uses: actions/setup-java@v4
 #        with:
 #          distribution: "temurin"
 #          java-version: 11
