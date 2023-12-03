@@ -1,3 +1,5 @@
+use rust_decimal_macros::dec;
+
 use crate::catalogs::catalog7_value_of_code;
 use crate::models::traits::detalle::icb::DetalleICBGetter;
 use crate::models::traits::detalle::igv::DetalleIGVGetter;
@@ -6,7 +8,6 @@ use crate::models::traits::detalle::isc::DetalleISCGetter;
 use crate::models::traits::detalle::totalimpuestos::{
     DetalleTotalImpuestosGetter, DetalleTotalImpuestosSetter,
 };
-use rust_decimal_macros::dec;
 
 pub trait DetalleTotalImpuestosProcessRule {
     fn process(&mut self) -> bool;

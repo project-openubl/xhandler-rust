@@ -1,7 +1,8 @@
+use rust_decimal::Decimal;
+
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
-use rust_decimal::Decimal;
 
 pub trait IGVTasaGetter {
     fn get_igv_tasa(&self) -> &Option<Decimal>;

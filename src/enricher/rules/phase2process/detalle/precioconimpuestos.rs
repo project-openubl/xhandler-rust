@@ -1,3 +1,5 @@
+use rust_decimal_macros::dec;
+
 use crate::catalogs::catalog7_value_of_code;
 use crate::models::traits::detalle::igvtasa::DetalleIGVTasaGetter;
 use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
@@ -6,7 +8,6 @@ use crate::models::traits::detalle::precio::DetallePrecioGetter;
 use crate::models::traits::detalle::precioconimpuestos::{
     DetallePrecioConImpuestosGetter, DetallePrecioConImpuestosSetter,
 };
-use rust_decimal_macros::dec;
 
 pub trait DetallePrecioConImpuestosProcessRule {
     fn process(&mut self) -> bool;
@@ -43,7 +44,7 @@ where
                     false
                 }
             }
-            // Si operacion onerosa y precio es diferente de cero => modificarlo
+            // Si operacion no es onerosa y precio es diferente de cero => modificarlo
             (Some(precio_con_impuestos), Some(igv_tipo), Some(_), Some(_), Some(_)) => {
                 if let Some(catalog) = catalog7_value_of_code(igv_tipo) {
                     if !catalog.onerosa() && precio_con_impuestos > &dec!(0) {

@@ -1,8 +1,9 @@
+use rust_decimal::Decimal;
+
 use crate::catalogs::{Catalog, Catalog53};
 use crate::models::traits::invoice::descuentos::{
     DescuentoGetter, DescuentoSetter, InvoiceDescuentosGetter,
 };
-use rust_decimal_macros::dec;
 
 pub trait InvoiceDescuentosEnrichRule {
     fn fill(&mut self) -> bool;
@@ -49,7 +50,7 @@ where
         match self.get_factor() {
             Some(..) => false,
             None => {
-                self.set_factor(dec!(1));
+                self.set_factor(Decimal::ONE);
                 true
             }
         }

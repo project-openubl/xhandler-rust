@@ -1,3 +1,5 @@
+use log::warn;
+
 use crate::catalogs::catalog7_value_of_code;
 use crate::models::traits::detalle::cantidad::DetalleCantidadGetter;
 use crate::models::traits::detalle::igvbaseimponible::{
@@ -41,6 +43,7 @@ where
                     self.set_igvbaseimponible(base_imponible + *isc);
                     true
                 } else {
+                    warn!("DetalleIGVBaseImponibleProcessRule: {igv_tipo} codigo no valido para Catalog7");
                     false
                 }
             }

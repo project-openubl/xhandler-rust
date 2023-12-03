@@ -1,6 +1,7 @@
+use rust_decimal::Decimal;
+
 use crate::models::general::Percepcion;
 use crate::models::invoice::Invoice;
-use rust_decimal::Decimal;
 
 pub trait InvoicePercepcionGetter {
     fn get_percepcion(&mut self) -> &mut Option<Percepcion>;

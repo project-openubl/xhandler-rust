@@ -1,5 +1,6 @@
-use crate::models::general::Detalle;
 use rust_decimal::Decimal;
+
+use crate::models::general::Detalle;
 
 pub trait DetalleICBGetter {
     fn get_icb(&self) -> &Option<Decimal>;

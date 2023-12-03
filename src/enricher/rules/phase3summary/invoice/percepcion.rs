@@ -1,3 +1,5 @@
+use rust_decimal_macros::dec;
+
 use crate::models::traits::invoice::percepcion::{
     InvoicePercepcionGetter, InvoicePercepcionMontoBaseGetter, InvoicePercepcionMontoBaseSetter,
     InvoicePercepcionMontoGetter, InvoicePercepcionMontoSetter, InvoicePercepcionMontoTotalGetter,
@@ -6,7 +8,6 @@ use crate::models::traits::invoice::percepcion::{
 };
 use crate::models::traits::totalimporte::TotalImporteGetter;
 use crate::prelude::TotalImporte;
-use rust_decimal_macros::dec;
 
 pub trait PercepcionSummaryRule {
     fn summary(&mut self) -> bool;

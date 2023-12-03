@@ -4,7 +4,7 @@ pub trait DetalleICBAplicaGetter {
     fn get_icbaplica(&self) -> bool;
 }
 
-pub trait DetalleICBSetter {
+pub trait DetalleICBAplicaSetter {
     fn set_icbaplica(&mut self, val: bool);
 }
 
@@ -14,7 +14,7 @@ impl DetalleICBAplicaGetter for Detalle {
     }
 }
 
-impl DetalleICBSetter for Detalle {
+impl DetalleICBAplicaSetter for Detalle {
     fn set_icbaplica(&mut self, val: bool) {
         self.icb_aplica = val;
     }

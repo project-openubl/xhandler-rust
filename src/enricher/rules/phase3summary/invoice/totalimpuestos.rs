@@ -1,8 +1,9 @@
-use rust_decimal::Decimal;
-use rust_decimal_macros::dec;
 use std::collections::HashMap;
 
-use crate::catalogs::{catalog53_value_of_code, catalog7_value_of_code, Catalog5, Catalog53};
+use rust_decimal::Decimal;
+use rust_decimal_macros::dec;
+
+use crate::catalogs::{Catalog5, Catalog53, catalog53_value_of_code, catalog7_value_of_code};
 use crate::models::general::{Detalle, TotalImpuestos};
 use crate::models::traits::detalle::DetallesGetter;
 use crate::models::traits::invoice::anticipos::InvoiceAnticiposGetter;
@@ -59,12 +60,9 @@ where
                 let isc_base_imponible = &self
                     .get_detalles()
                     .iter()
-                    .filter(|e| {
-                        if let Some(isc_tasa) = e.isc_tasa {
-                            isc_tasa > dec!(0)
-                        } else {
-                            false
-                        }
+                    .filter(|e| match (e.isc_tasa, e.isc) {
+                        (Some(isc_tasa), Some(isc)) => isc_tasa > dec!(0) && isc > dec!(0),
+                        _ => false,
                     })
                     .filter_map(|e| e.isc_base_imponible)
                     .fold(dec!(0), |a, b| a + b);

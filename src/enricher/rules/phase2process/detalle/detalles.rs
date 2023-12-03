@@ -1,8 +1,9 @@
 use crate::enricher::rules::phase2process::detalle::icb::DetalleICBProcessRule;
+use crate::enricher::rules::phase2process::detalle::icb_aplica::DetalleICBAplicaProcessRule;
 use crate::enricher::rules::phase2process::detalle::igv::DetalleIGVProcessRule;
-use crate::enricher::rules::phase2process::detalle::igvbaseimponible::DetalleIGVBaseImponibleProcessRule;
+use crate::enricher::rules::phase2process::detalle::igv_base_imponible::DetalleIGVBaseImponibleProcessRule;
 use crate::enricher::rules::phase2process::detalle::isc::DetalleISCProcessRule;
-use crate::enricher::rules::phase2process::detalle::iscbaseimponible::DetalleISCBaseImponibleProcessRule;
+use crate::enricher::rules::phase2process::detalle::isc_base_imponible::DetalleISCBaseImponibleProcessRule;
 use crate::enricher::rules::phase2process::detalle::precio::DetallePrecioProcessRule;
 use crate::enricher::rules::phase2process::detalle::precioconimpuestos::DetallePrecioConImpuestosProcessRule;
 use crate::enricher::rules::phase2process::detalle::precioreferencia::DetallePrecioReferenciaProcessRule;
@@ -31,6 +32,7 @@ where
                 } else {
                     let results = vec![
                         DetalleICBProcessRule::process(detalle),
+                        DetalleICBAplicaProcessRule::process(detalle),
                         DetalleIGVProcessRule::process(detalle),
                         DetalleISCProcessRule::process(detalle),
                         DetalleTotalImpuestosProcessRule::process(detalle),

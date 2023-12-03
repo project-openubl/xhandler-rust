@@ -1,6 +1,7 @@
+use rust_decimal::Decimal;
+
 use crate::models::general::Descuento;
 use crate::models::invoice::Invoice;
-use rust_decimal::Decimal;
 
 pub trait InvoiceDescuentosGetter {
     fn get_descuentos(&mut self) -> &mut Vec<Descuento>;

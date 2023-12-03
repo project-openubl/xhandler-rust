@@ -1,5 +1,5 @@
 {%- macro line(item) -%}
-        {%- if item.isc_base_imponible %}
+        {%- if item.isc_base_imponible is gt0 %}
         <cbc:LineExtensionAmount currencyID="{{moneda}}">{{item.isc_base_imponible | round_decimal}}</cbc:LineExtensionAmount>
         {%- else %}
         <cbc:LineExtensionAmount currencyID="{{moneda}}">{{item.igv_base_imponible | round_decimal}}</cbc:LineExtensionAmount>
@@ -41,7 +41,7 @@
                     </cac:TaxScheme>
                 </cac:TaxCategory>
             </cac:TaxSubtotal>
-            {%- if item.icb is gt0%}
+            {%- if item.icb is gt0 %}
             <cac:TaxSubtotal>
                 <cbc:TaxAmount currencyID="{{moneda}}">{{item.icb | round_decimal}}</cbc:TaxAmount>
                 <cbc:BaseUnitMeasure unitCode="{{item.unidad_medida}}">{{item.cantidad}}</cbc:BaseUnitMeasure>

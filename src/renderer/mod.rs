@@ -1,13 +1,13 @@
-use rust_decimal::Decimal;
-use rust_decimal_macros::dec;
 use std::collections::HashMap;
 use std::str::FromStr;
 
+use rust_decimal::Decimal;
+use rust_decimal_macros::dec;
+use tera::{Context, Error, from_value, Function, Tera, to_value, Value};
 use tera::helpers::tests::{number_args_allowed, value_defined};
-use tera::{from_value, to_value, Context, Error, Function, Tera, Value};
 
 use crate::models::invoice::Invoice;
-use crate::prelude::{catalog7_value_of_code, Catalog};
+use crate::prelude::{Catalog, catalog7_value_of_code};
 
 fn catalog7_taxcategory() -> impl Function {
     Box::new(

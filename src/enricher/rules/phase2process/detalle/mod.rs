@@ -1,9 +1,10 @@
 pub mod detalles;
 pub mod icb;
+pub mod icb_aplica;
 pub mod igv;
-pub mod igvbaseimponible;
+pub mod igv_base_imponible;
 pub mod isc;
-pub mod iscbaseimponible;
+pub mod isc_base_imponible;
 pub mod precio;
 pub mod precioconimpuestos;
 pub mod precioreferencia;
