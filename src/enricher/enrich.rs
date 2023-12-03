@@ -24,6 +24,7 @@ use crate::enricher::rules::phase1fill::note::debitnote::tiponota::DebitNoteTipo
 use crate::enricher::rules::phase1fill::note::tipocomprobanteafectado::NoteTipoComprobanteAfectadoEnrichRule;
 use crate::enricher::rules::phase1fill::proveedor::ProveedorEnrichRule;
 use crate::enricher::rules::phase2process::detalle::detalles::DetallesProcessRule;
+use crate::enricher::rules::phase3summary::invoice::detraccion::DetraccionSummaryRule;
 use crate::enricher::rules::phase3summary::invoice::percepcion::PercepcionSummaryRule;
 use crate::enricher::rules::phase3summary::invoice::totalimporte::InvoiceTotalImporteSummaryRule;
 use crate::enricher::rules::phase3summary::invoice::totalimpuestos::InvoiceTotalImpuestosSummaryRule;
@@ -299,7 +300,8 @@ where
     T: InvoiceTotalImpuestosSummaryRule
         + InvoiceTotalImporteSummaryRule
         + LeyendaIVAPSummaryRule
-        + PercepcionSummaryRule,
+        + PercepcionSummaryRule
+        + DetraccionSummaryRule,
 {
     fn summary_common(&mut self) {
         let mut changed = true;
@@ -310,6 +312,7 @@ where
                 InvoiceTotalImporteSummaryRule::summary(self),
                 LeyendaIVAPSummaryRule::summary(self),
                 PercepcionSummaryRule::summary(self),
+                DetraccionSummaryRule::summary(self),
             ];
 
             changed = results.contains(&true);

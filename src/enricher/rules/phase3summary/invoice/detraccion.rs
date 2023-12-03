@@ -1,20 +1,49 @@
-use crate::models::traits::invoice::detraccion::InvoiceDetraccionGetter;
+use crate::models::traits::invoice::detraccion::{
+    InvoiceDetraccionGetter, InvoiceDetraccionMontoGetter, InvoiceDetraccionMontoSetter,
+    InvoiceDetraccionPorcentajeGetter,
+};
+use crate::models::traits::totalimporte::TotalImporteGetter;
+use crate::prelude::TotalImporte;
 
-pub trait RetencionProcessRule {
-    fn process(&mut self) -> bool;
+pub trait DetraccionSummaryRule {
+    fn summary(&mut self) -> bool;
 }
 
-impl<T> RetencionProcessRule for T
+impl<T> DetraccionSummaryRule for T
 where
-    T: InvoiceDetraccionGetter,
+    T: InvoiceDetraccionGetter + TotalImporteGetter,
 {
-    fn process(&mut self) -> bool {
-        if let Some(detraccion) = self.get_detraccion() {
-            let _ = detraccion;
-            let results = vec![];
-            results.contains(&true)
-        } else {
-            false
+    fn summary(&mut self) -> bool {
+        match (self.get_totalimporte().clone(), self.get_detraccion()) {
+            (Some(total_importe), Some(detraccion)) => {
+                let results = vec![DetraccionMontoRule::summary(detraccion, &total_importe)];
+                results.contains(&true)
+            }
+            _ => false,
+        }
+    }
+}
+
+//
+
+pub trait DetraccionMontoRule {
+    fn summary(&mut self, total_importe: &TotalImporte) -> bool;
+}
+
+impl<T> DetraccionMontoRule for T
+where
+    T: InvoiceDetraccionMontoGetter
+        + InvoiceDetraccionMontoSetter
+        + InvoiceDetraccionPorcentajeGetter,
+{
+    fn summary(&mut self, total_importe: &TotalImporte) -> bool {
+        match &self.get_monto() {
+            Some(_) => false,
+            None => {
+                let monto = total_importe.importe_con_impuestos * self.get_porcentaje();
+                self.set_monto(monto);
+                true
+            }
         }
     }
 }

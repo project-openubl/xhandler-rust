@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
 use crate::catalogs::{Catalog5, Catalog53, catalog53_value_of_code, catalog7_value_of_code};
@@ -86,17 +87,17 @@ where
                 {
                     *val
                 } else {
-                    dec!(0)
+                    Decimal::ZERO
                 };
                 let descuentos_que_afectan_base_imponible_con_impuestos =
                     descuentos_que_afectan_base_imponible_sin_impuestos
-                        * (self.get_igv_tasa().unwrap_or(dec!(0)) + dec!(1));
+                        * (self.get_igv_tasa().unwrap_or(Decimal::ZERO) + Decimal::ONE);
                 let descuentos_que_no_afectan_base_imponible_sin_impuestos = if let Some(val) =
                     descuentos.get(&Catalog53::DescuentoGlobalNoAfectaBaseImponibleIgvIvap)
                 {
                     *val
                 } else {
-                    dec!(0)
+                    Decimal::ZERO
                 };
 
                 //
@@ -106,7 +107,7 @@ where
                     importe_con_impuestos - descuentos_que_afectan_base_imponible_con_impuestos;
                 let importe_total = importe_total
                     - descuentos_que_afectan_base_imponible_con_impuestos
-                    - descuentos_que_afectan_base_imponible_sin_impuestos;
+                    - descuentos_que_no_afectan_base_imponible_sin_impuestos;
 
                 //
                 self.set_totalimporte(TotalImporte {
