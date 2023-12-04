@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<VoidedDocuments xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:VoidedDocuments-1"
+                 xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+                 xmlns:sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
+>
+    {% include "ubl/standard/include/ubl-extensions.xml" %}
+    <cbc:UBLVersionID>2.0</cbc:UBLVersionID>
+    <cbc:CustomizationID>1.0</cbc:CustomizationID>
+    <cbc:ID>RA-{fechaEmision.format('yyyyMMdd')}-{numero}</cbc:ID>
+    <cbc:ReferenceDate>{fechaEmisionComprobantes}</cbc:ReferenceDate>
+    <cbc:IssueDate>{fechaEmision}</cbc:IssueDate>
+    {% include "ubl/common/signature.xml" %}
+    {% include "ubl/sunat/include/supplier.xml" %}
+    {%- for it in comprobantes %}
+    <sac:VoidedDocumentsLine>
+        <cbc:LineID>{{loop.index}}</cbc:LineID>
+        <cbc:DocumentTypeCode>{it.tipo_comprobante}</cbc:DocumentTypeCode>
+        <sac:DocumentSerialID>{it.serie}</sac:DocumentSerialID>
+        <sac:DocumentNumberID>{it.numero}</sac:DocumentNumberID>
+        <sac:VoidReasonDescription>{it.descripcionSustento}</sac:VoidReasonDescription>
+    </sac:VoidedDocumentsLine>
+    {%- endfor %}
+</VoidedDocuments>

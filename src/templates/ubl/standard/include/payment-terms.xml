@@ -1,0 +1,16 @@
+
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>{{forma_de_pago.tipo}}</cbc:PaymentMeansID>
+        {%- if forma_de_pago.tipo is credito %}
+        <cbc:Amount currencyID="{{moneda}}">{{forma_de_pago.total | round_decimal}}</cbc:Amount>
+        {%- endif %}
+    </cac:PaymentTerms>
+    {%- for it in forma_de_pago.cuotas %}
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>Cuota{{loop.index | format03d}}</cbc:PaymentMeansID>
+        <cbc:Amount currencyID="{{moneda}}">{{it.importe | round_decimal}}</cbc:Amount>
+        <cbc:PaymentDueDate>{{it.fecha_pago}}</cbc:PaymentDueDate>
+    </cac:PaymentTerms>
+    {%- endfor %}

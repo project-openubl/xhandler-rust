@@ -1,0 +1,15 @@
+[package]
+name = "xbuilder"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chrono = { version = "0.4.26", features = ["serde"] }
+regex = "1.9.5"
+log = "0.4.20"
+tera = "1.19.1"
+lazy_static = "1.4.0"
+serde = { version = "1.0.188", features = ["derive"] }
+format_xml = "0.3.0"
+rust_decimal = { version = "1.32.0", features = ["serde-str", "serde-with-str"] }
+rust_decimal_macros = "1.32.0"

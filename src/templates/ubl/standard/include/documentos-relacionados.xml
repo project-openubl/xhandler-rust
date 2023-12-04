@@ -1,0 +1,7 @@
+
+    {%- for it in documentos_relacionados %}
+    <cac:AdditionalDocumentReference>
+        <cbc:ID>{{it.serie_numero}}</cbc:ID>
+        <cbc:DocumentTypeCode>{{it.tipo_documento}}</cbc:DocumentTypeCode>
+    </cac:AdditionalDocumentReference>
+    {%- endfor %}

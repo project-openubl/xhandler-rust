@@ -1,0 +1,30 @@
+{%- macro address(direccion) -%}
+                    {%- if direccion.ubigeo %}
+                    <cbc:ID>{{direccion.ubigeo}}</cbc:ID>
+                    {%- endif %}
+                    {%- if direccion.codigo_local %}
+                    <cbc:AddressTypeCode>{{direccion.codigo_local}}</cbc:AddressTypeCode>
+                    {%- endif %}
+                    {%- if direccion.urbanizacion %}
+                    <cbc:CitySubdivisionName>{{direccion.urbanizacion}}</cbc:CitySubdivisionName>
+                    {%- endif %}
+                    {%- if direccion.provincia %}
+                    <cbc:CityName>{{direccion.provincia}}</cbc:CityName>
+                    {%- endif %}
+                    {%- if direccion.departamento %}
+                    <cbc:CountrySubentity>{{direccion.departamento}}</cbc:CountrySubentity>
+                    {%- endif %}
+                    {%- if direccion.distrito %}
+                    <cbc:District>{{direccion.distrito}}</cbc:District>
+                    {%- endif %}
+                    {%- if direccion.direccion %}
+                    <cac:AddressLine>
+                        <cbc:Line><![CDATA[{{direccion.direccion | escape}}]]></cbc:Line>
+                    </cac:AddressLine>
+                    {%- endif %}
+                    {%- if direccion.codigo_pais %}
+                    <cac:Country>
+                        <cbc:IdentificationCode>{{direccion.codigo_pais}}</cbc:IdentificationCode>
+                    </cac:Country>
+                    {%- endif %}
+{%- endmacro address -%}

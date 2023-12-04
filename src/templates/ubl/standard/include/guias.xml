@@ -1,0 +1,7 @@
+
+    {%- for it in guias %}
+    <cac:DespatchDocumentReference>
+        <cbc:ID>{{it.serie_numero}}</cbc:ID>
+        <cbc:DocumentTypeCode>{{it.tipo_documento}}</cbc:DocumentTypeCode>
+    </cac:DespatchDocumentReference>
+    {%- endfor %}
