@@ -70,6 +70,7 @@ pub enum Catalog1 {
     Boleta,
     NotaCredito,
     NotaDebito,
+    GuiaRemisionRemitente,
 }
 
 impl Catalog for Catalog1 {
@@ -79,6 +80,7 @@ impl Catalog for Catalog1 {
             Self::Boleta => "03",
             Self::NotaCredito => "07",
             Self::NotaDebito => "08",
+            Self::GuiaRemisionRemitente => "09"
         }
     }
 }

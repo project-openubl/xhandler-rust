@@ -72,7 +72,7 @@ pub struct Descuento {
 #[derive(Clone, Debug, Serialize)]
 pub struct Guia {
     /// Catalog1. Valores válidos: "09", "31"
-    pub tipo_documento: Decimal,
+    pub tipo_documento: &'static str,
     pub serie_numero: &'static str,
 }
 
