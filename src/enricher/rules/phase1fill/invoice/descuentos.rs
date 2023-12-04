@@ -17,7 +17,7 @@ where
         self.get_descuentos()
             .iter_mut()
             .map(|descuento| {
-                let results = vec![
+                let results = [
                     DescuentoFactorRule::fill(descuento),
                     DescuentoMontoBaseRule::fill(descuento),
                     DescuentoTipoRule::fill(descuento),

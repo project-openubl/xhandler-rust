@@ -1,6 +1,6 @@
 use rust_decimal::Decimal;
 
-use crate::catalogs::{Catalog7, catalog7_value_of_code, Catalog7Group};
+use crate::catalogs::{catalog7_value_of_code, Catalog7, Catalog7Group};
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
 use crate::models::traits::detalle::igvtasa::{DetalleIGVTasaGetter, DetalleIGVTasaSetter};
 use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;

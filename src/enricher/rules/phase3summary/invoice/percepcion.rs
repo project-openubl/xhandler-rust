@@ -19,7 +19,7 @@ where
 {
     fn summary(&mut self) -> bool {
         match (self.get_totalimporte().clone(), self.get_percepcion()) {
-            (Some(total_importe), Some(percepcion)) => vec![
+            (Some(total_importe), Some(percepcion)) => [
                 PerceptionPorcentajeBaseRule::summary(percepcion),
                 PerceptionMontoBaseRule::summary(percepcion, &total_importe),
                 PerceptionMontoRule::summary(percepcion),

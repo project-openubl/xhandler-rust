@@ -3,11 +3,11 @@ use std::str::FromStr;
 
 use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
-use tera::{Context, Error, from_value, Function, Tera, to_value, Value};
 use tera::helpers::tests::{number_args_allowed, value_defined};
+use tera::{from_value, to_value, Context, Error, Function, Tera, Value};
 
 use crate::models::invoice::Invoice;
-use crate::prelude::{Catalog, catalog7_value_of_code};
+use crate::prelude::{catalog7_value_of_code, Catalog};
 
 fn catalog7_taxcategory() -> impl Function {
     Box::new(
@@ -69,6 +69,16 @@ pub fn currency(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Erro
     }
 }
 
+pub fn format03d(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Error> {
+    match value.as_u64() {
+        Some(number) => {
+            let result = format!("{:03}", number);
+            Ok(to_value(result).unwrap())
+        }
+        None => Err("format03d could not find a string".into()),
+    }
+}
+
 pub fn gt0(value: Option<&Value>, params: &[Value]) -> tera::Result<bool> {
     number_args_allowed("gt0", 0, params.len())?;
     value_defined("gt0", value)?;
@@ -80,6 +90,19 @@ pub fn gt0(value: Option<&Value>, params: &[Value]) -> tera::Result<bool> {
                 "Tester `gt0` was called on a variable that isn't a Decimal",
             )),
         },
+        _ => Err(Error::msg(
+            "Tester `gt0` was called on a variable that isn't a number",
+        )),
+    }
+}
+
+pub fn credito(value: Option<&Value>, params: &[Value]) -> tera::Result<bool> {
+    number_args_allowed("credito", 0, params.len())?;
+    value_defined("credito", value)?;
+
+    match value.and_then(|v| v.as_str()) {
+        Some("Credito") => Ok(true),
+        Some("Contado") => Ok(false),
         _ => Err(Error::msg(
             "Tester `gt0` was called on a variable that isn't a number",
         )),
@@ -99,8 +122,10 @@ lazy_static::lazy_static! {
         tera.register_filter("multiply100", multiply100);
         tera.register_filter("round_decimal", round_decimal);
         tera.register_filter("currency", currency);
+        tera.register_filter("format03d", format03d);
 
         tera.register_tester("gt0", gt0);
+        tera.register_tester("credito", credito);
 
         // tera.autoescape_on(vec![".xml"]);
         tera

@@ -24,7 +24,7 @@ pub enum TipoFormaDePago {
 
 #[derive(Clone, Debug, Serialize)]
 pub struct FormaDePago {
-    pub tipo: TipoFormaDePago,
+    pub tipo: Option<TipoFormaDePago>,
     pub cuotas: Vec<CuotaDePago>,
     pub total: Option<Decimal>,
 }

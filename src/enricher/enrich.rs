@@ -9,7 +9,7 @@ use crate::enricher::rules::phase1fill::igvtasa::IGVTasaEnrichRule;
 use crate::enricher::rules::phase1fill::invoice::anticipos::InvoiceAnticiposEnrichRule;
 use crate::enricher::rules::phase1fill::invoice::descuentos::InvoiceDescuentosEnrichRule;
 use crate::enricher::rules::phase1fill::invoice::formadepago::{
-    InvoiceFormaDePagoEnrichRule, InvoiceFormaDePagoTotalRule,
+    InvoiceFormaDePagoEnrichRule, InvoiceFormaDePagoTipoRule, InvoiceFormaDePagoTotalRule,
 };
 use crate::enricher::rules::phase1fill::invoice::leyenda::{
     InvoiceLeyendaDetraccionEnrichRule, InvoiceLeyendaDireccionEntregaEnrichRule,
@@ -153,7 +153,7 @@ where
         let mut changed = true;
 
         while changed {
-            let results = vec![
+            let results = [
                 FechaEmisionEnrichRule::fill(self, defaults),
                 FirmanteEnrichRule::fill(self),
                 ICBTasaEnrichRule::fill(self, defaults),
@@ -175,11 +175,10 @@ where
         + InvoiceDescuentosEnrichRule
         + InvoiceFormaDePagoEnrichRule
         + InvoiceFormaDePagoTotalRule
+        + InvoiceFormaDePagoTipoRule
         + InvoiceLeyendaDetraccionEnrichRule
         + InvoiceLeyendaDireccionEntregaEnrichRule
         + InvoiceLeyendaPercepcionEnrichRule
-        + InvoiceFormaDePagoEnrichRule
-        + InvoiceFormaDePagoTotalRule
         + InvoiceTipoComprobanteEnrichRule
         + InvoiceTipoOperacionEnrichRule,
 {
@@ -187,11 +186,12 @@ where
         let mut changed = true;
 
         while changed {
-            let results = vec![
+            let results = [
                 InvoiceAnticiposEnrichRule::fill(self),
                 InvoiceDescuentosEnrichRule::fill(self),
                 InvoiceFormaDePagoEnrichRule::fill(self),
                 InvoiceFormaDePagoTotalRule::fill(self),
+                InvoiceFormaDePagoTipoRule::fill(self),
                 InvoiceLeyendaDetraccionEnrichRule::fill(self),
                 InvoiceLeyendaDireccionEntregaEnrichRule::fill(self),
                 InvoiceLeyendaPercepcionEnrichRule::fill(self),
@@ -212,7 +212,7 @@ where
         let mut changed = true;
 
         while changed {
-            let results = vec![
+            let results = [
                 NoteTipoComprobanteAfectadoEnrichRule::fill(self),
                 CreditNoteTipoEnrichRule::fill(self),
             ];
@@ -230,7 +230,7 @@ where
         let mut changed = true;
 
         while changed {
-            let results = vec![
+            let results = [
                 NoteTipoComprobanteAfectadoEnrichRule::fill(self),
                 DebitNoteTipoEnrichRule::fill(self),
             ];
@@ -268,7 +268,7 @@ where
         let mut changed = true;
 
         while changed {
-            let results = vec![DetallesProcessRule::process(self)];
+            let results = [DetallesProcessRule::process(self)];
 
             changed = results.contains(&true);
         }
@@ -307,7 +307,7 @@ where
         let mut changed = true;
 
         while changed {
-            let results = vec![
+            let results = [
                 InvoiceTotalImpuestosSummaryRule::summary(self),
                 InvoiceTotalImporteSummaryRule::summary(self),
                 LeyendaIVAPSummaryRule::summary(self),

@@ -36,7 +36,7 @@ where
         self.get_detalles()
             .iter_mut()
             .map(|detalle| {
-                let results = vec![
+                let results = [
                     DetalleICBTasaEnrichRule::fill(detalle, defaults),
                     DetalleIGVTasaEnrichRule::fill(detalle, defaults),
                     DetalleIGVTipoEnrichRule::fill(detalle, defaults),

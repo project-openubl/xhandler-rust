@@ -22,7 +22,7 @@ where
         self.get_detalles()
             .iter_mut()
             .map(|detalle| {
-                let results = vec![
+                let results = [
                     DetallePrecioProcessRule::process(detalle),
                     DetallePrecioConImpuestosProcessRule::process(detalle),
                     DetallePrecioReferenciaProcessRule::process(detalle),
@@ -30,7 +30,7 @@ where
                 if results.contains(&true) {
                     true
                 } else {
-                    let results = vec![
+                    let results = [
                         DetalleICBProcessRule::process(detalle),
                         DetalleICBAplicaProcessRule::process(detalle),
                         DetalleIGVProcessRule::process(detalle),

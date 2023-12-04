@@ -16,7 +16,7 @@ where
     fn summary(&mut self) -> bool {
         match (self.get_totalimporte().clone(), self.get_detraccion()) {
             (Some(total_importe), Some(detraccion)) => {
-                let results = vec![DetraccionMontoRule::summary(detraccion, &total_importe)];
+                let results = [DetraccionMontoRule::summary(detraccion, &total_importe)];
                 results.contains(&true)
             }
             _ => false,

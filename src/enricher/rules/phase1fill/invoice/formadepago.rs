@@ -13,22 +13,51 @@ pub trait InvoiceFormaDePagoTotalRule {
     fn fill(&mut self) -> bool;
 }
 
+pub trait InvoiceFormaDePagoTipoRule {
+    fn fill(&mut self) -> bool;
+}
+
 impl<T> InvoiceFormaDePagoEnrichRule for T
 where
     T: InvoiceFormaDePagoGetter + InvoiceFormaDePagoSetter,
 {
     fn fill(&mut self) -> bool {
         match &self.get_formadepago() {
-            Some(..) => false,
+            Some(_) => false,
             None => {
                 self.set_formadepago(FormaDePago {
-                    tipo: TipoFormaDePago::Contado,
+                    tipo: Some(TipoFormaDePago::Contado),
                     cuotas: vec![],
                     total: None,
                 });
                 true
             }
         }
+    }
+}
+
+impl<T> InvoiceFormaDePagoTipoRule for T
+where
+    T: InvoiceFormaDePagoGetter + InvoiceFormaDePagoSetter,
+{
+    fn fill(&mut self) -> bool {
+        if let Some(forma_de_pago) = self.get_formadepago() {
+            if forma_de_pago.tipo.is_none() {
+                let tipo = if forma_de_pago.cuotas.is_empty() {
+                    TipoFormaDePago::Contado
+                } else {
+                    TipoFormaDePago::Credito
+                };
+                self.set_formadepago(FormaDePago {
+                    tipo: Some(tipo),
+                    ..forma_de_pago.clone()
+                });
+
+                return true;
+            };
+        };
+
+        false
     }
 }
 

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
-use crate::catalogs::{Catalog5, Catalog53, catalog53_value_of_code, catalog7_value_of_code};
+use crate::catalogs::{catalog53_value_of_code, catalog7_value_of_code, Catalog5, Catalog53};
 use crate::models::general::{Detalle, TotalImpuestos};
 use crate::models::traits::detalle::DetallesGetter;
 use crate::models::traits::invoice::anticipos::InvoiceAnticiposGetter;
@@ -34,7 +34,7 @@ where
                 let gratuito = cal_impuesto_by_tipo(self.get_detalles(), Catalog5::Gratuito);
 
                 // ICB
-                let icb_importe = vec![
+                let icb_importe = [
                     ivap.importe_icb,
                     exportacion.importe_icb,
                     gravado.importe_icb,
@@ -46,7 +46,7 @@ where
                 .fold(dec!(0), |a, b| a + b);
 
                 // ISC
-                let isc_importe = vec![
+                let isc_importe = [
                     ivap.importe_isc,
                     exportacion.importe_isc,
                     gravado.importe_isc,
