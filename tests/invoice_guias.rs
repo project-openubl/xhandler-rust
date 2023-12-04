@@ -23,7 +23,7 @@ fn invoice_guia_serie_t() {
         ],
         guias: vec![Guia {
             tipo_documento: Catalog1::GuiaRemisionRemitente.code(),
-            serie_numero: "T001-1"
+            serie_numero: "T001-1",
         }],
         ..invoice_base()
     };

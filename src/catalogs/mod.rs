@@ -80,7 +80,7 @@ impl Catalog for Catalog1 {
             Self::Boleta => "03",
             Self::NotaCredito => "07",
             Self::NotaDebito => "08",
-            Self::GuiaRemisionRemitente => "09"
+            Self::GuiaRemisionRemitente => "09",
         }
     }
 }
