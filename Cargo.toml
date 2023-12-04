@@ -12,4 +12,4 @@ lazy_static = "1.4.0"
 serde = { version = "1.0.188", features = ["derive"] }
 format_xml = "0.3.0"
 rust_decimal = { version = "1.32.0", features = ["serde-str", "serde-with-str"] }
-rust_decimal_macros = "1.32.0"
+rust_decimal_macros = "1.33.1"
