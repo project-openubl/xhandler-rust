@@ -6,14 +6,9 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    commit-message:
-      prefix: "GitHub Actions"
-      include: "scope"
-  # Maintain dependencies for pom.xml
-  - package-ecosystem: "maven"
+
+  # Maintain dependencies for Cargo.toml
+  - package-ecosystem: "cargo"
     directory: "/"
     schedule:
       interval: "daily"
-    commit-message:
-      prefix: "Maven pom.xml"
-      include: "scope"
