@@ -1,67 +1,19 @@
 use std::fmt;
 use std::fmt::{Display, Formatter};
 
+/// A trait for providing the 'code' of a catalog
 pub trait Catalog {
     fn code(&self) -> &str;
 }
 
+/// A trait for getting a catalog from its 'code'
+pub trait FromCode: Sized {
+    fn from_code(code: &str) -> Result<Self, String>;
+}
+
+/// A trait for providing a 'label' representation
 pub trait Label {
     fn label(&self) -> &str;
-}
-
-pub fn catalog7_value_of_code(code: &str) -> Option<Catalog7> {
-    match code {
-        "10" => Some(Catalog7::GravadoOperacionOnerosa),
-        "11" => Some(Catalog7::GravadoRetiroPorPremio),
-        "12" => Some(Catalog7::GravadoRetiroPorDonacion),
-        "13" => Some(Catalog7::GravadoRetiro),
-        "14" => Some(Catalog7::GravadoRetiroPorPublicidad),
-        "15" => Some(Catalog7::GravadoBonificaciones),
-        "16" => Some(Catalog7::GravadoRetiroPorEntregaATrabajadores),
-        "17" => Some(Catalog7::GravadoIvap),
-
-        "20" => Some(Catalog7::ExoneradoOperacionOnerosa),
-        "21" => Some(Catalog7::ExoneradoTransferenciaGratuita),
-
-        "30" => Some(Catalog7::InafectoOperacionOnerosa),
-        "31" => Some(Catalog7::InafectoRetiroPorBonificacion),
-        "32" => Some(Catalog7::InafectoRetiro),
-        "33" => Some(Catalog7::InafectoRetiroPorMuestrasMedicas),
-        "34" => Some(Catalog7::InafectoRetiroPorConvenioColectivo),
-        "35" => Some(Catalog7::InafectoRetiroPorPremio),
-        "36" => Some(Catalog7::InafectoRetiroPorPublicidad),
-
-        "40" => Some(Catalog7::Exportacion),
-        _ => None,
-    }
-}
-
-pub fn catalog53_value_of_code(code: &'static str) -> Option<Catalog53> {
-    match code {
-        "00" => Some(Catalog53::DescuentoAfectaBaseImponibleIgvIvap),
-        "01" => Some(Catalog53::DescuentoNoAfectaBaseImponibleIgvIvap),
-        "02" => Some(Catalog53::DescuentoGlobalAfectaBaseImponibleIgvIvap),
-        "03" => Some(Catalog53::DescuentoGlobalNoAfectaBaseImponibleIgvIvap),
-        "04" => Some(Catalog53::DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap),
-        "05" => Some(Catalog53::DescuentoGlobalPorAnticiposExonerados),
-        "06" => Some(Catalog53::DescuentoGlobalPorAnticiposInafectos),
-        "07" => Some(Catalog53::FactorDeCompensacion),
-        "20" => Some(Catalog53::AnticipoDeIsc),
-        "45" => Some(Catalog53::FISE),
-        "46" => Some(Catalog53::RecargoAlConsumoYOPropinas),
-        "47" => Some(Catalog53::CargosQueAfectanBaseImponibleIgvIvap),
-        "48" => Some(Catalog53::CargosQueNoAfectanBaseImponibleIgvIvap),
-        "49" => Some(Catalog53::CargosGlobalesQueAfectanBaseImponibleIgvIvap),
-        "50" => Some(Catalog53::CargosGlobalesQueNoAfectanBaseImponibleIgvIvap),
-        "51" => Some(Catalog53::PercepcionVentaInterna),
-        "52" => Some(Catalog53::PercepcionALaAdquisicionDeCombustible),
-        "53" => Some(Catalog53::PercepcionRealizadaAlAgenteDePercepcionConTasaEspecial),
-        "61" => Some(Catalog53::FactorDeAportacion),
-        "62" => Some(Catalog53::RetencionDeRentaPorAnticipos),
-        "63" => Some(Catalog53::RetencionDelIgv),
-        "64" => Some(Catalog53::RetencionDeRentaDeSegundaCategoria),
-        _ => None,
-    }
 }
 
 #[derive(Clone, Debug)]
@@ -367,6 +319,36 @@ impl Display for Catalog7 {
     }
 }
 
+impl FromCode for Catalog7 {
+    fn from_code(code: &str) -> Result<Self, String> {
+        match code {
+            "10" => Ok(Catalog7::GravadoOperacionOnerosa),
+            "11" => Ok(Catalog7::GravadoRetiroPorPremio),
+            "12" => Ok(Catalog7::GravadoRetiroPorDonacion),
+            "13" => Ok(Catalog7::GravadoRetiro),
+            "14" => Ok(Catalog7::GravadoRetiroPorPublicidad),
+            "15" => Ok(Catalog7::GravadoBonificaciones),
+            "16" => Ok(Catalog7::GravadoRetiroPorEntregaATrabajadores),
+            "17" => Ok(Catalog7::GravadoIvap),
+
+            "20" => Ok(Catalog7::ExoneradoOperacionOnerosa),
+            "21" => Ok(Catalog7::ExoneradoTransferenciaGratuita),
+
+            "30" => Ok(Catalog7::InafectoOperacionOnerosa),
+            "31" => Ok(Catalog7::InafectoRetiroPorBonificacion),
+            "32" => Ok(Catalog7::InafectoRetiro),
+            "33" => Ok(Catalog7::InafectoRetiroPorMuestrasMedicas),
+            "34" => Ok(Catalog7::InafectoRetiroPorConvenioColectivo),
+            "35" => Ok(Catalog7::InafectoRetiroPorPremio),
+            "36" => Ok(Catalog7::InafectoRetiroPorPublicidad),
+
+            "40" => Ok(Catalog7::Exportacion),
+
+            _ => Err(format!("code {code} did not match")),
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum Catalog8 {
     SistemaAlValor,
@@ -578,6 +560,36 @@ impl Catalog for Catalog53 {
             Self::RetencionDeRentaPorAnticipos => "62",
             Self::RetencionDelIgv => "63",
             Self::RetencionDeRentaDeSegundaCategoria => "64",
+        }
+    }
+}
+
+impl FromCode for Catalog53 {
+    fn from_code(code: &str) -> Result<Self, String> {
+        match code {
+            "00" => Ok(Catalog53::DescuentoAfectaBaseImponibleIgvIvap),
+            "01" => Ok(Catalog53::DescuentoNoAfectaBaseImponibleIgvIvap),
+            "02" => Ok(Catalog53::DescuentoGlobalAfectaBaseImponibleIgvIvap),
+            "03" => Ok(Catalog53::DescuentoGlobalNoAfectaBaseImponibleIgvIvap),
+            "04" => Ok(Catalog53::DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap),
+            "05" => Ok(Catalog53::DescuentoGlobalPorAnticiposExonerados),
+            "06" => Ok(Catalog53::DescuentoGlobalPorAnticiposInafectos),
+            "07" => Ok(Catalog53::FactorDeCompensacion),
+            "20" => Ok(Catalog53::AnticipoDeIsc),
+            "45" => Ok(Catalog53::FISE),
+            "46" => Ok(Catalog53::RecargoAlConsumoYOPropinas),
+            "47" => Ok(Catalog53::CargosQueAfectanBaseImponibleIgvIvap),
+            "48" => Ok(Catalog53::CargosQueNoAfectanBaseImponibleIgvIvap),
+            "49" => Ok(Catalog53::CargosGlobalesQueAfectanBaseImponibleIgvIvap),
+            "50" => Ok(Catalog53::CargosGlobalesQueNoAfectanBaseImponibleIgvIvap),
+            "51" => Ok(Catalog53::PercepcionVentaInterna),
+            "52" => Ok(Catalog53::PercepcionALaAdquisicionDeCombustible),
+            "53" => Ok(Catalog53::PercepcionRealizadaAlAgenteDePercepcionConTasaEspecial),
+            "61" => Ok(Catalog53::FactorDeAportacion),
+            "62" => Ok(Catalog53::RetencionDeRentaPorAnticipos),
+            "63" => Ok(Catalog53::RetencionDelIgv),
+            "64" => Ok(Catalog53::RetencionDeRentaDeSegundaCategoria),
+            _ => Err(format!("code {code} did not match")),
         }
     }
 }

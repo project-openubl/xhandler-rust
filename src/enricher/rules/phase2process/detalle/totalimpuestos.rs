@@ -1,6 +1,6 @@
 use rust_decimal_macros::dec;
 
-use crate::catalogs::catalog7_value_of_code;
+use crate::catalogs::{Catalog7, FromCode};
 use crate::models::traits::detalle::icb::DetalleICBGetter;
 use crate::models::traits::detalle::igv::DetalleIGVGetter;
 use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
@@ -31,7 +31,7 @@ where
             &self.get_isc(),
         ) {
             (None, Some(igv_tipo), Some(igv), Some(icb), Some(isc)) => {
-                if let Some(catalog) = catalog7_value_of_code(igv_tipo) {
+                if let Ok(catalog) = Catalog7::from_code(igv_tipo) {
                     let igv_isc = if catalog.onerosa() {
                         (*igv, *isc)
                     } else {

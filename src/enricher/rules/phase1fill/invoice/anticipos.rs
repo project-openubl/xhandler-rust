@@ -1,11 +1,11 @@
 use log::warn;
 use regex::Regex;
 
+use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 use crate::catalogs::{Catalog, Catalog12, Catalog53};
 use crate::models::traits::invoice::anticipos::{
     AnticipoGetter, AnticipoSetter, InvoiceAnticiposGetter,
 };
-use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 
 pub trait InvoiceAnticiposEnrichRule {
     fn fill(&mut self) -> bool;

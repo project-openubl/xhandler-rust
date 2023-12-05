@@ -1,6 +1,6 @@
 use log::warn;
 
-use crate::catalogs::catalog7_value_of_code;
+use crate::catalogs::FromCode;
 use crate::models::traits::detalle::cantidad::DetalleCantidadGetter;
 use crate::models::traits::detalle::igvbaseimponible::{
     DetalleIGVBaseImponibleGetter, DetalleIGVBaseImponibleSetter,
@@ -9,6 +9,7 @@ use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
 use crate::models::traits::detalle::isc::DetalleISCGetter;
 use crate::models::traits::detalle::precio::DetallePrecioGetter;
 use crate::models::traits::detalle::precioreferencia::DetallePrecioReferenciaGetter;
+use crate::prelude::Catalog7;
 
 pub trait DetalleIGVBaseImponibleProcessRule {
     fn process(&mut self) -> bool;
@@ -33,7 +34,7 @@ where
             &self.get_isc(),
         ) {
             (None, Some(igv_tipo), Some(precio), Some(precio_referencia), Some(isc)) => {
-                if let Some(catalog) = catalog7_value_of_code(igv_tipo) {
+                if let Ok(catalog) = Catalog7::from_code(igv_tipo) {
                     let base_imponible = if catalog.onerosa() {
                         self.get_cantidad() * precio
                     } else {

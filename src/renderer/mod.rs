@@ -3,11 +3,12 @@ use std::str::FromStr;
 
 use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
+use tera::{Context, Error, from_value, Function, Tera, to_value, Value};
 use tera::helpers::tests::{number_args_allowed, value_defined};
-use tera::{from_value, to_value, Context, Error, Function, Tera, Value};
 
+use crate::catalogs::{Catalog7, FromCode};
 use crate::models::invoice::Invoice;
-use crate::prelude::{catalog7_value_of_code, Catalog};
+use crate::prelude::Catalog;
 
 fn catalog7_taxcategory() -> impl Function {
     Box::new(
@@ -17,8 +18,8 @@ fn catalog7_taxcategory() -> impl Function {
                     let igv_tipo = from_value::<String>(igv_tipo_value.clone())?;
                     let field = from_value::<String>(field_value.clone())?;
 
-                    match catalog7_value_of_code(&igv_tipo) {
-                        Some(catalog7) => {
+                    match Catalog7::from_code(&igv_tipo) {
+                        Ok(catalog7) => {
                             let category = catalog7.tax_category();
                             match field.as_str() {
                                 "code" => Ok(to_value(category.code()).unwrap()),
@@ -27,7 +28,9 @@ fn catalog7_taxcategory() -> impl Function {
                                 _ => Err("Parameter field not supported.".into()),
                             }
                         }
-                        None => Err("Parameter igv_tipo is not a valid value for Catalog7".into()),
+                        Err(_) => {
+                            Err("Parameter igv_tipo is not a valid value for Catalog7".into())
+                        }
                     }
                 }
                 _ => Err("Parameter igv_tipo or field not defined".into()),
