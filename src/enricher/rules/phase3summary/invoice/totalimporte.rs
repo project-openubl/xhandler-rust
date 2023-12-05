@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
-use crate::catalogs::{catalog53_value_of_code, catalog7_value_of_code, Catalog5, Catalog53};
+use crate::catalogs::{Catalog5, Catalog53, Catalog7, FromCode};
 use crate::models::general::TotalImporte;
 use crate::models::traits::detalle::DetallesGetter;
 use crate::models::traits::igv::IGVTasaGetter;
@@ -38,7 +38,7 @@ where
                     .get_detalles()
                     .iter()
                     .filter(|e| {
-                        if let Some(catalog7) = catalog7_value_of_code(e.igv_tipo.unwrap_or("")) {
+                        if let Ok(catalog7) = Catalog7::from_code(e.igv_tipo.unwrap_or("")) {
                             catalog7.tax_category() != Catalog5::Gratuito
                         } else {
                             false
@@ -73,7 +73,7 @@ where
                         .iter()
                         .fold(HashMap::new(), |mut acc, current| {
                             if let Some(tipo) = current.tipo {
-                                if let Some(catalog53) = catalog53_value_of_code(tipo) {
+                                if let Ok(catalog53) = Catalog53::from_code(tipo) {
                                     let monto =
                                         acc.get(&catalog53).unwrap_or(&dec!(0)) + current.monto;
                                     acc.insert(catalog53, monto);

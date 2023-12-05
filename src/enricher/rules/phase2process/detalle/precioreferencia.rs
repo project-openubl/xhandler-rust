@@ -1,10 +1,11 @@
-use crate::catalogs::catalog7_value_of_code;
+use crate::catalogs::FromCode;
 use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
 use crate::models::traits::detalle::precio::DetallePrecioGetter;
 use crate::models::traits::detalle::precioconimpuestos::DetallePrecioConImpuestosGetter;
 use crate::models::traits::detalle::precioreferencia::{
     DetallePrecioReferenciaGetter, DetallePrecioReferenciaSetter,
 };
+use crate::prelude::Catalog7;
 
 pub trait DetallePrecioReferenciaProcessRule {
     fn process(&mut self) -> bool;
@@ -26,7 +27,7 @@ where
             &self.get_precioconimpuestos(),
         ) {
             (None, Some(igv_tipo), Some(precio), Some(precio_con_impuestos)) => {
-                if let Some(catalog) = catalog7_value_of_code(igv_tipo) {
+                if let Ok(catalog) = Catalog7::from_code(igv_tipo) {
                     let precio_referencia = if catalog.onerosa() {
                         precio_con_impuestos
                     } else {

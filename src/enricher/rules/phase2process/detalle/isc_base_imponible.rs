@@ -1,4 +1,4 @@
-use crate::catalogs::catalog7_value_of_code;
+use crate::catalogs::{Catalog7, FromCode};
 use crate::models::traits::detalle::cantidad::DetalleCantidadGetter;
 use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
 use crate::models::traits::detalle::iscbaseimponible::{
@@ -28,7 +28,7 @@ where
             &self.get_precioreferencia(),
         ) {
             (None, Some(igv_tipo), Some(precio), Some(precio_referencia)) => {
-                if let Some(catalog) = catalog7_value_of_code(igv_tipo) {
+                if let Ok(catalog) = Catalog7::from_code(igv_tipo) {
                     let base_imponible = if catalog.onerosa() {
                         self.get_cantidad() * *precio
                     } else {

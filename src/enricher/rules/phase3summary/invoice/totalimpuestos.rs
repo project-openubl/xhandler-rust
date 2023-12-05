@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
-use crate::catalogs::{catalog53_value_of_code, catalog7_value_of_code, Catalog5, Catalog53};
+use crate::catalogs::{Catalog5, Catalog53, Catalog7, FromCode};
 use crate::models::general::{Detalle, TotalImpuestos};
 use crate::models::traits::detalle::DetallesGetter;
 use crate::models::traits::invoice::anticipos::InvoiceAnticiposGetter;
@@ -71,7 +71,7 @@ where
                 let total_anticipos_gravados = &self.get_anticipos().iter()
                     .filter(|e| {
                         if let Some(tipo) = e.tipo {
-                            if let Some(catalog53) = catalog53_value_of_code(tipo) {
+                            if let Ok(catalog53) = Catalog53::from_code(tipo) {
                                 catalog53 == Catalog53::DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap
                             } else {
                                 false
@@ -90,7 +90,7 @@ where
                         .iter()
                         .fold(HashMap::new(), |mut acc, current| {
                             if let Some(tipo) = current.tipo {
-                                if let Some(catalog53) = catalog53_value_of_code(tipo) {
+                                if let Ok(catalog53) = Catalog53::from_code(tipo) {
                                     let monto =
                                         acc.get(&catalog53).unwrap_or(&dec!(0)) + current.monto;
                                     acc.insert(catalog53, monto);
@@ -166,7 +166,7 @@ fn cal_impuesto_by_tipo(detalles: &[Detalle], categoria: Catalog5) -> Impuesto {
         .iter()
         .filter(|e| e.igv_tipo.is_some() && e.igv_tipo.is_some())
         .filter(|e| {
-            if let Some(catalog7) = catalog7_value_of_code(e.igv_tipo.unwrap()) {
+            if let Ok(catalog7) = Catalog7::from_code(e.igv_tipo.unwrap()) {
                 categoria == catalog7.tax_category()
             } else {
                 false
