@@ -1,6 +1,6 @@
 use rust_decimal::Decimal;
 
-use crate::models::general::Detalle;
+use crate::models::common::Detalle;
 
 pub trait DetalleIGVGetter {
     fn get_igv(&self) -> &Option<Decimal>;

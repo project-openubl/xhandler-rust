@@ -4,8 +4,9 @@ use chrono::NaiveDate;
 use rust_decimal::Decimal;
 
 use crate::models::common::{Cliente, Firmante, Proveedor};
-use crate::models::general::{Detalle, DocumentoRelacionado, Guia, TotalImporte, TotalImpuestos};
+use crate::models::common::{Detalle, DocumentoRelacionado, Guia, TotalImporte, TotalImpuestos};
 
+/// Nota de debito
 pub struct DebitNote {
     pub leyendas: HashMap<&'static str, &'static str>,
 

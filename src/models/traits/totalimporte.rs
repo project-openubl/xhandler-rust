@@ -1,6 +1,6 @@
+use crate::models::common::TotalImporte;
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
-use crate::models::general::TotalImporte;
 use crate::models::invoice::Invoice;
 
 pub trait TotalImporteGetter {

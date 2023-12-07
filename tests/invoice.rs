@@ -1,6 +1,6 @@
 use chrono::{NaiveDate, NaiveTime};
 use rust_decimal_macros::dec;
-use xbuilder::models::general::Detalle;
+use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
 
 use crate::common::detalle_base;

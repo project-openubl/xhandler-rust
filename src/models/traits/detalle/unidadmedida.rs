@@ -1,4 +1,4 @@
-use crate::models::general::Detalle;
+use crate::models::common::Detalle;
 
 pub trait DetalleUnidadMedidaGetter {
     fn get_unidadmedida(&self) -> &Option<&'static str>;

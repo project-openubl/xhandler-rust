@@ -1,6 +1,6 @@
 use rust_decimal::Decimal;
 
-use crate::models::general::Descuento;
+use crate::models::common::Descuento;
 use crate::models::invoice::Invoice;
 
 pub trait InvoiceDescuentosGetter {

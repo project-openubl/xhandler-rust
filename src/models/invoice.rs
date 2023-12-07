@@ -4,12 +4,13 @@ use chrono::{NaiveDate, NaiveTime};
 use rust_decimal::Decimal;
 use serde::Serialize;
 
-use crate::models::common::{Cliente, Direccion, Firmante, Proveedor};
-use crate::models::general::{
+use crate::models::common::{
     Anticipo, Descuento, Detalle, Detraccion, DocumentoRelacionado, FormaDePago, Guia, Percepcion,
     TotalImporte, TotalImpuestos,
 };
+use crate::models::common::{Cliente, Direccion, Firmante, Proveedor};
 
+/// Boleta o Factura
 #[derive(Debug, Serialize)]
 pub struct Invoice {
     pub leyendas: HashMap<&'static str, &'static str>,
