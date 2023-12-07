@@ -2,7 +2,7 @@ use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog7, Catalog7Group, FromCode};
 use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
-use crate::enricher::bounds::detalle::isc::{DetalleIscGetter, DetalleISCSetter};
+use crate::enricher::bounds::detalle::isc::{DetalleISCSetter, DetalleIscGetter};
 use crate::enricher::bounds::detalle::isc_base_imponible::DetalleIscBaseImponibleGetter;
 use crate::enricher::bounds::detalle::isc_tasa::DetalleIscTasaGetter;
 

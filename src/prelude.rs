@@ -5,4 +5,3 @@ pub use crate::models::credit_note::*;
 pub use crate::models::debit_note::*;
 pub use crate::models::invoice::*;
 pub use crate::renderer::render_invoice;
-

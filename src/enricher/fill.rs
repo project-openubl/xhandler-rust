@@ -1,4 +1,3 @@
-use crate::enricher::Defaults;
 use crate::enricher::rules::phase1fill::detalle::detalles::DetallesEnrichRule;
 use crate::enricher::rules::phase1fill::fecha_emision::FechaEmisionEnrichRule;
 use crate::enricher::rules::phase1fill::firmante::FirmanteEnrichRule;
@@ -21,6 +20,7 @@ use crate::enricher::rules::phase1fill::note::creditnote::tipo_nota::CreditNoteT
 use crate::enricher::rules::phase1fill::note::debitnote::tipo_nota::DebitNoteTipoEnrichRule;
 use crate::enricher::rules::phase1fill::note::tipo_comprobante_afectado::NoteTipoComprobanteAfectadoEnrichRule;
 use crate::enricher::rules::phase1fill::proveedor::ProveedorEnrichRule;
+use crate::enricher::Defaults;
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
