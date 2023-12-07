@@ -4,13 +4,13 @@ use crate::enricher::bounds::detalle::DetallesGetter;
 use crate::enricher::bounds::icb::IcbTasaGetter;
 use crate::enricher::bounds::igv::IgvTasaGetter;
 use crate::enricher::bounds::ivap::IvapTasaGetter;
-use crate::enricher::rules::phase1fill::detalle::icbtasa::DetalleICBTasaEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::igvtasa::DetalleIGVTasaEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::igvtipo::DetalleIGVTipoEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::isctasa::DetalleISCTasaEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::isctipo::DetalleISCTipoEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::precioreferenciatipo::DetallePrecioReferenciaTipoEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::unidadmedida::DetalleUnidadMedidaEnrichRule;
+use crate::enricher::rules::phase1fill::detalle::icb_tasa::DetalleICBTasaEnrichRule;
+use crate::enricher::rules::phase1fill::detalle::igv_tasa::DetalleIGVTasaEnrichRule;
+use crate::enricher::rules::phase1fill::detalle::igv_tipo::DetalleIGVTipoEnrichRule;
+use crate::enricher::rules::phase1fill::detalle::isc_tasa::DetalleISCTasaEnrichRule;
+use crate::enricher::rules::phase1fill::detalle::isc_tipo::DetalleISCTipoEnrichRule;
+use crate::enricher::rules::phase1fill::detalle::precio_referencia_tipo::DetallePrecioReferenciaTipoEnrichRule;
+use crate::enricher::rules::phase1fill::detalle::unidad_medida::DetalleUnidadMedidaEnrichRule;
 
 pub struct DetalleDefaults {
     pub igv_tasa: Decimal,

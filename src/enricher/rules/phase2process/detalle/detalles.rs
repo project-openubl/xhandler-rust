@@ -6,9 +6,9 @@ use crate::enricher::rules::phase2process::detalle::igv_base_imponible::DetalleI
 use crate::enricher::rules::phase2process::detalle::isc::DetalleISCProcessRule;
 use crate::enricher::rules::phase2process::detalle::isc_base_imponible::DetalleISCBaseImponibleProcessRule;
 use crate::enricher::rules::phase2process::detalle::precio::DetallePrecioProcessRule;
-use crate::enricher::rules::phase2process::detalle::precioconimpuestos::DetallePrecioConImpuestosProcessRule;
-use crate::enricher::rules::phase2process::detalle::precioreferencia::DetallePrecioReferenciaProcessRule;
-use crate::enricher::rules::phase2process::detalle::totalimpuestos::DetalleTotalImpuestosProcessRule;
+use crate::enricher::rules::phase2process::detalle::precio_con_impuestos::DetallePrecioConImpuestosProcessRule;
+use crate::enricher::rules::phase2process::detalle::precio_referencia::DetallePrecioReferenciaProcessRule;
+use crate::enricher::rules::phase2process::detalle::total_impuestos::DetalleTotalImpuestosProcessRule;
 
 pub trait DetallesProcessRule {
     fn process(&mut self) -> bool;

@@ -3,7 +3,7 @@ use log::warn;
 use crate::catalogs::FromCode;
 use crate::enricher::bounds::detalle::cantidad::DetalleCantidadGetter;
 use crate::enricher::bounds::detalle::igv_base_imponible::{
-    DetalleIGVBaseImponibleSetter, DetalleIgvBaseImponibleGetter,
+    DetalleIgvBaseImponibleGetter, DetalleIGVBaseImponibleSetter,
 };
 use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
 use crate::enricher::bounds::detalle::isc::DetalleIscGetter;

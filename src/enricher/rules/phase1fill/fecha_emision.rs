@@ -1,5 +1,5 @@
 use crate::enricher::bounds::fecha_emision::{FechaEmisionGetter, FechaEmisionSetter};
-use crate::enricher::enrich::Defaults;
+use crate::enricher::Defaults;
 
 pub trait FechaEmisionEnrichRule {
     fn fill(&mut self, defaults: &Defaults) -> bool;

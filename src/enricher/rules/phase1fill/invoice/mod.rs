@@ -1,6 +1,6 @@
 pub mod anticipos;
 pub mod descuentos;
-pub mod formadepago;
+pub mod forma_de_pago;
 pub mod leyenda;
-pub mod tipocomprobante;
-pub mod tipooperacion;
+pub mod tipo_comprobante;
+pub mod tipo_operacion;

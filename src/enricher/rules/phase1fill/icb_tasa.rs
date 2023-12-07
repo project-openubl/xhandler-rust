@@ -1,5 +1,5 @@
 use crate::enricher::bounds::icb::{IcbTasaGetter, IcbTasaSetter};
-use crate::enricher::enrich::Defaults;
+use crate::enricher::Defaults;
 
 pub trait ICBTasaEnrichRule {
     fn fill(&mut self, defaults: &Defaults) -> bool;

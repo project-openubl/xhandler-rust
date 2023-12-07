@@ -1,5 +1,5 @@
 use crate::enricher::bounds::ivap::{IvapTasaGetter, IvapTasaSetter};
-use crate::enricher::enrich::Defaults;
+use crate::enricher::Defaults;
 
 pub trait IVAPTasaEnrichRule {
     fn fill(&mut self, defaults: &Defaults) -> bool;

@@ -1,7 +1,7 @@
-use chrono::NaiveDate;
-use rust_decimal::Decimal;
 use std::fmt::Debug;
 
+use chrono::NaiveDate;
+use rust_decimal::Decimal;
 use serde::Serialize;
 
 /// Quien provee el documento electronico. Quien genera o crea el documento.

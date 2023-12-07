@@ -1,1 +1,1 @@
-pub mod tiponota;
+pub mod tipo_nota;

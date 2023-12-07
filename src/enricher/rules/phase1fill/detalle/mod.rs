@@ -1,8 +1,8 @@
 pub mod detalles;
-pub mod icbtasa;
-pub mod igvtasa;
-pub mod igvtipo;
-pub mod isctasa;
-pub mod isctipo;
-pub mod precioreferenciatipo;
-pub mod unidadmedida;
+pub mod icb_tasa;
+pub mod igv_tasa;
+pub mod igv_tipo;
+pub mod isc_tasa;
+pub mod isc_tipo;
+pub mod precio_referencia_tipo;
+pub mod unidad_medida;

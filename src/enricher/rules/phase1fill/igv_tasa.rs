@@ -1,5 +1,5 @@
 use crate::enricher::bounds::igv::{IgvTasaGetter, IgvTasaSetter};
-use crate::enricher::enrich::Defaults;
+use crate::enricher::Defaults;
 
 pub trait IGVTasaEnrichRule {
     fn fill(&mut self, defaults: &Defaults) -> bool;
