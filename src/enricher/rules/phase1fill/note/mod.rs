@@ -1,3 +1,3 @@
 pub mod creditnote;
 pub mod debitnote;
-pub mod tipocomprobanteafectado;
+pub mod tipo_comprobante_afectado;

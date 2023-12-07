@@ -3,8 +3,8 @@ use std::str::FromStr;
 
 use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
+use tera::{Context, Error, from_value, Function, Tera, to_value, Value};
 use tera::helpers::tests::{number_args_allowed, value_defined};
-use tera::{from_value, to_value, Context, Error, Function, Tera, Value};
 
 use crate::catalogs::{Catalog7, FromCode};
 use crate::models::invoice::Invoice;

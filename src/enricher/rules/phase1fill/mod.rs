@@ -1,10 +1,10 @@
 pub mod detalle;
 pub mod fecha_emision;
 pub mod firmante;
-pub mod icbtasa;
-pub mod igvtasa;
+pub mod icb_tasa;
+pub mod igv_tasa;
 pub mod invoice;
-pub mod ivaptasa;
+pub mod ivap_tasa;
 pub mod moneda;
 pub mod note;
 pub mod proveedor;
