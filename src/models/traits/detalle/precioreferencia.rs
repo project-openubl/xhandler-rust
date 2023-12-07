@@ -1,6 +1,6 @@
 use rust_decimal::Decimal;
 
-use crate::models::general::Detalle;
+use crate::models::common::Detalle;
 
 pub trait DetallePrecioReferenciaGetter {
     fn get_precioreferencia(&self) -> &Option<Decimal>;

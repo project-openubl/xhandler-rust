@@ -1,6 +1,6 @@
+use crate::models::common::Detalle;
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
-use crate::models::general::Detalle;
 use crate::models::invoice::Invoice;
 
 pub mod cantidad;

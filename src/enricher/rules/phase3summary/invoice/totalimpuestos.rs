@@ -4,7 +4,7 @@ use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
 use crate::catalogs::{Catalog5, Catalog53, Catalog7, FromCode};
-use crate::models::general::{Detalle, TotalImpuestos};
+use crate::models::common::{Detalle, TotalImpuestos};
 use crate::models::traits::detalle::DetallesGetter;
 use crate::models::traits::invoice::anticipos::InvoiceAnticiposGetter;
 use crate::models::traits::invoice::descuentos::InvoiceDescuentosGetter;

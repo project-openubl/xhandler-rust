@@ -1,4 +1,4 @@
-use crate::models::general::Detalle;
+use crate::models::common::Detalle;
 
 pub trait DetalleISCTipoGetter {
     fn get_isctipo(&self) -> &Option<&'static str>;

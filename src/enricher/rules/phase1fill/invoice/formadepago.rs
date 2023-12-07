@@ -1,6 +1,6 @@
 use rust_decimal::Decimal;
 
-use crate::models::general::{FormaDePago, TipoFormaDePago};
+use crate::models::common::{FormaDePago, TipoFormaDePago};
 use crate::models::traits::invoice::formadepago::{
     InvoiceFormaDePagoGetter, InvoiceFormaDePagoSetter,
 };

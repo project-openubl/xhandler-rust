@@ -1,4 +1,4 @@
-use crate::models::general::Anticipo;
+use crate::models::common::Anticipo;
 use crate::models::invoice::Invoice;
 
 pub trait InvoiceAnticiposGetter {

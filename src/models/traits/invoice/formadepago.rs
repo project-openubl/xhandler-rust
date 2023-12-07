@@ -1,4 +1,4 @@
-use crate::models::general::FormaDePago;
+use crate::models::common::FormaDePago;
 use crate::models::invoice::Invoice;
 
 pub trait InvoiceFormaDePagoGetter {

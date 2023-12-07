@@ -1,5 +1,5 @@
 use rust_decimal_macros::dec;
-use xbuilder::models::general::Detalle;
+use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
 
 use crate::common::assert_invoice;

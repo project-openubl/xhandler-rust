@@ -1,6 +1,6 @@
 use rust_decimal::Decimal;
 
-use crate::models::general::Detalle;
+use crate::models::common::Detalle;
 
 pub trait DetalleTotalImpuestosGetter {
     fn get_totalimpuestos(&self) -> &Option<Decimal>;

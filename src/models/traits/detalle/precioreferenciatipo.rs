@@ -1,4 +1,4 @@
-use crate::models::general::Detalle;
+use crate::models::common::Detalle;
 
 pub trait DetallePrecioReferenciaTipoGetter {
     fn get_precioreferenciatipo(&self) -> &Option<&'static str>;

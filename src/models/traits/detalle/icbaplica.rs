@@ -1,4 +1,4 @@
-use crate::models::general::Detalle;
+use crate::models::common::Detalle;
 
 pub trait DetalleICBAplicaGetter {
     fn get_icbaplica(&self) -> bool;
