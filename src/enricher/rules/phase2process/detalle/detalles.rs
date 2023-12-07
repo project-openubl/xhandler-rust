@@ -1,3 +1,4 @@
+use crate::enricher::bounds::detalle::DetallesGetter;
 use crate::enricher::rules::phase2process::detalle::icb::DetalleICBProcessRule;
 use crate::enricher::rules::phase2process::detalle::icb_aplica::DetalleICBAplicaProcessRule;
 use crate::enricher::rules::phase2process::detalle::igv::DetalleIGVProcessRule;
@@ -8,7 +9,6 @@ use crate::enricher::rules::phase2process::detalle::precio::DetallePrecioProcess
 use crate::enricher::rules::phase2process::detalle::precioconimpuestos::DetallePrecioConImpuestosProcessRule;
 use crate::enricher::rules::phase2process::detalle::precioreferencia::DetallePrecioReferenciaProcessRule;
 use crate::enricher::rules::phase2process::detalle::totalimpuestos::DetalleTotalImpuestosProcessRule;
-use crate::models::traits::detalle::DetallesGetter;
 
 pub trait DetallesProcessRule {
     fn process(&mut self) -> bool;

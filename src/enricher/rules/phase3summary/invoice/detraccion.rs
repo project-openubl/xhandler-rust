@@ -1,8 +1,8 @@
-use crate::models::traits::invoice::detraccion::{
+use crate::enricher::bounds::invoice::detraccion::{
     InvoiceDetraccionGetter, InvoiceDetraccionMontoGetter, InvoiceDetraccionMontoSetter,
     InvoiceDetraccionPorcentajeGetter,
 };
-use crate::models::traits::totalimporte::TotalImporteGetter;
+use crate::enricher::bounds::total_importe::TotalImporteGetter;
 use crate::prelude::TotalImporte;
 
 pub trait DetraccionSummaryRule {
@@ -14,7 +14,7 @@ where
     T: InvoiceDetraccionGetter + TotalImporteGetter,
 {
     fn summary(&mut self) -> bool {
-        match (self.get_totalimporte().clone(), self.get_detraccion()) {
+        match (self.get_total_importe().clone(), self.get_detraccion()) {
             (Some(total_importe), Some(detraccion)) => {
                 let results = [DetraccionMontoRule::summary(detraccion, &total_importe)];
                 results.contains(&true)

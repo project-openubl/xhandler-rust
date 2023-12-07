@@ -1,8 +1,8 @@
 use crate::catalogs::{Catalog, Catalog52, Label};
-use crate::models::traits::invoice::detraccion::InvoiceDetraccionGetter;
-use crate::models::traits::invoice::direccionentrega::InvoiceDireccionEntregaGetter;
-use crate::models::traits::invoice::percepcion::InvoicePercepcionGetter;
-use crate::models::traits::leyendas::{LeyendasGetter, LeyendasSetter};
+use crate::enricher::bounds::invoice::detraccion::InvoiceDetraccionGetter;
+use crate::enricher::bounds::invoice::direccion_entrega::InvoiceDireccionEntregaGetter;
+use crate::enricher::bounds::invoice::percepcion::InvoicePercepcionGetter;
+use crate::enricher::bounds::leyendas::{LeyendasGetter, LeyendasSetter};
 
 pub trait InvoiceLeyendaDetraccionEnrichRule {
     fn fill(&mut self) -> bool;
@@ -48,7 +48,7 @@ where
     T: InvoiceDireccionEntregaGetter + LeyendasGetter + LeyendasSetter,
 {
     fn fill(&mut self) -> bool {
-        match &self.get_direccionentrega() {
+        match &self.get_direccion_entrega() {
             None => false,
             Some(..) => {
                 let catalog = &Catalog52::VentaRealizadaPorEmisorItinerante;

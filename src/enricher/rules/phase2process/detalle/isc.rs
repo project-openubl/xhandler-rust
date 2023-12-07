@@ -1,10 +1,10 @@
 use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog7, Catalog7Group, FromCode};
-use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
-use crate::models::traits::detalle::isc::{DetalleISCGetter, DetalleISCSetter};
-use crate::models::traits::detalle::iscbaseimponible::DetalleISCBaseImponibleGetter;
-use crate::models::traits::detalle::isctasa::DetalleISCTasaGetter;
+use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
+use crate::enricher::bounds::detalle::isc::{DetalleISCSetter, DetalleIscGetter};
+use crate::enricher::bounds::detalle::isc_base_imponible::DetalleIscBaseImponibleGetter;
+use crate::enricher::bounds::detalle::isc_tasa::DetalleIscTasaGetter;
 
 pub trait DetalleISCProcessRule {
     fn process(&mut self) -> bool;
@@ -12,18 +12,18 @@ pub trait DetalleISCProcessRule {
 
 impl<T> DetalleISCProcessRule for T
 where
-    T: DetalleISCGetter
+    T: DetalleIscGetter
         + DetalleISCSetter
-        + DetalleISCBaseImponibleGetter
-        + DetalleISCTasaGetter
-        + DetalleIGVTipoGetter,
+        + DetalleIscBaseImponibleGetter
+        + DetalleIscTasaGetter
+        + DetalleIgvTipoGetter,
 {
     fn process(&mut self) -> bool {
         match (
             &self.get_isc(),
-            &self.get_iscbaseimponible(),
-            &self.get_isctasa(),
-            &self.get_igvtipo(),
+            &self.get_isc_base_imponible(),
+            &self.get_isc_tasa(),
+            &self.get_igv_tipo(),
         ) {
             (None, Some(isc_base_imponible), Some(isc_tasa), Some(igv_tipo)) => {
                 if let Ok(catalog) = Catalog7::from_code(igv_tipo) {

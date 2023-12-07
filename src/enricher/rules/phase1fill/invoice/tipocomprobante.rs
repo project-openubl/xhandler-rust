@@ -1,10 +1,10 @@
 use regex::Regex;
 
 use crate::catalogs::{Catalog, Catalog1};
-use crate::models::traits::invoice::tipocomprobante::{
+use crate::enricher::bounds::invoice::tipo_comprobante::{
     InvoiceTipoComprobanteGetter, InvoiceTipoComprobanteSetter,
 };
-use crate::models::traits::serienumero::SerieNumeroGetter;
+use crate::enricher::bounds::serie_numero::SerieNumeroGetter;
 use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 
 pub trait InvoiceTipoComprobanteEnrichRule {
@@ -16,21 +16,21 @@ where
     T: InvoiceTipoComprobanteGetter + InvoiceTipoComprobanteSetter + SerieNumeroGetter,
 {
     fn fill(&mut self) -> bool {
-        match &self.get_tipocomprobante() {
+        match &self.get_tipo_comprobante() {
             Some(..) => false,
             None => {
                 if Regex::new(FACTURA_SERIE_REGEX)
                     .unwrap()
-                    .is_match(self.get_serienumero())
+                    .is_match(self.get_serie_numero())
                 {
-                    self.set_tipocomprobante(Catalog1::Factura.code());
+                    self.set_tipo_comprobante(Catalog1::Factura.code());
 
                     return true;
                 } else if Regex::new(BOLETA_SERIE_REGEX)
                     .unwrap()
-                    .is_match(self.get_serienumero())
+                    .is_match(self.get_serie_numero())
                 {
-                    self.set_tipocomprobante(Catalog1::Boleta.code());
+                    self.set_tipo_comprobante(Catalog1::Boleta.code());
 
                     return true;
                 }

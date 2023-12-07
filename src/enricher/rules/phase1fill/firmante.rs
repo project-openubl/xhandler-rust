@@ -1,6 +1,6 @@
+use crate::enricher::bounds::firmante::{FirmanteGetter, FirmanteSetter};
+use crate::enricher::bounds::proveedor::ProveedorGetter;
 use crate::models::common::Firmante;
-use crate::models::traits::firmante::{FirmanteGetter, FirmanteSetter};
-use crate::models::traits::proveedor::ProveedorGetter;
 
 pub trait FirmanteEnrichRule {
     fn fill(&mut self) -> bool;

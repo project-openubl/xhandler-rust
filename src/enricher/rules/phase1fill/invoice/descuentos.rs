@@ -1,7 +1,7 @@
 use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog, Catalog53};
-use crate::models::traits::invoice::descuentos::{
+use crate::enricher::bounds::invoice::descuentos::{
     DescuentoGetter, DescuentoSetter, InvoiceDescuentosGetter,
 };
 

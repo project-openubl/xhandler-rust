@@ -2,9 +2,9 @@ use log::trace;
 use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog7, Catalog7Group, FromCode};
+use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
+use crate::enricher::bounds::detalle::isc_tasa::{DetalleIscTasaGetter, DetalleIscTasaSetter};
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
-use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
-use crate::models::traits::detalle::isctasa::{DetalleISCTasaGetter, DetalleISCTasaSetter};
 
 pub trait DetalleISCTasaEnrichRule {
     fn fill(&mut self, defaults: &DetalleDefaults) -> bool;
@@ -12,10 +12,10 @@ pub trait DetalleISCTasaEnrichRule {
 
 impl<T> DetalleISCTasaEnrichRule for T
 where
-    T: DetalleISCTasaGetter + DetalleISCTasaSetter + DetalleIGVTipoGetter,
+    T: DetalleIscTasaGetter + DetalleIscTasaSetter + DetalleIgvTipoGetter,
 {
     fn fill(&mut self, _: &DetalleDefaults) -> bool {
-        match (&self.get_isctasa(), &self.get_igvtipo()) {
+        match (&self.get_isc_tasa(), &self.get_igv_tipo()) {
             (Some(isc_tasa), Some(igv_tipo)) => {
                 if let Ok(catalog) = Catalog7::from_code(igv_tipo) {
                     let tasa = if !catalog.onerosa() {
@@ -31,7 +31,7 @@ where
 
                     if &tasa != isc_tasa {
                         trace!("DetalleISCTasaEnrichRule: isc_tasa changed to {tasa}");
-                        self.set_isctasa(tasa);
+                        self.set_isc_tasa(tasa);
                         true
                     } else {
                         false
@@ -41,7 +41,7 @@ where
                 }
             }
             (None, _) => {
-                self.set_isctasa(Decimal::ZERO);
+                self.set_isc_tasa(Decimal::ZERO);
                 true
             }
             _ => false,

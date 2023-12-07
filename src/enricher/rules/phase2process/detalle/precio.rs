@@ -1,11 +1,11 @@
 use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog7, FromCode};
-use crate::models::traits::detalle::igvtasa::DetalleIGVTasaGetter;
-use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
-use crate::models::traits::detalle::isctasa::DetalleISCTasaGetter;
-use crate::models::traits::detalle::precio::{DetallePrecioGetter, DetallePrecioSetter};
-use crate::models::traits::detalle::precioconimpuestos::DetallePrecioConImpuestosGetter;
+use crate::enricher::bounds::detalle::igv_tasa::DetalleIgvTasaGetter;
+use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
+use crate::enricher::bounds::detalle::isc_tasa::DetalleIscTasaGetter;
+use crate::enricher::bounds::detalle::precio::{DetallePrecioGetter, DetallePrecioSetter};
+use crate::enricher::bounds::detalle::precio_con_impuestos::DetallePrecioConImpuestosGetter;
 
 pub trait DetallePrecioProcessRule {
     fn process(&mut self) -> bool;
@@ -15,18 +15,18 @@ impl<T> DetallePrecioProcessRule for T
 where
     T: DetallePrecioGetter
         + DetallePrecioSetter
-        + DetalleIGVTipoGetter
+        + DetalleIgvTipoGetter
         + DetallePrecioConImpuestosGetter
-        + DetalleIGVTasaGetter
-        + DetalleISCTasaGetter,
+        + DetalleIgvTasaGetter
+        + DetalleIscTasaGetter,
 {
     fn process(&mut self) -> bool {
         match (
             &self.get_precio(),
-            &self.get_igvtipo(),
-            &self.get_igvtasa(),
-            &self.get_isctasa(),
-            &self.get_precioconimpuestos(),
+            &self.get_igv_tipo(),
+            &self.get_igv_tasa(),
+            &self.get_isc_tasa(),
+            &self.get_precio_con_impuestos(),
         ) {
             (None, Some(igv_tipo), Some(igv_tasa), Some(isc_tasa), Some(precio_con_impuestos)) => {
                 if let Ok(catalog) = Catalog7::from_code(igv_tipo) {

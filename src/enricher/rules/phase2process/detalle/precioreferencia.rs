@@ -1,8 +1,8 @@
 use crate::catalogs::FromCode;
-use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
-use crate::models::traits::detalle::precio::DetallePrecioGetter;
-use crate::models::traits::detalle::precioconimpuestos::DetallePrecioConImpuestosGetter;
-use crate::models::traits::detalle::precioreferencia::{
+use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
+use crate::enricher::bounds::detalle::precio::DetallePrecioGetter;
+use crate::enricher::bounds::detalle::precio_con_impuestos::DetallePrecioConImpuestosGetter;
+use crate::enricher::bounds::detalle::precio_referencia::{
     DetallePrecioReferenciaGetter, DetallePrecioReferenciaSetter,
 };
 use crate::prelude::Catalog7;
@@ -17,14 +17,14 @@ where
         + DetallePrecioReferenciaSetter
         + DetallePrecioGetter
         + DetallePrecioConImpuestosGetter
-        + DetalleIGVTipoGetter,
+        + DetalleIgvTipoGetter,
 {
     fn process(&mut self) -> bool {
         match (
-            &self.get_precioreferencia(),
-            &self.get_igvtipo(),
+            &self.get_precio_referencia(),
+            &self.get_igv_tipo(),
             &self.get_precio(),
-            &self.get_precioconimpuestos(),
+            &self.get_precio_con_impuestos(),
         ) {
             (None, Some(igv_tipo), Some(precio), Some(precio_con_impuestos)) => {
                 if let Ok(catalog) = Catalog7::from_code(igv_tipo) {
@@ -33,7 +33,7 @@ where
                     } else {
                         precio
                     };
-                    self.set_precioreferencia(*precio_referencia);
+                    self.set_precio_referencia(*precio_referencia);
                     true
                 } else {
                     false

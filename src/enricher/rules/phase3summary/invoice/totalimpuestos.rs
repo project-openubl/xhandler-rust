@@ -4,11 +4,11 @@ use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
 use crate::catalogs::{Catalog5, Catalog53, Catalog7, FromCode};
+use crate::enricher::bounds::detalle::DetallesGetter;
+use crate::enricher::bounds::invoice::anticipos::InvoiceAnticiposGetter;
+use crate::enricher::bounds::invoice::descuentos::InvoiceDescuentosGetter;
+use crate::enricher::bounds::total_impuestos::{TotalImpuestosGetter, TotalImpuestosSetter};
 use crate::models::common::{Detalle, TotalImpuestos};
-use crate::models::traits::detalle::DetallesGetter;
-use crate::models::traits::invoice::anticipos::InvoiceAnticiposGetter;
-use crate::models::traits::invoice::descuentos::InvoiceDescuentosGetter;
-use crate::models::traits::totalimpuestos::{TotalImpuestosGetter, TotalImpuestosSetter};
 
 pub trait InvoiceTotalImpuestosSummaryRule {
     fn summary(&mut self) -> bool;
@@ -23,7 +23,7 @@ where
         + InvoiceAnticiposGetter,
 {
     fn summary(&mut self) -> bool {
-        match &self.get_totalimpuestos() {
+        match &self.get_total_impuestos() {
             Some(..) => false,
             None => {
                 let ivap = cal_impuesto_by_tipo(self.get_detalles(), Catalog5::ImpuestoArrozPilado);
@@ -145,7 +145,7 @@ where
                     total,
                 };
 
-                self.set_totalimpuestos(total_impuestos);
+                self.set_total_impuestos(total_impuestos);
                 true
             }
         }

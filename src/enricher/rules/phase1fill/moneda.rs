@@ -1,4 +1,4 @@
-use crate::models::traits::moneda::{MonedaGetter, MonedaSetter};
+use crate::enricher::bounds::moneda::{MonedaGetter, MonedaSetter};
 
 pub trait MonedaEnrichRule {
     fn fill(&mut self) -> bool;

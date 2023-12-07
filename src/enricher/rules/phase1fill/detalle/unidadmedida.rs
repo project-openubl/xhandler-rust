@@ -1,7 +1,7 @@
-use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
-use crate::models::traits::detalle::unidadmedida::{
+use crate::enricher::bounds::detalle::unidad_medida::{
     DetalleUnidadMedidaGetter, DetalleUnidadMedidaSetter,
 };
+use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
 
 pub trait DetalleUnidadMedidaEnrichRule {
     fn fill(&mut self, defaults: &DetalleDefaults) -> bool;
@@ -12,10 +12,10 @@ where
     T: DetalleUnidadMedidaGetter + DetalleUnidadMedidaSetter,
 {
     fn fill(&mut self, _: &DetalleDefaults) -> bool {
-        match &self.get_unidadmedida() {
+        match &self.get_unidad_medida() {
             Some(..) => false,
             None => {
-                self.set_unidadmedida("NIU");
+                self.set_unidad_medida("NIU");
                 true
             }
         }

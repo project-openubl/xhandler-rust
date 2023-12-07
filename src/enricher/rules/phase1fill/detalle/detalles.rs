@@ -1,5 +1,9 @@
 use rust_decimal::Decimal;
 
+use crate::enricher::bounds::detalle::DetallesGetter;
+use crate::enricher::bounds::icb::IcbTasaGetter;
+use crate::enricher::bounds::igv::IgvTasaGetter;
+use crate::enricher::bounds::ivap::IvapTasaGetter;
 use crate::enricher::rules::phase1fill::detalle::icbtasa::DetalleICBTasaEnrichRule;
 use crate::enricher::rules::phase1fill::detalle::igvtasa::DetalleIGVTasaEnrichRule;
 use crate::enricher::rules::phase1fill::detalle::igvtipo::DetalleIGVTipoEnrichRule;
@@ -7,10 +11,6 @@ use crate::enricher::rules::phase1fill::detalle::isctasa::DetalleISCTasaEnrichRu
 use crate::enricher::rules::phase1fill::detalle::isctipo::DetalleISCTipoEnrichRule;
 use crate::enricher::rules::phase1fill::detalle::precioreferenciatipo::DetallePrecioReferenciaTipoEnrichRule;
 use crate::enricher::rules::phase1fill::detalle::unidadmedida::DetalleUnidadMedidaEnrichRule;
-use crate::models::traits::detalle::DetallesGetter;
-use crate::models::traits::icb::ICBTasaGetter;
-use crate::models::traits::igv::IGVTasaGetter;
-use crate::models::traits::ivap::IVAPTasaGetter;
 
 pub struct DetalleDefaults {
     pub igv_tasa: Decimal,
@@ -24,7 +24,7 @@ pub trait DetallesEnrichRule {
 
 impl<T> DetallesEnrichRule for T
 where
-    T: DetallesGetter + IGVTasaGetter + ICBTasaGetter + IVAPTasaGetter,
+    T: DetallesGetter + IgvTasaGetter + IcbTasaGetter + IvapTasaGetter,
 {
     fn fill(&mut self) -> bool {
         let defaults = &DetalleDefaults {
