@@ -1,5 +1,5 @@
+use crate::enricher::bounds::ivap::{IvapTasaGetter, IvapTasaSetter};
 use crate::enricher::enrich::Defaults;
-use crate::models::traits::ivap::{IVAPTasaGetter, IVAPTasaSetter};
 
 pub trait IVAPTasaEnrichRule {
     fn fill(&mut self, defaults: &Defaults) -> bool;
@@ -7,7 +7,7 @@ pub trait IVAPTasaEnrichRule {
 
 impl<T> IVAPTasaEnrichRule for T
 where
-    T: IVAPTasaGetter + IVAPTasaSetter,
+    T: IvapTasaGetter + IvapTasaSetter,
 {
     fn fill(&mut self, defaults: &Defaults) -> bool {
         match &self.get_ivap_tasa() {

@@ -1,12 +1,12 @@
 use rust_decimal_macros::dec;
 
-use crate::models::traits::invoice::percepcion::{
+use crate::enricher::bounds::invoice::percepcion::{
     InvoicePercepcionGetter, InvoicePercepcionMontoBaseGetter, InvoicePercepcionMontoBaseSetter,
     InvoicePercepcionMontoGetter, InvoicePercepcionMontoSetter, InvoicePercepcionMontoTotalGetter,
     InvoicePercepcionMontoTotalSetter, InvoicePercepcionPorcentajeGetter,
     InvoicePercepcionPorcentajeSetter,
 };
-use crate::models::traits::totalimporte::TotalImporteGetter;
+use crate::enricher::bounds::total_importe::TotalImporteGetter;
 use crate::prelude::TotalImporte;
 
 pub trait PercepcionSummaryRule {
@@ -18,7 +18,7 @@ where
     T: InvoicePercepcionGetter + TotalImporteGetter,
 {
     fn summary(&mut self) -> bool {
-        match (self.get_totalimporte().clone(), self.get_percepcion()) {
+        match (self.get_total_importe().clone(), self.get_percepcion()) {
             (Some(total_importe), Some(percepcion)) => [
                 PerceptionPorcentajeBaseRule::summary(percepcion),
                 PerceptionMontoBaseRule::summary(percepcion, &total_importe),

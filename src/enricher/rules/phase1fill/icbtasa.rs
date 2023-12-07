@@ -1,5 +1,5 @@
+use crate::enricher::bounds::icb::{IcbTasaGetter, IcbTasaSetter};
 use crate::enricher::enrich::Defaults;
-use crate::models::traits::icb::{ICBTasaGetter, ICBTasaSetter};
 
 pub trait ICBTasaEnrichRule {
     fn fill(&mut self, defaults: &Defaults) -> bool;
@@ -7,7 +7,7 @@ pub trait ICBTasaEnrichRule {
 
 impl<T> ICBTasaEnrichRule for T
 where
-    T: ICBTasaGetter + ICBTasaSetter,
+    T: IcbTasaGetter + IcbTasaSetter,
 {
     fn fill(&mut self, defaults: &Defaults) -> bool {
         match &self.get_icb_tasa() {

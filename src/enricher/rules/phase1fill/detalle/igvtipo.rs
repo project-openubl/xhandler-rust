@@ -1,6 +1,6 @@
 use crate::catalogs::{Catalog, Catalog7};
+use crate::enricher::bounds::detalle::igv_tipo::{DetalleIgvTipoGetter, DetalleIgvTipoSetter};
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
-use crate::models::traits::detalle::igvtipo::{DetalleIGVTipoGetter, DetalleIGVTipoSetter};
 
 pub trait DetalleIGVTipoEnrichRule {
     fn fill(&mut self, defaults: &DetalleDefaults) -> bool;
@@ -8,13 +8,13 @@ pub trait DetalleIGVTipoEnrichRule {
 
 impl<T> DetalleIGVTipoEnrichRule for T
 where
-    T: DetalleIGVTipoGetter + DetalleIGVTipoSetter,
+    T: DetalleIgvTipoGetter + DetalleIgvTipoSetter,
 {
     fn fill(&mut self, _: &DetalleDefaults) -> bool {
-        match &self.get_igvtipo() {
+        match &self.get_igv_tipo() {
             Some(..) => false,
             None => {
-                self.set_igvtipo(Catalog7::GravadoOperacionOnerosa.code());
+                self.set_igv_tipo(Catalog7::GravadoOperacionOnerosa.code());
                 true
             }
         }

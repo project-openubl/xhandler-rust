@@ -1,9 +1,9 @@
 use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog7, Catalog7Group, FromCode};
+use crate::enricher::bounds::detalle::igv_tasa::{DetalleIgvTasaGetter, DetalleIgvTasaSetter};
+use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
-use crate::models::traits::detalle::igvtasa::{DetalleIGVTasaGetter, DetalleIGVTasaSetter};
-use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
 
 pub trait DetalleIGVTasaEnrichRule {
     fn fill(&mut self, defaults: &DetalleDefaults) -> bool;
@@ -11,10 +11,10 @@ pub trait DetalleIGVTasaEnrichRule {
 
 impl<T> DetalleIGVTasaEnrichRule for T
 where
-    T: DetalleIGVTasaGetter + DetalleIGVTasaSetter + DetalleIGVTipoGetter,
+    T: DetalleIgvTasaGetter + DetalleIgvTasaSetter + DetalleIgvTipoGetter,
 {
     fn fill(&mut self, defaults: &DetalleDefaults) -> bool {
-        match (self.get_igvtasa(), *self.get_igvtipo()) {
+        match (self.get_igv_tasa(), *self.get_igv_tipo()) {
             (None, Some(igv_tipo)) => {
                 if let Ok(catalog) = Catalog7::from_code(igv_tipo) {
                     let tasa = match catalog {
@@ -26,7 +26,7 @@ where
                             | Catalog7Group::Exportacion => Decimal::ZERO,
                         },
                     };
-                    self.set_igvtasa(tasa);
+                    self.set_igv_tasa(tasa);
                     true
                 } else {
                     false

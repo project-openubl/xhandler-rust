@@ -1,5 +1,5 @@
 use crate::catalogs::{Catalog, Catalog9};
-use crate::models::traits::note::creditnote::tiponota::{
+use crate::enricher::bounds::note::creditnote::tipo_nota::{
     CreditNoteTipoGetter, CreditNoteTipoSetter,
 };
 
@@ -12,10 +12,10 @@ where
     T: CreditNoteTipoGetter + CreditNoteTipoSetter,
 {
     fn fill(&mut self) -> bool {
-        match &self.get_tipo_nota_credito() {
+        match &self.get_tipo_nota() {
             Some(..) => false,
             None => {
-                self.set_tipo_nota_credito(Catalog9::AnulacionDeLaOperacion.code());
+                self.set_tipo_nota(Catalog9::AnulacionDeLaOperacion.code());
                 true
             }
         }

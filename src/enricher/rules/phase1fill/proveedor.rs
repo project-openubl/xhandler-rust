@@ -1,5 +1,5 @@
+use crate::enricher::bounds::proveedor::{ProveedorGetter, ProveedorSetter};
 use crate::models::common::Direccion;
-use crate::models::traits::proveedor::{ProveedorGetter, ProveedorSetter};
 
 pub trait ProveedorEnrichRule {
     fn fill(&mut self) -> bool;

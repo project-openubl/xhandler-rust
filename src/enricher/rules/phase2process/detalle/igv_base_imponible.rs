@@ -1,14 +1,14 @@
 use log::warn;
 
 use crate::catalogs::FromCode;
-use crate::models::traits::detalle::cantidad::DetalleCantidadGetter;
-use crate::models::traits::detalle::igvbaseimponible::{
-    DetalleIGVBaseImponibleGetter, DetalleIGVBaseImponibleSetter,
+use crate::enricher::bounds::detalle::cantidad::DetalleCantidadGetter;
+use crate::enricher::bounds::detalle::igv_base_imponible::{
+    DetalleIGVBaseImponibleSetter, DetalleIgvBaseImponibleGetter,
 };
-use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
-use crate::models::traits::detalle::isc::DetalleISCGetter;
-use crate::models::traits::detalle::precio::DetallePrecioGetter;
-use crate::models::traits::detalle::precioreferencia::DetallePrecioReferenciaGetter;
+use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
+use crate::enricher::bounds::detalle::isc::DetalleIscGetter;
+use crate::enricher::bounds::detalle::precio::DetallePrecioGetter;
+use crate::enricher::bounds::detalle::precio_referencia::DetallePrecioReferenciaGetter;
 use crate::prelude::Catalog7;
 
 pub trait DetalleIGVBaseImponibleProcessRule {
@@ -17,20 +17,20 @@ pub trait DetalleIGVBaseImponibleProcessRule {
 
 impl<T> DetalleIGVBaseImponibleProcessRule for T
 where
-    T: DetalleIGVBaseImponibleGetter
+    T: DetalleIgvBaseImponibleGetter
         + DetalleIGVBaseImponibleSetter
-        + DetalleIGVTipoGetter
+        + DetalleIgvTipoGetter
         + DetalleCantidadGetter
         + DetallePrecioGetter
         + DetallePrecioReferenciaGetter
-        + DetalleISCGetter,
+        + DetalleIscGetter,
 {
     fn process(&mut self) -> bool {
         match (
-            &self.get_igvbaseimponible(),
-            &self.get_igvtipo(),
+            &self.get_igv_base_imponible(),
+            &self.get_igv_tipo(),
             &self.get_precio(),
-            &self.get_precioreferencia(),
+            &self.get_precio_referencia(),
             &self.get_isc(),
         ) {
             (None, Some(igv_tipo), Some(precio), Some(precio_referencia), Some(isc)) => {
@@ -41,7 +41,7 @@ where
                         self.get_cantidad() * precio_referencia
                     };
 
-                    self.set_igvbaseimponible(base_imponible + *isc);
+                    self.set_igv_base_imponible(base_imponible + *isc);
                     true
                 } else {
                     warn!("DetalleIGVBaseImponibleProcessRule: {igv_tipo} codigo no valido para Catalog7");

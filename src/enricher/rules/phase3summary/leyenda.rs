@@ -1,6 +1,6 @@
 use crate::catalogs::Catalog;
-use crate::models::traits::detalle::DetallesGetter;
-use crate::models::traits::leyendas::{LeyendasGetter, LeyendasSetter};
+use crate::enricher::bounds::detalle::DetallesGetter;
+use crate::enricher::bounds::leyendas::{LeyendasGetter, LeyendasSetter};
 use crate::prelude::Catalog7;
 
 pub trait LeyendaIVAPSummaryRule {

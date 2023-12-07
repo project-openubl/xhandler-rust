@@ -4,12 +4,12 @@ use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
 use crate::catalogs::{Catalog5, Catalog53, Catalog7, FromCode};
+use crate::enricher::bounds::detalle::DetallesGetter;
+use crate::enricher::bounds::igv::IgvTasaGetter;
+use crate::enricher::bounds::invoice::anticipos::InvoiceAnticiposGetter;
+use crate::enricher::bounds::invoice::descuentos::InvoiceDescuentosGetter;
+use crate::enricher::bounds::total_importe::{TotalImporteGetter, TotalImporteSetter};
 use crate::models::common::TotalImporte;
-use crate::models::traits::detalle::DetallesGetter;
-use crate::models::traits::igv::IGVTasaGetter;
-use crate::models::traits::invoice::anticipos::InvoiceAnticiposGetter;
-use crate::models::traits::invoice::descuentos::InvoiceDescuentosGetter;
-use crate::models::traits::totalimporte::{TotalImporteGetter, TotalImporteSetter};
 
 pub trait InvoiceTotalImporteSummaryRule {
     fn summary(&mut self) -> bool;
@@ -22,10 +22,10 @@ where
         + DetallesGetter
         + InvoiceDescuentosGetter
         + InvoiceAnticiposGetter
-        + IGVTasaGetter,
+        + IgvTasaGetter,
 {
     fn summary(&mut self) -> bool {
-        match &self.get_totalimporte() {
+        match &self.get_total_importe() {
             Some(..) => false,
             None => {
                 let total_impuestos = self
@@ -110,7 +110,7 @@ where
                     - descuentos_que_no_afectan_base_imponible_sin_impuestos;
 
                 //
-                self.set_totalimporte(TotalImporte {
+                self.set_total_importe(TotalImporte {
                     importe_sin_impuestos,
                     importe_con_impuestos,
                     descuentos: descuentos_que_no_afectan_base_imponible_sin_impuestos,

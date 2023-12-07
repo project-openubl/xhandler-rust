@@ -2,10 +2,10 @@ use log::warn;
 use regex::Regex;
 
 use crate::catalogs::{Catalog, Catalog1};
-use crate::models::traits::note::tipocomprobanteafectado::{
+use crate::enricher::bounds::note::tipo_comprobante_afectado::{
     NoteTipoComprobanteAfectadoGetter, NoteTipoComprobanteAfectadoSetter,
 };
-use crate::models::traits::serienumero::SerieNumeroGetter;
+use crate::enricher::bounds::serie_numero::SerieNumeroGetter;
 use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 
 pub trait NoteTipoComprobanteAfectadoEnrichRule {
@@ -22,13 +22,13 @@ where
             None => {
                 if Regex::new(FACTURA_SERIE_REGEX)
                     .unwrap()
-                    .is_match(self.get_serienumero())
+                    .is_match(self.get_serie_numero())
                 {
                     self.set_tipo_comprobante_afectado(Catalog1::Factura.code());
                     true
                 } else if Regex::new(BOLETA_SERIE_REGEX)
                     .unwrap()
-                    .is_match(self.get_serienumero())
+                    .is_match(self.get_serie_numero())
                 {
                     self.set_tipo_comprobante_afectado(Catalog1::Boleta.code());
                     true

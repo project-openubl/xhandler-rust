@@ -1,5 +1,5 @@
+use crate::enricher::bounds::detalle::icb_tasa::{DetalleIcbTasaGetter, DetalleIcbTasaSetter};
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
-use crate::models::traits::detalle::icbtasa::{DetalleICBTasaGetter, DetalleICBTasaSetter};
 
 pub trait DetalleICBTasaEnrichRule {
     fn fill(&mut self, defaults: &DetalleDefaults) -> bool;
@@ -7,13 +7,13 @@ pub trait DetalleICBTasaEnrichRule {
 
 impl<T> DetalleICBTasaEnrichRule for T
 where
-    T: DetalleICBTasaGetter + DetalleICBTasaSetter,
+    T: DetalleIcbTasaGetter + DetalleIcbTasaSetter,
 {
     fn fill(&mut self, defaults: &DetalleDefaults) -> bool {
-        match &self.get_icbtasa() {
+        match &self.get_icb_tasa() {
             Some(..) => false,
             None => {
-                self.set_icbtasa(defaults.icb_tasa);
+                self.set_icb_tasa(defaults.icb_tasa);
                 true
             }
         }

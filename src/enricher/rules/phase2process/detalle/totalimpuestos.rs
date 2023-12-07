@@ -1,11 +1,11 @@
 use rust_decimal_macros::dec;
 
 use crate::catalogs::{Catalog7, FromCode};
-use crate::models::traits::detalle::icb::DetalleICBGetter;
-use crate::models::traits::detalle::igv::DetalleIGVGetter;
-use crate::models::traits::detalle::igvtipo::DetalleIGVTipoGetter;
-use crate::models::traits::detalle::isc::DetalleISCGetter;
-use crate::models::traits::detalle::totalimpuestos::{
+use crate::enricher::bounds::detalle::icb::DetalleIcbGetter;
+use crate::enricher::bounds::detalle::igv::DetalleIgvGetter;
+use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
+use crate::enricher::bounds::detalle::isc::DetalleIscGetter;
+use crate::enricher::bounds::detalle::total_impuestos::{
     DetalleTotalImpuestosGetter, DetalleTotalImpuestosSetter,
 };
 
@@ -17,15 +17,15 @@ impl<T> DetalleTotalImpuestosProcessRule for T
 where
     T: DetalleTotalImpuestosGetter
         + DetalleTotalImpuestosSetter
-        + DetalleIGVTipoGetter
-        + DetalleIGVGetter
-        + DetalleICBGetter
-        + DetalleISCGetter,
+        + DetalleIgvTipoGetter
+        + DetalleIgvGetter
+        + DetalleIcbGetter
+        + DetalleIscGetter,
 {
     fn process(&mut self) -> bool {
         match (
-            &self.get_totalimpuestos(),
-            &self.get_igvtipo(),
+            &self.get_total_impuestos(),
+            &self.get_igv_tipo(),
             &self.get_igv(),
             &self.get_icb(),
             &self.get_isc(),
@@ -39,7 +39,7 @@ where
                     };
 
                     let total = icb + igv_isc.0 + igv_isc.1;
-                    self.set_totalimpuestos(total);
+                    self.set_total_impuestos(total);
                     true
                 } else {
                     false

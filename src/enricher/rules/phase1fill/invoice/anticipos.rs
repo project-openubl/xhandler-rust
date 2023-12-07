@@ -2,7 +2,7 @@ use log::warn;
 use regex::Regex;
 
 use crate::catalogs::{Catalog, Catalog12, Catalog53};
-use crate::models::traits::invoice::anticipos::{
+use crate::enricher::bounds::invoice::anticipos::{
     AnticipoGetter, AnticipoSetter, InvoiceAnticiposGetter,
 };
 use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
