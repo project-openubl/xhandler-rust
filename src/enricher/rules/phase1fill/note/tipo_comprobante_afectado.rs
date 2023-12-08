@@ -8,11 +8,11 @@ use crate::enricher::bounds::note::tipo_comprobante_afectado::{
 use crate::enricher::bounds::serie_numero::SerieNumeroGetter;
 use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 
-pub trait NoteTipoComprobanteAfectadoEnrichRule {
+pub trait NoteTipoComprobanteAfectadoFillRule {
     fn fill(&mut self) -> bool;
 }
 
-impl<T> NoteTipoComprobanteAfectadoEnrichRule for T
+impl<T> NoteTipoComprobanteAfectadoFillRule for T
 where
     T: NoteTipoComprobanteAfectadoGetter + NoteTipoComprobanteAfectadoSetter + SerieNumeroGetter,
 {

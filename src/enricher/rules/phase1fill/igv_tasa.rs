@@ -1,11 +1,11 @@
 use crate::enricher::bounds::igv::{IgvTasaGetter, IgvTasaSetter};
 use crate::enricher::Defaults;
 
-pub trait IGVTasaEnrichRule {
+pub trait IgvTasaFillRule {
     fn fill(&mut self, defaults: &Defaults) -> bool;
 }
 
-impl<T> IGVTasaEnrichRule for T
+impl<T> IgvTasaFillRule for T
 where
     T: IgvTasaGetter + IgvTasaSetter,
 {

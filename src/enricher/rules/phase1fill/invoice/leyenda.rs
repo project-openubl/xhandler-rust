@@ -4,15 +4,15 @@ use crate::enricher::bounds::invoice::direccion_entrega::InvoiceDireccionEntrega
 use crate::enricher::bounds::invoice::percepcion::InvoicePercepcionGetter;
 use crate::enricher::bounds::leyendas::{LeyendasGetter, LeyendasSetter};
 
-pub trait InvoiceLeyendaDetraccionEnrichRule {
+pub trait InvoiceLeyendaDetraccionFillRule {
     fn fill(&mut self) -> bool;
 }
 
-pub trait InvoiceLeyendaDireccionEntregaEnrichRule {
+pub trait InvoiceLeyendaDireccionEntregaFillRule {
     fn fill(&mut self) -> bool;
 }
 
-pub trait InvoiceLeyendaPercepcionEnrichRule {
+pub trait InvoiceLeyendaPercepcionFillRule {
     fn fill(&mut self) -> bool;
 }
 
@@ -28,7 +28,7 @@ where
     }
 }
 
-impl<T> InvoiceLeyendaDetraccionEnrichRule for T
+impl<T> InvoiceLeyendaDetraccionFillRule for T
 where
     T: InvoiceDetraccionGetter + LeyendasGetter + LeyendasSetter,
 {
@@ -43,7 +43,7 @@ where
     }
 }
 
-impl<T> InvoiceLeyendaDireccionEntregaEnrichRule for T
+impl<T> InvoiceLeyendaDireccionEntregaFillRule for T
 where
     T: InvoiceDireccionEntregaGetter + LeyendasGetter + LeyendasSetter,
 {
@@ -58,7 +58,7 @@ where
     }
 }
 
-impl<T> InvoiceLeyendaPercepcionEnrichRule for T
+impl<T> InvoiceLeyendaPercepcionFillRule for T
 where
     T: InvoicePercepcionGetter + LeyendasGetter + LeyendasSetter,
 {

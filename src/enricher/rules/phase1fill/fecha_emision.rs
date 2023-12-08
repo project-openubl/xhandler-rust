@@ -1,11 +1,11 @@
 use crate::enricher::bounds::fecha_emision::{FechaEmisionGetter, FechaEmisionSetter};
 use crate::enricher::Defaults;
 
-pub trait FechaEmisionEnrichRule {
+pub trait FechaEmisionFillRule {
     fn fill(&mut self, defaults: &Defaults) -> bool;
 }
 
-impl<T> FechaEmisionEnrichRule for T
+impl<T> FechaEmisionFillRule for T
 where
     T: FechaEmisionGetter + FechaEmisionSetter,
 {

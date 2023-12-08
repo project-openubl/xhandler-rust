@@ -1,11 +1,11 @@
 use crate::enricher::bounds::icb::{IcbTasaGetter, IcbTasaSetter};
 use crate::enricher::Defaults;
 
-pub trait ICBTasaEnrichRule {
+pub trait IcbTasaFillRule {
     fn fill(&mut self, defaults: &Defaults) -> bool;
 }
 
-impl<T> ICBTasaEnrichRule for T
+impl<T> IcbTasaFillRule for T
 where
     T: IcbTasaGetter + IcbTasaSetter,
 {

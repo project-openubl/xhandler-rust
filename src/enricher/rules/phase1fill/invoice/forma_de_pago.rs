@@ -5,7 +5,7 @@ use crate::enricher::bounds::invoice::forma_de_pago::{
 };
 use crate::models::common::{FormaDePago, TipoFormaDePago};
 
-pub trait InvoiceFormaDePagoEnrichRule {
+pub trait InvoiceFormaDePagoFillRule {
     fn fill(&mut self) -> bool;
 }
 
@@ -17,7 +17,7 @@ pub trait InvoiceFormaDePagoTipoRule {
     fn fill(&mut self) -> bool;
 }
 
-impl<T> InvoiceFormaDePagoEnrichRule for T
+impl<T> InvoiceFormaDePagoFillRule for T
 where
     T: InvoiceFormaDePagoGetter + InvoiceFormaDePagoSetter,
 {

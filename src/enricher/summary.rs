@@ -7,45 +7,45 @@ use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
 
-pub trait SummaryTrait {
+pub trait Summary {
     fn summary(&mut self);
 }
 
-trait SummaryCommonTrait {
+trait SummaryCommon {
     fn summary_common(&mut self);
 }
 
-trait SummaryInvoiceTrait {
+trait SummaryInvoice {
     fn summary_invoice(&mut self);
 }
 
-trait SummaryCreditNoteTrait {
+trait SummaryCreditNote {
     fn summary_creditnote(&mut self);
 }
 
-trait SummaryDebitNoteTrait {
+trait SummaryDebitNote {
     fn summary_debitnote(&mut self);
 }
 
-impl SummaryTrait for Invoice {
+impl Summary for Invoice {
     fn summary(&mut self) {
         self.summary_common();
     }
 }
 
-impl SummaryTrait for CreditNote {
+impl Summary for CreditNote {
     fn summary(&mut self) {
         // self.summary_common();
     }
 }
 
-impl SummaryTrait for DebitNote {
+impl Summary for DebitNote {
     fn summary(&mut self) {
         // self.summary_common();
     }
 }
 
-impl<T> SummaryCommonTrait for T
+impl<T> SummaryCommon for T
 where
     T: InvoiceTotalImpuestosSummaryRule
         + InvoiceTotalImporteSummaryRule

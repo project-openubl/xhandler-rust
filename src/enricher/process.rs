@@ -3,45 +3,45 @@ use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
 
-pub trait ProcessTrait {
+pub trait Process {
     fn process(&mut self);
 }
 
-trait ProcessCommonTrait {
+trait ProcessCommon {
     fn process_common(&mut self);
 }
 
-trait ProcessInvoiceTrait {
+trait ProcessInvoice {
     fn process_invoice(&mut self);
 }
 
-trait ProcessCreditNoteTrait {
+trait ProcessCreditNote {
     fn process_creditnote(&mut self);
 }
 
-trait ProcessDebitNoteTrait {
+trait ProcessDebitNote {
     fn process_debitnote(&mut self);
 }
 
-impl ProcessTrait for Invoice {
+impl Process for Invoice {
     fn process(&mut self) {
         self.process_common();
     }
 }
 
-impl ProcessTrait for CreditNote {
+impl Process for CreditNote {
     fn process(&mut self) {
         self.process_common();
     }
 }
 
-impl ProcessTrait for DebitNote {
+impl Process for DebitNote {
     fn process(&mut self) {
         self.process_common();
     }
 }
 
-impl<T> ProcessCommonTrait for T
+impl<T> ProcessCommon for T
 where
     T: DetallesProcessRule,
 {

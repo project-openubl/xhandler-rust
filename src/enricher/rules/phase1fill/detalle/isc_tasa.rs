@@ -6,11 +6,11 @@ use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
 use crate::enricher::bounds::detalle::isc_tasa::{DetalleIscTasaGetter, DetalleIscTasaSetter};
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
 
-pub trait DetalleISCTasaEnrichRule {
+pub trait DetalleISCTasaFillRule {
     fn fill(&mut self, defaults: &DetalleDefaults) -> bool;
 }
 
-impl<T> DetalleISCTasaEnrichRule for T
+impl<T> DetalleISCTasaFillRule for T
 where
     T: DetalleIscTasaGetter + DetalleIscTasaSetter + DetalleIgvTipoGetter,
 {
