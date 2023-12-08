@@ -1,3 +1,5 @@
+mod common;
+
 use rust_decimal_macros::dec;
 use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
@@ -5,8 +7,6 @@ use xbuilder::prelude::*;
 use crate::common::assert_invoice;
 use crate::common::detalle_base;
 use crate::common::invoice_base;
-
-mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceTipoIgvTest";
 
