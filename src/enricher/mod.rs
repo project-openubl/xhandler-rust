@@ -1,9 +1,9 @@
 use chrono::NaiveDate;
 use rust_decimal::Decimal;
 
-use crate::enricher::fill::FillTrait;
-use crate::enricher::process::ProcessTrait;
-use crate::enricher::summary::SummaryTrait;
+use crate::enricher::fill::Fill;
+use crate::enricher::process::Process;
+use crate::enricher::summary::Summary;
 use crate::models::invoice::Invoice;
 use crate::prelude::{CreditNote, DebitNote};
 
@@ -20,30 +20,30 @@ pub struct Defaults {
     pub date: NaiveDate,
 }
 
-pub trait EnrichTrait {
+pub trait Enrich {
     fn enrich(&mut self, defaults: &Defaults);
 }
 
-impl EnrichTrait for Invoice {
+impl Enrich for Invoice {
     fn enrich(&mut self, defaults: &Defaults) {
-        FillTrait::fill(self, defaults);
-        ProcessTrait::process(self);
-        SummaryTrait::summary(self);
+        Fill::fill(self, defaults);
+        Process::process(self);
+        Summary::summary(self);
     }
 }
 
-impl EnrichTrait for CreditNote {
+impl Enrich for CreditNote {
     fn enrich(&mut self, defaults: &Defaults) {
-        FillTrait::fill(self, defaults);
-        ProcessTrait::process(self);
-        SummaryTrait::summary(self);
+        Fill::fill(self, defaults);
+        Process::process(self);
+        Summary::summary(self);
     }
 }
 
-impl EnrichTrait for DebitNote {
+impl Enrich for DebitNote {
     fn enrich(&mut self, defaults: &Defaults) {
-        FillTrait::fill(self, defaults);
-        ProcessTrait::process(self);
-        SummaryTrait::summary(self);
+        Fill::fill(self, defaults);
+        Process::process(self);
+        Summary::summary(self);
     }
 }

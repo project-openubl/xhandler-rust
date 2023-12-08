@@ -7,11 +7,11 @@ use crate::enricher::bounds::invoice::anticipos::{
 };
 use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 
-pub trait InvoiceAnticiposEnrichRule {
+pub trait InvoiceAnticiposFillRule {
     fn fill(&mut self) -> bool;
 }
 
-impl<T> InvoiceAnticiposEnrichRule for T
+impl<T> InvoiceAnticiposFillRule for T
 where
     T: InvoiceAnticiposGetter,
 {

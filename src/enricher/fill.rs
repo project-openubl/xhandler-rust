@@ -1,93 +1,93 @@
-use crate::enricher::rules::phase1fill::detalle::detalles::DetallesEnrichRule;
-use crate::enricher::rules::phase1fill::fecha_emision::FechaEmisionEnrichRule;
-use crate::enricher::rules::phase1fill::firmante::FirmanteEnrichRule;
-use crate::enricher::rules::phase1fill::icb_tasa::ICBTasaEnrichRule;
-use crate::enricher::rules::phase1fill::igv_tasa::IGVTasaEnrichRule;
-use crate::enricher::rules::phase1fill::invoice::anticipos::InvoiceAnticiposEnrichRule;
-use crate::enricher::rules::phase1fill::invoice::descuentos::InvoiceDescuentosEnrichRule;
+use crate::enricher::rules::phase1fill::detalle::detalles::DetallesFillRule;
+use crate::enricher::rules::phase1fill::fecha_emision::FechaEmisionFillRule;
+use crate::enricher::rules::phase1fill::firmante::FirmanteFillRule;
+use crate::enricher::rules::phase1fill::icb_tasa::IcbTasaFillRule;
+use crate::enricher::rules::phase1fill::igv_tasa::IgvTasaFillRule;
+use crate::enricher::rules::phase1fill::invoice::anticipos::InvoiceAnticiposFillRule;
+use crate::enricher::rules::phase1fill::invoice::descuentos::InvoiceDescuentosFillRule;
 use crate::enricher::rules::phase1fill::invoice::forma_de_pago::{
-    InvoiceFormaDePagoEnrichRule, InvoiceFormaDePagoTipoRule, InvoiceFormaDePagoTotalRule,
+    InvoiceFormaDePagoFillRule, InvoiceFormaDePagoTipoRule, InvoiceFormaDePagoTotalRule,
 };
 use crate::enricher::rules::phase1fill::invoice::leyenda::{
-    InvoiceLeyendaDetraccionEnrichRule, InvoiceLeyendaDireccionEntregaEnrichRule,
-    InvoiceLeyendaPercepcionEnrichRule,
+    InvoiceLeyendaDetraccionFillRule, InvoiceLeyendaDireccionEntregaFillRule,
+    InvoiceLeyendaPercepcionFillRule,
 };
-use crate::enricher::rules::phase1fill::invoice::tipo_comprobante::InvoiceTipoComprobanteEnrichRule;
-use crate::enricher::rules::phase1fill::invoice::tipo_operacion::InvoiceTipoOperacionEnrichRule;
-use crate::enricher::rules::phase1fill::ivap_tasa::IVAPTasaEnrichRule;
-use crate::enricher::rules::phase1fill::moneda::MonedaEnrichRule;
-use crate::enricher::rules::phase1fill::note::creditnote::tipo_nota::CreditNoteTipoEnrichRule;
-use crate::enricher::rules::phase1fill::note::debitnote::tipo_nota::DebitNoteTipoEnrichRule;
-use crate::enricher::rules::phase1fill::note::tipo_comprobante_afectado::NoteTipoComprobanteAfectadoEnrichRule;
-use crate::enricher::rules::phase1fill::proveedor::ProveedorEnrichRule;
+use crate::enricher::rules::phase1fill::invoice::tipo_comprobante::InvoiceTipoComprobanteFillRule;
+use crate::enricher::rules::phase1fill::invoice::tipo_operacion::InvoiceTipoOperacionFillRule;
+use crate::enricher::rules::phase1fill::ivap_tasa::IvapTasaFillRule;
+use crate::enricher::rules::phase1fill::moneda::MonedaFillRule;
+use crate::enricher::rules::phase1fill::note::creditnote::tipo_nota::CreditNoteTipoFillRule;
+use crate::enricher::rules::phase1fill::note::debitnote::tipo_nota::DebitNoteTipoFillRule;
+use crate::enricher::rules::phase1fill::note::tipo_comprobante_afectado::NoteTipoComprobanteAfectadoFillRule;
+use crate::enricher::rules::phase1fill::proveedor::ProveedorFillRule;
 use crate::enricher::Defaults;
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
 
-pub trait FillTrait {
+pub trait Fill {
     fn fill(&mut self, defaults: &Defaults);
 }
 
-trait FillCommonTrait {
+trait FillCommon {
     fn fill_common(&mut self, defaults: &Defaults);
 }
 
-trait FillInvoiceTrait {
+trait FillInvoice {
     fn fill_invoice(&mut self, defaults: &Defaults);
 }
 
-trait FillCreditNoteTrait {
+trait FillCreditNote {
     fn enrich_credit_note(&mut self, defaults: &Defaults);
 }
 
-trait FillDebitNoteTrait {
+trait FillDebitNote {
     fn enrich_debit_note(&mut self, defaults: &Defaults);
 }
 
-impl FillTrait for Invoice {
+impl Fill for Invoice {
     fn fill(&mut self, defaults: &Defaults) {
         self.fill_common(defaults);
         self.fill_invoice(defaults);
     }
 }
 
-impl FillTrait for CreditNote {
+impl Fill for CreditNote {
     fn fill(&mut self, defaults: &Defaults) {
         self.fill_common(defaults);
     }
 }
 
-impl FillTrait for DebitNote {
+impl Fill for DebitNote {
     fn fill(&mut self, defaults: &Defaults) {
         self.fill_common(defaults);
     }
 }
 
-impl<T> FillCommonTrait for T
+impl<T> FillCommon for T
 where
-    T: DetallesEnrichRule
-        + FechaEmisionEnrichRule
-        + FirmanteEnrichRule
-        + ICBTasaEnrichRule
-        + IGVTasaEnrichRule
-        + IVAPTasaEnrichRule
-        + MonedaEnrichRule
-        + ProveedorEnrichRule,
+    T: DetallesFillRule
+        + FechaEmisionFillRule
+        + FirmanteFillRule
+        + IcbTasaFillRule
+        + IgvTasaFillRule
+        + IvapTasaFillRule
+        + MonedaFillRule
+        + ProveedorFillRule,
 {
     fn fill_common(&mut self, defaults: &Defaults) {
         let mut changed = true;
 
         while changed {
             let results = [
-                FechaEmisionEnrichRule::fill(self, defaults),
-                FirmanteEnrichRule::fill(self),
-                ICBTasaEnrichRule::fill(self, defaults),
-                IGVTasaEnrichRule::fill(self, defaults),
-                IVAPTasaEnrichRule::fill(self, defaults),
-                MonedaEnrichRule::fill(self),
-                ProveedorEnrichRule::fill(self),
-                DetallesEnrichRule::fill(self),
+                FechaEmisionFillRule::fill(self, defaults),
+                FirmanteFillRule::fill(self),
+                IcbTasaFillRule::fill(self, defaults),
+                IgvTasaFillRule::fill(self, defaults),
+                IvapTasaFillRule::fill(self, defaults),
+                MonedaFillRule::fill(self),
+                ProveedorFillRule::fill(self),
+                DetallesFillRule::fill(self),
             ];
 
             changed = results.contains(&true);
@@ -95,34 +95,34 @@ where
     }
 }
 
-impl<T> FillInvoiceTrait for T
+impl<T> FillInvoice for T
 where
-    T: InvoiceAnticiposEnrichRule
-        + InvoiceDescuentosEnrichRule
-        + InvoiceFormaDePagoEnrichRule
+    T: InvoiceAnticiposFillRule
+        + InvoiceDescuentosFillRule
+        + InvoiceFormaDePagoFillRule
         + InvoiceFormaDePagoTotalRule
         + InvoiceFormaDePagoTipoRule
-        + InvoiceLeyendaDetraccionEnrichRule
-        + InvoiceLeyendaDireccionEntregaEnrichRule
-        + InvoiceLeyendaPercepcionEnrichRule
-        + InvoiceTipoComprobanteEnrichRule
-        + InvoiceTipoOperacionEnrichRule,
+        + InvoiceLeyendaDetraccionFillRule
+        + InvoiceLeyendaDireccionEntregaFillRule
+        + InvoiceLeyendaPercepcionFillRule
+        + InvoiceTipoComprobanteFillRule
+        + InvoiceTipoOperacionFillRule,
 {
     fn fill_invoice(&mut self, _: &Defaults) {
         let mut changed = true;
 
         while changed {
             let results = [
-                InvoiceAnticiposEnrichRule::fill(self),
-                InvoiceDescuentosEnrichRule::fill(self),
-                InvoiceFormaDePagoEnrichRule::fill(self),
+                InvoiceAnticiposFillRule::fill(self),
+                InvoiceDescuentosFillRule::fill(self),
+                InvoiceFormaDePagoFillRule::fill(self),
                 InvoiceFormaDePagoTotalRule::fill(self),
                 InvoiceFormaDePagoTipoRule::fill(self),
-                InvoiceLeyendaDetraccionEnrichRule::fill(self),
-                InvoiceLeyendaDireccionEntregaEnrichRule::fill(self),
-                InvoiceLeyendaPercepcionEnrichRule::fill(self),
-                InvoiceTipoComprobanteEnrichRule::fill(self),
-                InvoiceTipoOperacionEnrichRule::fill(self),
+                InvoiceLeyendaDetraccionFillRule::fill(self),
+                InvoiceLeyendaDireccionEntregaFillRule::fill(self),
+                InvoiceLeyendaPercepcionFillRule::fill(self),
+                InvoiceTipoComprobanteFillRule::fill(self),
+                InvoiceTipoOperacionFillRule::fill(self),
             ];
 
             changed = results.contains(&true);
@@ -130,17 +130,17 @@ where
     }
 }
 
-impl<T> FillCreditNoteTrait for T
+impl<T> FillCreditNote for T
 where
-    T: NoteTipoComprobanteAfectadoEnrichRule + CreditNoteTipoEnrichRule,
+    T: NoteTipoComprobanteAfectadoFillRule + CreditNoteTipoFillRule,
 {
     fn enrich_credit_note(&mut self, _: &Defaults) {
         let mut changed = true;
 
         while changed {
             let results = [
-                NoteTipoComprobanteAfectadoEnrichRule::fill(self),
-                CreditNoteTipoEnrichRule::fill(self),
+                NoteTipoComprobanteAfectadoFillRule::fill(self),
+                CreditNoteTipoFillRule::fill(self),
             ];
 
             changed = results.contains(&true);
@@ -148,17 +148,17 @@ where
     }
 }
 
-impl<T> FillDebitNoteTrait for T
+impl<T> FillDebitNote for T
 where
-    T: NoteTipoComprobanteAfectadoEnrichRule + DebitNoteTipoEnrichRule,
+    T: NoteTipoComprobanteAfectadoFillRule + DebitNoteTipoFillRule,
 {
     fn enrich_debit_note(&mut self, _: &Defaults) {
         let mut changed = true;
 
         while changed {
             let results = [
-                NoteTipoComprobanteAfectadoEnrichRule::fill(self),
-                DebitNoteTipoEnrichRule::fill(self),
+                NoteTipoComprobanteAfectadoFillRule::fill(self),
+                DebitNoteTipoFillRule::fill(self),
             ];
 
             changed = results.contains(&true);

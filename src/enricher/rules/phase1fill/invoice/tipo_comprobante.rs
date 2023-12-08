@@ -7,11 +7,11 @@ use crate::enricher::bounds::invoice::tipo_comprobante::{
 use crate::enricher::bounds::serie_numero::SerieNumeroGetter;
 use crate::{BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX};
 
-pub trait InvoiceTipoComprobanteEnrichRule {
+pub trait InvoiceTipoComprobanteFillRule {
     fn fill(&mut self) -> bool;
 }
 
-impl<T> InvoiceTipoComprobanteEnrichRule for T
+impl<T> InvoiceTipoComprobanteFillRule for T
 where
     T: InvoiceTipoComprobanteGetter + InvoiceTipoComprobanteSetter + SerieNumeroGetter,
 {

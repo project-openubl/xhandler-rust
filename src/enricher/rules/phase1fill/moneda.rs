@@ -1,10 +1,10 @@
 use crate::enricher::bounds::moneda::{MonedaGetter, MonedaSetter};
 
-pub trait MonedaEnrichRule {
+pub trait MonedaFillRule {
     fn fill(&mut self) -> bool;
 }
 
-impl<T> MonedaEnrichRule for T
+impl<T> MonedaFillRule for T
 where
     T: MonedaGetter + MonedaSetter,
 {

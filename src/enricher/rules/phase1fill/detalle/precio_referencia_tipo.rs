@@ -5,11 +5,11 @@ use crate::enricher::bounds::detalle::precio_referencia_tipo::{
 };
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
 
-pub trait DetallePrecioReferenciaTipoEnrichRule {
+pub trait DetallePrecioReferenciaTipoFillRule {
     fn fill(&mut self, defaults: &DetalleDefaults) -> bool;
 }
 
-impl<T> DetallePrecioReferenciaTipoEnrichRule for T
+impl<T> DetallePrecioReferenciaTipoFillRule for T
 where
     T: DetallePrecioReferenciaTipoGetter + DetallePrecioReferenciaTipoSetter + DetalleIgvTipoGetter,
 {

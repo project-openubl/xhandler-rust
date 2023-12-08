@@ -2,11 +2,11 @@ use crate::enricher::bounds::firmante::{FirmanteGetter, FirmanteSetter};
 use crate::enricher::bounds::proveedor::ProveedorGetter;
 use crate::models::common::Firmante;
 
-pub trait FirmanteEnrichRule {
+pub trait FirmanteFillRule {
     fn fill(&mut self) -> bool;
 }
 
-impl<T> FirmanteEnrichRule for T
+impl<T> FirmanteFillRule for T
 where
     T: FirmanteGetter + FirmanteSetter + ProveedorGetter,
 {

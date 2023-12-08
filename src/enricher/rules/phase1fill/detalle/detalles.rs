@@ -4,13 +4,13 @@ use crate::enricher::bounds::detalle::DetallesGetter;
 use crate::enricher::bounds::icb::IcbTasaGetter;
 use crate::enricher::bounds::igv::IgvTasaGetter;
 use crate::enricher::bounds::ivap::IvapTasaGetter;
-use crate::enricher::rules::phase1fill::detalle::icb_tasa::DetalleICBTasaEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::igv_tasa::DetalleIGVTasaEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::igv_tipo::DetalleIGVTipoEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::isc_tasa::DetalleISCTasaEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::isc_tipo::DetalleISCTipoEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::precio_referencia_tipo::DetallePrecioReferenciaTipoEnrichRule;
-use crate::enricher::rules::phase1fill::detalle::unidad_medida::DetalleUnidadMedidaEnrichRule;
+use crate::enricher::rules::phase1fill::detalle::icb_tasa::DetalleICBTasaFillRule;
+use crate::enricher::rules::phase1fill::detalle::igv_tasa::DetalleIGVTasaFillRule;
+use crate::enricher::rules::phase1fill::detalle::igv_tipo::DetalleIGVTipoFillRule;
+use crate::enricher::rules::phase1fill::detalle::isc_tasa::DetalleISCTasaFillRule;
+use crate::enricher::rules::phase1fill::detalle::isc_tipo::DetalleISCTipoFillRule;
+use crate::enricher::rules::phase1fill::detalle::precio_referencia_tipo::DetallePrecioReferenciaTipoFillRule;
+use crate::enricher::rules::phase1fill::detalle::unidad_medida::DetalleUnidadMedidaFillRule;
 
 pub struct DetalleDefaults {
     pub igv_tasa: Decimal,
@@ -18,11 +18,11 @@ pub struct DetalleDefaults {
     pub ivap_tasa: Decimal,
 }
 
-pub trait DetallesEnrichRule {
+pub trait DetallesFillRule {
     fn fill(&mut self) -> bool;
 }
 
-impl<T> DetallesEnrichRule for T
+impl<T> DetallesFillRule for T
 where
     T: DetallesGetter + IgvTasaGetter + IcbTasaGetter + IvapTasaGetter,
 {
@@ -37,13 +37,13 @@ where
             .iter_mut()
             .map(|detalle| {
                 let results = [
-                    DetalleICBTasaEnrichRule::fill(detalle, defaults),
-                    DetalleIGVTasaEnrichRule::fill(detalle, defaults),
-                    DetalleIGVTipoEnrichRule::fill(detalle, defaults),
-                    DetalleISCTasaEnrichRule::fill(detalle, defaults),
-                    DetalleISCTipoEnrichRule::fill(detalle, defaults),
-                    DetallePrecioReferenciaTipoEnrichRule::fill(detalle, defaults),
-                    DetalleUnidadMedidaEnrichRule::fill(detalle, defaults),
+                    DetalleICBTasaFillRule::fill(detalle, defaults),
+                    DetalleIGVTasaFillRule::fill(detalle, defaults),
+                    DetalleIGVTipoFillRule::fill(detalle, defaults),
+                    DetalleISCTasaFillRule::fill(detalle, defaults),
+                    DetalleISCTipoFillRule::fill(detalle, defaults),
+                    DetallePrecioReferenciaTipoFillRule::fill(detalle, defaults),
+                    DetalleUnidadMedidaFillRule::fill(detalle, defaults),
                 ];
                 results.contains(&true)
             })

@@ -1,11 +1,11 @@
 use crate::enricher::bounds::ivap::{IvapTasaGetter, IvapTasaSetter};
 use crate::enricher::Defaults;
 
-pub trait IVAPTasaEnrichRule {
+pub trait IvapTasaFillRule {
     fn fill(&mut self, defaults: &Defaults) -> bool;
 }
 
-impl<T> IVAPTasaEnrichRule for T
+impl<T> IvapTasaFillRule for T
 where
     T: IvapTasaGetter + IvapTasaSetter,
 {

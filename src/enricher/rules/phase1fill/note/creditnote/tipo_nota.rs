@@ -3,11 +3,11 @@ use crate::enricher::bounds::note::creditnote::tipo_nota::{
     CreditNoteTipoGetter, CreditNoteTipoSetter,
 };
 
-pub trait CreditNoteTipoEnrichRule {
+pub trait CreditNoteTipoFillRule {
     fn fill(&mut self) -> bool;
 }
 
-impl<T> CreditNoteTipoEnrichRule for T
+impl<T> CreditNoteTipoFillRule for T
 where
     T: CreditNoteTipoGetter + CreditNoteTipoSetter,
 {

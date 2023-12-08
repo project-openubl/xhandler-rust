@@ -1,11 +1,11 @@
 use crate::enricher::bounds::proveedor::{ProveedorGetter, ProveedorSetter};
 use crate::models::common::Direccion;
 
-pub trait ProveedorEnrichRule {
+pub trait ProveedorFillRule {
     fn fill(&mut self) -> bool;
 }
 
-impl<T> ProveedorEnrichRule for T
+impl<T> ProveedorFillRule for T
 where
     T: ProveedorGetter + ProveedorSetter,
 {

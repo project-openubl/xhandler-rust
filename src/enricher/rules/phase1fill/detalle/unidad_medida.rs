@@ -3,11 +3,11 @@ use crate::enricher::bounds::detalle::unidad_medida::{
 };
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
 
-pub trait DetalleUnidadMedidaEnrichRule {
+pub trait DetalleUnidadMedidaFillRule {
     fn fill(&mut self, defaults: &DetalleDefaults) -> bool;
 }
 
-impl<T> DetalleUnidadMedidaEnrichRule for T
+impl<T> DetalleUnidadMedidaFillRule for T
 where
     T: DetalleUnidadMedidaGetter + DetalleUnidadMedidaSetter,
 {

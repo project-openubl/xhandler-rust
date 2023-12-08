@@ -5,11 +5,11 @@ use crate::enricher::bounds::invoice::descuentos::{
     DescuentoGetter, DescuentoSetter, InvoiceDescuentosGetter,
 };
 
-pub trait InvoiceDescuentosEnrichRule {
+pub trait InvoiceDescuentosFillRule {
     fn fill(&mut self) -> bool;
 }
 
-impl<T> InvoiceDescuentosEnrichRule for T
+impl<T> InvoiceDescuentosFillRule for T
 where
     T: InvoiceDescuentosGetter,
 {

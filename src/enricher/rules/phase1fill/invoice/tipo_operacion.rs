@@ -5,11 +5,11 @@ use crate::enricher::bounds::invoice::tipo_operacion::{
     InvoiceTipoOperacionGetter, InvoiceTipoOperacionSetter,
 };
 
-pub trait InvoiceTipoOperacionEnrichRule {
+pub trait InvoiceTipoOperacionFillRule {
     fn fill(&mut self) -> bool;
 }
 
-impl<T> InvoiceTipoOperacionEnrichRule for T
+impl<T> InvoiceTipoOperacionFillRule for T
 where
     T: InvoiceTipoOperacionGetter
         + InvoiceTipoOperacionSetter
