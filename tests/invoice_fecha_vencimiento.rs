@@ -1,10 +1,11 @@
-mod common;
-
 use chrono::NaiveDate;
+
 use xbuilder::prelude::*;
 
 use crate::common::assert_invoice;
 use crate::common::invoice_base;
+
+mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceFechaVencimientoTest";
 

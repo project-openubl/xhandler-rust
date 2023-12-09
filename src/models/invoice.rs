@@ -6,7 +6,7 @@ use serde::Serialize;
 
 use crate::models::common::{
     Anticipo, Descuento, Detalle, Detraccion, DocumentoRelacionado, FormaDePago, Guia, Percepcion,
-    TotalImporte, TotalImpuestos,
+    TotalImporteInvoice, TotalImpuestos,
 };
 use crate::models::common::{Cliente, Direccion, Firmante, Proveedor};
 
@@ -44,7 +44,7 @@ pub struct Invoice {
 
     pub detalles: Vec<Detalle>,
 
-    pub total_importe: Option<TotalImporte>,
+    pub total_importe: Option<TotalImporteInvoice>,
     pub total_impuestos: Option<TotalImpuestos>,
 
     pub guias: Vec<Guia>,

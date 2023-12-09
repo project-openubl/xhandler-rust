@@ -6,9 +6,7 @@ use rust_decimal_macros::dec;
 use tera::helpers::tests::{number_args_allowed, value_defined};
 use tera::{from_value, to_value, Context, Error, Function, Tera, Value};
 
-use crate::catalogs::{Catalog7, FromCode};
-use crate::models::invoice::Invoice;
-use crate::prelude::Catalog;
+use crate::prelude::*;
 
 fn catalog7_taxcategory() -> impl Function {
     Box::new(
@@ -137,4 +135,8 @@ lazy_static::lazy_static! {
 
 pub fn render_invoice(obj: &Invoice) -> tera::Result<String> {
     TEMPLATES.render("renderer/invoice.xml", &Context::from_serialize(obj)?)
+}
+
+pub fn render_credit_note(obj: &CreditNote) -> tera::Result<String> {
+    TEMPLATES.render("renderer/creditNote.xml", &Context::from_serialize(obj)?)
 }

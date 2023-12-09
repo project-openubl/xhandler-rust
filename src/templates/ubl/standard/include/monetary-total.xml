@@ -1,3 +1,4 @@
-        <cbc:LineExtensionAmount currencyID="{{moneda}}">{totalImporte.importeSinImpuestos | round_decimal}</cbc:LineExtensionAmount>
-        <cbc:TaxInclusiveAmount currencyID="{{moneda}}">{totalImporte.importe | round_decimal}</cbc:TaxInclusiveAmount>
-        <cbc:PayableAmount currencyID="{{moneda}}">{totalImporte.importe | round_decimal}</cbc:PayableAmount>
+
+        <cbc:LineExtensionAmount currencyID="{{moneda}}">{{total_importe.importe_sin_impuestos | round_decimal}}</cbc:LineExtensionAmount>
+        <cbc:TaxInclusiveAmount currencyID="{{moneda}}">{{total_importe.importe | round_decimal}}</cbc:TaxInclusiveAmount>
+        <cbc:PayableAmount currencyID="{{moneda}}">{{total_importe.importe | round_decimal}}</cbc:PayableAmount>

@@ -18,7 +18,7 @@ use crate::enricher::rules::phase1fill::ivap_tasa::IvapTasaFillRule;
 use crate::enricher::rules::phase1fill::moneda::MonedaFillRule;
 use crate::enricher::rules::phase1fill::note::creditnote::tipo_nota::CreditNoteTipoFillRule;
 use crate::enricher::rules::phase1fill::note::debitnote::tipo_nota::DebitNoteTipoFillRule;
-use crate::enricher::rules::phase1fill::note::tipo_comprobante_afectado::NoteTipoComprobanteAfectadoFillRule;
+use crate::enricher::rules::phase1fill::note::tipo_comprobante_afectado::NoteComprobanteAfectadoTipoFillRule;
 use crate::enricher::rules::phase1fill::proveedor::ProveedorFillRule;
 use crate::enricher::Defaults;
 use crate::models::credit_note::CreditNote;
@@ -38,11 +38,11 @@ trait FillInvoice {
 }
 
 trait FillCreditNote {
-    fn enrich_credit_note(&mut self, defaults: &Defaults);
+    fn fill_credit_note(&mut self, defaults: &Defaults);
 }
 
 trait FillDebitNote {
-    fn enrich_debit_note(&mut self, defaults: &Defaults);
+    fn fill_debit_note(&mut self, defaults: &Defaults);
 }
 
 impl Fill for Invoice {
@@ -55,12 +55,14 @@ impl Fill for Invoice {
 impl Fill for CreditNote {
     fn fill(&mut self, defaults: &Defaults) {
         self.fill_common(defaults);
+        self.fill_credit_note(defaults);
     }
 }
 
 impl Fill for DebitNote {
     fn fill(&mut self, defaults: &Defaults) {
         self.fill_common(defaults);
+        self.fill_debit_note(defaults);
     }
 }
 
@@ -132,14 +134,14 @@ where
 
 impl<T> FillCreditNote for T
 where
-    T: NoteTipoComprobanteAfectadoFillRule + CreditNoteTipoFillRule,
+    T: NoteComprobanteAfectadoTipoFillRule + CreditNoteTipoFillRule,
 {
-    fn enrich_credit_note(&mut self, _: &Defaults) {
+    fn fill_credit_note(&mut self, _: &Defaults) {
         let mut changed = true;
 
         while changed {
             let results = [
-                NoteTipoComprobanteAfectadoFillRule::fill(self),
+                NoteComprobanteAfectadoTipoFillRule::fill(self),
                 CreditNoteTipoFillRule::fill(self),
             ];
 
@@ -150,14 +152,14 @@ where
 
 impl<T> FillDebitNote for T
 where
-    T: NoteTipoComprobanteAfectadoFillRule + DebitNoteTipoFillRule,
+    T: NoteComprobanteAfectadoTipoFillRule + DebitNoteTipoFillRule,
 {
-    fn enrich_debit_note(&mut self, _: &Defaults) {
+    fn fill_debit_note(&mut self, _: &Defaults) {
         let mut changed = true;
 
         while changed {
             let results = [
-                NoteTipoComprobanteAfectadoFillRule::fill(self),
+                NoteComprobanteAfectadoTipoFillRule::fill(self),
                 DebitNoteTipoFillRule::fill(self),
             ];
 
