@@ -14,12 +14,16 @@ fn invoice_guia_serie_t() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item1", dec!(2))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item2", dec!(2))
+                ..detalle_base()
             },
         ],
         guias: vec![Guia {

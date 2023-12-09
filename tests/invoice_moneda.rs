@@ -15,9 +15,10 @@ fn invoice_custom_moneda() {
     let mut invoice = Invoice {
         moneda: Some("USD"),
         detalles: vec![Detalle {
+            descripcion: "Item1",
             cantidad: Decimal::ONE,
             precio: Some(dec!(100)),
-            ..detalle_base("Item1", dec!(10))
+            ..detalle_base()
         }],
         ..invoice_base()
     };

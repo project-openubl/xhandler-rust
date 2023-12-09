@@ -15,12 +15,16 @@ fn credit_note() {
         orden_de_compra: Some("123456"),
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item1", dec!(10))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item2", dec!(10))
+                ..detalle_base()
             },
         ],
         ..credit_note_base()

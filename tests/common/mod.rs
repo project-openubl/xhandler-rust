@@ -50,16 +50,7 @@ pub fn invoice_base() -> Invoice {
 
         anticipos: vec![],
         descuentos: vec![],
-        detalles: vec![
-            Detalle {
-                precio: Some(dec!(100)),
-                ..detalle_base("Item1", dec!(10))
-            },
-            Detalle {
-                precio: Some(dec!(100)),
-                ..detalle_base("Item2", dec!(10))
-            },
-        ],
+        detalles: vec![],
 
         guias: vec![],
         documentos_relacionados: vec![],
@@ -86,11 +77,7 @@ pub fn credit_note_base() -> CreditNote {
 
         moneda: None,
         fecha_emision: None,
-        // hora_emision: None,
-        // fecha_vencimiento: None,
-        // forma_de_pago: None,
-        // direccion_entrega: None,
-        // observaciones: None,
+
         total_impuestos: None,
         total_importe: None,
 
@@ -98,21 +85,7 @@ pub fn credit_note_base() -> CreditNote {
         proveedor: proveedor_base(),
         cliente: cliente_base(),
 
-        // percepcion: None,
-        // detraccion: None,
-        //
-        // anticipos: vec![],
-        // descuentos: vec![],
-        detalles: vec![
-            Detalle {
-                precio: Some(dec!(100)),
-                ..detalle_base("Item1", dec!(10))
-            },
-            Detalle {
-                precio: Some(dec!(100)),
-                ..detalle_base("Item2", dec!(10))
-            },
-        ],
+        detalles: vec![],
 
         guias: vec![],
         documentos_relacionados: vec![],
@@ -139,11 +112,7 @@ pub fn debit_note_base() -> DebitNote {
 
         moneda: None,
         fecha_emision: None,
-        // hora_emision: None,
-        // fecha_vencimiento: None,
-        // forma_de_pago: None,
-        // direccion_entrega: None,
-        // observaciones: None,
+
         total_impuestos: None,
         total_importe: None,
 
@@ -151,21 +120,7 @@ pub fn debit_note_base() -> DebitNote {
         proveedor: proveedor_base(),
         cliente: cliente_base(),
 
-        // percepcion: None,
-        // detraccion: None,
-        //
-        // anticipos: vec![],
-        // descuentos: vec![],
-        detalles: vec![
-            Detalle {
-                precio: Some(dec!(100)),
-                ..detalle_base("Item1", dec!(10))
-            },
-            Detalle {
-                precio: Some(dec!(100)),
-                ..detalle_base("Item2", dec!(10))
-            },
-        ],
+        detalles: vec![],
 
         guias: vec![],
         documentos_relacionados: vec![],
@@ -194,10 +149,10 @@ pub fn cliente_base() -> Cliente {
     }
 }
 
-pub fn detalle_base(descripcion: &'static str, cantidad: Decimal) -> Detalle {
+pub fn detalle_base() -> Detalle {
     Detalle {
-        descripcion,
-        cantidad,
+        descripcion: "Item",
+        cantidad: Decimal::ZERO,
         unidad_medida: None,
 
         precio: None,
