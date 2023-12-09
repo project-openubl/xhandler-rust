@@ -1,4 +1,4 @@
-use rust_decimal_macros::dec;
+use rust_decimal::Decimal;
 
 use crate::catalogs::Catalog5;
 use crate::enricher::bounds::detalle::DetallesGetter;
@@ -35,7 +35,7 @@ where
                     gratuito.importe_icb,
                 ]
                 .iter()
-                .fold(dec!(0), |a, b| a + b);
+                .fold(Decimal::ZERO, |a, b| a + b);
 
                 // ISC
                 let isc_importe = [
@@ -47,17 +47,19 @@ where
                     gratuito.importe_isc,
                 ]
                 .iter()
-                .fold(dec!(0), |a, b| a + b);
+                .fold(Decimal::ZERO, |a, b| a + b);
 
                 let isc_base_imponible = &self
                     .get_detalles()
                     .iter()
                     .filter(|e| match (e.isc_tasa, e.isc) {
-                        (Some(isc_tasa), Some(isc)) => isc_tasa > dec!(0) && isc > dec!(0),
+                        (Some(isc_tasa), Some(isc)) => {
+                            isc_tasa > Decimal::ZERO && isc > Decimal::ZERO
+                        }
                         _ => false,
                     })
                     .filter_map(|e| e.isc_base_imponible)
-                    .fold(dec!(0), |a, b| a + b);
+                    .fold(Decimal::ZERO, |a, b| a + b);
 
                 // Set final values
                 let total = gravado.importe + ivap.importe + exportacion.importe;

@@ -1,4 +1,4 @@
-use rust_decimal_macros::dec;
+use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog7, FromCode};
 use crate::enricher::bounds::detalle::icb::DetalleIcbGetter;
@@ -35,7 +35,7 @@ where
                     let igv_isc = if catalog.onerosa() {
                         (*igv, *isc)
                     } else {
-                        (dec!(0), dec!(0))
+                        (Decimal::ZERO, Decimal::ZERO)
                     };
 
                     let total = icb + igv_isc.0 + igv_isc.1;

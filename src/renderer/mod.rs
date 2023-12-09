@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::str::FromStr;
 
 use rust_decimal::Decimal;
-use rust_decimal_macros::dec;
 use tera::helpers::tests::{number_args_allowed, value_defined};
 use tera::{from_value, to_value, Context, Error, Function, Tera, Value};
 
@@ -86,7 +85,7 @@ pub fn gt0(value: Option<&Value>, params: &[Value]) -> tera::Result<bool> {
 
     match value.and_then(|v| v.as_str()) {
         Some(v) => match Decimal::from_str(v) {
-            Ok(d) => Ok(d > dec!(0)),
+            Ok(d) => Ok(d > Decimal::ZERO),
             Err(_) => Err(Error::msg(
                 "Tester `gt0` was called on a variable that isn't a Decimal",
             )),

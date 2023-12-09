@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use rust_decimal::Decimal;
-use rust_decimal_macros::dec;
 
 use crate::catalogs::{Catalog5, Catalog53, Catalog7, FromCode};
 use crate::enricher::bounds::detalle::DetallesGetter;
@@ -34,7 +33,7 @@ where
                     .get_detalles()
                     .iter()
                     .filter_map(|e| e.total_impuestos)
-                    .fold(dec!(0), |a, b| a + b);
+                    .fold(Decimal::ZERO, |a, b| a + b);
 
                 let importe_sin_impuestos = self
                     .get_detalles()
@@ -49,14 +48,14 @@ where
                     .filter_map(|detalle| {
                         if detalle
                             .isc_base_imponible
-                            .is_some_and(|base_imponible| base_imponible > dec!(0))
+                            .is_some_and(|base_imponible| base_imponible > Decimal::ZERO)
                         {
                             detalle.isc_base_imponible
                         } else {
                             detalle.igv_base_imponible
                         }
                     })
-                    .fold(dec!(0), |a, b| a + b);
+                    .fold(Decimal::ZERO, |a, b| a + b);
 
                 let importe_con_impuestos = importe_sin_impuestos + total_impuestos;
 
@@ -65,7 +64,7 @@ where
                     .get_anticipos()
                     .iter()
                     .map(|e| e.monto)
-                    .fold(dec!(0), |a, b| a + b);
+                    .fold(Decimal::ZERO, |a, b| a + b);
 
                 let importe_total = importe_con_impuestos - anticipos;
 
@@ -76,8 +75,8 @@ where
                         .fold(HashMap::new(), |mut acc, current| {
                             if let Some(tipo) = current.tipo {
                                 if let Ok(catalog53) = Catalog53::from_code(tipo) {
-                                    let monto =
-                                        acc.get(&catalog53).unwrap_or(&dec!(0)) + current.monto;
+                                    let monto = acc.get(&catalog53).unwrap_or(&Decimal::ZERO)
+                                        + current.monto;
                                     acc.insert(catalog53, monto);
                                 }
                             }
