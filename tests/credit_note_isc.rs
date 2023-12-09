@@ -48,7 +48,10 @@ fn credit_note_aplication_al_monto_fijo() {
         ..credit_note_base()
     };
 
-    assert_credit_note(&mut credit_note, &format!("{BASE}/isc_aplicacionAlMontoFijo.xml"));
+    assert_credit_note(
+        &mut credit_note,
+        &format!("{BASE}/isc_aplicacionAlMontoFijo.xml"),
+    );
 }
 
 #[test]
@@ -69,5 +72,8 @@ fn credit_note_sistema_de_precios_de_venta_al_publico() {
         ..credit_note_base()
     };
 
-    assert_credit_note(&mut credit_note, &format!("{BASE}/isc_sistemaDePreciosDeVentalAlPublico.xml"));
+    assert_credit_note(
+        &mut credit_note,
+        &format!("{BASE}/isc_sistemaDePreciosDeVentalAlPublico.xml"),
+    );
 }
