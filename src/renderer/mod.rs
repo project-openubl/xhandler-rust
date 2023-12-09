@@ -140,3 +140,7 @@ pub fn render_invoice(obj: &Invoice) -> tera::Result<String> {
 pub fn render_credit_note(obj: &CreditNote) -> tera::Result<String> {
     TEMPLATES.render("renderer/creditNote.xml", &Context::from_serialize(obj)?)
 }
+
+pub fn render_debit_note(obj: &DebitNote) -> tera::Result<String> {
+    TEMPLATES.render("renderer/debitNote.xml", &Context::from_serialize(obj)?)
+}
