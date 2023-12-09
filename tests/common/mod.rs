@@ -17,6 +17,7 @@ pub fn defaults_base() -> Defaults {
     }
 }
 
+#[allow(dead_code)]
 pub fn invoice_base() -> Invoice {
     Invoice {
         leyendas: HashMap::new(),
@@ -67,6 +68,7 @@ pub fn invoice_base() -> Invoice {
     }
 }
 
+#[allow(dead_code)]
 pub fn credit_note_base() -> CreditNote {
     CreditNote {
         leyendas: HashMap::new(),
@@ -170,6 +172,7 @@ pub fn detalle_base(descripcion: &'static str, cantidad: Decimal) -> Detalle {
     }
 }
 
+#[allow(dead_code)]
 pub fn assert_invoice(invoice: &mut Invoice, snapshot_filename: &str) {
     let defaults = defaults_base();
     invoice.enrich(&defaults);
@@ -180,6 +183,7 @@ pub fn assert_invoice(invoice: &mut Invoice, snapshot_filename: &str) {
     assert_snapshot(result.ok().unwrap(), snapshot_filename)
 }
 
+#[allow(dead_code)]
 pub fn assert_credit_note(credit_note: &mut CreditNote, snapshot_filename: &str) {
     let defaults = defaults_base();
     credit_note.enrich(&defaults);
