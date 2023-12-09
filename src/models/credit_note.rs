@@ -2,11 +2,14 @@ use std::collections::HashMap;
 
 use chrono::NaiveDate;
 use rust_decimal::Decimal;
+use serde::Serialize;
 
 use crate::models::common::{Cliente, Firmante, Proveedor};
-use crate::models::common::{Detalle, DocumentoRelacionado, Guia, TotalImporte, TotalImpuestos};
+use crate::models::common::{Detalle, DocumentoRelacionado, Guia, TotalImpuestos};
+use crate::prelude::TotalImporteNote;
 
 /// Nota de credito
+#[derive(Debug, Serialize)]
 pub struct CreditNote {
     pub leyendas: HashMap<&'static str, &'static str>,
 
@@ -29,7 +32,7 @@ pub struct CreditNote {
 
     pub detalles: Vec<Detalle>,
 
-    pub total_importe: Option<TotalImporte>,
+    pub total_importe: Option<TotalImporteNote>,
     pub total_impuestos: Option<TotalImpuestos>,
 
     pub guias: Vec<Guia>,

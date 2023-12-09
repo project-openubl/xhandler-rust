@@ -6,6 +6,7 @@ use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
 use xbuilder::prelude::*;
+use xbuilder::renderer::render_credit_note;
 
 pub fn defaults_base() -> Defaults {
     Defaults {
@@ -16,6 +17,7 @@ pub fn defaults_base() -> Defaults {
     }
 }
 
+#[allow(dead_code)]
 pub fn invoice_base() -> Invoice {
     Invoice {
         leyendas: HashMap::new(),
@@ -48,6 +50,59 @@ pub fn invoice_base() -> Invoice {
 
         anticipos: vec![],
         descuentos: vec![],
+        detalles: vec![
+            Detalle {
+                precio: Some(dec!(100)),
+                ..detalle_base("Item1", dec!(10))
+            },
+            Detalle {
+                precio: Some(dec!(100)),
+                ..detalle_base("Item2", dec!(10))
+            },
+        ],
+
+        guias: vec![],
+        documentos_relacionados: vec![],
+
+        orden_de_compra: None,
+    }
+}
+
+#[allow(dead_code)]
+pub fn credit_note_base() -> CreditNote {
+    CreditNote {
+        leyendas: HashMap::new(),
+
+        serie_numero: "FC01-1",
+        tipo_nota: None,
+
+        comprobante_afectado_serie_numero: "F001-1",
+        comprobante_afectado_tipo: None,
+        sustento_descripcion: "mi sustento",
+
+        igv_tasa: None,
+        icb_tasa: None,
+        ivap_tasa: None,
+
+        moneda: None,
+        fecha_emision: None,
+        // hora_emision: None,
+        // fecha_vencimiento: None,
+        // forma_de_pago: None,
+        // direccion_entrega: None,
+        // observaciones: None,
+        total_impuestos: None,
+        total_importe: None,
+
+        firmante: None,
+        proveedor: proveedor_base(),
+        cliente: cliente_base(),
+
+        // percepcion: None,
+        // detraccion: None,
+        //
+        // anticipos: vec![],
+        // descuentos: vec![],
         detalles: vec![
             Detalle {
                 precio: Some(dec!(100)),
@@ -117,11 +172,23 @@ pub fn detalle_base(descripcion: &'static str, cantidad: Decimal) -> Detalle {
     }
 }
 
+#[allow(dead_code)]
 pub fn assert_invoice(invoice: &mut Invoice, snapshot_filename: &str) {
     let defaults = defaults_base();
     invoice.enrich(&defaults);
 
     let result = render_invoice(invoice);
+    assert!(result.is_ok());
+
+    assert_snapshot(result.ok().unwrap(), snapshot_filename)
+}
+
+#[allow(dead_code)]
+pub fn assert_credit_note(credit_note: &mut CreditNote, snapshot_filename: &str) {
+    let defaults = defaults_base();
+    credit_note.enrich(&defaults);
+
+    let result = render_credit_note(credit_note);
     assert!(result.is_ok());
 
     assert_snapshot(result.ok().unwrap(), snapshot_filename)

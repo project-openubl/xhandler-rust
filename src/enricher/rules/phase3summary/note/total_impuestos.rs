@@ -1,26 +1,18 @@
-use std::collections::HashMap;
-
 use rust_decimal_macros::dec;
 
-use crate::catalogs::{Catalog5, Catalog53, FromCode};
+use crate::catalogs::Catalog5;
 use crate::enricher::bounds::detalle::DetallesGetter;
-use crate::enricher::bounds::invoice::anticipos::InvoiceAnticiposGetter;
-use crate::enricher::bounds::invoice::descuentos::InvoiceDescuentosGetter;
 use crate::enricher::bounds::total_impuestos::{TotalImpuestosGetter, TotalImpuestosSetter};
 use crate::enricher::rules::phase3summary::utils::cal_impuesto_by_tipo;
 use crate::models::common::TotalImpuestos;
 
-pub trait InvoiceTotalImpuestosSummaryRule {
+pub trait NoteTotalImpuestosSummaryRule {
     fn summary(&mut self) -> bool;
 }
 
-impl<T> InvoiceTotalImpuestosSummaryRule for T
+impl<T> NoteTotalImpuestosSummaryRule for T
 where
-    T: TotalImpuestosGetter
-        + TotalImpuestosSetter
-        + DetallesGetter
-        + InvoiceDescuentosGetter
-        + InvoiceAnticiposGetter,
+    T: TotalImpuestosGetter + TotalImpuestosSetter + DetallesGetter,
 {
     fn summary(&mut self) -> bool {
         match &self.get_total_impuestos() {
@@ -67,60 +59,9 @@ where
                     .filter_map(|e| e.isc_base_imponible)
                     .fold(dec!(0), |a, b| a + b);
 
-                // Anticipos
-                let total_anticipos_gravados = &self.get_anticipos().iter()
-                    .filter(|e| {
-                        if let Some(tipo) = e.tipo {
-                            if let Ok(catalog53) = Catalog53::from_code(tipo) {
-                                catalog53 == Catalog53::DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap
-                            } else {
-                                false
-                            }
-                        } else {
-                            false
-                        }
-                    })
-                    .map(|e| e.monto)
-                    .fold(dec!(0), |a, b| a + b);
-
-                // Descuentos
-                let descuentos =
-                    &self
-                        .get_descuentos()
-                        .iter()
-                        .fold(HashMap::new(), |mut acc, current| {
-                            if let Some(tipo) = current.tipo {
-                                if let Ok(catalog53) = Catalog53::from_code(tipo) {
-                                    let monto =
-                                        acc.get(&catalog53).unwrap_or(&dec!(0)) + current.monto;
-                                    acc.insert(catalog53, monto);
-                                }
-                            }
-                            acc
-                        });
-
-                let descuentos_que_afectan_base_imponible_sin_impuestos = if let Some(val) =
-                    descuentos.get(&Catalog53::DescuentoGlobalAfectaBaseImponibleIgvIvap)
-                {
-                    *val
-                } else {
-                    dec!(0)
-                };
-
-                // Aplicar ANTICIPOS Y DESCUENTOS
-                let gravado_base_imponible = gravado.base_imponible
-                    - total_anticipos_gravados
-                    - descuentos_que_afectan_base_imponible_sin_impuestos;
-
-                let factor = if gravado.base_imponible > dec!(0) {
-                    gravado_base_imponible / gravado.base_imponible
-                } else {
-                    dec!(1)
-                };
-
-                let total = (gravado.importe + ivap.importe + exportacion.importe) * factor;
-
                 // Set final values
+                let total = gravado.importe + ivap.importe + exportacion.importe;
+
                 let total_impuestos = TotalImpuestos {
                     ivap_importe: ivap.importe_igv,
                     ivap_base_imponible: ivap.base_imponible,
@@ -130,8 +71,8 @@ where
 
                     isc_importe,
                     isc_base_imponible: *isc_base_imponible,
-                    gravado_importe: gravado.importe_igv * factor,
-                    gravado_base_imponible,
+                    gravado_importe: gravado.importe_igv,
+                    gravado_base_imponible: gravado.base_imponible,
 
                     inafecto_importe: inafecto.importe_igv,
                     inafecto_base_imponible: inafecto.base_imponible,

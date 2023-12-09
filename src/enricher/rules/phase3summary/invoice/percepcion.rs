@@ -6,8 +6,8 @@ use crate::enricher::bounds::invoice::percepcion::{
     InvoicePercepcionMontoTotalSetter, InvoicePercepcionPorcentajeGetter,
     InvoicePercepcionPorcentajeSetter,
 };
-use crate::enricher::bounds::total_importe::TotalImporteGetter;
-use crate::prelude::TotalImporte;
+use crate::enricher::bounds::invoice::total_importe::InvoiceTotalImporteGetter;
+use crate::prelude::TotalImporteInvoice;
 
 pub trait PercepcionSummaryRule {
     fn summary(&mut self) -> bool;
@@ -15,7 +15,7 @@ pub trait PercepcionSummaryRule {
 
 impl<T> PercepcionSummaryRule for T
 where
-    T: InvoicePercepcionGetter + TotalImporteGetter,
+    T: InvoicePercepcionGetter + InvoiceTotalImporteGetter,
 {
     fn summary(&mut self) -> bool {
         match (self.get_total_importe().clone(), self.get_percepcion()) {
@@ -56,14 +56,14 @@ where
 //
 
 pub trait PerceptionMontoBaseRule {
-    fn summary(&mut self, total_importe: &TotalImporte) -> bool;
+    fn summary(&mut self, total_importe: &TotalImporteInvoice) -> bool;
 }
 
 impl<T> PerceptionMontoBaseRule for T
 where
     T: InvoicePercepcionMontoBaseGetter + InvoicePercepcionMontoBaseSetter,
 {
-    fn summary(&mut self, total_importe: &TotalImporte) -> bool {
+    fn summary(&mut self, total_importe: &TotalImporteInvoice) -> bool {
         match &self.get_montobase() {
             Some(_) => false,
             None => {

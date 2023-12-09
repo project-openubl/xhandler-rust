@@ -175,14 +175,21 @@ pub struct Detalle {
     pub total_impuestos: Option<Decimal>,
 }
 
-/// Total Importe
+/// Total Importe Invoice
 #[derive(Clone, Debug, Serialize)]
-pub struct TotalImporte {
+pub struct TotalImporteInvoice {
     pub anticipos: Decimal,
     pub descuentos: Decimal,
     pub importe: Decimal,
     pub importe_sin_impuestos: Decimal,
     pub importe_con_impuestos: Decimal,
+}
+
+// Total importe Note
+#[derive(Clone, Debug, Serialize)]
+pub struct TotalImporteNote {
+    pub importe: Decimal,
+    pub importe_sin_impuestos: Decimal,
 }
 
 /// Total impuestos

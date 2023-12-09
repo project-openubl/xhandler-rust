@@ -8,8 +8,10 @@ use crate::enricher::bounds::detalle::DetallesGetter;
 use crate::enricher::bounds::igv::IgvTasaGetter;
 use crate::enricher::bounds::invoice::anticipos::InvoiceAnticiposGetter;
 use crate::enricher::bounds::invoice::descuentos::InvoiceDescuentosGetter;
-use crate::enricher::bounds::total_importe::{TotalImporteGetter, TotalImporteSetter};
-use crate::models::common::TotalImporte;
+use crate::enricher::bounds::invoice::total_importe::{
+    InvoiceTotalImporteGetter, InvoiceTotalImporteSetter,
+};
+use crate::models::common::TotalImporteInvoice;
 
 pub trait InvoiceTotalImporteSummaryRule {
     fn summary(&mut self) -> bool;
@@ -17,8 +19,8 @@ pub trait InvoiceTotalImporteSummaryRule {
 
 impl<T> InvoiceTotalImporteSummaryRule for T
 where
-    T: TotalImporteGetter
-        + TotalImporteSetter
+    T: InvoiceTotalImporteGetter
+        + InvoiceTotalImporteSetter
         + DetallesGetter
         + InvoiceDescuentosGetter
         + InvoiceAnticiposGetter
@@ -110,7 +112,7 @@ where
                     - descuentos_que_no_afectan_base_imponible_sin_impuestos;
 
                 //
-                self.set_total_importe(TotalImporte {
+                self.set_total_importe(TotalImporteInvoice {
                     importe_sin_impuestos,
                     importe_con_impuestos,
                     descuentos: descuentos_que_no_afectan_base_imponible_sin_impuestos,
