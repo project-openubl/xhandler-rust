@@ -4,9 +4,9 @@ use rust_decimal_macros::dec;
 use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
 
-use crate::common::{assert_invoice, cliente_base, proveedor_base};
 use crate::common::detalle_base;
 use crate::common::invoice_base;
+use crate::common::{assert_invoice, cliente_base, proveedor_base};
 
 mod common;
 
