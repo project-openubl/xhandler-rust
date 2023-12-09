@@ -1,5 +1,4 @@
 use rust_decimal::Decimal;
-use rust_decimal_macros::dec;
 
 use crate::catalogs::{Catalog5, Catalog7, FromCode};
 use crate::models::common::Detalle;
@@ -30,28 +29,28 @@ pub fn cal_impuesto_by_tipo(detalles: &[Detalle], categoria: Catalog5) -> Impues
         .iter()
         .map(|e| e.isc_base_imponible)
         .filter(|e| e.is_some())
-        .fold(dec!(0), |a, b| a + b.unwrap());
+        .fold(Decimal::ZERO, |a, b| a + b.unwrap());
     let importe = stream
         .iter()
         .map(|e| e.total_impuestos)
         .filter(|e| e.is_some())
-        .fold(dec!(0), |a, b| a + b.unwrap());
+        .fold(Decimal::ZERO, |a, b| a + b.unwrap());
 
     let importe_isc = stream
         .iter()
         .map(|e| e.isc)
         .filter(|e| e.is_some())
-        .fold(dec!(0), |a, b| a + b.unwrap());
+        .fold(Decimal::ZERO, |a, b| a + b.unwrap());
     let importe_igv = stream
         .iter()
         .map(|e| e.igv)
         .filter(|e| e.is_some())
-        .fold(dec!(0), |a, b| a + b.unwrap());
+        .fold(Decimal::ZERO, |a, b| a + b.unwrap());
     let importe_icb = stream
         .iter()
         .map(|e| e.icb)
         .filter(|e| e.is_some())
-        .fold(dec!(0), |a, b| a + b.unwrap());
+        .fold(Decimal::ZERO, |a, b| a + b.unwrap());
 
     Impuesto {
         base_imponible,
@@ -75,19 +74,19 @@ pub fn importe_sin_impuestos(detalle: &[Detalle]) -> Decimal {
         .filter_map(|detalle| {
             if detalle
                 .isc_base_imponible
-                .is_some_and(|base_imponible| base_imponible > dec!(0))
+                .is_some_and(|base_imponible| base_imponible > Decimal::ZERO)
             {
                 detalle.isc_base_imponible
             } else {
                 detalle.igv_base_imponible
             }
         })
-        .fold(dec!(0), |a, b| a + b)
+        .fold(Decimal::ZERO, |a, b| a + b)
 }
 
 pub fn total_impuestos(detalle: &[Detalle]) -> Decimal {
     detalle
         .iter()
         .filter_map(|e| e.total_impuestos)
-        .fold(dec!(0), |a, b| a + b)
+        .fold(Decimal::ZERO, |a, b| a + b)
 }

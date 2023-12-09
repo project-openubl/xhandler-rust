@@ -1,4 +1,4 @@
-use rust_decimal_macros::dec;
+use rust_decimal::Decimal;
 
 use crate::enricher::bounds::invoice::percepcion::{
     InvoicePercepcionGetter, InvoicePercepcionMontoBaseGetter, InvoicePercepcionMontoBaseSetter,
@@ -46,7 +46,7 @@ where
         match &self.get_porcentaje() {
             Some(_) => false,
             None => {
-                self.set_porcentaje(dec!(1));
+                self.set_porcentaje(Decimal::ONE);
                 true
             }
         }

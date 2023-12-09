@@ -1,3 +1,4 @@
+use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
 use xbuilder::prelude::*;
@@ -14,7 +15,7 @@ fn invoice_anticipos() {
     let mut invoice = Invoice {
         detalles: vec![Detalle {
             precio: Some(dec!(100)),
-            ..detalle_base("Item1", dec!(1))
+            ..detalle_base("Item1", Decimal::ONE)
         }],
         descuentos: vec![Descuento {
             monto: dec!(50),

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use rust_decimal_macros::dec;
+use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog5, Catalog53, FromCode};
 use crate::enricher::bounds::detalle::DetallesGetter;
@@ -43,7 +43,7 @@ where
                     gratuito.importe_icb,
                 ]
                 .iter()
-                .fold(dec!(0), |a, b| a + b);
+                .fold(Decimal::ZERO, |a, b| a + b);
 
                 // ISC
                 let isc_importe = [
@@ -55,17 +55,19 @@ where
                     gratuito.importe_isc,
                 ]
                 .iter()
-                .fold(dec!(0), |a, b| a + b);
+                .fold(Decimal::ZERO, |a, b| a + b);
 
                 let isc_base_imponible = &self
                     .get_detalles()
                     .iter()
                     .filter(|e| match (e.isc_tasa, e.isc) {
-                        (Some(isc_tasa), Some(isc)) => isc_tasa > dec!(0) && isc > dec!(0),
+                        (Some(isc_tasa), Some(isc)) => {
+                            isc_tasa > Decimal::ZERO && isc > Decimal::ZERO
+                        }
                         _ => false,
                     })
                     .filter_map(|e| e.isc_base_imponible)
-                    .fold(dec!(0), |a, b| a + b);
+                    .fold(Decimal::ZERO, |a, b| a + b);
 
                 // Anticipos
                 let total_anticipos_gravados = &self.get_anticipos().iter()
@@ -81,7 +83,7 @@ where
                         }
                     })
                     .map(|e| e.monto)
-                    .fold(dec!(0), |a, b| a + b);
+                    .fold(Decimal::ZERO, |a, b| a + b);
 
                 // Descuentos
                 let descuentos =
@@ -91,8 +93,8 @@ where
                         .fold(HashMap::new(), |mut acc, current| {
                             if let Some(tipo) = current.tipo {
                                 if let Ok(catalog53) = Catalog53::from_code(tipo) {
-                                    let monto =
-                                        acc.get(&catalog53).unwrap_or(&dec!(0)) + current.monto;
+                                    let monto = acc.get(&catalog53).unwrap_or(&Decimal::ZERO)
+                                        + current.monto;
                                     acc.insert(catalog53, monto);
                                 }
                             }
@@ -104,7 +106,7 @@ where
                 {
                     *val
                 } else {
-                    dec!(0)
+                    Decimal::ZERO
                 };
 
                 // Aplicar ANTICIPOS Y DESCUENTOS
@@ -112,10 +114,10 @@ where
                     - total_anticipos_gravados
                     - descuentos_que_afectan_base_imponible_sin_impuestos;
 
-                let factor = if gravado.base_imponible > dec!(0) {
+                let factor = if gravado.base_imponible > Decimal::ZERO {
                     gravado_base_imponible / gravado.base_imponible
                 } else {
-                    dec!(1)
+                    Decimal::ONE
                 };
 
                 let total = (gravado.importe + ivap.importe + exportacion.importe) * factor;
