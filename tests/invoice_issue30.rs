@@ -18,9 +18,10 @@ fn invoice_issue30() {
             ..proveedor_base()
         },
         detalles: vec![Detalle {
+            descripcion: "Item1",
             cantidad: dec!(10),
             precio: Some(dec!(6.68)),
-            ..detalle_base("Item1", dec!(10))
+            ..detalle_base()
         }],
         ..invoice_base()
     };

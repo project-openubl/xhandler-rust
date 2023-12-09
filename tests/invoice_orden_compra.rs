@@ -15,14 +15,16 @@ fn invoice_custom_moneda() {
         orden_de_compra: Some("123456"),
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item1", dec!(10))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item2", dec!(10))
+                ..detalle_base()
             },
         ],
         ..invoice_base()

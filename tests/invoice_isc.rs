@@ -16,14 +16,18 @@ fn invoice_sistema_al_valor() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.17)),
-                ..detalle_base("Item1", dec!(2))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item2", dec!(2))
+                ..detalle_base()
             },
         ],
         ..invoice_base()
@@ -37,14 +41,18 @@ fn invoice_aplication_al_monto_fijo() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 isc_tipo: Some(Catalog8::AplicacionAlMontoFijo.code()),
                 isc_tasa: Some(dec!(0.20)),
-                ..detalle_base("Item1", dec!(2))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item2", dec!(2))
+                ..detalle_base()
             },
         ],
         ..invoice_base()
@@ -61,14 +69,18 @@ fn invoice_sistem_de_precios_de_venta_al_publico() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 isc_tipo: Some(Catalog8::SistemaDePreciosDeVentaAlPublico.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base("Item1", dec!(2))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item2", dec!(2))
+                ..detalle_base()
             },
         ],
         ..invoice_base()
@@ -85,19 +97,23 @@ fn invoice_precio_con_impuestos() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(2),
                 precio_con_impuestos: Some(dec!(138.06)),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.17)),
                 icb_aplica: true,
-                ..detalle_base("Item1", dec!(2))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(2),
                 precio_con_impuestos: Some(dec!(100)),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.17)),
                 icb_aplica: true,
                 igv_tipo: Some(Catalog7::GravadoRetiroPorPremio.code()),
-                ..detalle_base("Item2", dec!(2))
+                ..detalle_base()
             },
         ],
         ..invoice_base()
@@ -111,43 +127,55 @@ fn invoice_mixed_tipo_igv() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item1", dec!(2))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 igv_tipo: Some(Catalog7::GravadoRetiroPorPremio.code()),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base("Item2", dec!(2))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item3",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 igv_tipo: Some(Catalog7::ExoneradoOperacionOnerosa.code()),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base("Item3", dec!(2))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item4",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 igv_tipo: Some(Catalog7::ExoneradoTransferenciaGratuita.code()),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base("Item4", dec!(2))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item5",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 igv_tipo: Some(Catalog7::InafectoOperacionOnerosa.code()),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base("Item5", dec!(2))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item6",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 igv_tipo: Some(Catalog7::InafectoRetiroPorBonificacion.code()),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base("Item6", dec!(2))
+                ..detalle_base()
             },
         ],
         ..invoice_base()

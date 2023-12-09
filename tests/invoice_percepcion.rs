@@ -20,9 +20,10 @@ fn invoice_percepcion() {
             monto_total: None,
         }),
         detalles: vec![Detalle {
+            descripcion: "Item1",
             cantidad: dec!(4),
             precio: Some(dec!(200)),
-            ..detalle_base("Item1", dec!(10))
+            ..detalle_base()
         }],
         ..invoice_base()
     };

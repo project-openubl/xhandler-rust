@@ -14,8 +14,10 @@ const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDescuentosTest";
 fn invoice_anticipos() {
     let mut invoice = Invoice {
         detalles: vec![Detalle {
+            descripcion: "Item1",
+            cantidad: Decimal::ONE,
             precio: Some(dec!(100)),
-            ..detalle_base("Item1", Decimal::ONE)
+            ..detalle_base()
         }],
         descuentos: vec![Descuento {
             monto: dec!(50),

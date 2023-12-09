@@ -17,14 +17,18 @@ fn invoice_custom_unidad_medida() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 unidad_medida: Some("KGM"),
-                ..detalle_base("Item1", dec!(10))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 unidad_medida: Some("KGM"),
-                ..detalle_base("Item2", dec!(10))
+                ..detalle_base()
             },
         ],
         ..invoice_base()
@@ -38,6 +42,20 @@ fn invoice_custom_fecha_emision() {
     let mut invoice = Invoice {
         fecha_emision: NaiveDate::from_ymd_opt(2019, 1, 6),
         hora_emision: NaiveTime::from_hms_opt(0, 0, 0),
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..detalle_base()
+            },
+            Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..detalle_base()
+            },
+        ],
         ..invoice_base()
     };
 
@@ -64,6 +82,20 @@ fn invoice_custom_cliente_direccion_and_contacto() {
             }),
             ..cliente_base()
         },
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..detalle_base()
+            },
+            Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..detalle_base()
+            },
+        ],
         ..invoice_base()
     };
 
@@ -93,6 +125,20 @@ fn invoice_custom_proveedor_direccion_and_contacto() {
             }),
             ..proveedor_base()
         },
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..detalle_base()
+            },
+            Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..detalle_base()
+            },
+        ],
         ..invoice_base()
     };
 
@@ -109,6 +155,20 @@ fn invoice_custom_firmante() {
             ruc: "000000000000",
             razon_social: "Wolsnut4 S.A.C.",
         }),
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..detalle_base()
+            },
+            Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..detalle_base()
+            },
+        ],
         ..invoice_base()
     };
 
@@ -120,16 +180,18 @@ fn invoice_with_icb_precio_unitario() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 icb_aplica: true,
-                ..detalle_base("Item1", dec!(10))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 icb_aplica: true,
-                ..detalle_base("Item2", dec!(10))
+                ..detalle_base()
             },
         ],
         ..invoice_base()
@@ -143,16 +205,18 @@ fn invoice_with_icb_precio_con_igv() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
                 cantidad: dec!(10),
                 precio_con_impuestos: Some(dec!(118)),
                 icb_aplica: true,
-                ..detalle_base("Item1", dec!(10))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
                 cantidad: dec!(10),
                 precio_con_impuestos: Some(dec!(118)),
                 icb_aplica: true,
-                ..detalle_base("Item2", dec!(10))
+                ..detalle_base()
             },
         ],
         ..invoice_base()
@@ -179,14 +243,16 @@ fn invoice_with_custom_proveedor_direccion_not_null_and_codigo_local_null() {
         },
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
                 cantidad: dec!(10),
                 precio: Some(dec!(118)),
-                ..detalle_base("Item1", dec!(10))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
                 cantidad: dec!(10),
                 precio: Some(dec!(118)),
-                ..detalle_base("Item2", dec!(10))
+                ..detalle_base()
             },
         ],
         ..invoice_base()

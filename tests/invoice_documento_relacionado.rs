@@ -14,12 +14,16 @@ fn invoice_documento_relacionado_y_orden_de_compra() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
+                descripcion: "Item1",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item1", dec!(2))
+                ..detalle_base()
             },
             Detalle {
+                descripcion: "Item2",
+                cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base("Item2", dec!(2))
+                ..detalle_base()
             },
         ],
         documentos_relacionados: vec![DocumentoRelacionado {
