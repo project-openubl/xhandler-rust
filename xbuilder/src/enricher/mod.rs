@@ -4,8 +4,9 @@ use rust_decimal::Decimal;
 use crate::enricher::fill::Fill;
 use crate::enricher::process::Process;
 use crate::enricher::summary::Summary;
+use crate::models::credit_note::CreditNote;
+use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
-use crate::prelude::{CreditNote, DebitNote};
 
 pub mod bounds;
 pub mod fill;

@@ -7,7 +7,7 @@ use crate::enricher::bounds::invoice::percepcion::{
     InvoicePercepcionPorcentajeSetter,
 };
 use crate::enricher::bounds::invoice::total_importe::InvoiceTotalImporteGetter;
-use crate::prelude::TotalImporteInvoice;
+use crate::models::common::TotalImporteInvoice;
 
 pub trait PercepcionSummaryRule {
     fn summary(&mut self) -> bool;

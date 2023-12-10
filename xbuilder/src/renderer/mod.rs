@@ -132,14 +132,25 @@ lazy_static::lazy_static! {
     };
 }
 
-pub fn render_invoice(obj: &Invoice) -> tera::Result<String> {
-    TEMPLATES.render("renderer/invoice.xml", &Context::from_serialize(obj)?)
+/// Renders XML
+pub trait Renderer {
+    fn render(&self) -> tera::Result<String>;
 }
 
-pub fn render_credit_note(obj: &CreditNote) -> tera::Result<String> {
-    TEMPLATES.render("renderer/creditNote.xml", &Context::from_serialize(obj)?)
+impl Renderer for Invoice {
+    fn render(&self) -> tera::Result<String> {
+        TEMPLATES.render("renderer/invoice.xml", &Context::from_serialize(self)?)
+    }
 }
 
-pub fn render_debit_note(obj: &DebitNote) -> tera::Result<String> {
-    TEMPLATES.render("renderer/debitNote.xml", &Context::from_serialize(obj)?)
+impl Renderer for CreditNote {
+    fn render(&self) -> tera::Result<String> {
+        TEMPLATES.render("renderer/creditNote.xml", &Context::from_serialize(self)?)
+    }
+}
+
+impl Renderer for DebitNote {
+    fn render(&self) -> tera::Result<String> {
+        TEMPLATES.render("renderer/debitNote.xml", &Context::from_serialize(self)?)
+    }
 }

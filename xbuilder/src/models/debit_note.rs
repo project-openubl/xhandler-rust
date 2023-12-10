@@ -4,9 +4,10 @@ use chrono::NaiveDate;
 use rust_decimal::Decimal;
 use serde::Serialize;
 
-use crate::models::common::{Cliente, Firmante, Proveedor};
-use crate::models::common::{Detalle, DocumentoRelacionado, Guia, TotalImpuestos};
-use crate::prelude::TotalImporteNote;
+use crate::models::common::{
+    Cliente, Detalle, DocumentoRelacionado, Firmante, Guia, Proveedor, TotalImporteNote,
+    TotalImpuestos,
+};
 
 /// Nota de debito
 #[derive(Debug, Serialize)]

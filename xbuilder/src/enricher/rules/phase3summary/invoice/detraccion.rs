@@ -3,7 +3,7 @@ use crate::enricher::bounds::invoice::detraccion::{
     InvoiceDetraccionPorcentajeGetter,
 };
 use crate::enricher::bounds::invoice::total_importe::InvoiceTotalImporteGetter;
-use crate::prelude::TotalImporteInvoice;
+use crate::models::common::TotalImporteInvoice;
 
 pub trait DetraccionSummaryRule {
     fn summary(&mut self) -> bool;

@@ -5,10 +5,9 @@ use rust_decimal::Decimal;
 use serde::Serialize;
 
 use crate::models::common::{
-    Anticipo, Descuento, Detalle, Detraccion, DocumentoRelacionado, FormaDePago, Guia, Percepcion,
-    TotalImporteInvoice, TotalImpuestos,
+    Anticipo, Cliente, Descuento, Detalle, Detraccion, Direccion, DocumentoRelacionado, Firmante,
+    FormaDePago, Guia, Percepcion, Proveedor, TotalImporteInvoice, TotalImpuestos,
 };
-use crate::models::common::{Cliente, Direccion, Firmante, Proveedor};
 
 /// Boleta o Factura
 #[derive(Debug, Serialize)]

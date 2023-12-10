@@ -184,7 +184,7 @@ pub fn assert_invoice(invoice: &mut Invoice, snapshot_filename: &str) {
     let defaults = defaults_base();
     invoice.enrich(&defaults);
 
-    let result = render_invoice(invoice);
+    let result = invoice.render();
     assert!(result.is_ok());
 
     assert_snapshot(result.ok().unwrap(), snapshot_filename)
@@ -195,7 +195,7 @@ pub fn assert_credit_note(credit_note: &mut CreditNote, snapshot_filename: &str)
     let defaults = defaults_base();
     credit_note.enrich(&defaults);
 
-    let result = render_credit_note(credit_note);
+    let result = credit_note.render();
     assert!(result.is_ok());
 
     assert_snapshot(result.ok().unwrap(), snapshot_filename)
@@ -206,7 +206,7 @@ pub fn assert_debit_note(debit_note: &mut DebitNote, snapshot_filename: &str) {
     let defaults = defaults_base();
     debit_note.enrich(&defaults);
 
-    let result = render_debit_note(debit_note);
+    let result = debit_note.render();
     assert!(result.is_ok());
 
     assert_snapshot(result.ok().unwrap(), snapshot_filename)
