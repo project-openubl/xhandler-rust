@@ -1,7 +1,6 @@
-use crate::catalogs::Catalog;
+use crate::catalogs::{Catalog, Catalog7};
 use crate::enricher::bounds::detalle::DetallesGetter;
 use crate::enricher::bounds::leyendas::{LeyendasGetter, LeyendasSetter};
-use crate::prelude::Catalog7;
 
 pub trait LeyendaIVAPSummaryRule {
     fn summary(&mut self) -> bool;

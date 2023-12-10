@@ -3,7 +3,7 @@ use crate::enricher::bounds::note::total_importe::{
     NoteTotalImporteGetter, NoteTotalImporteSetter,
 };
 use crate::enricher::rules::phase3summary::utils::{importe_sin_impuestos, total_impuestos};
-use crate::prelude::TotalImporteNote;
+use crate::models::common::TotalImporteNote;
 
 pub trait NoteTotalImporteSummaryRule {
     fn summary(&mut self) -> bool;
