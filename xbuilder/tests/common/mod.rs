@@ -6,7 +6,6 @@ use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
 use xbuilder::prelude::*;
-use xbuilder::renderer::{render_credit_note, render_debit_note};
 
 pub fn defaults_base() -> Defaults {
     Defaults {
