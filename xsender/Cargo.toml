@@ -6,3 +6,5 @@ license = "Apache-2.0"
 description = "Sends XML files through SOAP - SUNAT"
 
 [dependencies]
+xml = "0.8.10"
+log = "0.4.20"
