@@ -1,26 +1,26 @@
 use xml::reader::XmlEvent;
 use xml::EventReader;
 
-use crate::xml_file::XmlFile;
+use crate::xml::Xml;
 
 const CBC_NS: &str = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2";
 const CAC_NS: &str = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2";
 const SAC_NS: &str = "urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1";
 
 #[derive(Debug)]
-pub struct XmlMetadata {
+pub struct Metadata {
     pub document_type: String,
     pub document_id: Option<String>,
     pub ruc: Option<String>,
     pub voided_line_document_type_code: Option<String>,
 }
 
-pub trait XmlMetadataProvider {
-    fn metadata(&self) -> Result<XmlMetadata, &'static str>;
+pub trait MetadataProvider {
+    fn get_metadata(&self) -> Result<Metadata, &'static str>;
 }
 
-impl XmlMetadataProvider for XmlFile {
-    fn metadata(&self) -> Result<XmlMetadata, &'static str> {
+impl MetadataProvider for Xml {
+    fn get_metadata(&self) -> Result<Metadata, &'static str> {
         let event_reader = EventReader::from_str(&self.file_content);
 
         enum Wrapper {
@@ -105,7 +105,7 @@ impl XmlMetadataProvider for XmlFile {
         }
 
         match document_type {
-            Some(document_type) => Ok(XmlMetadata {
+            Some(document_type) => Ok(Metadata {
                 document_type,
                 document_id,
                 ruc,
@@ -120,22 +120,22 @@ impl XmlMetadataProvider for XmlFile {
 mod tests {
     use std::path::Path;
 
-    use crate::xml_file::{FromPath, XmlFile};
-    use crate::xml_metadata::XmlMetadataProvider;
+    use crate::metadata::MetadataProvider;
+    use crate::xml::{FromPath, Xml};
 
     const RESOURCES: &str = "resources/test";
 
     #[test]
     fn metadata() {
-        let file1 = XmlFile::from_path(Path::new(&format!("{RESOURCES}/F001-1.xml")));
-        let metadata1 = file1.unwrap().metadata().unwrap();
+        let file1 = Xml::from_path(Path::new(&format!("{RESOURCES}/F001-1.xml")));
+        let metadata1 = file1.unwrap().get_metadata().unwrap();
         assert_eq!(metadata1.document_type, "Invoice");
         assert_eq!(metadata1.document_id.as_deref(), Some("F001-1"));
         assert_eq!(metadata1.ruc.as_deref(), Some("12345678912"));
         assert_eq!(metadata1.voided_line_document_type_code, None);
 
-        let file2 = XmlFile::from_path(Path::new(&format!("{RESOURCES}/RA-20200328-1.xml")));
-        let metadata2 = file2.unwrap().metadata().unwrap();
+        let file2 = Xml::from_path(Path::new(&format!("{RESOURCES}/RA-20200328-1.xml")));
+        let metadata2 = file2.unwrap().get_metadata().unwrap();
         assert_eq!(metadata2.document_type, "VoidedDocuments");
         assert_eq!(metadata2.document_id.as_deref(), Some("RA-20200328-1"));
         assert_eq!(metadata2.ruc.as_deref(), Some("12345678912"));

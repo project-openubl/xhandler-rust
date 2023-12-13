@@ -1,0 +1,23 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Header>
+        <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+            <wsse:UsernameToken>
+                <wsse:Username>{{username}}</wsse:Username>
+                <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{{password}}</wsse:Password>
+            </wsse:UsernameToken>
+        </wsse:Security>
+    </soap:Header>
+    <soap:Body>
+        <ns2:validaCDPcriterios xmlns:ns2="http://service.sunat.gob.pe">
+            <rucEmisor>{{body.ruc}}</rucEmisor>
+            <tipoCDP>{{body.tipo_comprobante}}</tipoCDP>
+            <serieCDP>{{body.serie_comprobante}}</serieCDP>
+            <numeroCDP>{{body.numero_comprobante}}</numeroCDP>
+            <tipoDocIdReceptor>{{body.tipo_documento_identidad_receptor}}</tipoDocIdReceptor>
+            <numeroDocIdReceptor>{{body.numero_documento_identidad_receptor}}</numeroDocIdReceptor>
+            <fechaEmision>{{body.fecha_emision}}</fechaEmision>
+            <importeTotal>{{body.importe_total}}</importeTotal>
+            <nroAutorizacion/>
+        </ns2:validaCDPcriterios>
+    </soap:Body>
+</soap:Envelope>

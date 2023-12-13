@@ -8,3 +8,7 @@ description = "Sends XML files through SOAP - SUNAT"
 [dependencies]
 xml = "0.8.10"
 log = "0.4.20"
+zip = { version = "0.6.6", default-features = false }
+tera = "1.19.1"
+lazy_static = "1.4.0"
+serde = { version = "1.0.193", features = ["derive"] }
