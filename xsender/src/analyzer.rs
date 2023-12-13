@@ -1,4 +1,4 @@
-use crate::xml_metadata::XmlMetadata;
+use crate::metadata::Metadata;
 
 pub struct DocumentType {}
 
@@ -53,12 +53,12 @@ pub enum RestAction {
 }
 
 pub trait Analyze {
-    fn document(&self, urls: &DeliveryUrls) -> Option<Delivery>;
+    fn target(&self, urls: &DeliveryUrls) -> Option<Delivery>;
     fn ticket(&self, urls: &DeliveryUrls) -> Option<Delivery>;
 }
 
-impl Analyze for XmlMetadata {
-    fn document(&self, urls: &DeliveryUrls) -> Option<Delivery> {
+impl Analyze for Metadata {
+    fn target(&self, urls: &DeliveryUrls) -> Option<Delivery> {
         match self.document_type.as_str() {
             DocumentType::INVOICE | DocumentType::CREDIT_NOTE | DocumentType::DEBIT_NOTE => {
                 Some(Delivery::SOAP(urls.invoice.clone(), SoapAction::SendBill))
@@ -120,10 +120,10 @@ impl Analyze for XmlMetadata {
 
 #[cfg(test)]
 mod tests {
-    use crate::xml_analyzer::{
+    use crate::analyzer::{
         Analyze, Catalog1, Delivery, DeliveryUrls, DocumentType, RestAction, SoapAction,
     };
-    use crate::xml_metadata::XmlMetadata;
+    use crate::metadata::Metadata;
 
     #[test]
     fn unknow_document_type() {
@@ -133,14 +133,14 @@ mod tests {
             despatch: String::from("https://despatch"),
         };
 
-        let metadata = XmlMetadata {
+        let metadata = Metadata {
             document_type: String::from("Unknown"),
             document_id: Some(String::from("F001-1")),
             ruc: Some(String::from("123456789012")),
             voided_line_document_type_code: None,
         };
 
-        let document_delivery = metadata.document(&delivery_urls);
+        let document_delivery = metadata.target(&delivery_urls);
         let ticket_delivery = metadata.ticket(&delivery_urls);
 
         assert_eq!(document_delivery, None);
@@ -155,14 +155,14 @@ mod tests {
             despatch: String::from("https://despatch"),
         };
 
-        let metadata = XmlMetadata {
+        let metadata = Metadata {
             document_type: String::from(DocumentType::INVOICE),
             document_id: Some(String::from("F001-1")),
             ruc: Some(String::from("123456789012")),
             voided_line_document_type_code: None,
         };
 
-        let document_delivery = metadata.document(&delivery_urls).unwrap();
+        let document_delivery = metadata.target(&delivery_urls).unwrap();
         let ticket_delivery = metadata.ticket(&delivery_urls);
 
         assert_eq!(
@@ -180,14 +180,14 @@ mod tests {
             despatch: String::from("https://despatch"),
         };
 
-        let metadata = XmlMetadata {
+        let metadata = Metadata {
             document_type: String::from(DocumentType::CREDIT_NOTE),
             document_id: Some(String::from("FC01-1")),
             ruc: Some(String::from("123456789012")),
             voided_line_document_type_code: None,
         };
 
-        let document_delivery = metadata.document(&delivery_urls).unwrap();
+        let document_delivery = metadata.target(&delivery_urls).unwrap();
         let ticket_delivery = metadata.ticket(&delivery_urls);
 
         assert_eq!(
@@ -205,14 +205,14 @@ mod tests {
             despatch: String::from("https://despatch"),
         };
 
-        let metadata = XmlMetadata {
+        let metadata = Metadata {
             document_type: String::from(DocumentType::DEBIT_NOTE),
             document_id: Some(String::from("FD01-1")),
             ruc: Some(String::from("123456789012")),
             voided_line_document_type_code: None,
         };
 
-        let document_delivery = metadata.document(&delivery_urls).unwrap();
+        let document_delivery = metadata.target(&delivery_urls).unwrap();
         let ticket_delivery = metadata.ticket(&delivery_urls);
 
         assert_eq!(
@@ -231,7 +231,7 @@ mod tests {
         };
 
         // Invoice
-        let baja_invoice = XmlMetadata {
+        let baja_invoice = Metadata {
             voided_line_document_type_code: Some(String::from(Catalog1::FACTURA)),
 
             document_type: String::from(DocumentType::VOIDED_DOCUMENTS),
@@ -239,7 +239,7 @@ mod tests {
             ruc: Some(String::from("123456789012")),
         };
 
-        let document_delivery = baja_invoice.document(&delivery_urls).unwrap();
+        let document_delivery = baja_invoice.target(&delivery_urls).unwrap();
         let ticket_delivery = baja_invoice.ticket(&delivery_urls).unwrap();
 
         assert_eq!(
@@ -252,7 +252,7 @@ mod tests {
         );
 
         // CreditNote
-        let baja_credit_note = XmlMetadata {
+        let baja_credit_note = Metadata {
             voided_line_document_type_code: Some(String::from(Catalog1::NOTA_CREDITO)),
 
             document_type: String::from(DocumentType::VOIDED_DOCUMENTS),
@@ -260,7 +260,7 @@ mod tests {
             ruc: Some(String::from("123456789012")),
         };
 
-        let document_delivery = baja_credit_note.document(&delivery_urls).unwrap();
+        let document_delivery = baja_credit_note.target(&delivery_urls).unwrap();
         let ticket_delivery = baja_credit_note.ticket(&delivery_urls).unwrap();
 
         assert_eq!(
@@ -273,7 +273,7 @@ mod tests {
         );
 
         // DebitNote
-        let baja_debit_note = XmlMetadata {
+        let baja_debit_note = Metadata {
             voided_line_document_type_code: Some(String::from(Catalog1::NOTA_DEBITO)),
 
             document_type: String::from(DocumentType::VOIDED_DOCUMENTS),
@@ -281,7 +281,7 @@ mod tests {
             ruc: Some(String::from("123456789012")),
         };
 
-        let document_delivery = baja_debit_note.document(&delivery_urls).unwrap();
+        let document_delivery = baja_debit_note.target(&delivery_urls).unwrap();
         let ticket_delivery = baja_debit_note.ticket(&delivery_urls).unwrap();
 
         assert_eq!(
@@ -294,7 +294,7 @@ mod tests {
         );
 
         // Percepcion
-        let baja_percepcion = XmlMetadata {
+        let baja_percepcion = Metadata {
             voided_line_document_type_code: Some(String::from(Catalog1::PERCEPCION)),
 
             document_type: String::from(DocumentType::VOIDED_DOCUMENTS),
@@ -302,7 +302,7 @@ mod tests {
             ruc: Some(String::from("123456789012")),
         };
 
-        let document_delivery = baja_percepcion.document(&delivery_urls).unwrap();
+        let document_delivery = baja_percepcion.target(&delivery_urls).unwrap();
         let ticket_delivery = baja_percepcion.ticket(&delivery_urls).unwrap();
 
         assert_eq!(
@@ -321,14 +321,14 @@ mod tests {
         );
 
         // Retencion
-        let baja_retencion = XmlMetadata {
+        let baja_retencion = Metadata {
             document_type: String::from(DocumentType::VOIDED_DOCUMENTS),
             document_id: Some(String::from("RA-20200328-1")),
             ruc: Some(String::from("123456789012")),
             voided_line_document_type_code: Some(String::from(Catalog1::RETENCION)),
         };
 
-        let document_delivery = baja_retencion.document(&delivery_urls).unwrap();
+        let document_delivery = baja_retencion.target(&delivery_urls).unwrap();
         let ticket_delivery = baja_retencion.ticket(&delivery_urls).unwrap();
 
         assert_eq!(
@@ -347,14 +347,14 @@ mod tests {
         );
 
         // Guia
-        let baja_guia = XmlMetadata {
+        let baja_guia = Metadata {
             document_type: String::from(DocumentType::VOIDED_DOCUMENTS),
             document_id: Some(String::from("RA-20200328-1")),
             ruc: Some(String::from("123456789012")),
             voided_line_document_type_code: Some(String::from(Catalog1::GUIA_REMISION_REMITENTE)),
         };
 
-        let document_delivery = baja_guia.document(&delivery_urls);
+        let document_delivery = baja_guia.target(&delivery_urls);
         let ticket_delivery = baja_guia.ticket(&delivery_urls);
 
         assert_eq!(document_delivery, None);
@@ -369,14 +369,14 @@ mod tests {
             despatch: String::from("https://despatch"),
         };
 
-        let metadata = XmlMetadata {
+        let metadata = Metadata {
             document_type: String::from(DocumentType::SUMMARY_DOCUMENTS),
             document_id: Some(String::from("S001-1")),
             ruc: Some(String::from("123456789012")),
             voided_line_document_type_code: None,
         };
 
-        let document_delivery = metadata.document(&delivery_urls).unwrap();
+        let document_delivery = metadata.target(&delivery_urls).unwrap();
         let ticket_delivery = metadata.ticket(&delivery_urls).unwrap();
 
         assert_eq!(
@@ -397,14 +397,14 @@ mod tests {
             despatch: String::from("https://despatch"),
         };
 
-        let metadata = XmlMetadata {
+        let metadata = Metadata {
             document_type: String::from(DocumentType::PERCEPTION),
             document_id: Some(String::from("S001-1")),
             ruc: Some(String::from("123456789012")),
             voided_line_document_type_code: None,
         };
 
-        let document_delivery = metadata.document(&delivery_urls).unwrap();
+        let document_delivery = metadata.target(&delivery_urls).unwrap();
         let ticket_delivery = metadata.ticket(&delivery_urls);
 
         assert_eq!(
@@ -425,14 +425,14 @@ mod tests {
             despatch: String::from("https://despatch"),
         };
 
-        let metadata = XmlMetadata {
+        let metadata = Metadata {
             document_type: String::from(DocumentType::RETENTION),
             document_id: Some(String::from("R001-1")),
             ruc: Some(String::from("123456789012")),
             voided_line_document_type_code: None,
         };
 
-        let document_delivery = metadata.document(&delivery_urls).unwrap();
+        let document_delivery = metadata.target(&delivery_urls).unwrap();
         let ticket_delivery = metadata.ticket(&delivery_urls);
 
         assert_eq!(
@@ -453,14 +453,14 @@ mod tests {
             despatch: String::from("https://despatch"),
         };
 
-        let metadata = XmlMetadata {
+        let metadata = Metadata {
             document_type: String::from(DocumentType::DESPATCH_ADVICE),
             document_id: Some(String::from("D001-1")),
             ruc: Some(String::from("123456789012")),
             voided_line_document_type_code: None,
         };
 
-        let document_delivery = metadata.document(&delivery_urls).unwrap();
+        let document_delivery = metadata.target(&delivery_urls).unwrap();
         let ticket_delivery = metadata.ticket(&delivery_urls).unwrap();
 
         assert_eq!(
