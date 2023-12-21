@@ -1,26 +1,41 @@
+use std::fs;
+use std::path::Path;
+
 use xml::reader::XmlEvent;
 use xml::EventReader;
 
-use crate::xml::Xml;
+use crate::global::{CAC_NS, CBC_NS, SAC_NS};
 
-const CBC_NS: &str = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2";
-const CAC_NS: &str = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2";
-const SAC_NS: &str = "urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1";
+pub struct UblFile {
+    pub file_content: String,
+}
+
+pub trait FromPath {
+    fn from_path(path: &Path) -> std::io::Result<UblFile>;
+}
+
+impl FromPath for UblFile {
+    fn from_path(path: &Path) -> std::io::Result<UblFile> {
+        let file_content = fs::read_to_string(path)?;
+        Ok(UblFile { file_content })
+    }
+}
 
 #[derive(Debug)]
-pub struct Metadata {
+pub struct UblMetadata {
     pub document_type: String,
-    pub document_id: Option<String>,
-    pub ruc: Option<String>,
+    pub document_id: String,
+    pub ruc: String,
     pub voided_line_document_type_code: Option<String>,
 }
 
-pub trait MetadataProvider {
-    fn get_metadata(&self) -> Result<Metadata, &'static str>;
+#[derive(Debug)]
+pub struct UblMetadataError {
+    pub message: String,
 }
 
-impl MetadataProvider for Xml {
-    fn get_metadata(&self) -> Result<Metadata, &'static str> {
+impl UblFile {
+    pub fn metadata(&self) -> Result<UblMetadata, UblMetadataError> {
         let event_reader = EventReader::from_str(&self.file_content);
 
         enum Wrapper {
@@ -104,14 +119,16 @@ impl MetadataProvider for Xml {
             }
         }
 
-        match document_type {
-            Some(document_type) => Ok(Metadata {
+        match (document_type, document_id, ruc) {
+            (Some(document_type), Some(document_id), Some(ruc)) => Ok(UblMetadata {
                 document_type,
                 document_id,
                 ruc,
                 voided_line_document_type_code,
             }),
-            None => Err("document_type could not be identified"),
+            _ => Err(UblMetadataError {
+                message: "document_type, document_id, and ruc were not found".to_string(),
+            }),
         }
     }
 }
@@ -120,25 +137,24 @@ impl MetadataProvider for Xml {
 mod tests {
     use std::path::Path;
 
-    use crate::metadata::MetadataProvider;
-    use crate::xml::{FromPath, Xml};
+    use crate::ubl_file::{FromPath, UblFile};
 
     const RESOURCES: &str = "resources/test";
 
     #[test]
     fn metadata() {
-        let file1 = Xml::from_path(Path::new(&format!("{RESOURCES}/F001-1.xml")));
-        let metadata1 = file1.unwrap().get_metadata().unwrap();
+        let file1 = UblFile::from_path(Path::new(&format!("{RESOURCES}/F001-1.xml")));
+        let metadata1 = file1.unwrap().metadata().unwrap();
         assert_eq!(metadata1.document_type, "Invoice");
-        assert_eq!(metadata1.document_id.as_deref(), Some("F001-1"));
-        assert_eq!(metadata1.ruc.as_deref(), Some("12345678912"));
+        assert_eq!(metadata1.document_id, "F001-1");
+        assert_eq!(metadata1.ruc, "12345678912");
         assert_eq!(metadata1.voided_line_document_type_code, None);
 
-        let file2 = Xml::from_path(Path::new(&format!("{RESOURCES}/RA-20200328-1.xml")));
-        let metadata2 = file2.unwrap().get_metadata().unwrap();
+        let file2 = UblFile::from_path(Path::new(&format!("{RESOURCES}/RA-20200328-1.xml")));
+        let metadata2 = file2.unwrap().metadata().unwrap();
         assert_eq!(metadata2.document_type, "VoidedDocuments");
-        assert_eq!(metadata2.document_id.as_deref(), Some("RA-20200328-1"));
-        assert_eq!(metadata2.ruc.as_deref(), Some("12345678912"));
+        assert_eq!(metadata2.document_id, "RA-20200328-1");
+        assert_eq!(metadata2.ruc, "12345678912");
         assert_eq!(
             metadata2.voided_line_document_type_code.as_deref(),
             Some("01")
