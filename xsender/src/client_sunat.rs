@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use crate::global::HTTP_CLIENT;
 use crate::models::{
     Credentials, RestFileTargetAction, SendFileTarget, SoapFileTargetAction, VerifyTicketTarget,
 };
@@ -29,6 +30,7 @@ pub enum Layer {
     Templating(String),
     Request(reqwest::Error),
     ReadingResponse,
+    ServiceUnavailable(String),
 }
 
 pub enum SendFileResponse {
@@ -78,16 +80,23 @@ impl ClientSUNAT {
 
                 let body = envelope.to_string_xml()?;
 
-                let body = reqwest::Client::new()
+                let response = HTTP_CLIENT
+                    .clone()
                     .post(url)
                     .body(body)
                     .header("Content-Type", "text/xml; charset=utf-8")
                     .header("SOAPAction", soap_action)
                     .send()
-                    .await?
-                    .text()
                     .await?;
 
+                let response_status = response.status();
+                if !response_status.is_success() {
+                    return Err(ErrorClientSUNAT {
+                        kind: Layer::ServiceUnavailable(response_status.to_string()),
+                    });
+                }
+
+                let body = response.text().await?;
                 let response_body = SendFileXmlResponse::from_str(&body)?;
 
                 let result = match response_body {
@@ -137,16 +146,23 @@ impl ClientSUNAT {
 
                 let body = envelope.to_string_xml()?;
 
-                let body = reqwest::Client::new()
+                let response = HTTP_CLIENT
+                    .clone()
                     .post(url)
                     .body(body)
                     .header("Content-Type", "text/xml; charset=utf-8")
                     .header("SOAPAction", "urn:getStatus")
                     .send()
-                    .await?
-                    .text()
                     .await?;
 
+                let response_status = response.status();
+                if !response_status.is_success() {
+                    return Err(ErrorClientSUNAT {
+                        kind: Layer::ServiceUnavailable(response_status.to_string()),
+                    });
+                }
+
+                let body = response.text().await?;
                 let response_body = VerifyTicketXmlResponse::from_str(&body)?;
 
                 match response_body {

@@ -1,5 +1,5 @@
+use serial_test::serial;
 use std::path::Path;
-
 use xsender::prelude::*;
 
 const BASE: &str = "tests/resources/e2e";
@@ -18,6 +18,7 @@ lazy_static::lazy_static! {
     };
 }
 
+#[serial]
 #[tokio::test]
 async fn send_invoice() {
     let file_path = format!("{BASE}/12345678912-01-F001-1.xml");
@@ -45,6 +46,7 @@ async fn send_invoice() {
     assert!(result);
 }
 
+#[serial]
 #[tokio::test]
 async fn send_voided_documents() {
     let file_path = format!("{BASE}/12345678912-RA-20200328-1.xml");

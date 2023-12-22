@@ -1,4 +1,5 @@
 use regex::Regex;
+use reqwest::Client;
 use tera::Tera;
 
 pub const CBC_NS: &str = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2";
@@ -21,4 +22,5 @@ lazy_static::lazy_static! {
     pub static ref BOLETA_SERIE_REGEX: Regex = Regex::new("^[B|f].*$").expect("Invalid BOLETA_SERIE_REGEX");
     pub static ref GUIA_REMISION_REMITENTE_SERIE_REGEX: Regex = Regex::new("^[T|t].*$").expect("Invalid GUIA_REMISION_REMITENTE_SERIE_REGEX");
     pub static ref GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX: Regex = Regex::new("^[V|v].*$").expect("Invalid GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX");
+    pub static ref HTTP_CLIENT: Client = Client::builder().connection_verbose(true).build().expect("Could not create HTTP client");
 }
