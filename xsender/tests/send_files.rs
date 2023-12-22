@@ -24,23 +24,23 @@ async fn send_invoice() {
     let file_path = format!("{BASE}/12345678912-01-F001-1.xml");
     let xml_file = UblFile::from_path(Path::new(&file_path)).expect("File not found");
 
-    let response = CLIENT
+    let result = CLIENT
         .send_file(&xml_file)
         .await
         .expect("Could not get a valid response");
 
-    let result = match response.data {
-        SendFileResponse::Ok(_, cdr) => {
-            assert_eq!("0", cdr.response_code);
+    let result = match result.response {
+        SendFileAggregatedResponse::Cdr(_, cdr_metadata) => {
+            assert_eq!("0", cdr_metadata.response_code);
             assert_eq!(
                 "La Factura numero F001-1, ha sido aceptada",
-                cdr.description
+                cdr_metadata.description
             );
-            assert_eq!(Vec::<String>::new(), cdr.notes);
+            assert_eq!(Vec::<String>::new(), cdr_metadata.notes);
             true
         }
-        SendFileResponse::Ticket(_) => false,
-        SendFileResponse::Error(_, _) => false,
+        SendFileAggregatedResponse::Ticket(_) => false,
+        SendFileAggregatedResponse::Error(_) => false,
     };
 
     assert!(result);
@@ -52,40 +52,41 @@ async fn send_voided_documents() {
     let file_path = format!("{BASE}/12345678912-RA-20200328-1.xml");
     let xml_file = UblFile::from_path(Path::new(&file_path)).expect("File not found");
 
-    let send_file_response = CLIENT
+    let file_result = CLIENT
         .send_file(&xml_file)
         .await
         .expect("Could not get a valid response");
 
     // Send file
-    let verify_ticket_target = send_file_response
+    let verify_ticket_target = file_result
         .verify_ticket_target
         .expect("Could not determine the verify_ticket target");
-    let ticket = match send_file_response.data {
-        SendFileResponse::Ok(_, _) => "".to_string(),
-        SendFileResponse::Ticket(ticket) => ticket,
-        SendFileResponse::Error(_, _) => "".to_string(),
+    let ticket = match file_result.response {
+        SendFileAggregatedResponse::Cdr(_, _) => "".to_string(),
+        SendFileAggregatedResponse::Ticket(ticket) => ticket,
+        SendFileAggregatedResponse::Error(_) => "".to_string(),
     };
     assert!(!ticket.is_empty());
 
     // Verify ticket
-    let verify_ticket_response = CLIENT
+    let ticket_result = CLIENT
         .verify_ticket(&verify_ticket_target, &ticket)
         .await
         .expect("Could not verify ticket");
-    let result = match verify_ticket_response {
-        VerifyTicketResponse::Ok(_, cdr, status_code) => {
-            assert_eq!("0", cdr.response_code);
+    let result = match ticket_result.response {
+        VerifyTicketAggregatedResponse::Cdr(status, cdr_metadata) => {
+            assert_eq!("0", status.status_code);
+
+            assert_eq!("0", cdr_metadata.response_code);
             assert_eq!(
                 "La Comunicacion de baja RA-20200328-1, ha sido aceptada",
-                cdr.description
+                cdr_metadata.description
             );
-            assert_eq!(Vec::<String>::new(), cdr.notes);
+            assert_eq!(Vec::<String>::new(), cdr_metadata.notes);
 
-            assert_eq!("0", status_code);
             true
         }
-        VerifyTicketResponse::Error(_, _) => false,
+        VerifyTicketAggregatedResponse::Error(_) => false,
     };
     assert!(result);
 }

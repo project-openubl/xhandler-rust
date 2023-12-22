@@ -6,18 +6,20 @@ use xml::EventReader;
 
 use crate::constants::{CAC_NS, CBC_NS};
 
-pub struct Cdr {
+/// Response obtained from SUNAT
+pub struct CdrMetadata {
     pub response_code: String,
     pub description: String,
     pub notes: Vec<String>,
 }
 
+/// Error occurred while reading the XML CDR
 #[derive(Debug)]
 pub struct CdrReadError {
     pub message: String,
 }
 
-impl FromStr for Cdr {
+impl FromStr for CdrMetadata {
     type Err = CdrReadError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -117,7 +119,7 @@ mod tests {
     use std::fs;
     use std::str::FromStr;
 
-    use crate::soap::cdr::Cdr;
+    use crate::soap::cdr::CdrMetadata;
 
     const RESOURCES: &str = "resources/test";
 
@@ -126,7 +128,7 @@ mod tests {
         let file_content =
             fs::read_to_string(format!("{RESOURCES}/R-12345678901-01-F001-00000587.xml"))
                 .expect("Could not read file");
-        let cdr = Cdr::from_str(&file_content).expect("Could not read Cdr");
+        let cdr = CdrMetadata::from_str(&file_content).expect("Could not read Cdr");
 
         assert_eq!(cdr.response_code, "0");
         assert_eq!(
@@ -141,7 +143,7 @@ mod tests {
         let file_content =
             fs::read_to_string(format!("{RESOURCES}/R-20220557805-01-F001-22Openubl.xml"))
                 .expect("Could not read file");
-        let cdr = Cdr::from_str(&file_content).expect("Could not read Cdr");
+        let cdr = CdrMetadata::from_str(&file_content).expect("Could not read Cdr");
 
         assert_eq!(cdr.response_code, "0");
         assert_eq!(

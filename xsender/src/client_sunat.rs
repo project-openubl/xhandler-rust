@@ -1,16 +1,12 @@
 use std::str::FromStr;
 
 use crate::constants::HTTP_CLIENT;
-use crate::models::{
-    Credentials, RestFileTargetAction, SendFileTarget, SoapFileTargetAction, VerifyTicketTarget,
-};
-use crate::soap::cdr::{Cdr, CdrReadError};
+use crate::models::{Credentials, SendFileTarget, SoapFileTargetAction, VerifyTicketTarget};
 use crate::soap::envelope::{BodyData, EnvelopeData, FileData, ToStringXml};
 use crate::soap::send_file_response::{SendFileXmlResponse, SendFileXmlResponseFromStrError};
 use crate::soap::verify_ticket_response::{
     VerifyTicketXmlResponse, VerifyTicketXmlResponseFromStrError,
 };
-use crate::zip_manager::{extract_cdr_from_base64_zip, ExtractCdrFromBase64ZipError};
 
 #[derive(Default)]
 pub struct ClientSUNAT {}
@@ -34,14 +30,24 @@ pub enum Layer {
 }
 
 pub enum SendFileResponse {
-    Ok(String, Cdr),
+    Cdr(String),
     Ticket(String),
-    Error(String, String),
+    Error(ErrorResponse),
 }
 
 pub enum VerifyTicketResponse {
-    Ok(String, Cdr, String),
-    Error(String, String),
+    Cdr(VerifyTicketStatus),
+    Error(ErrorResponse),
+}
+
+pub struct VerifyTicketStatus {
+    pub cdr_base64: String,
+    pub status_code: String,
+}
+
+pub struct ErrorResponse {
+    pub code: String,
+    pub message: String,
 }
 
 impl ClientSUNAT {
@@ -99,34 +105,13 @@ impl ClientSUNAT {
                 let body = response.text().await?;
                 let response_body = SendFileXmlResponse::from_str(&body)?;
 
-                let result = match response_body {
-                    SendFileXmlResponse::Cdr(cdr_base64) => {
-                        let cdr_xml = extract_cdr_from_base64_zip(&cdr_base64)?;
-                        let cdr = Cdr::from_str(&cdr_xml)?;
-                        SendFileResponse::Ok(cdr_base64, cdr)
-                    }
-                    SendFileXmlResponse::Ticket(ticket) => SendFileResponse::Ticket(ticket),
-                    SendFileXmlResponse::Fault(code, description) => {
-                        SendFileResponse::Error(code, description)
-                    }
-                };
-
-                Ok(result)
+                Ok(response_body.into())
             }
-            SendFileTarget::Rest(url, action) => {
-                let path = match action {
-                    RestFileTargetAction::SendDocument => "/comprobantes",
-                };
-                let _ = reqwest::Client::new()
-                    .post(format!("{url}/{path}/{}", file.name))
-                    .body("test")
-                    .header("Content-Type", "application/json")
-                    .send()
-                    .await?
-                    .text()
-                    .await?;
-                Ok(SendFileResponse::Ticket("".to_string()))
-            }
+            SendFileTarget::Rest(_, _) => Err(ErrorClientSUNAT {
+                kind: Layer::ServiceUnavailable(
+                    "SendFileTarget::Rest not implemented yet".to_string(),
+                ),
+            }),
         }
     }
 
@@ -165,32 +150,41 @@ impl ClientSUNAT {
                 let body = response.text().await?;
                 let response_body = VerifyTicketXmlResponse::from_str(&body)?;
 
-                match response_body {
-                    VerifyTicketXmlResponse::Cdr(cdr_base64, status_code) => {
-                        let cdr_xml = extract_cdr_from_base64_zip(&cdr_base64)?;
-                        let cdr = Cdr::from_str(&cdr_xml)?;
-                        let result = VerifyTicketResponse::Ok(cdr_base64, cdr, status_code);
-
-                        Ok(result)
-                    }
-                    VerifyTicketXmlResponse::Fault(code, description) => {
-                        let result = VerifyTicketResponse::Error(code, description);
-
-                        Ok(result)
-                    }
-                }
+                Ok(response_body.into())
             }
-            VerifyTicketTarget::Rest(url) => {
-                let _ = reqwest::Client::new()
-                    .post(format!("{url}/ticket"))
-                    .body("test")
-                    .header("Content-Type", "application/json")
-                    .send()
-                    .await?
-                    .text()
-                    .await?;
-                Ok(VerifyTicketResponse::Error("".to_string(), "".to_string()))
-            }
+            VerifyTicketTarget::Rest(_) => Err(ErrorClientSUNAT {
+                kind: Layer::ServiceUnavailable(
+                    "SendFileTarget::Rest not implemented yet".to_string(),
+                ),
+            }),
+        }
+    }
+}
+
+impl From<SendFileXmlResponse> for SendFileResponse {
+    fn from(value: SendFileXmlResponse) -> Self {
+        match value {
+            SendFileXmlResponse::Cdr(cdr) => Self::Cdr(cdr),
+            SendFileXmlResponse::Ticket(ticket) => Self::Ticket(ticket),
+            SendFileXmlResponse::Fault(error) => Self::Error(ErrorResponse {
+                code: error.code,
+                message: error.message,
+            }),
+        }
+    }
+}
+
+impl From<VerifyTicketXmlResponse> for VerifyTicketResponse {
+    fn from(value: VerifyTicketXmlResponse) -> Self {
+        match value {
+            VerifyTicketXmlResponse::Status(status) => Self::Cdr(VerifyTicketStatus {
+                cdr_base64: status.cdr_base64,
+                status_code: status.status_code,
+            }),
+            VerifyTicketXmlResponse::Fault(error) => Self::Error(ErrorResponse {
+                code: error.code,
+                message: error.message,
+            }),
         }
     }
 }
@@ -221,22 +215,6 @@ impl From<SendFileXmlResponseFromStrError> for ErrorClientSUNAT {
 
 impl From<VerifyTicketXmlResponseFromStrError> for ErrorClientSUNAT {
     fn from(_: VerifyTicketXmlResponseFromStrError) -> Self {
-        Self {
-            kind: Layer::ReadingResponse,
-        }
-    }
-}
-
-impl From<ExtractCdrFromBase64ZipError> for ErrorClientSUNAT {
-    fn from(_: ExtractCdrFromBase64ZipError) -> Self {
-        Self {
-            kind: Layer::ReadingResponse,
-        }
-    }
-}
-
-impl From<CdrReadError> for ErrorClientSUNAT {
-    fn from(_: CdrReadError) -> Self {
         Self {
             kind: Layer::ReadingResponse,
         }
