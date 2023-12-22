@@ -119,7 +119,7 @@ mod tests {
 
     #[test]
     fn read_ok_response() {
-        let file_content = fs::read_to_string(&format!("{RESOURCES}/get_status_response_ok.xml"))
+        let file_content = fs::read_to_string(format!("{RESOURCES}/get_status_response_ok.xml"))
             .expect("Could not read file");
         let response =
             VerifyTicketXmlResponse::from_str(&file_content).expect("Could not read response");

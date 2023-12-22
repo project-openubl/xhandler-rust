@@ -133,7 +133,7 @@ mod tests {
 
     #[test]
     fn read_ok_response() {
-        let file_content = fs::read_to_string(&format!("{RESOURCES}/bill_service_response_ok.xml"))
+        let file_content = fs::read_to_string(format!("{RESOURCES}/bill_service_response_ok.xml"))
             .expect("Could not read file");
         let response =
             SendFileXmlResponse::from_str(&file_content).expect("Could not read response");
@@ -151,7 +151,7 @@ mod tests {
     #[test]
     fn read_fault_response() {
         let file_content =
-            fs::read_to_string(&format!("{RESOURCES}/bill_service_response_fault.xml"))
+            fs::read_to_string(format!("{RESOURCES}/bill_service_response_fault.xml"))
                 .expect("Could not read file");
         let response =
             SendFileXmlResponse::from_str(&file_content).expect("Could not read response");
@@ -169,7 +169,7 @@ mod tests {
     #[test]
     fn read_ticket_response() {
         let file_content =
-            fs::read_to_string(&format!("{RESOURCES}/bill_service_response_ticket.xml"))
+            fs::read_to_string(format!("{RESOURCES}/bill_service_response_ticket.xml"))
                 .expect("Could not read file");
         let response =
             SendFileXmlResponse::from_str(&file_content).expect("Could not read response");

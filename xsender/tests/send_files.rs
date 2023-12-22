@@ -66,7 +66,7 @@ async fn send_voided_documents() {
         SendFileResponse::Ticket(ticket) => ticket,
         SendFileResponse::Error(_, _) => "".to_string(),
     };
-    assert!(ticket.len() > 0);
+    assert!(!ticket.is_empty());
 
     // Verify ticket
     let verify_ticket_response = CLIENT

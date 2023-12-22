@@ -1,7 +1,7 @@
 use serde::Serialize;
 use tera::{Context, Result};
 
-use crate::global::TEMPLATES;
+use crate::constants::TEMPLATES;
 
 pub struct EnvelopeData {
     pub username: String,

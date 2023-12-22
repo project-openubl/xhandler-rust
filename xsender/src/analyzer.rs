@@ -1,6 +1,6 @@
 use log::warn;
 
-use crate::global::{
+use crate::constants::{
     BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX, GUIA_REMISION_REMITENTE_SERIE_REGEX,
     GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX,
 };

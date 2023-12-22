@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::global::HTTP_CLIENT;
+use crate::constants::HTTP_CLIENT;
 use crate::models::{
     Credentials, RestFileTargetAction, SendFileTarget, SoapFileTargetAction, VerifyTicketTarget,
 };

@@ -4,7 +4,7 @@ use xml::name::OwnedName;
 use xml::reader::XmlEvent;
 use xml::EventReader;
 
-use crate::global::{CAC_NS, CBC_NS};
+use crate::constants::{CAC_NS, CBC_NS};
 
 pub struct Cdr {
     pub response_code: String,
@@ -124,7 +124,7 @@ mod tests {
     #[test]
     fn read_cdr_without_notes() {
         let file_content =
-            fs::read_to_string(&format!("{RESOURCES}/R-12345678901-01-F001-00000587.xml"))
+            fs::read_to_string(format!("{RESOURCES}/R-12345678901-01-F001-00000587.xml"))
                 .expect("Could not read file");
         let cdr = Cdr::from_str(&file_content).expect("Could not read Cdr");
 
@@ -139,7 +139,7 @@ mod tests {
     #[test]
     fn read_cdr_with_notes() {
         let file_content =
-            fs::read_to_string(&format!("{RESOURCES}/R-20220557805-01-F001-22Openubl.xml"))
+            fs::read_to_string(format!("{RESOURCES}/R-20220557805-01-F001-22Openubl.xml"))
                 .expect("Could not read file");
         let cdr = Cdr::from_str(&file_content).expect("Could not read Cdr");
 

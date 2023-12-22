@@ -1,10 +1,11 @@
 use std::fs;
 use std::path::Path;
 
+use xml::name::OwnedName;
 use xml::reader::XmlEvent;
 use xml::EventReader;
 
-use crate::global::{CAC_NS, CBC_NS, SAC_NS};
+use crate::constants::{CAC_NS, CBC_NS, SAC_NS};
 
 pub struct UblFile {
     pub file_content: String,
@@ -51,6 +52,36 @@ impl UblFile {
         let mut ruc: Option<String> = None;
         let mut voided_line_document_type_code: Option<String> = None;
 
+        fn set_wrapper(
+            is_start: bool,
+            name: &OwnedName,
+            mut current_wrapper: Option<Wrapper>,
+        ) -> Option<Wrapper> {
+            let namespace = name.namespace.as_deref();
+            let prefix = name.prefix.as_deref();
+            let local_name = name.local_name.as_str();
+
+            match (namespace, prefix, local_name) {
+                (Some(CAC_NS), Some("cac"), "AccountingSupplierParty") => {
+                    current_wrapper = if is_start {
+                        Some(Wrapper::AccountingSupplierParty)
+                    } else {
+                        None
+                    }
+                }
+                (Some(SAC_NS), Some("sac"), "VoidedDocumentsLine") => {
+                    current_wrapper = if is_start {
+                        Some(Wrapper::VoidedDocumentsLine)
+                    } else {
+                        None
+                    }
+                }
+                _ => {}
+            };
+
+            current_wrapper
+        }
+
         for event in event_reader {
             match event {
                 Ok(XmlEvent::StartElement { name, .. }) => {
@@ -59,55 +90,45 @@ impl UblFile {
                         document_type = Some(name.local_name.clone());
                     }
 
-                    if let (Some(namespace), Some(prefix), local_name) = (
-                        name.namespace.as_deref(),
-                        name.prefix.as_deref(),
-                        name.local_name,
-                    ) {
-                        match (namespace, prefix, local_name.as_str()) {
-                            (CAC_NS, "cac", "AccountingSupplierParty") => {
-                                current_wrapper = Some(Wrapper::AccountingSupplierParty);
-                            }
-                            (SAC_NS, "sac", "VoidedDocumentsLine") => {
-                                current_wrapper = Some(Wrapper::VoidedDocumentsLine);
-                            }
-                            _ => {}
-                        };
-                    };
+                    current_wrapper = set_wrapper(true, &name, current_wrapper);
                 }
                 Ok(XmlEvent::EndElement { name }) => {
-                    if let (Some(namespace), Some(prefix), local_name) = (
-                        name.namespace.as_deref(),
-                        name.prefix.as_deref(),
-                        name.local_name,
-                    ) {
-                        match (&current_wrapper, namespace, prefix, local_name.as_str()) {
-                            // Document ID
-                            (None, CBC_NS, "cbc", "ID") => {
-                                if document_id.is_none() {
-                                    document_id = Some(current_text.clone());
-                                }
-                            }
+                    let namespace = name.namespace.as_deref();
+                    let prefix = name.prefix.as_deref();
+                    let local_name = name.local_name.as_str();
 
-                            // RUC
-                            (Some(wrapper), CBC_NS, "cbc", "ID")
-                            | (Some(wrapper), CBC_NS, "cbc", "CustomerAssignedAccountID") => {
-                                if let (Wrapper::AccountingSupplierParty, None) = (wrapper, &ruc) {
-                                    ruc = Some(current_text.clone());
-                                };
+                    match (&current_wrapper, &namespace, &prefix, local_name) {
+                        (None, Some(CBC_NS), Some("cbc"), "ID") => {
+                            if document_id.is_none() {
+                                document_id = Some(current_text.clone());
                             }
-
-                            // Voided line document_type_code
-                            (Some(wrapper), CBC_NS, "cbc", "DocumentTypeCode") => {
-                                if let (Wrapper::VoidedDocumentsLine, None) =
-                                    (wrapper, &voided_line_document_type_code)
-                                {
-                                    voided_line_document_type_code = Some(current_text.clone());
-                                };
-                            }
-                            _ => {}
-                        };
+                        }
+                        (
+                            Some(Wrapper::AccountingSupplierParty),
+                            Some(CBC_NS),
+                            Some("cbc"),
+                            "ID",
+                        )
+                        | (
+                            Some(Wrapper::AccountingSupplierParty),
+                            Some(CBC_NS),
+                            Some("cbc"),
+                            "CustomerAssignedAccountID",
+                        ) => {
+                            ruc = Some(current_text.clone());
+                        }
+                        (
+                            Some(Wrapper::VoidedDocumentsLine),
+                            Some(CBC_NS),
+                            Some("cbc"),
+                            "DocumentTypeCode",
+                        ) => {
+                            voided_line_document_type_code = Some(current_text.clone());
+                        }
+                        _ => {}
                     };
+
+                    current_wrapper = set_wrapper(false, &name, current_wrapper);
                 }
                 Ok(XmlEvent::Characters(characters)) => {
                     current_text = characters;

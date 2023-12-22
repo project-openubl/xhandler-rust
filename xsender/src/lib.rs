@@ -1,7 +1,7 @@
 mod analyzer;
 mod client_sunat;
+mod constants;
 mod file_sender;
-mod global;
 mod models;
 pub mod prelude;
 mod soap;
