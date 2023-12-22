@@ -3,33 +3,10 @@
 
 [![Project Chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg?style=for-the-badge&logo=zulip)](https://projectopenubl.zulipchat.com/)
 
-# XBuilder
+# XBuilder y XSender
 
-Librería Java para crear XMLs basados en UBL y los estándares de la SUNAT respecto a la facturación electrónica.
-
-XBuilder esta diseñado para que puedas crear XMLs fácilmente.
-
-- Crea XMLs sin que necesites conocer nada sobre manejo de archivos XMLs.
-- Hace cálculos internos por ti.
-- Requiere solamente datos mínimos.
-
-## ¿Qué puedes hacer con XBuilder?
-
-- Crear XMLs
-- Firmar XMLs
-
-## Getting started
-
-- [Documentación](https://project-openubl.github.io)
-- [Discusiones](https://github.com/project-openubl/xbuilder/discussions)
-
-## Developers
-
-### Update snapshots
-
-```shell
-mvn clean test -Dxbuilder.snapshot.update
-```
+- Crea XML basados en SUNAT y UBL
+- Envia los XMLs a la SUNAT usando SOAP y REST
 
 ### Create Pull Requests
 
