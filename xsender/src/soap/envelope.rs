@@ -1,13 +1,16 @@
 use serde::Serialize;
-use tera::{Context, Tera};
+use tera::{Context, Result};
 
-pub struct SoapMessage {
+use crate::constants::TEMPLATES;
+
+pub struct EnvelopeData {
     pub username: String,
     pub password: String,
-    pub body: SoapBody,
+    pub body: BodyData,
 }
 
-pub enum SoapBody {
+#[allow(dead_code)]
+pub enum BodyData {
     SendBill(FileData),
     SendSummary(FileData),
     VerifyTicket(String),
@@ -42,50 +45,38 @@ pub struct DocumentCdpData {
     importe_total: String,
 }
 
-pub trait RendererSoap {
-    fn render(&self) -> tera::Result<String>;
+pub trait ToStringXml {
+    fn to_string_xml(&self) -> Result<String>;
 }
 
-lazy_static::lazy_static! {
-    pub static ref TEMPLATES: Tera = {
-        match Tera::new("src/templates/*.xml") {
-            Ok(t) => t,
-            Err(e) => {
-                println!("Parsing error(s): {}", e);
-                ::std::process::exit(1);
-            }
-        }
-    };
-}
-
-impl RendererSoap for SoapMessage {
-    fn render(&self) -> tera::Result<String> {
+impl ToStringXml for EnvelopeData {
+    fn to_string_xml(&self) -> Result<String> {
         let mut context = Context::new();
         context.insert("username", &self.username);
         context.insert("password", &self.password);
 
         match &self.body {
-            SoapBody::SendBill(file_data) => {
+            BodyData::SendBill(file_data) => {
                 context.insert("body", &file_data);
                 TEMPLATES.render("send_bill.xml", &context)
             }
-            SoapBody::SendSummary(file_data) => {
+            BodyData::SendSummary(file_data) => {
                 context.insert("body", &file_data);
                 TEMPLATES.render("send_summary.xml", &context)
             }
-            SoapBody::VerifyTicket(ticket) => {
+            BodyData::VerifyTicket(ticket) => {
                 context.insert("ticket", ticket);
                 TEMPLATES.render("verify_ticket.xml", &context)
             }
-            SoapBody::GetStatusCrd(document_data) => {
+            BodyData::GetStatusCrd(document_data) => {
                 context.insert("body", document_data);
                 TEMPLATES.render("get_status_crd.xml", &context)
             }
-            SoapBody::ValidateCdpCriterios(document_data) => {
+            BodyData::ValidateCdpCriterios(document_data) => {
                 context.insert("body", document_data);
                 TEMPLATES.render("validate_cdp_criterios.xml", &context)
             }
-            SoapBody::ValidateFile(file_data) => {
+            BodyData::ValidateFile(file_data) => {
                 context.insert("body", &file_data);
                 TEMPLATES.render("validate_file.xml", &context)
             }
@@ -95,16 +86,14 @@ impl RendererSoap for SoapMessage {
 
 #[cfg(test)]
 mod tests {
-    use crate::message_renderer::SoapBody::{
+    use crate::soap::envelope::BodyData::{
         GetStatusCrd, SendBill, SendSummary, ValidateCdpCriterios, ValidateFile, VerifyTicket,
     };
-    use crate::message_renderer::{
-        DocumentCdpData, DocumentData, FileData, RendererSoap, SoapMessage,
-    };
+    use crate::soap::envelope::*;
 
     #[test]
     fn send_bill() {
-        let message = SoapMessage {
+        let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
             body: SendBill(FileData {
@@ -113,13 +102,12 @@ mod tests {
             }),
         };
 
-        let result = message.render();
-        assert!(result.is_ok());
+        assert!(message.to_string_xml().unwrap().len() > 1);
     }
 
     #[test]
     fn send_summary() {
-        let message = SoapMessage {
+        let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
             body: SendSummary(FileData {
@@ -128,25 +116,23 @@ mod tests {
             }),
         };
 
-        let result = message.render();
-        assert!(result.is_ok());
+        assert!(message.to_string_xml().unwrap().len() > 1);
     }
 
     #[test]
     fn verify_ticket() {
-        let message = SoapMessage {
+        let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
             body: VerifyTicket(String::from("my_ticket")),
         };
 
-        let result = message.render();
-        assert!(result.is_ok());
+        assert!(message.to_string_xml().unwrap().len() > 1);
     }
 
     #[test]
     fn get_status_crd() {
-        let message = SoapMessage {
+        let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
             body: GetStatusCrd(DocumentData {
@@ -157,13 +143,12 @@ mod tests {
             }),
         };
 
-        let result = message.render();
-        assert!(result.is_ok());
+        assert!(message.to_string_xml().unwrap().len() > 1);
     }
 
     #[test]
     fn validate_cdp_criterios() {
-        let message = SoapMessage {
+        let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
             body: ValidateCdpCriterios(DocumentCdpData {
@@ -178,13 +163,12 @@ mod tests {
             }),
         };
 
-        let result = message.render();
-        assert!(result.is_ok());
+        assert!(message.to_string_xml().unwrap().len() > 1);
     }
 
     #[test]
     fn validate_file() {
-        let message = SoapMessage {
+        let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
             body: ValidateFile(FileData {
@@ -193,7 +177,6 @@ mod tests {
             }),
         };
 
-        let result = message.render();
-        assert!(result.is_ok());
+        assert!(message.to_string_xml().unwrap().len() > 1);
     }
 }
