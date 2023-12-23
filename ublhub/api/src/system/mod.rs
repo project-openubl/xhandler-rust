@@ -1,4 +1,3 @@
-use crate::db::{ConnectionOrTransaction, Transactional};
 use migration::{Migrator, MigratorTrait};
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbErr, Statement};
 use std::fmt::{Debug, Display, Formatter};
@@ -75,15 +74,16 @@ impl InnerSystem {
         Ok(Self { db })
     }
 
-    pub(crate) fn connection<'db>(
-        &'db self,
-        tx: Transactional<'db>,
-    ) -> ConnectionOrTransaction<'db> {
-        match tx {
-            Transactional::None => ConnectionOrTransaction::Connection(&self.db),
-            Transactional::Some(tx) => ConnectionOrTransaction::Transaction(tx),
-        }
-    }
+    // todo
+    // pub(crate) fn connection<'db>(
+    //     &'db self,
+    //     tx: Transactional<'db>,
+    // ) -> ConnectionOrTransaction<'db> {
+    //     match tx {
+    //         Transactional::None => ConnectionOrTransaction::Connection(&self.db),
+    //         Transactional::Some(tx) => ConnectionOrTransaction::Transaction(tx),
+    //     }
+    // }
 
     #[cfg(test)]
     pub async fn for_test(name: &str) -> Result<Arc<Self>, anyhow::Error> {
