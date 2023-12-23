@@ -1,9 +1,7 @@
-use std::process::ExitCode;
-use std::sync::Arc;
-
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
-
+use std::process::ExitCode;
+use std::sync::Arc;
 use ublhub_api::system::InnerSystem;
 use ublhub_common::config::Database;
 
@@ -64,16 +62,4 @@ pub struct AppState {
 
 pub fn configure(config: &mut web::ServiceConfig) {
     config.service(project::create_project);
-}
-
-#[cfg(test)]
-mod tests {
-    use std::sync::Arc;
-    use ublhub_api::system::InnerSystem;
-
-    pub async fn bootstrap_system(name: &str) -> Result<Arc<InnerSystem>, anyhow::Error> {
-        InnerSystem::bootstrap("postgres", "eggs", "localhost", None, name)
-            .await
-            .map(Arc::new)
-    }
 }
