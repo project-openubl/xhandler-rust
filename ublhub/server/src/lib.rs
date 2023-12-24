@@ -1,11 +1,13 @@
-use actix_web::middleware::Logger;
-use actix_web::{web, App, HttpServer};
 use std::process::ExitCode;
 use std::sync::Arc;
+
+use actix_web::middleware::Logger;
+use actix_web::{web, App, HttpServer};
+
 use ublhub_api::system::InnerSystem;
 use ublhub_common::config::Database;
 
-use crate::server::project;
+use crate::server::{health, project};
 
 pub mod server;
 
@@ -61,5 +63,7 @@ pub struct AppState {
 }
 
 pub fn configure(config: &mut web::ServiceConfig) {
+    config.service(health::liveness);
+    config.service(health::readiness);
     config.service(project::create_project);
 }

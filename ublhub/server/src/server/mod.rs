@@ -6,6 +6,7 @@ use actix_web::{HttpResponse, ResponseError};
 
 use ublhub_api::system;
 
+pub mod health;
 pub mod project;
 
 #[derive(Debug, thiserror::Error)]

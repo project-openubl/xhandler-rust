@@ -9,6 +9,7 @@ edition = "2021"
 ublhub-entity = {path = "../entity"}
 ublhub-common = {path = "../common"}
 ublhub-migration = {path = "../migration"}
+
 sea-orm = { version = "0.12", features = [ "sea-query-binder", "sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
 sea-query = "0.30.5"
 async-trait = "0.1.75"
