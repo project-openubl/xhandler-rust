@@ -3945,6 +3945,7 @@ name = "ublhub-entity"
 version = "0.1.0"
 dependencies = [
  "sea-orm",
+ "serde",
 ]
 
 [[package]]
@@ -3968,6 +3969,7 @@ dependencies = [
  "thiserror",
  "ublhub-api",
  "ublhub-common",
+ "ublhub-entity",
  "utoipa",
  "utoipa-swagger-ui",
  "xbuilder",

@@ -8,6 +8,7 @@ description = "Web service for managing UBL files from SUNAT"
 [dependencies]
 ublhub-api = { path = "../api" }
 ublhub-common = { path = "../common" }
+ublhub-entity = {path = "../entity"}
 xsender = { path = "../../xsender" }
 xbuilder = { path = "../../xbuilder" }
 

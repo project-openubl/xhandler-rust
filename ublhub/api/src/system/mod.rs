@@ -1,9 +1,14 @@
-use migration::{Migrator, MigratorTrait};
-use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbErr, Statement};
 use std::fmt::{Debug, Display, Formatter};
 use std::sync::Arc;
 
+use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbErr, Statement};
+
+use migration::{Migrator, MigratorTrait};
+
+use crate::db::{ConnectionOrTransaction, Transactional};
+
 pub mod error;
+pub mod project;
 
 pub type System = Arc<InnerSystem>;
 
@@ -74,16 +79,15 @@ impl InnerSystem {
         Ok(Self { db })
     }
 
-    // todo
-    // pub(crate) fn connection<'db>(
-    //     &'db self,
-    //     tx: Transactional<'db>,
-    // ) -> ConnectionOrTransaction<'db> {
-    //     match tx {
-    //         Transactional::None => ConnectionOrTransaction::Connection(&self.db),
-    //         Transactional::Some(tx) => ConnectionOrTransaction::Transaction(tx),
-    //     }
-    // }
+    pub(crate) fn connection<'db>(
+        &'db self,
+        tx: Transactional<'db>,
+    ) -> ConnectionOrTransaction<'db> {
+        match tx {
+            Transactional::None => ConnectionOrTransaction::Connection(&self.db),
+            Transactional::Some(tx) => ConnectionOrTransaction::Transaction(tx),
+        }
+    }
 
     #[cfg(test)]
     pub async fn for_test(name: &str) -> Result<Arc<Self>, anyhow::Error> {

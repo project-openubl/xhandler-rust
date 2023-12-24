@@ -8,7 +8,7 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub username: String,
     #[sea_orm(primary_key, auto_increment = false)]
-    pub project_id: i32,
+    pub project_name: i32,
     pub roles: String,
 }
 
@@ -16,8 +16,8 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(
         belongs_to = "super::project::Entity",
-        from = "Column::ProjectId",
-        to = "super::project::Column::Id",
+        from = "Column::ProjectName",
+        to = "super::project::Column::Name",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]
