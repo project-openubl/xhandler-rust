@@ -12,7 +12,7 @@ ublhub-entity = {path = "../entity"}
 xsender = { path = "../../xsender" }
 xbuilder = { path = "../../xbuilder" }
 
-actix-web = "4.4.0"
+actix-web = "4.4.1"
 serde = { version = "1.0.193", features = ["derive"] }
 sea-orm = { version = "0.12.10", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
 clap = "4.4.11"
