@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <% if(brandType == 'ssc'){ %>
+    <title>LibreFact</title>
+    <meta name="description" content="LibreFact UI" />
+    <meta id="appName" name="application-name" content="LibreFact facturacion Peru - SUNAT" />
+    <% } else{ %>
+    <title>Ublhub</title>
+    <meta name="description" content="Project Openubl/Ublhub UI" />
+    <meta id="appName" name="application-name" content="Ublhub UI" />
+    <% } %>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="version" content="2.0.0" />
+    <link rel="manifest" href="manifest.json" />
+    <base href="/" />
+    <script>
+      window._env = JSON.parse(atob("<%= _env %>"));
+    </script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root" style="height: 100%"></div>
+  </body>
+</html>
