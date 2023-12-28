@@ -9,4 +9,5 @@ members = [
     "ublhub/api",
     "ublhub/server",
     "ublhub/cli",
+    "ublhub/oidc",
 ]

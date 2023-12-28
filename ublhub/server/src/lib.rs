@@ -1,11 +1,15 @@
+use std::fmt::Debug;
 use std::process::ExitCode;
 use std::sync::Arc;
 
+use actix_4_jwt_auth::biscuit::{Validation, ValidationOptions};
+use actix_4_jwt_auth::{Oidc, OidcBiscuitValidator, OidcConfig};
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 
 use ublhub_api::system::InnerSystem;
 use ublhub_common::config::Database;
+use ublhub_oidc::config;
 
 use crate::server::{health, project};
 
@@ -22,6 +26,9 @@ pub struct Run {
 
     #[arg(long, env)]
     pub bootstrap: bool,
+
+    #[command(flatten)]
+    pub oidc: config::Oidc,
 }
 
 impl Run {
@@ -44,10 +51,22 @@ impl Run {
 
         let app_state = Arc::new(AppState { system });
 
+        let oidc = Oidc::new(OidcConfig::Issuer(self.oidc.auth_server_url.clone().into()))
+            .await
+            .unwrap();
+        let oidc_validator = OidcBiscuitValidator {
+            options: ValidationOptions {
+                issuer: Validation::Validate(self.oidc.auth_server_url.clone()),
+                ..ValidationOptions::default()
+            },
+        };
+
         HttpServer::new(move || {
             App::new()
                 .app_data(web::Data::from(app_state.clone()))
                 .wrap(Logger::default())
+                .wrap(oidc_validator.clone())
+                .app_data(oidc.clone())
                 .configure(configure)
         })
         .bind(self.bind_addr)?

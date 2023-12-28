@@ -66,18 +66,18 @@ impl From<(&InnerSystem, project::Model)> for ProjectContext {
     }
 }
 
-// impl ProjectContext {
-//     pub async fn advisories(&self, tx: Transactional<'_>) -> Result<Vec<ProjectContext>, Error> {
-//         Ok(advisory::Entity::find()
-//             .join(
-//                 JoinType::Join,
-//                 advisory_vulnerability::Relation::Advisory.def().rev(),
-//             )
-//             .filter(advisory_vulnerability::Column::VulnerabilityId.eq(self.cve.id))
-//             .all(&self.system.connection(tx))
-//             .await?
-//             .drain(0..)
-//             .map(|advisory| (&self.system, advisory).into())
-//             .collect())
-//     }
-// }
+impl ProjectContext {
+    // pub async fn set_owner(&self, tx: Transactional<'_>) -> Result<Vec<ProjectContext>, Error> {
+    //     Ok(advisory::Entity::find()
+    //         .join(
+    //             JoinType::Join,
+    //             advisory_vulnerability::Relation::Advisory.def().rev(),
+    //         )
+    //         .filter(advisory_vulnerability::Column::VulnerabilityId.eq(self.cve.id))
+    //         .all(&self.system.connection(tx))
+    //         .await?
+    //         .drain(0..)
+    //         .map(|advisory| (&self.system, advisory).into())
+    //         .collect())
+    // }
+}

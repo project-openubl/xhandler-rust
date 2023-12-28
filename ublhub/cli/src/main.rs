@@ -45,7 +45,7 @@ impl Cli {
     }
 }
 
-#[tokio::main]
+#[actix_web::main]
 async fn main() -> impl Termination {
     Cli::parse().run().await
 }
