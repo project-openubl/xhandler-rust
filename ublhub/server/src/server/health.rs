@@ -1,7 +1,7 @@
-use actix_web::{get, Responder, web};
+use actix_web::{get, web, Responder};
 
-use crate::AppState;
 use crate::server::Error;
+use crate::AppState;
 
 #[utoipa::path(
     responses(
@@ -9,9 +9,7 @@ use crate::server::Error;
     ),
 )]
 #[get("/health/live")]
-pub async fn liveness(
-    _: web::Data<AppState>,
-) -> Result<impl Responder, Error> {
+pub async fn liveness(_: web::Data<AppState>) -> Result<impl Responder, Error> {
     Ok("Live")
 }
 
