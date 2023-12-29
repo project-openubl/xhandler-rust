@@ -173,16 +173,8 @@ const config: Configuration = {
     new CopyPlugin({
       patterns: [
         {
-          from: pathTo("../public/locales"),
-          to: pathTo("../dist/locales"),
-        },
-        {
           from: pathTo("../public/manifest.json"),
           to: pathTo("../dist/manifest.json"),
-        },
-        {
-          from: pathTo("../public/templates"),
-          to: pathTo("../dist/templates"),
         },
       ],
     }),
@@ -193,9 +185,9 @@ const config: Configuration = {
   ],
 
   resolve: {
-    alias: {
-      "react-dom": "@hot-loader/react-dom",
-    },
+    // alias: {
+    //   "react-dom": "@hot-loader/react-dom",
+    // },
     extensions: [".js", ".ts", ".tsx", ".jsx"],
     plugins: [
       new TsconfigPathsPlugin({

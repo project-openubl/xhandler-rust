@@ -1,9 +1,9 @@
 import type { Options } from "http-proxy-middleware";
-import { KONVEYOR_ENV as UBLHUB_ENV } from "./environment.js";
+import { OPENUBL_ENV } from "./environment.js";
 
 export const proxyMap: Record<string, Options> = {
   "/auth": {
-    target: UBLHUB_ENV.KEYCLOAK_SERVER_URL || "http://localhost:9001",
+    target: OPENUBL_ENV.KEYCLOAK_SERVER_URL || "http://localhost:9001",
     logLevel: process.env.DEBUG ? "debug" : "info",
 
     changeOrigin: true,
@@ -31,7 +31,7 @@ export const proxyMap: Record<string, Options> = {
   },
 
   "/hub": {
-    target: UBLHUB_ENV.UBL_HUB_URL || "http://localhost:9002",
+    target: OPENUBL_ENV.OPENUBL_HUB_URL || "http://localhost:9002",
     logLevel: process.env.DEBUG ? "debug" : "info",
 
     changeOrigin: true,

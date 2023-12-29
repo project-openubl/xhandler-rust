@@ -11,14 +11,14 @@ import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 
 import {
   encodeEnv,
-  UBLHUB_ENV,
+  OPENUBL_ENV,
   SERVER_ENV_KEYS,
   proxyMap,
-} from "@ublhub-ui/common";
+} from "@openubl-ui/common";
 import { stylePaths } from "./stylePaths";
 import commonWebpackConfiguration from "./webpack.common";
 
-const brandType = UBLHUB_ENV.PROFILE;
+const brandType = OPENUBL_ENV.PROFILE;
 const pathTo = (relativePath: string) => path.resolve(__dirname, relativePath);
 
 interface Configuration extends WebpackConfiguration {
@@ -101,7 +101,7 @@ const config: Configuration = mergeWithRules({
       filename: "index.html",
       template: pathTo("../public/index.html.ejs"),
       templateParameters: {
-        _env: encodeEnv(UBLHUB_ENV, SERVER_ENV_KEYS),
+        _env: encodeEnv(OPENUBL_ENV, SERVER_ENV_KEYS),
         brandType,
       },
       favicon: pathTo(`../public/${brandType}-favicon.ico`),
@@ -116,8 +116,8 @@ const config: Configuration = mergeWithRules({
   ],
 
   watchOptions: {
-    // ignore watching everything except @ublhub-ui packages
-    ignored: /node_modules\/(?!@ublhub-ui\/)/,
+    // ignore watching everything except @openubl-ui packages
+    ignored: /node_modules\/(?!@openubl-ui\/)/,
   },
 } as Configuration);
 export default config;

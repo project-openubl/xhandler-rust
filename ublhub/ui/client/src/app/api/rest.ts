@@ -10,10 +10,13 @@ import {
   Repository,
   New,
   Tag,
+  Project,
 } from "./models";
 import { serializeRequestParamsForApi } from "@app/shared/hooks/table-controls";
 
 const API = "/api";
+
+export const PROJECTS = API + "/projects";
 
 const ORGANIZATIONS = API + "/organizations";
 const REPOSITORIES = API + "/repositories";
@@ -44,6 +47,13 @@ export const getApiPaginatedResult = <T>(
       total: data.total,
       params,
     }));
+
+//
+export const getProjects = () => {
+  return axios.get<Project[]>(PROJECTS);
+};
+
+//
 
 export const getOrganizations = () => {
   return axios.get<Organization[]>(ORGANIZATIONS);

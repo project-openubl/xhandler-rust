@@ -5,11 +5,11 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 
-import { UBLHUB_ENV } from "@ublhub-ui/common";
+import { OPENUBL_ENV } from "@openubl-ui/common";
 import { stylePaths } from "./stylePaths";
 import commonWebpackConfiguration from "./webpack.common";
 
-const brandType = UBLHUB_ENV.PROFILE;
+const brandType = OPENUBL_ENV.PROFILE;
 const pathTo = (relativePath: string) => path.resolve(__dirname, relativePath);
 
 const config = merge<Configuration>(commonWebpackConfiguration, {

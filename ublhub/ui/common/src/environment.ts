@@ -28,9 +28,6 @@ export type OpenublEnvType = {
   /** UI upload file size limit in megabytes (MB), suffixed with "m" */
   UI_INGRESS_PROXY_BODY_SIZE: string;
 
-  /** Allow clearing local maven artifact repository? Requires availability of RWX volumes for hub. */
-  RWX_SUPPORTED: "true" | "false";
-
   /** The listen port for the UI's server */
   PORT?: string;
 
@@ -38,7 +35,7 @@ export type OpenublEnvType = {
   KEYCLOAK_SERVER_URL?: string;
 
   /** Target URL for the UI server's `/hub` proxy */
-  UBL_HUB_URL?: string;
+  OPENUBL_HUB_URL?: string;
 };
 
 /**
@@ -54,21 +51,19 @@ export const SERVER_ENV_KEYS = [
 /**
  * Create a `KonveyorEnv` from a partial `KonveyorEnv` with a set of default values.
  */
-export const buildKonveyorEnv = ({
+export const buildOpenublEnv = ({
   NODE_ENV = "production",
   PORT,
   VERSION = "99.0.0",
   MOCK = "off",
 
   KEYCLOAK_SERVER_URL,
-  AUTH_REQUIRED = "false",
-  KEYCLOAK_REALM = "tackle",
-  KEYCLOAK_CLIENT_ID = "tackle-ui",
+  KEYCLOAK_REALM = "openubl",
+  KEYCLOAK_CLIENT_ID = "openubl-ui",
 
-  PROFILE = "konveyor",
+  PROFILE = "openubl",
   UI_INGRESS_PROXY_BODY_SIZE = "500m",
-  RWX_SUPPORTED = "true",
-  UBL_HUB_URL: TACKLE_HUB_URL,
+  OPENUBL_HUB_URL,
 }: Partial<OpenublEnvType> = {}): OpenublEnvType => ({
   NODE_ENV,
   PORT,
@@ -76,22 +71,20 @@ export const buildKonveyorEnv = ({
   MOCK,
 
   KEYCLOAK_SERVER_URL,
-  AUTH_REQUIRED,
   KEYCLOAK_REALM,
   KEYCLOAK_CLIENT_ID,
 
   PROFILE,
   UI_INGRESS_PROXY_BODY_SIZE,
-  RWX_SUPPORTED,
-  UBL_HUB_URL: TACKLE_HUB_URL,
+  OPENUBL_HUB_URL,
 });
 
 /**
- * Default values for `KonveyorEnvType`.
+ * Default values for `OpenublEnvType`.
  */
-export const KONVEYOR_ENV_DEFAULTS = buildKonveyorEnv();
+export const OPENUBL_ENV_DEFAULTS = buildOpenublEnv();
 
 /**
- * Current `@konveyor-ui` environment configurations from `process.env`.
+ * Current `@openubl-ui` environment configurations from `process.env`.
  */
-export const KONVEYOR_ENV = buildKonveyorEnv(process.env);
+export const OPENUBL_ENV = buildOpenublEnv(process.env);

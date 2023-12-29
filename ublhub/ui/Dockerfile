@@ -15,18 +15,18 @@ RUN microdnf -y install tar procps-ng && microdnf clean all
 
 USER 1001
 
-LABEL name="project-openubl/ublhub-ui" \
-      description="Ublhub - User Interface" \
+LABEL name="project-openubl/openubl-ui" \
+      description="Openubl - User Interface" \
       help="For more information visit https://project-openubl.github.io/" \
       license="Apache License 2.0" \
       maintainer="carlosthe19916@gmail.com" \
-      summary="Ublhub - User Interface" \
-      url="https://quay.io/repository/projectopenubl/ublhub-ui" \
-      usage="podman run -p 80 -v projectopenubl/ublhub-ui:latest" \      
-      io.k8s.display-name="ublhub-ui" \
-      io.k8s.description="Ublhub - User Interface" \
+      summary="Openubl - User Interface" \
+      url="https://quay.io/repository/projectopenubl/openubl-ui" \
+      usage="podman run -p 80 -v projectopenubl/openubl-ui:latest" \      
+      io.k8s.display-name="openubl-ui" \
+      io.k8s.description="Openubl - User Interface" \
       io.openshift.expose-services="80:http" \
-      io.openshift.tags="operator,ublhub,ui,nodejs18" \
+      io.openshift.tags="operator,openubl,ui,nodejs18" \
       io.openshift.min-cpu="100m" \
       io.openshift.min-memory="350Mi"
 

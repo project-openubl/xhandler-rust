@@ -33,6 +33,14 @@ export interface ApiPaginatedResult<T> {
 
 //
 
+export interface Project {
+  id: number;
+  name: String;
+  description?: String;
+}
+
+//
+
 export type AdvisorySeverity = "Low" | "Moderate" | "Important" | "Critical";
 
 export interface Advisory {
