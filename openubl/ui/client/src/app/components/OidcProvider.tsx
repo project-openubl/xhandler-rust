@@ -35,17 +35,22 @@ const AuthEnabledOidcProvider: React.FC<IOidcProviderProps> = ({
   const auth = useAuth();
 
   React.useEffect(() => {
-    initInterceptors();
-  }, []);
+    if (!auth.isAuthenticated && !auth.isLoading) {
+      auth.signinRedirect();
+    }
+  }, [auth.isAuthenticated, auth.isLoading]);
+
+  React.useEffect(() => {
+    if (auth.user?.access_token) {
+      initInterceptors(auth.user.access_token);
+    }
+  }, [auth.user?.access_token]);
 
   if (auth.isAuthenticated) {
     return <Suspense fallback={<AppPlaceholder />}>{children}</Suspense>;
   } else if (auth.isLoading) {
     return <AppPlaceholder />;
   } else {
-    auth.signinRedirect().then(() => {
-      console.log("Login in...");
-    });
     return <p>Login in...</p>;
   }
 };

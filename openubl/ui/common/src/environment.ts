@@ -23,7 +23,7 @@ export type OpenublEnvType = {
   OIDC_CLIENT_ID: string;
 
   /** Branding to apply to the UI */
-  PROFILE: "openubl" | "mta";
+  PROFILE: "openubl" | "lf";
 
   /** UI upload file size limit in megabytes (MB), suffixed with "m" */
   UI_INGRESS_PROXY_BODY_SIZE: string;
