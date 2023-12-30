@@ -2,9 +2,9 @@ import axios from "axios";
 import { ApiPaginatedResult, ApiRequestParams, New, Project } from "./models";
 import { serializeRequestParamsForApi } from "@app/shared/hooks/table-controls";
 
-const API = "/hub";
+const HUB = "/hub";
 
-export const PROJECTS = API + "/projects";
+export const PROJECTS = HUB + "/projects";
 
 interface ApiSearchResult<T> {
   total: number;

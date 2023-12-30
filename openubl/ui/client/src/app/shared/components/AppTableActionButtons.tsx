@@ -40,7 +40,7 @@ export const AppTableActionButtons: React.FC<AppTableActionButtonsProps> = ({
               onClick={onDelete}
               isAriaDisabled={isDeleteEnabled}
             >
-              Delete
+              Eliminar
             </Button>
           </ConditionalTooltip>
         </FlexItem>

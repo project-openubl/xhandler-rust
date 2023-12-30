@@ -65,7 +65,7 @@ export const Projects: React.FC = () => {
 
   const onDeleteOrgSuccess = () => {
     pushNotification({
-      title: "Project deleted",
+      title: "Proyecto eliminado",
       variant: "success",
     });
   };
@@ -211,11 +211,11 @@ export const Projects: React.FC = () => {
                           <ActionsColumn
                             items={[
                               {
-                                title: "Edit",
+                                title: "Editar",
                                 onClick: () => setCreateUpdateModalState(item),
                               },
                               {
-                                title: "Delete",
+                                title: "Eliminar",
                                 onClick: () => deleteRow(item),
                               },
                             ]}
@@ -252,7 +252,7 @@ export const Projects: React.FC = () => {
 
       {isConfirmDialogOpen && (
         <ConfirmDialog
-          title={"Delete project"}
+          title={"Eliminar proyecto"}
           isOpen={true}
           titleIconVariant={"warning"}
           message={`Estas seguro de querer eliminar este proyecto?`}

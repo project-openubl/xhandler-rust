@@ -36,7 +36,7 @@ export const handlers = [
     newProject.id = generateRandomId(1000, 9999);
 
     const existingProjectIndex = mockProjectArray.findIndex(
-      (app) => app.id === newProject.id
+      (elem) => elem.id === newProject.id
     );
 
     if (existingProjectIndex !== -1) {
@@ -53,24 +53,34 @@ export const handlers = [
       );
     }
   }),
-  rest.delete(`${AppRest.PROJECTS}`, async (req, res, ctx) => {
-    const ids: number[] = await req.json();
+  rest.put(`${AppRest.PROJECTS}/:id`, async (req, res, ctx) => {
+    const { id } = req.params;
+    const newProject = await req.json();
 
-    // Filter and remove projects from the mock array by their IDs
-    ids.forEach((id) => {
-      const existingProjectsIndex = mockProjectArray.findIndex(
-        (app) => app.id === id
-      );
-
-      if (existingProjectsIndex !== -1) {
-        mockProjectArray.splice(existingProjectsIndex, 1);
-      }
-    });
-
-    return res(
-      ctx.status(200),
-      ctx.json({ message: "Projects deleted successfully" })
+    const existingProjectIndex = mockProjectArray.findIndex(
+      (elem) => `${elem.id}` === `${id}`
     );
+
+    if (existingProjectIndex !== -1) {
+      mockProjectArray[existingProjectIndex] = newProject;
+      return res(ctx.status(204));
+    } else {
+      return res(ctx.status(404));
+    }
+  }),
+  rest.delete(`${AppRest.PROJECTS}/:id`, async (req, res, ctx) => {
+    const { id } = req.params;
+
+    const existingProjectIndex = mockProjectArray.findIndex(
+      (elem) => `${elem.id}` === `${id}`
+    );
+
+    if (existingProjectIndex !== -1) {
+      mockProjectArray.splice(existingProjectIndex, 1);
+      return res(ctx.status(200));
+    } else {
+      return res(ctx.status(404));
+    }
   }),
 ];
 
