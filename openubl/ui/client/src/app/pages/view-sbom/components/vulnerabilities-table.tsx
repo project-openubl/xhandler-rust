@@ -227,7 +227,7 @@ export const VulnerabilitiesTable: React.FC = () => {
                                   <DescriptionListDescription>
                                     The CVSS score(s) listed for this
                                     vulnerability do not reflect the associated
-                                    product's status, and are included for
+                                    product{"'"}s status, and are included for
                                     informational purposes to better understand
                                     the severity of this vulnerability.
                                   </DescriptionListDescription>

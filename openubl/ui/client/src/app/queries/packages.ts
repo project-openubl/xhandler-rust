@@ -15,10 +15,7 @@ export const PackagesQueryKey = "packages";
 
 export const useFetchPackages = (params: ApiRequestParams = {}) => {
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [
-      PackagesQueryKey,
-      serializeRequestParamsForApi(params).toString(),
-    ],
+    queryKey: [PackagesQueryKey, params],
     queryFn: async () => await getpackages(params),
     onError: (error) => console.log("error, ", error),
     keepPreviousData: true,

@@ -9,7 +9,6 @@ import {
   getRepositories,
   updateRepository,
 } from "@app/api/rest";
-import { serializeRequestParamsForApi } from "@app/shared/hooks/table-controls";
 
 export interface IRepositoriesFetchState {
   result: Repository[];
@@ -22,10 +21,7 @@ export const RepositoriesQueryKey = "repositories";
 
 export const useFetchRepositories = (params: ApiRequestParams = {}) => {
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [
-      RepositoriesQueryKey,
-      serializeRequestParamsForApi(params).toString(),
-    ],
+    queryKey: [RepositoriesQueryKey, params],
     queryFn: async () => await getRepositories(params),
     onError: (error) => console.log("error, ", error),
     keepPreviousData: true,

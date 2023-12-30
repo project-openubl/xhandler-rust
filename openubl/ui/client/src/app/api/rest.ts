@@ -27,7 +27,7 @@ const ADVISORY_SEARCH = API + "/advisory/search";
 const PACKAGE = API + "/package";
 const PACKAGE_SEARCH = API + "/package/search";
 
-const formHeaders = { headers: { Accept: "multipart/form-data" } };
+// const formHeaders = { headers: { Accept: "multipart/form-data" } };
 
 interface ApiSearchResult<T> {
   total: number;

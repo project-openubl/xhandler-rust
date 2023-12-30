@@ -19,10 +19,7 @@ export const AdvisoriesQueryKey = "advisories";
 
 export const useFetchAdvisories = (params: ApiRequestParams = {}) => {
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [
-      AdvisoriesQueryKey,
-      serializeRequestParamsForApi(params).toString(),
-    ],
+    queryKey: [AdvisoriesQueryKey, params],
     queryFn: async () => await getAdvisories(params),
     onError: (error) => console.log("error, ", error),
     keepPreviousData: true,
