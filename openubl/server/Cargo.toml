@@ -20,7 +20,7 @@ sea-orm = { version = "0.12.10", features = ["sqlx-postgres", "runtime-tokio-rus
 clap = { version = "4.4.11", features = ["derive", "env"] }
 anyhow = "1.0.76"
 env_logger = "0.10.1"
-thiserror = "1.0.50"
+thiserror = "1.0.52"
 utoipa = { version = "4.1.0", features = ["actix_extras"] }
 utoipa-swagger-ui = { version = "5.0.0", features = ["actix-web"] }
 actix-web-httpauth = "0.8.1"
