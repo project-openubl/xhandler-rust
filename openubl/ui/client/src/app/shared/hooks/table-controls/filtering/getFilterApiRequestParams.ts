@@ -48,7 +48,7 @@ const pushOrMergeFilter = (
 
 export interface IGetFilterApiRequestParamsArgs<
   TItem,
-  TFilterCategoryKey extends string = string
+  TFilterCategoryKey extends string = string,
 > {
   filterState?: IFilterState<TFilterCategoryKey>;
   filterCategories?: FilterCategory<TItem, TFilterCategoryKey>[];
@@ -57,7 +57,7 @@ export interface IGetFilterApiRequestParamsArgs<
 
 export const getFilterApiRequestParams = <
   TItem,
-  TFilterCategoryKey extends string = string
+  TFilterCategoryKey extends string = string,
 >({
   filterState,
   filterCategories,
@@ -137,10 +137,10 @@ export const serializeFilterForApi = (filter: ApiFilter): string => {
     typeof value === "string"
       ? wrapInQuotesAndEscape(value)
       : typeof value === "number"
-      ? `"${value}"`
-      : `(${value.list
-          .map(wrapInQuotesAndEscape)
-          .join(value.operator === "OR" ? "|" : ",")})`;
+        ? `"${value}"`
+        : `(${value.list
+            .map(wrapInQuotesAndEscape)
+            .join(value.operator === "OR" ? "|" : ",")})`;
   return `${field}${operator}${joinedValue}`;
 };
 
@@ -164,8 +164,8 @@ export const serializeFilterRequestParamsForApi = (
         typeof value === "string"
           ? value
           : typeof value === "number"
-          ? `"${value}"`
-          : `(${value.list.join(value.operator === "OR" ? "|" : ",")})`;
+            ? `"${value}"`
+            : `(${value.list.join(value.operator === "OR" ? "|" : ",")})`;
 
       serializedParams.append(field, joinedValue);
     });

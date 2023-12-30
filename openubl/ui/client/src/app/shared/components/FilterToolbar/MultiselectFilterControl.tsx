@@ -15,14 +15,14 @@ import {
 
 export interface IMultiselectFilterControlProps<
   TItem,
-  TFilterCategoryKey extends string
+  TFilterCategoryKey extends string,
 > extends IFilterControlProps<TItem, TFilterCategoryKey> {
   category: IMultiselectFilterCategory<TItem, TFilterCategoryKey>;
 }
 
 export const MultiselectFilterControl = <
   TItem,
-  TFilterCategoryKey extends string
+  TFilterCategoryKey extends string,
 >({
   category,
   filterValue,
@@ -55,13 +55,13 @@ export const MultiselectFilterControl = <
   const onFilterSelect = (value: string | SelectOptionObject) => {
     const optionKey = getOptionKeyFromOptionValue(value);
     if (optionKey && filterValue?.includes(optionKey)) {
-      let updatedValues = filterValue.filter(
+      const updatedValues = filterValue.filter(
         (item: string) => item !== optionKey
       );
       setFilterValue(updatedValues);
     } else {
       if (filterValue) {
-        let updatedValues = [...filterValue, optionKey];
+        const updatedValues = [...filterValue, optionKey];
         setFilterValue(updatedValues as string[]);
       } else {
         setFilterValue([optionKey || ""]);

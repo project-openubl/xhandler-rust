@@ -7,7 +7,7 @@ import { IFilterState } from "./useFilterState";
 
 export interface ILocalFilterDerivedStateArgs<
   TItem,
-  TFilterCategoryKey extends string
+  TFilterCategoryKey extends string,
 > {
   items: TItem[];
   filterCategories?: FilterCategory<TItem, TFilterCategoryKey>[];
@@ -15,7 +15,7 @@ export interface ILocalFilterDerivedStateArgs<
 
 export const getLocalFilterDerivedState = <
   TItem,
-  TFilterCategoryKey extends string
+  TFilterCategoryKey extends string,
 >({
   items,
   filterCategories = [],

@@ -11,7 +11,6 @@ import {
 import { useLocalTableControls } from "@app/shared/hooks/table-controls";
 import {
   Button,
-  ButtonVariant,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -19,25 +18,18 @@ import {
   EmptyState,
   EmptyStateIcon,
   EmptyStateVariant,
-  Flex,
-  FlexItem,
   List,
   ListComponent,
   ListItem,
   OrderType,
-  Tab,
-  TabTitleText,
-  Tabs,
   Text,
   TextContent,
   Title,
   Toolbar,
   ToolbarContent,
-  ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
 import {
-  ActionsColumn,
   ExpandableRowContent,
   Table,
   Tbody,
@@ -46,15 +38,8 @@ import {
   Thead,
   Tr,
 } from "@patternfly/react-table";
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import ShieldIcon from "@patternfly/react-icons/dist/esm/icons/shield-alt-icon";
-import {
-  global_info_color_100 as lowColor,
-  global_warning_color_100 as moderateColor,
-  global_danger_color_100 as importantColor,
-  global_palette_purple_400 as criticalColor,
-} from "@patternfly/react-tokens";
+import React from "react";
+
 import {
   IPageDrawerContentProps,
   PageDrawerContent,
@@ -261,7 +246,7 @@ export const VulnerabilitiesTable: React.FC = () => {
                                   <DescriptionListDescription>
                                     memory allocation hazard and crash
                                   </DescriptionListDescription>
-                                </DescriptionListGroup>                                
+                                </DescriptionListGroup>
                               </DescriptionList>
                             </div>
                           )}

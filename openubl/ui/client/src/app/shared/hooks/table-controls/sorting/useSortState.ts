@@ -34,7 +34,7 @@ export const useSortState = <TSortableColumnKey extends string>({
 
 export const useSortUrlParams = <
   TSortableColumnKey extends string,
-  TURLParamKeyPrefix extends string = string
+  TURLParamKeyPrefix extends string = string,
 >({
   sortableColumns = [],
   initialSort = getDefaultSort(sortableColumns),

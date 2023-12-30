@@ -23,7 +23,7 @@ type TSerializedParams<TURLParamKey extends string> = Partial<
 export interface IUseUrlParamsArgs<
   TURLParamKey extends string,
   TKeyPrefix extends string,
-  TDeserializedParams
+  TDeserializedParams,
 > {
   keyPrefix?: DisallowCharacters<TKeyPrefix, ":">;
   keys: DisallowCharacters<TURLParamKey, ":">[];
@@ -38,13 +38,13 @@ export interface IUseUrlParamsArgs<
 
 export type TURLParamStateTuple<TDeserializedParams> = readonly [
   TDeserializedParams,
-  (newParams: Partial<TDeserializedParams>) => void
+  (newParams: Partial<TDeserializedParams>) => void,
 ];
 
 export const useUrlParams = <
   TURLParamKey extends string,
   TKeyPrefix extends string,
-  TDeserializedParams
+  TDeserializedParams,
 >({
   keyPrefix,
   keys,

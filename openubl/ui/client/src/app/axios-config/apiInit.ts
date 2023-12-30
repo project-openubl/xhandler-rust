@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const initInterceptors = (access_token: String) => {
+export const initInterceptors = (access_token: string) => {
   axios.interceptors.request.use(
     (config) => {
       const token = access_token;

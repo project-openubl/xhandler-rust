@@ -23,7 +23,7 @@ export const usePaginationState = ({
 };
 
 export const usePaginationUrlParams = <
-  TURLParamKeyPrefix extends string = string
+  TURLParamKeyPrefix extends string = string,
 >({
   initialItemsPerPage = 10,
   urlParamKeyPrefix,

@@ -4,5 +4,5 @@ export type KeyWithValueType<T, V> = {
 
 export type DisallowCharacters<
   T extends string,
-  TInvalidCharacter extends string
+  TInvalidCharacter extends string,
 > = T extends `${string}${TInvalidCharacter}${string}` ? never : T;

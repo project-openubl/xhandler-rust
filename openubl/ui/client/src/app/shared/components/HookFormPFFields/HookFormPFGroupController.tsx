@@ -18,7 +18,7 @@ import {
 // Generic type params here are the same as the ones used by react-hook-form's <Controller>.
 export interface BaseHookFormPFGroupControllerProps<
   TFieldValues extends FieldValues,
-  TName extends Path<TFieldValues>
+  TName extends Path<TFieldValues>,
 > {
   control: Control<TFieldValues>;
   label?: React.ReactNode;
@@ -34,14 +34,14 @@ export interface BaseHookFormPFGroupControllerProps<
 
 export interface HookFormPFGroupControllerProps<
   TFieldValues extends FieldValues,
-  TName extends Path<TFieldValues>
+  TName extends Path<TFieldValues>,
 > extends BaseHookFormPFGroupControllerProps<TFieldValues, TName> {
   renderInput: ControllerProps<TFieldValues, TName>["render"];
 }
 
 export const HookFormPFGroupController = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
 >({
   control,
   label,
@@ -94,7 +94,7 @@ export const HookFormPFGroupController = <
 export const extractGroupControllerProps = <
   TFieldValues extends FieldValues,
   TName extends Path<TFieldValues>,
-  TProps extends BaseHookFormPFGroupControllerProps<TFieldValues, TName>
+  TProps extends BaseHookFormPFGroupControllerProps<TFieldValues, TName>,
 >(
   props: TProps
 ): {

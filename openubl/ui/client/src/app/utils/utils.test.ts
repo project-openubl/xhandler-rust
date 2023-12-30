@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import { getToolbarChipKey } from "./utils";
 
 describe("utils", () => {

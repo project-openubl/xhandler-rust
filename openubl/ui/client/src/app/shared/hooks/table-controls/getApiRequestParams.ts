@@ -21,7 +21,7 @@ import {
 export const getApiRequestParams = <
   TItem,
   TSortableColumnKey extends string,
-  TFilterCategoryKey extends string = string
+  TFilterCategoryKey extends string = string,
 >(
   args: IGetFilterApiRequestParamsArgs<TItem, TFilterCategoryKey> &
     IGetSortApiRequestParamsArgs<TSortableColumnKey> &

@@ -10,7 +10,7 @@ import {
 
 export type HookFormPFSelectProps<
   TFieldValues extends FieldValues,
-  TName extends Path<TFieldValues>
+  TName extends Path<TFieldValues>,
 > = FormSelectProps &
   BaseHookFormPFGroupControllerProps<TFieldValues, TName> & {
     children: React.ReactNode;
@@ -18,7 +18,7 @@ export type HookFormPFSelectProps<
 
 export const HookFormPFSelect = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
 >(
   props: HookFormPFSelectProps<TFieldValues, TName>
 ) => {

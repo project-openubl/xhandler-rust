@@ -1,9 +1,8 @@
 import { AxiosError } from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { ApiRequestParams, Tag } from "@app/api/models";
-import { getRepositories, getTags, uploadTag } from "@app/api/rest";
-import { serializeRequestParamsForApi } from "@app/shared/hooks/table-controls";
+import { Tag } from "@app/api/models";
+import { getTags, uploadTag } from "@app/api/rest";
 
 export interface ITagsFetchState {
   result: Tag[];

@@ -1,67 +1,27 @@
 import React from "react";
 
 import {
-  Button,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateVariant,
-  Flex,
-  FlexItem,
-  List,
-  ListComponent,
-  ListItem,
-  OrderType,
   PageSection,
   PageSectionVariants,
   Text,
   TextContent,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from "@patternfly/react-core";
-import {
-  getApiRequestParams,
-  useLocalTableControls,
-  useTableControlProps,
-  useTableControlUrlParams,
-} from "@app/shared/hooks/table-controls";
+import { useLocalTableControls } from "@app/shared/hooks/table-controls";
 import {
   FilterToolbar,
   FilterType,
 } from "@app/shared/components/FilterToolbar";
-import { useFetchPackages } from "@app/queries/packages";
-import { useSelectionState } from "@app/shared/hooks/useSelectionState";
 import { SimplePagination } from "@app/shared/components/SimplePagination";
-import {
-  ExpandableRowContent,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from "@patternfly/react-table";
+import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import {
   ConditionalTableBody,
   TableHeaderContentWithControls,
   TableRowContentWithControls,
 } from "@app/shared/components/TableControls";
-import DownloadIcon from "@patternfly/react-icons/dist/esm/icons/download-icon";
-import spacing from "@patternfly/react-styles/css/utilities/Spacing/spacing";
-import { Link, NavLink } from "react-router-dom";
-import ShieldIcon from "@patternfly/react-icons/dist/esm/icons/shield-alt-icon";
-import {
-  global_info_color_100 as lowColor,
-  global_warning_color_100 as moderateColor,
-  global_danger_color_100 as importantColor,
-  global_palette_purple_400 as criticalColor,
-} from "@patternfly/react-tokens";
-import {
-  IPageDrawerContentProps,
-  PageDrawerContent,
-} from "@app/shared/components/PageDrawerContext";
-import CubesIcon from "@patternfly/react-icons/dist/esm/icons/cubes-icon";
+import { NavLink } from "react-router-dom";
 
 interface RowData {
   name: string;

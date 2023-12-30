@@ -6,11 +6,6 @@ import {
   Label,
   PageSection,
   PageSectionVariants,
-  Spinner,
-  Tab,
-  TabContent,
-  TabTitleText,
-  Tabs,
   Text,
   TextContent,
 } from "@patternfly/react-core";
@@ -39,7 +34,9 @@ export const ViewPackage: React.FC = () => {
       </PageSection>
       <PageSection variant={PageSectionVariants.light}>
         <TextContent>
-          <Text component="h1">log4j <Label color="blue">Maven</Label></Text>
+          <Text component="h1">
+            log4j <Label color="blue">Maven</Label>
+          </Text>
           {/* <Text component="p">Package description</Text> */}
         </TextContent>
       </PageSection>

@@ -10,7 +10,7 @@ export const useTableControlUrlParams = <
   TColumnKey extends string,
   TSortableColumnKey extends TColumnKey,
   TFilterCategoryKey extends string = string,
-  TURLParamKeyPrefix extends string = string
+  TURLParamKeyPrefix extends string = string,
 >(
   args: ITableControlCommonArgs<
     TItem,

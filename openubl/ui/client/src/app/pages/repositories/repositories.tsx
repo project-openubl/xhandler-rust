@@ -61,7 +61,7 @@ export const Repositories: React.FC = () => {
   const { pushNotification } = useContext(NotificationsContext);
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
-    useState<Boolean>(false);
+    useState<boolean>(false);
   const [repositoryIdToDelete, setRepositoryIdToDelete] =
     React.useState<number>();
 

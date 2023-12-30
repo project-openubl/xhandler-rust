@@ -12,7 +12,7 @@ import { ISearchFilterCategory } from "./FilterToolbar";
 
 export interface ISearchFilterControlProps<
   TItem,
-  TFilterCategoryKey extends string
+  TFilterCategoryKey extends string,
 > extends IFilterControlProps<TItem, TFilterCategoryKey> {
   category: ISearchFilterCategory<TItem, TFilterCategoryKey>;
   isNumeric: boolean;

@@ -35,11 +35,11 @@ export const useFetchOrganizations = () => {
 };
 
 export const useOrganizationById = (id: number) => {
-  const { data, isLoading, error } = useQuery(
-    [OrganizationsQueryKey, id],
-    async () => (await getOrganizationById(id)).data,
-    { onError: (error) => console.log(error) }
-  );
+  const { data, isLoading, error } = useQuery({
+    queryKey: [OrganizationsQueryKey, id],
+    queryFn: async () => (await getOrganizationById(id)).data,
+    onError: (error) => console.log(error),
+  });
 
   return {
     result: data,

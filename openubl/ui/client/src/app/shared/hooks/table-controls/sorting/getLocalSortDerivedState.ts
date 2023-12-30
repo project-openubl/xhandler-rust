@@ -2,7 +2,7 @@ import { ISortState } from "./useSortState";
 
 export interface ILocalSortDerivedStateArgs<
   TItem,
-  TSortableColumnKey extends string
+  TSortableColumnKey extends string,
 > {
   items: TItem[];
   getSortValues?: (
@@ -12,7 +12,7 @@ export interface ILocalSortDerivedStateArgs<
 
 export const getLocalSortDerivedState = <
   TItem,
-  TSortableColumnKey extends string
+  TSortableColumnKey extends string,
 >({
   items,
   getSortValues,

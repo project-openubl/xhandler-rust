@@ -5,7 +5,7 @@ import { IUseLocalTableControlStateArgs } from "./types";
 export const useLocalTableControls = <
   TItem,
   TColumnKey extends string,
-  TSortableColumnKey extends TColumnKey
+  TSortableColumnKey extends TColumnKey,
 >(
   args: IUseLocalTableControlStateArgs<TItem, TColumnKey, TSortableColumnKey>
 ) => useTableControlProps(useLocalTableControlState(args));

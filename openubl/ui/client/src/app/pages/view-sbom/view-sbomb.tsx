@@ -6,7 +6,6 @@ import {
   Label,
   PageSection,
   PageSectionVariants,
-  Spinner,
   Tab,
   TabContent,
   TabTitleText,
@@ -14,8 +13,6 @@ import {
   Text,
   TextContent,
 } from "@patternfly/react-core";
-import { usePackageById } from "@app/queries/packages";
-import { useParams } from "react-router-dom";
 import { PackagesTable } from "./components/packages-table";
 import { CodeEditor, Language } from "@patternfly/react-code-editor";
 import { VulnerabilitiesTable } from "./components/vulnerabilities-table";

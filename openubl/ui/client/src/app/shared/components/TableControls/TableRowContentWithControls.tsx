@@ -5,7 +5,7 @@ import { useTableControlProps } from "@app/shared/hooks/table-controls";
 export interface ITableRowContentWithControlsProps<
   TItem,
   TColumnKey extends string,
-  TSortableColumnKey extends TColumnKey
+  TSortableColumnKey extends TColumnKey,
 > {
   expandableVariant?: "single" | "compound" | null;
   isSelectable?: boolean;
@@ -20,7 +20,7 @@ export interface ITableRowContentWithControlsProps<
 export const TableRowContentWithControls = <
   TItem,
   TColumnKey extends string,
-  TSortableColumnKey extends TColumnKey
+  TSortableColumnKey extends TColumnKey,
 >({
   expandableVariant = null,
   isSelectable = false,

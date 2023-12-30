@@ -19,7 +19,7 @@ export interface IExpansionState<TColumnKey extends string> {
 }
 
 export const useExpansionState = <
-  TColumnKey extends string
+  TColumnKey extends string,
 >(): IExpansionState<TColumnKey> => {
   const [expandedCells, setExpandedCells] = React.useState<
     TExpandedCells<TColumnKey>
@@ -29,7 +29,7 @@ export const useExpansionState = <
 
 export const useExpansionUrlParams = <
   TColumnKey extends string,
-  TURLParamKeyPrefix extends string = string
+  TURLParamKeyPrefix extends string = string,
 >({
   urlParamKeyPrefix,
 }: IExtraArgsForURLParamHooks<TURLParamKeyPrefix> = {}): IExpansionState<TColumnKey> => {

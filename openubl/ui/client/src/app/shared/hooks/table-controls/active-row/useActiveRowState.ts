@@ -13,7 +13,7 @@ export const useActiveRowState = (): IActiveRowState => {
 };
 
 export const useActiveRowUrlParams = <
-  TURLParamKeyPrefix extends string = string
+  TURLParamKeyPrefix extends string = string,
 >({
   urlParamKeyPrefix,
 }: IExtraArgsForURLParamHooks<TURLParamKeyPrefix> = {}): IActiveRowState => {

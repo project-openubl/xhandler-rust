@@ -29,7 +29,7 @@ export interface OptionPropsWithKey extends SelectOptionProps {
 
 export interface IBasicFilterCategory<
   TItem, // The actual API objects we're filtering
-  TFilterCategoryKey extends string // Unique identifiers for each filter category (inferred from key properties if possible)
+  TFilterCategoryKey extends string, // Unique identifiers for each filter category (inferred from key properties if possible)
 > {
   key: TFilterCategoryKey; // For use in the filterValues state object. Must be unique per category.
   title: string;
@@ -42,7 +42,7 @@ export interface IBasicFilterCategory<
 
 export interface IMultiselectFilterCategory<
   TItem,
-  TFilterCategoryKey extends string
+  TFilterCategoryKey extends string,
 > extends IBasicFilterCategory<TItem, TFilterCategoryKey> {
   selectOptions: OptionPropsWithKey[];
   placeholderText?: string;
@@ -70,7 +70,7 @@ export type IFilterValues<TFilterCategoryKey extends string> = Partial<
 
 export const getFilterLogicOperator = <
   TItem,
-  TFilterCategoryKey extends string
+  TFilterCategoryKey extends string,
 >(
   filterCategory?: FilterCategory<TItem, TFilterCategoryKey>,
   defaultOperator: "AND" | "OR" = "OR"
@@ -131,7 +131,7 @@ export const FilterToolbar = <TItem, TFilterCategoryKey extends string>({
   );
 
   const renderDropdownItems = () => {
-    if (!!filterGroups.length) {
+    if (filterGroups.length) {
       return filterGroups.map((filterGroup) => (
         <DropdownGroup label={filterGroup} key={filterGroup}>
           {filterCategories

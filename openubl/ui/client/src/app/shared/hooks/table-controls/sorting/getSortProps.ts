@@ -4,7 +4,7 @@ import { ISortState } from "./useSortState";
 // Args that are part of IUseTableControlPropsArgs (the args for useTableControlProps)
 export interface ISortPropsArgs<
   TColumnKey extends string,
-  TSortableColumnKey extends TColumnKey
+  TSortableColumnKey extends TColumnKey,
 > {
   sortState: ISortState<TSortableColumnKey>;
 }
@@ -12,7 +12,7 @@ export interface ISortPropsArgs<
 // Additional args that need to be passed in on a per-column basis
 export interface IUseSortPropsArgs<
   TColumnKey extends string,
-  TSortableColumnKey extends TColumnKey
+  TSortableColumnKey extends TColumnKey,
 > extends ISortPropsArgs<TColumnKey, TSortableColumnKey> {
   columnKeys: TColumnKey[];
   columnKey: TSortableColumnKey;
@@ -20,7 +20,7 @@ export interface IUseSortPropsArgs<
 
 export const getSortProps = <
   TColumnKey extends string,
-  TSortableColumnKey extends TColumnKey
+  TSortableColumnKey extends TColumnKey,
 >({
   sortState: { activeSort, setActiveSort },
   columnKeys,

@@ -6,22 +6,16 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
-  Flex,
-  FlexItem,
-  Grid,
-  GridItem,
   Label,
   LabelProps,
   List,
   ListItem,
   Spinner,
   Tooltip,
-  TreeView,
-  TreeViewDataItem,
 } from "@patternfly/react-core";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import { useAdvisoryById } from "@app/queries/advisories";
-import { Advisory, BaseSeverity, Branch } from "@app/api/models";
+import { Advisory, BaseSeverity } from "@app/api/models";
 
 type BaseSeverityListType = {
   [key in BaseSeverity]: {

@@ -1,10 +1,5 @@
 import { ToolbarItemProps, ToolbarProps } from "@patternfly/react-core";
-import {
-  TableProps,
-  TdProps,
-  ThProps,
-  TrProps,
-} from "@patternfly/react-table";
+import { TableProps, TdProps, ThProps, TrProps } from "@patternfly/react-table";
 import spacing from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 import { IToolbarBulkSelectorProps } from "@app/shared/components/ToolbarBulkSelector/toolbar-bulk-selector";
@@ -21,7 +16,7 @@ export const useTableControlProps = <
   TItem,
   TColumnKey extends string,
   TSortableColumnKey extends TColumnKey,
-  TFilterCategoryKey extends string = string
+  TFilterCategoryKey extends string = string,
 >(
   args: IUseTableControlPropsArgs<
     TItem,
@@ -105,7 +100,7 @@ export const useTableControlProps = <
 
   const tableProps: Omit<TableProps, "ref"> = {
     variant,
-    // TODO PF V5 obsolete  
+    // TODO PF V5 obsolete
     // hasSelectableRowCaption: hasClickableRows,
   };
 

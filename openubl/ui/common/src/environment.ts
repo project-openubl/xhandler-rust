@@ -42,11 +42,7 @@ export type OpenublEnvType = {
  * Keys in `KonveyorEnvType` that are only used on the server and therefore do not
  * need to be sent to the client.
  */
-export const SERVER_ENV_KEYS = [
-  "PORT",
-  "OIDC_SERVER_URL",
-  "OPENUBL_HUB_URL",
-];
+export const SERVER_ENV_KEYS = ["PORT", "OIDC_SERVER_URL", "OPENUBL_HUB_URL"];
 
 /**
  * Create a `KonveyorEnv` from a partial `KonveyorEnv` with a set of default values.

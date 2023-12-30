@@ -2,7 +2,7 @@ import { ApiRequestParams } from "@app/api/models";
 import { ISortState } from "./useSortState";
 
 export interface IGetSortApiRequestParamsArgs<
-  TSortableColumnKey extends string
+  TSortableColumnKey extends string,
 > {
   sortState?: ISortState<TSortableColumnKey>;
   apiSortFieldKeys?: Record<TSortableColumnKey, string>;

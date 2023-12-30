@@ -10,7 +10,7 @@ import { ISelectFilterCategory } from "./FilterToolbar";
 
 export interface ISelectFilterControlProps<
   TItem,
-  TFilterCategoryKey extends string
+  TFilterCategoryKey extends string,
 > extends IFilterControlProps<TItem, TFilterCategoryKey> {
   category: ISelectFilterCategory<TItem, TFilterCategoryKey>;
 }

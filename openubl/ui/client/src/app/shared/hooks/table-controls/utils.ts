@@ -1,7 +1,7 @@
 import React from "react";
 
 export const handlePropagatedRowClick = <
-  E extends React.KeyboardEvent | React.MouseEvent
+  E extends React.KeyboardEvent | React.MouseEvent,
 >(
   event: E | undefined,
   onRowClick: (event: E) => void

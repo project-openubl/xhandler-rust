@@ -11,7 +11,6 @@ import {
 import { useLocalTableControls } from "@app/shared/hooks/table-controls";
 import {
   Button,
-  ButtonVariant,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -25,19 +24,14 @@ import {
   ListComponent,
   ListItem,
   OrderType,
-  Tab,
-  TabTitleText,
-  Tabs,
   Text,
   TextContent,
   Title,
   Toolbar,
   ToolbarContent,
-  ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
 import {
-  ActionsColumn,
   ExpandableRowContent,
   Table,
   Tbody,
@@ -46,8 +40,7 @@ import {
   Thead,
   Tr,
 } from "@patternfly/react-table";
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import React from "react";
 import ShieldIcon from "@patternfly/react-icons/dist/esm/icons/shield-alt-icon";
 import {
   global_info_color_100 as lowColor,

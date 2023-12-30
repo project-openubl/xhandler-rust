@@ -6,7 +6,6 @@ import {
   BreadcrumbItem,
   PageSection,
   PageSectionVariants,
-  Spinner,
   Tab,
   TabContent,
   TabTitleText,
@@ -15,15 +14,12 @@ import {
   TextContent,
 } from "@patternfly/react-core";
 import { Tags } from "./components/tags";
-import {
-  useFetchRepositories,
-  useRepositoryById,
-} from "@app/queries/repositories";
+import { useRepositoryById } from "@app/queries/repositories";
 
 export const ViewRepository: React.FC = () => {
   const refTags = React.createRef<HTMLElement>();
 
-  let { repositoryId } = useParams();
+  const { repositoryId } = useParams();
   const { result: repository } = useRepositoryById(repositoryId!);
 
   return (

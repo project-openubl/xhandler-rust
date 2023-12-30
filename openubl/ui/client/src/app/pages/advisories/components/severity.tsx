@@ -36,7 +36,7 @@ interface SeverityProps {
 }
 
 export const Severity: React.FC<SeverityProps> = ({ advisory }) => {
-  let severityProps = advisorySeverityList[advisory.severity];
+  const severityProps = advisorySeverityList[advisory.severity];
 
   return (
     <Flex

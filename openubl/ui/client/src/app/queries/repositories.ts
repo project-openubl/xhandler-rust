@@ -39,11 +39,11 @@ export const useFetchRepositories = (params: ApiRequestParams = {}) => {
 };
 
 export const useRepositoryById = (id: number | string) => {
-  const { data, isLoading, error } = useQuery(
-    [RepositoriesQueryKey, id],
-    async () => (await getRepositoryById(id)).data,
-    { onError: (error) => console.log(error) }
-  );
+  const { data, isLoading, error } = useQuery({
+    queryKey: [RepositoriesQueryKey, id],
+    queryFn: async () => (await getRepositoryById(id)).data,
+    onError: (error) => console.log(error),
+  });
 
   return {
     result: data,

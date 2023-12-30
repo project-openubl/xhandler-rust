@@ -10,12 +10,12 @@ import {
 
 export type HookFormPFTextInputProps<
   TFieldValues extends FieldValues,
-  TName extends Path<TFieldValues>
+  TName extends Path<TFieldValues>,
 > = TextInputProps & BaseHookFormPFGroupControllerProps<TFieldValues, TName>;
 
 export const HookFormPFTextInput = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
 >(
   props: HookFormPFTextInputProps<TFieldValues, TName>
 ) => {

@@ -36,11 +36,11 @@ export const useFetchAdvisories = (params: ApiRequestParams = {}) => {
 };
 
 export const useAdvisoryById = (id: string) => {
-  const { data, isLoading, error } = useQuery(
-    [AdvisoriesQueryKey, id],
-    async () => (await getAdvisoryById(id)).data,
-    { onError: (error) => console.log(error) }
-  );
+  const { data, isLoading, error } = useQuery({
+    queryKey: [AdvisoriesQueryKey, id],
+    queryFn: async () => (await getAdvisoryById(id)).data,
+    onError: (error) => console.log(error),
+  });
 
   return {
     result: data,
