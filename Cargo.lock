@@ -2296,6 +2296,85 @@ dependencies = [
 ]
 
 [[package]]
+name = "openubl-api"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "openubl-common",
+ "openubl-entity",
+ "openubl-migration",
+ "sea-orm",
+ "sea-query",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "openubl-cli"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "anyhow",
+ "clap",
+ "openubl-server",
+]
+
+[[package]]
+name = "openubl-common"
+version = "0.1.0"
+dependencies = [
+ "clap",
+]
+
+[[package]]
+name = "openubl-entity"
+version = "0.1.0"
+dependencies = [
+ "sea-orm",
+ "serde",
+]
+
+[[package]]
+name = "openubl-migration"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "sea-orm-migration",
+]
+
+[[package]]
+name = "openubl-oidc"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde",
+]
+
+[[package]]
+name = "openubl-server"
+version = "0.1.0"
+dependencies = [
+ "actix-4-jwt-auth",
+ "actix-web",
+ "actix-web-httpauth",
+ "anyhow",
+ "clap",
+ "env_logger",
+ "openubl-api",
+ "openubl-common",
+ "openubl-entity",
+ "openubl-oidc",
+ "sea-orm",
+ "serde",
+ "thiserror",
+ "utoipa",
+ "utoipa-swagger-ui",
+ "xbuilder",
+ "xsender",
+]
+
+[[package]]
 name = "option-ext"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4078,85 +4157,6 @@ name = "typenum"
 version = "1.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42ff0bf0c66b8238c6f3b578df37d0b7848e55df8577b3f74f92a69acceeb825"
-
-[[package]]
-name = "ublhub-api"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "sea-orm",
- "sea-query",
- "serde_json",
- "thiserror",
- "ublhub-common",
- "ublhub-entity",
- "ublhub-migration",
-]
-
-[[package]]
-name = "ublhub-cli"
-version = "0.1.0"
-dependencies = [
- "actix-web",
- "anyhow",
- "clap",
- "ublhub-server",
-]
-
-[[package]]
-name = "ublhub-common"
-version = "0.1.0"
-dependencies = [
- "clap",
-]
-
-[[package]]
-name = "ublhub-entity"
-version = "0.1.0"
-dependencies = [
- "sea-orm",
- "serde",
-]
-
-[[package]]
-name = "ublhub-migration"
-version = "0.1.0"
-dependencies = [
- "async-std",
- "sea-orm-migration",
-]
-
-[[package]]
-name = "ublhub-oidc"
-version = "0.1.0"
-dependencies = [
- "clap",
- "serde",
-]
-
-[[package]]
-name = "ublhub-server"
-version = "0.1.0"
-dependencies = [
- "actix-4-jwt-auth",
- "actix-web",
- "actix-web-httpauth",
- "anyhow",
- "clap",
- "env_logger",
- "sea-orm",
- "serde",
- "thiserror",
- "ublhub-api",
- "ublhub-common",
- "ublhub-entity",
- "ublhub-oidc",
- "utoipa",
- "utoipa-swagger-ui",
- "xbuilder",
- "xsender",
-]
 
 [[package]]
 name = "ucd-trie"

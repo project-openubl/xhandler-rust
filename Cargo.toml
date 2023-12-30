@@ -3,11 +3,11 @@ resolver = "2"
 members = [
     "xbuilder",
     "xsender",
-    "ublhub/migration",
-    "ublhub/entity",
-    "ublhub/common",
-    "ublhub/api",
-    "ublhub/server",
-    "ublhub/cli",
-    "ublhub/oidc",
+    "openubl/migration",
+    "openubl/entity",
+    "openubl/common",
+    "openubl/api",
+    "openubl/server",
+    "openubl/cli",
+    "openubl/oidc",
 ]

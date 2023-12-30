@@ -1,0 +1,40 @@
+version: '3'
+services:
+  postgres:
+    image: docker.io/library/postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: "openubl"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "password"
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d openubl" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.3
+    command: start-dev
+    ports:
+      - "9001:8080"
+    expose:
+      - "8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+  keycloak-init:
+    image: quay.io/keycloak/keycloak:23.0.3
+    depends_on:
+      keycloak:
+        condition: service_started
+    volumes:
+      - ./scripts/keycloak:/tmp/keycloak:z
+    entrypoint: /usr/bin/bash
+    command: /tmp/keycloak/setup.sh
+    environment:
+      KEYCLOAK_SERVER_URL: http://keycloak:8080
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
