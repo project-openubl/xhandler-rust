@@ -39,34 +39,33 @@ import {
 
 import { useLocalTableControls } from "@app/shared/hooks/table-controls";
 import {
-  useDeleteOrganizationMutation,
-  useFetchOrganizations,
-} from "@app/queries/organizations";
+  useFetchProjects,
+  useDeleteProjectMutation,
+} from "@app/queries/projects";
 
-import { Organization } from "@app/api/models";
-import { OrganizationForm } from "./components/organization-form";
+import { Project } from "@app/api/models";
+import { ProjectForm } from "./components/project-form";
 import { ConfirmDialog } from "@app/shared/components/ConfirmDialog";
 import { NotificationsContext } from "@app/shared/components/NotificationsContext";
 import { getAxiosErrorMessage } from "@app/utils/utils";
 
-export const Organizations: React.FC = () => {
+export const Projects: React.FC = () => {
   const { pushNotification } = useContext(NotificationsContext);
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
     useState<boolean>(false);
-  const [orgIdToDelete, setOrgIdToDelete] = React.useState<number>();
+  const [projectIdToDelete, setProjectIdToDelete] = React.useState<number>();
 
   const [createUpdateModalState, setCreateUpdateModalState] = useState<
-    "create" | Organization | null
+    "create" | Project | null
   >(null);
   const isCreateUpdateModalOpen = createUpdateModalState !== null;
-  const orgToUpdate =
+  const projectToUpdate =
     createUpdateModalState !== "create" ? createUpdateModalState : null;
 
-  //
-  const onDeleteOrgSuccess = (response: any) => {
+  const onDeleteOrgSuccess = () => {
     pushNotification({
-      title: "Organization deleted",
+      title: "Project deleted",
       variant: "success",
     });
   };
@@ -78,23 +77,16 @@ export const Organizations: React.FC = () => {
     });
   };
 
-  //
+  const { projects, isFetching, fetchError, refetch } = useFetchProjects();
 
-  const {
-    result: orgs,
-    isFetching,
-    fetchError,
-    refetch,
-  } = useFetchOrganizations();
-
-  const { mutate: deleteOrg } = useDeleteOrganizationMutation(
+  const { mutate: deleteOrg } = useDeleteProjectMutation(
     onDeleteOrgSuccess,
     onDeleteOrgError
   );
 
   const tableControls = useLocalTableControls({
-    idProperty: "name",
-    items: orgs,
+    idProperty: "id",
+    items: projects,
     columnNames: {
       name: "Name",
       description: "Description",
@@ -105,10 +97,8 @@ export const Organizations: React.FC = () => {
         key: "q",
         title: "Name",
         type: FilterType.search,
-        placeholderText: "Search",
-        getItemValue: (item) => {
-          return item.name || "";
-        },
+        placeholderText: "Search by name...",
+        getItemValue: (item) => item.name || "",
       },
     ],
     sortableColumns: ["name"],
@@ -137,8 +127,8 @@ export const Organizations: React.FC = () => {
     refetch;
   };
 
-  const deleteRow = (row: Organization) => {
-    setOrgIdToDelete(row.id);
+  const deleteRow = (row: Project) => {
+    setProjectIdToDelete(row.id);
     setIsConfirmDialogOpen(true);
   };
 
@@ -146,7 +136,7 @@ export const Organizations: React.FC = () => {
     <>
       <PageSection variant={PageSectionVariants.light}>
         <TextContent>
-          <Text component="h1">Organizations</Text>
+          <Text component="h1">Proyectos</Text>
         </TextContent>
       </PageSection>
       <PageSection>
@@ -162,18 +152,18 @@ export const Organizations: React.FC = () => {
                 <ToolbarItem>
                   <Button
                     type="button"
-                    id="create-organization"
-                    aria-label="Create new organization"
+                    id="create-project"
+                    aria-label="Create new project"
                     variant={ButtonVariant.primary}
                     onClick={() => setCreateUpdateModalState("create")}
                   >
-                    Create Organization
+                    Crear proyecto
                   </Button>
                 </ToolbarItem>
               </ToolbarGroup>
               <ToolbarItem {...paginationToolbarItemProps}>
                 <SimplePagination
-                  idPrefix="organizations-table"
+                  idPrefix="projects-table"
                   isTop
                   paginationProps={paginationProps}
                 />
@@ -181,7 +171,7 @@ export const Organizations: React.FC = () => {
             </ToolbarContent>
           </Toolbar>
 
-          <Table {...tableProps} aria-label="Organizations table">
+          <Table {...tableProps} aria-label="Projects table">
             <Thead>
               <Tr>
                 <TableHeaderContentWithControls {...tableControls}>
@@ -193,7 +183,7 @@ export const Organizations: React.FC = () => {
             <ConditionalTableBody
               isLoading={isFetching}
               isError={!!fetchError}
-              isNoData={orgs.length === 0}
+              isNoData={projects.length === 0}
               numRenderedColumns={numRenderedColumns}
             >
               {currentPageItems?.map((item, rowIndex) => {
@@ -206,7 +196,7 @@ export const Organizations: React.FC = () => {
                         rowIndex={rowIndex}
                       >
                         <Td width={15} {...getTdProps({ columnKey: "name" })}>
-                          <NavLink to={`/organizations/${item.name}`}>
+                          <NavLink to={`/projects/${item.id}`}>
                             {item.name}
                           </NavLink>
                         </Td>
@@ -240,7 +230,7 @@ export const Organizations: React.FC = () => {
           </Table>
 
           <SimplePagination
-            idPrefix="organizations-table"
+            idPrefix="projects-table"
             isTop={false}
             paginationProps={paginationProps}
           />
@@ -248,33 +238,33 @@ export const Organizations: React.FC = () => {
       </PageSection>
 
       <Modal
-        id="create-edit-organization-modal"
-        title={orgToUpdate ? "Update organization" : "New organization"}
+        id="create-edit-project-modal"
+        title={projectToUpdate ? "Actualizar proyecto" : "Nuevo proyecto"}
         variant={ModalVariant.medium}
         isOpen={isCreateUpdateModalOpen}
         onClose={closeCreateUpdateModal}
       >
-        <OrganizationForm
-          organization={orgToUpdate ? orgToUpdate : undefined}
+        <ProjectForm
+          project={projectToUpdate ? projectToUpdate : undefined}
           onClose={closeCreateUpdateModal}
         />
       </Modal>
 
       {isConfirmDialogOpen && (
         <ConfirmDialog
-          title={"Delete organization"}
+          title={"Delete project"}
           isOpen={true}
           titleIconVariant={"warning"}
-          message={`Are you sure you want to delete this organization?`}
+          message={`Estas seguro de querer eliminar este proyecto?`}
           confirmBtnVariant={ButtonVariant.danger}
-          confirmBtnLabel="Delete"
-          cancelBtnLabel="Cancel"
+          confirmBtnLabel="Eliminar"
+          cancelBtnLabel="Cancelar"
           onCancel={() => setIsConfirmDialogOpen(false)}
           onClose={() => setIsConfirmDialogOpen(false)}
           onConfirm={() => {
-            if (orgIdToDelete) {
-              deleteOrg(orgIdToDelete);
-              setOrgIdToDelete(undefined);
+            if (projectIdToDelete) {
+              deleteOrg(projectIdToDelete);
+              setProjectIdToDelete(undefined);
             }
             setIsConfirmDialogOpen(false);
           }}

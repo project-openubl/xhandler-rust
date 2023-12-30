@@ -11,13 +11,14 @@ import {
   Form,
 } from "@patternfly/react-core";
 
-import { New, Organization } from "@app/api/models";
+import { New, Project } from "@app/api/models";
 import { duplicateFieldCheck } from "@app/utils/utils";
 import {
-  useCreateOrganizationMutation,
-  useFetchOrganizations,
-  useUpdateOrganizationMutation,
-} from "@app/queries/organizations";
+  useCreateProjectMutation,
+  useFetchProjectById,
+  useFetchProjects,
+  useUpdateProjectMutation,
+} from "@app/queries/projects";
 
 import {
   HookFormPFTextArea,
@@ -30,18 +31,18 @@ export interface FormValues {
   description?: string;
 }
 
-export interface IOrganizationFormProps {
-  organization?: Organization;
+export interface IProjectFormProps {
+  project?: Project;
   onClose: () => void;
 }
 
-export const OrganizationForm: React.FC<IOrganizationFormProps> = ({
-  organization,
+export const ProjectForm: React.FC<IProjectFormProps> = ({
+  project,
   onClose,
 }) => {
   const { pushNotification } = useContext(NotificationsContext);
 
-  const { result: organizations } = useFetchOrganizations();
+  const { projects } = useFetchProjects();
 
   const validationSchema = object().shape({
     name: string()
@@ -52,14 +53,9 @@ export const OrganizationForm: React.FC<IOrganizationFormProps> = ({
       .matches(/[a-z0-9]([-a-z0-9]*[a-z0-9])?/)
       .test(
         "Duplicate name",
-        "A organization with this name address already exists. Use a different name.",
+        "Un proyecto con el mismo nombre ya existe. Use un nombre diferente.",
         (value) =>
-          duplicateFieldCheck(
-            "name",
-            organizations,
-            organization || null,
-            value || ""
-          )
+          duplicateFieldCheck("name", projects, project || null, value || "")
       ),
     description: string().trim().max(250),
   });
@@ -71,58 +67,58 @@ export const OrganizationForm: React.FC<IOrganizationFormProps> = ({
     control,
   } = useForm<FormValues>({
     defaultValues: {
-      name: organization?.name || "",
-      description: organization?.description || "",
+      name: project?.name || "",
+      description: project?.description || "",
     },
     resolver: yupResolver(validationSchema),
     mode: "onChange",
   });
 
-  const onCreateOrganizationSuccess = (_: AxiosResponse<Organization>) =>
+  const onCreateProjectSuccess = (_: Project) =>
     pushNotification({
-      title: "Organization created",
+      title: "Proyecto creado",
       variant: "success",
     });
 
-  const onCreateOrganizationError = (error: AxiosError) => {
+  const onCreateProjectError = (error: AxiosError) => {
     pushNotification({
-      title: "Error while creating organization",
+      title: "Error al crear el proyecto",
       variant: "danger",
     });
   };
 
-  const { mutate: createOrganization } = useCreateOrganizationMutation(
-    onCreateOrganizationSuccess,
-    onCreateOrganizationError
+  const { mutate: createProject } = useCreateProjectMutation(
+    onCreateProjectSuccess,
+    onCreateProjectError
   );
 
-  const onUpdateOrganizationSuccess = (_: AxiosResponse<Organization>) =>
+  const onUpdateProjectSuccess = (_: Project) =>
     pushNotification({
-      title: "Organization saved",
+      title: "Proyecto guardado",
       variant: "success",
     });
 
-  const onUpdateOrganizationError = (error: AxiosError) => {
+  const onUpdateProjectError = (error: AxiosError) => {
     pushNotification({
-      title: "Error while saving data",
+      title: "Error al guardar los datos",
       variant: "danger",
     });
   };
-  const { mutate: updateOrganization } = useUpdateOrganizationMutation(
-    onUpdateOrganizationSuccess,
-    onUpdateOrganizationError
+  const { mutate: updateProject } = useUpdateProjectMutation(
+    onUpdateProjectSuccess,
+    onUpdateProjectError
   );
 
   const onSubmit = (formValues: FormValues) => {
-    const payload: New<Organization> = {
+    const payload: New<Project> = {
       name: formValues.name.trim(),
       description: formValues.description?.trim(),
     };
 
-    if (organization) {
-      updateOrganization({ id: organization.id, ...payload });
+    if (project) {
+      updateProject({ id: project.id, ...payload });
     } else {
-      createOrganization(payload);
+      createProject(payload);
     }
     onClose();
   };
@@ -152,7 +148,7 @@ export const OrganizationForm: React.FC<IOrganizationFormProps> = ({
           variant={ButtonVariant.primary}
           isDisabled={!isValid || isSubmitting || isValidating || !isDirty}
         >
-          {!organization ? "Create" : "Save"}
+          {!project ? "Create" : "Save"}
         </Button>
         <Button
           type="button"
