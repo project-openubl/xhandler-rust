@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ApiPaginatedResult, ApiRequestParams, New, Project } from "./models";
-import { serializeRequestParamsForApi } from "@app/shared/hooks/table-controls";
+import { serializeRequestParamsForApi } from "@app/hooks/table-controls";
 
 const HUB = "/hub";
 

@@ -1,7 +1,7 @@
 import {
   FilterCategory,
   IFilterToolbarProps,
-} from "@app/shared/components/FilterToolbar";
+} from "@app/components/FilterToolbar";
 import { IFilterState } from "./useFilterState";
 
 export interface IFilterPropsArgs<TItem, TFilterCategoryKey extends string> {

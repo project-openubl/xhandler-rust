@@ -1,10 +1,10 @@
 import * as React from "react";
-import { useSessionStorage } from "@app/shared/hooks/useStorage";
+import { useSessionStorage } from "@app/hooks/useStorage";
 import {
   FilterCategory,
   FilterValue,
   IFilterValues,
-} from "@app/shared/components/FilterToolbar";
+} from "@app/components/FilterToolbar";
 import { useUrlParams } from "../../useUrlParams";
 import { objectKeys } from "@app/utils/utils";
 import { IExtraArgsForURLParamHooks } from "../types";

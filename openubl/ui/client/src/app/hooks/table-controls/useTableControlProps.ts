@@ -2,7 +2,7 @@ import { ToolbarItemProps, ToolbarProps } from "@patternfly/react-core";
 import { TableProps, TdProps, ThProps, TrProps } from "@patternfly/react-table";
 import spacing from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-import { IToolbarBulkSelectorProps } from "@app/shared/components/ToolbarBulkSelector/toolbar-bulk-selector";
+import { IToolbarBulkSelectorProps } from "@app/components/ToolbarBulkSelector/toolbar-bulk-selector";
 import { objectKeys } from "@app/utils/utils";
 import { IUseTableControlPropsArgs } from "./types";
 import { getFilterProps } from "./filtering";

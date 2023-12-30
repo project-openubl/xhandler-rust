@@ -23,8 +23,8 @@ import {
 import {
   HookFormPFTextArea,
   HookFormPFTextInput,
-} from "@app/shared/components/HookFormPFFields";
-import { NotificationsContext } from "@app/shared/components/NotificationsContext";
+} from "@app/components/HookFormPFFields";
+import { NotificationsContext } from "@app/components/NotificationsContext";
 
 export interface FormValues {
   name: string;

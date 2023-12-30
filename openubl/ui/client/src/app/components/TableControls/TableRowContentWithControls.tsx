@@ -1,6 +1,6 @@
 import React from "react";
 import { Td } from "@patternfly/react-table";
-import { useTableControlProps } from "@app/shared/hooks/table-controls";
+import { useTableControlProps } from "@app/hooks/table-controls";
 
 export interface ITableRowContentWithControlsProps<
   TItem,

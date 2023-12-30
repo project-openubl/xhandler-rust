@@ -2,7 +2,7 @@ import { TableProps } from "@patternfly/react-table";
 import {
   ISelectionStateArgs,
   useSelectionState,
-} from "@app/shared/hooks/useSelectionState";
+} from "@app/hooks/useSelectionState";
 import { DisallowCharacters, KeyWithValueType } from "@app/utils/type-utils";
 import {
   IFilterStateArgs,

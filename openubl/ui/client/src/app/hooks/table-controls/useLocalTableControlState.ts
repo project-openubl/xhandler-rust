@@ -1,4 +1,4 @@
-import { useSelectionState } from "@app/shared/hooks/useSelectionState";
+import { useSelectionState } from "@app/hooks/useSelectionState";
 import { getLocalFilterDerivedState, useFilterState } from "./filtering";
 import { useSortState, getLocalSortDerivedState } from "./sorting";
 import {

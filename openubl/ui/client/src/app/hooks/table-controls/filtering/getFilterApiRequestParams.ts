@@ -3,7 +3,7 @@ import { objectKeys } from "@app/utils/utils";
 import {
   FilterCategory,
   getFilterLogicOperator,
-} from "@app/shared/components/FilterToolbar";
+} from "@app/components/FilterToolbar";
 import { IFilterState } from "./useFilterState";
 
 // If we have multiple UI filters using the same api field, we need to AND them and pass them to the api as one filter.

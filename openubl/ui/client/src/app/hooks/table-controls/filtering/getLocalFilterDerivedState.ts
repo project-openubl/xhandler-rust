@@ -1,7 +1,7 @@
 import {
   FilterCategory,
   getFilterLogicOperator,
-} from "@app/shared/components/FilterToolbar";
+} from "@app/components/FilterToolbar";
 import { objectKeys } from "@app/utils/utils";
 import { IFilterState } from "./useFilterState";
 
