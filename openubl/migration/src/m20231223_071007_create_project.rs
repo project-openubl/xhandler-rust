@@ -12,21 +12,14 @@ impl MigrationTrait for Migration {
                     .table(Project::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Project::Name)
-                            .string()
+                        ColumnDef::new(Project::Id)
+                            .integer()
                             .not_null()
+                            .auto_increment()
                             .primary_key(),
                     )
+                    .col(ColumnDef::new(Project::Name).string().not_null())
                     .col(ColumnDef::new(Project::Description).string())
-                    .col(ColumnDef::new(Project::SunatUsername).string().not_null())
-                    .col(ColumnDef::new(Project::SunatPassword).string().not_null())
-                    .col(ColumnDef::new(Project::SunatFacturaUrl).string().not_null())
-                    .col(ColumnDef::new(Project::SunatGuiaUrl).string().not_null())
-                    .col(
-                        ColumnDef::new(Project::SunatPercepcionRetencionUrl)
-                            .string()
-                            .not_null(),
-                    )
                     .to_owned(),
             )
             .await
@@ -42,11 +35,7 @@ impl MigrationTrait for Migration {
 #[derive(DeriveIden)]
 pub enum Project {
     Table,
+    Id,
     Name,
     Description,
-    SunatUsername,
-    SunatPassword,
-    SunatFacturaUrl,
-    SunatGuiaUrl,
-    SunatPercepcionRetencionUrl,
 }

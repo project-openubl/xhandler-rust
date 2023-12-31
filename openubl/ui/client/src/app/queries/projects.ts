@@ -27,11 +27,13 @@ export const useFetchProjects = () => {
   };
 };
 
-export const useFetchProjectById = (id: number | string) => {
+export const useFetchProjectById = (id?: number | string) => {
   const { data, isLoading, error } = useQuery({
     queryKey: [ProjectsQueryKey, id],
-    queryFn: () => getProjectById(id),
+    queryFn: () =>
+      id === undefined ? Promise.resolve(undefined) : getProjectById(id),
     onError: (error: AxiosError) => console.log("error", error),
+    enabled: id !== undefined,
   });
 
   return {

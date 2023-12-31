@@ -13,18 +13,19 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(UserRole::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(UserRole::Username).string().not_null())
-                    .col(ColumnDef::new(UserRole::ProjectName).string().not_null())
-                    .col(ColumnDef::new(UserRole::Roles).string().not_null())
+                    .col(ColumnDef::new(UserRole::UserId).string().not_null())
+                    .col(ColumnDef::new(UserRole::ProjectId).integer().not_null())
+                    .col(ColumnDef::new(UserRole::Role).string().not_null())
                     .primary_key(
                         Index::create()
-                            .col(UserRole::Username)
-                            .col(UserRole::ProjectName),
+                            .col(UserRole::UserId)
+                            .col(UserRole::ProjectId)
+                            .col(UserRole::Role),
                     )
                     .foreign_key(
                         ForeignKey::create()
-                            .from_col(UserRole::ProjectName)
-                            .to(Project::Table, Project::Name)
+                            .from_col(UserRole::ProjectId)
+                            .to(Project::Table, Project::Id)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
@@ -42,7 +43,7 @@ impl MigrationTrait for Migration {
 #[derive(DeriveIden)]
 pub enum UserRole {
     Table,
-    Username,
-    ProjectName,
-    Roles,
+    UserId,
+    ProjectId,
+    Role,
 }

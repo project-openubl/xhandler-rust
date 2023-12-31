@@ -6,18 +6,26 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "user_role")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub username: String,
+    pub user_id: String,
     #[sea_orm(primary_key, auto_increment = false)]
-    pub project_name: i32,
-    pub roles: String,
+    pub project_id: i32,
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub role: Role,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
+#[sea_orm(rs_type = "String", db_type = "String(Some(1))")]
+pub enum Role {
+    #[sea_orm(string_value = "o")]
+    Owner,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
         belongs_to = "super::project::Entity",
-        from = "Column::ProjectName",
-        to = "super::project::Column::Name",
+        from = "Column::ProjectId",
+        to = "super::project::Column::Id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]

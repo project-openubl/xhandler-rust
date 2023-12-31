@@ -3,7 +3,7 @@ import { OPENUBL_ENV } from "./environment.js";
 
 export const proxyMap: Record<string, Options> = {
   "/hub": {
-    target: OPENUBL_ENV.OPENUBL_HUB_URL || "http://localhost:9002",
+    target: OPENUBL_ENV.OPENUBL_HUB_URL || "http://localhost:8080",
     logLevel: process.env.DEBUG ? "debug" : "info",
 
     changeOrigin: true,

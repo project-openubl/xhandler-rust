@@ -20,7 +20,7 @@ export const SidebarApp: React.FC = () => {
   const routeParams = useMatch("/projects/:projectId/*");
 
   let projectId = routeParams?.params.projectId;
-  let { project } = useFetchProjectById(projectId || "");
+  let { project } = useFetchProjectById(projectId);
 
   const renderPageNav = () => {
     return (
