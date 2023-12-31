@@ -1,4 +1,4 @@
-import { ApiFilter, ApiRequestParams } from "@app/api/models";
+import { HubFilter, HubRequestParams } from "@app/api/models";
 import { objectKeys } from "@app/utils/utils";
 import {
   FilterCategory,
@@ -6,10 +6,14 @@ import {
 } from "@app/components/FilterToolbar";
 import { IFilterState } from "./useFilterState";
 
-// If we have multiple UI filters using the same api field, we need to AND them and pass them to the api as one filter.
+/**
+ * Helper function for getFilterHubRequestParams
+ * Given a new filter, determines whether there is an existing filter for that hub field and either creates one or merges this filter with the existing one.
+ * - If we have multiple UI filters using the same hub field, we need to AND them and pass them to the hub as one filter.
+ */
 const pushOrMergeFilter = (
-  existingFilters: ApiFilter[],
-  newFilter: ApiFilter
+  existingFilters: HubFilter[],
+  newFilter: HubFilter
 ) => {
   const existingFilterIndex = existingFilters.findIndex(
     (f) => f.field === newFilter.field
@@ -24,7 +28,7 @@ const pushOrMergeFilter = (
     (typeof existingFilter.value !== "object" || // The existing filter isn't already a list, or...
       existingFilter.value.operator === "AND") // ...it is and it's an AND list (already merged once)
   ) {
-    const mergedFilter: ApiFilter =
+    const mergedFilter: HubFilter =
       typeof existingFilter.value === "object"
         ? {
             ...existingFilter,
@@ -46,26 +50,41 @@ const pushOrMergeFilter = (
   }
 };
 
-export interface IGetFilterApiRequestParamsArgs<
+/**
+ * Args for getFilterHubRequestParams
+ * - Partially satisfied by the object returned by useTableControlState (ITableControlState)
+ */
+export interface IGetFilterHubRequestParamsArgs<
   TItem,
   TFilterCategoryKey extends string = string,
 > {
+  /**
+   * The "source of truth" state for the filter feature (returned by useFilterState)
+   */
   filterState?: IFilterState<TFilterCategoryKey>;
+  /**
+   * Definitions of the filters to be used (must include `getItemValue` functions for each category when performing filtering locally)
+   */
   filterCategories?: FilterCategory<TItem, TFilterCategoryKey>[];
-  implicitFilters?: ApiFilter[];
+  implicitFilters?: HubFilter[];
 }
 
-export const getFilterApiRequestParams = <
+/**
+ * Given the state for the filter feature and additional arguments, returns params the hub API needs to apply the current filters.
+ * - Makes up part of the object returned by getHubRequestParams
+ * @see getHubRequestParams
+ */
+export const getFilterHubRequestParams = <
   TItem,
   TFilterCategoryKey extends string = string,
 >({
   filterState,
   filterCategories,
   implicitFilters,
-}: IGetFilterApiRequestParamsArgs<
+}: IGetFilterHubRequestParamsArgs<
   TItem,
   TFilterCategoryKey
->): Partial<ApiRequestParams> => {
+>): Partial<HubRequestParams> => {
   if (
     !implicitFilters?.length &&
     (!filterState ||
@@ -74,7 +93,7 @@ export const getFilterApiRequestParams = <
   ) {
     return {};
   }
-  const filters: ApiFilter[] = [];
+  const filters: HubFilter[] = [];
   if (filterState) {
     const { filterValues } = filterState;
     objectKeys(filterValues).forEach((categoryKey) => {
@@ -86,7 +105,7 @@ export const getFilterApiRequestParams = <
       const serverFilterField = filterCategory.serverFilterField || categoryKey;
       const serverFilterValue =
         filterCategory.getServerFilterValue?.(filterValue) || filterValue;
-      // Note: If we need to support more of the logic operators in ApiFilter in the future,
+      // Note: If we need to support more of the logic operators in HubFilter in the future,
       //       we'll need to figure out how to express those on the FilterCategory objects
       //       and translate them here.
       if (filterCategory.type === "numsearch") {
@@ -128,46 +147,45 @@ export const getFilterApiRequestParams = <
   return { filters };
 };
 
+/**
+ * Helper function for serializeFilterForHub
+ * - Given a string or number, returns it as a string with quotes (`"`) around it.
+ * - Adds an escape character before any existing quote (`"`) characters in the string.
+ */
 export const wrapInQuotesAndEscape = (value: string | number): string =>
   `"${String(value).replace('"', '\\"')}"`;
 
-export const serializeFilterForApi = (filter: ApiFilter): string => {
+/**
+ * Converts a single filter object (HubFilter, the higher-level inspectable type) to the query string filter format used by the hub API
+ */
+export const serializeFilterForHub = (filter: HubFilter): string => {
   const { field, operator, value } = filter;
   const joinedValue =
     typeof value === "string"
       ? wrapInQuotesAndEscape(value)
       : typeof value === "number"
-        ? `"${value}"`
-        : `(${value.list
-            .map(wrapInQuotesAndEscape)
-            .join(value.operator === "OR" ? "|" : ",")})`;
+      ? `"${value}"`
+      : `(${value.list
+          .map(wrapInQuotesAndEscape)
+          .join(value.operator === "OR" ? "|" : ",")})`;
   return `${field}${operator}${joinedValue}`;
 };
 
-export const serializeFilterRequestParamsForApi = (
-  deserializedParams: ApiRequestParams,
+/**
+ * Converts the values returned by getFilterHubRequestParams into the URL query strings expected by the hub API
+ * - Appends converted URL params to the given `serializedParams` object for use in the hub API request
+ * - Constructs part of the object returned by serializeRequestParamsForHub
+ * @see serializeRequestParamsForHub
+ */
+export const serializeFilterRequestParamsForHub = (
+  deserializedParams: HubRequestParams,
   serializedParams: URLSearchParams
 ) => {
   const { filters } = deserializedParams;
-  // if (filters) {
-  //   serializedParams.append(
-  //     "filter",
-  //     filters.map(serializeFilterForApi).join(",")
-  //   );
-  // }
-
   if (filters) {
-    filters.forEach((filter) => {
-      const { field, operator, value } = filter;
-
-      const joinedValue =
-        typeof value === "string"
-          ? value
-          : typeof value === "number"
-            ? `"${value}"`
-            : `(${value.list.join(value.operator === "OR" ? "|" : ",")})`;
-
-      serializedParams.append(field, joinedValue);
-    });
+    serializedParams.append(
+      "filter",
+      filters.map(serializeFilterForHub).join(",")
+    );
   }
 };

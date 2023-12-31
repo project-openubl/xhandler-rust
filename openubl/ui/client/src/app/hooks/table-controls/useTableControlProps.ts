@@ -1,38 +1,63 @@
-import { ToolbarItemProps, ToolbarProps } from "@patternfly/react-core";
-import { TableProps, TdProps, ThProps, TrProps } from "@patternfly/react-table";
+import { useTranslation } from "react-i18next";
 import spacing from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-import { IToolbarBulkSelectorProps } from "@app/components/ToolbarBulkSelector/toolbar-bulk-selector";
 import { objectKeys } from "@app/utils/utils";
-import { IUseTableControlPropsArgs } from "./types";
-import { getFilterProps } from "./filtering";
-import { getSortProps } from "./sorting";
-import { getPaginationProps, usePaginationEffects } from "./pagination";
-import { getActiveRowDerivedState, useActiveRowEffects } from "./active-row";
+import { ITableControls, IUseTableControlPropsArgs } from "./types";
+import { useFilterPropHelpers } from "./filtering";
+import { useSortPropHelpers } from "./sorting";
+import { usePaginationPropHelpers } from "./pagination";
+import { useActiveItemPropHelpers } from "./active-item";
+import { useExpansionPropHelpers } from "./expansion";
 import { handlePropagatedRowClick } from "./utils";
-import { getExpansionDerivedState } from "./expansion";
 
+/**
+ * Returns derived state and prop helpers for all features. Used to make rendering the table components easier.
+ * - Takes "source of truth" state and table-level derived state (derived either on the server or in getLocalTableControlDerivedState)
+ *   along with API data and additional args.
+ * - Also triggers side-effects for some features to prevent invalid state.
+ * - If you aren't using server-side filtering/sorting/pagination, call this via the shorthand hook useLocalTableControls.
+ * - If you are using server-side filtering/sorting/pagination, call this last after calling useTableControlState and fetching your API data.
+ * @see useLocalTableControls
+ * @see useTableControlState
+ * @see getLocalTableControlDerivedState
+ */
 export const useTableControlProps = <
   TItem,
   TColumnKey extends string,
   TSortableColumnKey extends TColumnKey,
   TFilterCategoryKey extends string = string,
+  TPersistenceKeyPrefix extends string = string,
 >(
   args: IUseTableControlPropsArgs<
     TItem,
     TColumnKey,
     TSortableColumnKey,
-    TFilterCategoryKey
+    TFilterCategoryKey,
+    TPersistenceKeyPrefix
   >
-) => {
+): ITableControls<
+  TItem,
+  TColumnKey,
+  TSortableColumnKey,
+  TFilterCategoryKey,
+  TPersistenceKeyPrefix
+> => {
+  type PropHelpers = ITableControls<
+    TItem,
+    TColumnKey,
+    TSortableColumnKey,
+    TFilterCategoryKey,
+    TPersistenceKeyPrefix
+  >["propHelpers"];
+
+  const { t } = useTranslation();
+
   // Note: To avoid repetition, not all args are destructured here since the entire
   //       args object is passed to other other helpers which require other parts of it.
   //       For future additions, inspect `args` to see if it has anything more you need.
   const {
     currentPageItems,
     forceNumRenderedColumns,
-    filterState: { setFilterValues },
-    expansionState: { expandedCells },
     selectionState: {
       selectAll,
       areAllSelected,
@@ -42,13 +67,13 @@ export const useTableControlProps = <
       isItemSelected,
     },
     columnNames,
-    sortableColumns = [],
-    isSelectable = false,
-    expandableVariant = null,
     hasActionsColumn = false,
-    hasClickableRows = false,
     variant,
-    idProperty,
+    isFilterEnabled,
+    isSortEnabled,
+    isSelectionEnabled,
+    isExpansionEnabled,
+    isActiveItemEnabled,
   } = args;
 
   const columnKeys = objectKeys(columnNames);
@@ -57,39 +82,35 @@ export const useTableControlProps = <
   // We need to account for those when dealing with props based on column index and colSpan.
   let numColumnsBeforeData = 0;
   let numColumnsAfterData = 0;
-  if (isSelectable) numColumnsBeforeData++;
-  if (expandableVariant === "single") numColumnsBeforeData++;
+  if (isSelectionEnabled) numColumnsBeforeData++;
+  if (isExpansionEnabled && args.expandableVariant === "single")
+    numColumnsBeforeData++;
   if (hasActionsColumn) numColumnsAfterData++;
   const numRenderedColumns =
     forceNumRenderedColumns ||
     columnKeys.length + numColumnsBeforeData + numColumnsAfterData;
 
-  const expansionDerivedState = getExpansionDerivedState(args);
-  const { isCellExpanded, setCellExpanded } = expansionDerivedState;
+  const { filterPropsForToolbar, propsForFilterToolbar } =
+    useFilterPropHelpers(args);
+  const { getSortThProps } = useSortPropHelpers({ ...args, columnKeys });
+  const { paginationProps, paginationToolbarItemProps } =
+    usePaginationPropHelpers(args);
+  const {
+    expansionDerivedState,
+    getSingleExpandButtonTdProps,
+    getCompoundExpandTdProps,
+    getExpandedContentTdProps,
+  } = useExpansionPropHelpers({ ...args, columnKeys, numRenderedColumns });
+  const { activeItemDerivedState, getActiveItemTrProps } =
+    useActiveItemPropHelpers(args);
 
-  const activeRowDerivedState = getActiveRowDerivedState(args);
-  useActiveRowEffects({ ...args, activeRowDerivedState });
-  const { activeRowItem, setActiveRowItem, clearActiveRow } =
-    activeRowDerivedState;
-
-  const toolbarProps: Omit<ToolbarProps, "ref"> = {
+  const toolbarProps: PropHelpers["toolbarProps"] = {
     className: variant === "compact" ? spacing.pt_0 : "",
-    collapseListedFiltersBreakpoint: "xl",
-    clearAllFilters: () => setFilterValues({}),
-    clearFiltersButtonText: "Clear all filters",
+    ...(isFilterEnabled && filterPropsForToolbar),
   };
 
-  const filterToolbarProps = getFilterProps(args);
-
-  const paginationProps = getPaginationProps(args);
-  usePaginationEffects(args);
-
-  const paginationToolbarItemProps: ToolbarItemProps = {
-    variant: "pagination",
-    align: { default: "alignRight" },
-  };
-
-  const toolbarBulkSelectorProps: IToolbarBulkSelectorProps<TItem> = {
+  // TODO move this to a useSelectionPropHelpers when we move selection from lib-ui
+  const toolbarBulkSelectorProps: PropHelpers["toolbarBulkSelectorProps"] = {
     onSelectAll: selectAll,
     areAllSelected,
     selectedRows: selectedItems,
@@ -98,63 +119,49 @@ export const useTableControlProps = <
     onSelectMultiple: selectMultiple,
   };
 
-  const tableProps: Omit<TableProps, "ref"> = {
+  const tableProps: PropHelpers["tableProps"] = {
     variant,
-    // TODO PF V5 obsolete
-    // hasSelectableRowCaption: hasClickableRows,
+    isExpandable: isExpansionEnabled && !!args.expandableVariant,
   };
 
-  const getThProps = ({
-    columnKey,
-  }: {
-    columnKey: TColumnKey;
-  }): Omit<ThProps, "ref"> => ({
-    ...(sortableColumns.includes(columnKey as TSortableColumnKey)
-      ? getSortProps({
-          ...args,
-          columnKeys,
-          columnKey: columnKey as TSortableColumnKey,
-        })
-      : {}),
+  const getThProps: PropHelpers["getThProps"] = ({ columnKey }) => ({
+    ...(isSortEnabled &&
+      getSortThProps({ columnKey: columnKey as TSortableColumnKey })),
     children: columnNames[columnKey],
   });
 
-  const getClickableTrProps = ({
-    onRowClick,
-    item,
-  }: {
-    onRowClick?: TrProps["onRowClick"]; // Extra callback if necessary - setting the active row is built in
-    item?: TItem; // Can be omitted if using this just for the click handler and not for active rows
-  }): Omit<TrProps, "ref"> => ({
-    isSelectable: true,
-    isClickable: true,
-    isRowSelected: item && item[idProperty] === activeRowItem?.[idProperty],
-    onRowClick: (event) =>
-      handlePropagatedRowClick(event, () => {
-        if (item && activeRowItem?.[idProperty] !== item[idProperty]) {
-          setActiveRowItem(item);
-        } else {
-          clearActiveRow();
-        }
-        onRowClick?.(event);
-      }),
-  });
+  const getTrProps: PropHelpers["getTrProps"] = ({ item, onRowClick }) => {
+    const activeItemTrProps = getActiveItemTrProps({ item });
+    return {
+      ...(isActiveItemEnabled && activeItemTrProps),
+      onRowClick: (event) =>
+        handlePropagatedRowClick(event, () => {
+          activeItemTrProps.onRowClick?.(event);
+          onRowClick?.(event);
+        }),
+    };
+  };
 
-  const getTdProps = ({
-    columnKey,
-  }: {
-    columnKey: TColumnKey;
-  }): Omit<TdProps, "ref"> => ({
-    dataLabel: columnNames[columnKey],
-  });
+  const getTdProps: PropHelpers["getTdProps"] = (getTdPropsArgs) => {
+    const { columnKey } = getTdPropsArgs;
+    return {
+      dataLabel: columnNames[columnKey],
+      ...(isExpansionEnabled &&
+        args.expandableVariant === "compound" &&
+        getTdPropsArgs.isCompoundExpandToggle &&
+        getCompoundExpandTdProps({
+          columnKey,
+          item: getTdPropsArgs.item,
+          rowIndex: getTdPropsArgs.rowIndex,
+        })),
+    };
+  };
 
-  const getSelectCheckboxTdProps = ({
+  // TODO move this into a useSelectionPropHelpers and make it part of getTdProps once we move selection from lib-ui
+  const getSelectCheckboxTdProps: PropHelpers["getSelectCheckboxTdProps"] = ({
     item,
     rowIndex,
-  }: {
-    item: TItem;
-    rowIndex: number;
-  }): Omit<TdProps, "ref"> => ({
+  }) => ({
     select: {
       rowIndex,
       onSelect: (_event, isSelecting) => {
@@ -164,87 +171,26 @@ export const useTableControlProps = <
     },
   });
 
-  const getSingleExpandTdProps = ({
-    item,
-    rowIndex,
-  }: {
-    item: TItem;
-    rowIndex: number;
-  }): Omit<TdProps, "ref"> => ({
-    expand: {
-      rowIndex,
-      isExpanded: isCellExpanded(item),
-      onToggle: () =>
-        setCellExpanded({
-          item,
-          isExpanding: !isCellExpanded(item),
-        }),
-      expandId: `expandable-row-${item[idProperty]}`,
-    },
-  });
-
-  const getCompoundExpandTdProps = ({
-    item,
-    rowIndex,
-    columnKey,
-  }: {
-    item: TItem;
-    rowIndex: number;
-    columnKey: TColumnKey;
-  }): Omit<TdProps, "ref"> => ({
-    ...getTdProps({ columnKey }),
-    compoundExpand: {
-      isExpanded: isCellExpanded(item, columnKey),
-      onToggle: () =>
-        setCellExpanded({
-          item,
-          isExpanding: !isCellExpanded(item, columnKey),
-          columnKey,
-        }),
-      expandId: `compound-expand-${item[idProperty]}-${columnKey}`,
-      rowIndex,
-      columnIndex: columnKeys.indexOf(columnKey),
-    },
-  });
-
-  const getExpandedContentTdProps = ({
-    item,
-  }: {
-    item: TItem;
-  }): Omit<TdProps, "ref"> => {
-    const expandedColumnKey = expandedCells[String(item[idProperty])];
-    return {
-      dataLabel:
-        typeof expandedColumnKey === "string"
-          ? columnNames[expandedColumnKey]
-          : undefined,
-      noPadding: true,
-      colSpan: numRenderedColumns,
-      width: 100,
-    };
-  };
-
   return {
     ...args,
     numColumnsBeforeData,
     numColumnsAfterData,
     numRenderedColumns,
+    expansionDerivedState,
+    activeItemDerivedState,
     propHelpers: {
       toolbarProps,
-      toolbarBulkSelectorProps,
-      filterToolbarProps,
-      paginationProps,
-      paginationToolbarItemProps,
       tableProps,
       getThProps,
-      getClickableTrProps,
+      getTrProps,
       getTdProps,
+      filterToolbarProps: propsForFilterToolbar,
+      paginationProps,
+      paginationToolbarItemProps,
+      toolbarBulkSelectorProps,
       getSelectCheckboxTdProps,
-      getCompoundExpandTdProps,
-      getSingleExpandTdProps,
+      getSingleExpandButtonTdProps,
       getExpandedContentTdProps,
     },
-    expansionDerivedState,
-    activeRowDerivedState,
   };
 };

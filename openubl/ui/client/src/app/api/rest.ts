@@ -1,6 +1,6 @@
 import axios from "axios";
-import { ApiPaginatedResult, ApiRequestParams, New, Project } from "./models";
-import { serializeRequestParamsForApi } from "@app/hooks/table-controls";
+import { HubPaginatedResult, HubRequestParams, New, Project } from "./models";
+import { serializeRequestParamsForHub } from "@app/hooks/table-controls";
 
 const HUB = "/hub";
 
@@ -13,11 +13,11 @@ interface ApiSearchResult<T> {
 
 export const getApiPaginatedResult = <T>(
   url: string,
-  params: ApiRequestParams = {}
-): Promise<ApiPaginatedResult<T>> =>
+  params: HubRequestParams = {}
+): Promise<HubPaginatedResult<T>> =>
   axios
     .get<ApiSearchResult<T>>(url, {
-      params: serializeRequestParamsForApi(params),
+      params: serializeRequestParamsForHub(params),
     })
     .then(({ data }) => ({
       data: data.data,

@@ -1,5 +1,5 @@
 export * from "./usePaginationState";
 export * from "./getLocalPaginationDerivedState";
-export * from "./getPaginationProps";
+export * from "./usePaginationPropHelpers";
 export * from "./usePaginationEffects";
-export * from "./getPaginationApiRequestParams";
+export * from "./getPaginationHubRequestParams";

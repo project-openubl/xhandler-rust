@@ -16,16 +16,17 @@ import { useLocation, useNavigate } from "react-router-dom";
 //       The keys of TDeserializedParams and TSerializedParams have the prefixes omitted.
 //       Prefixes are only used at the very first/last step when reading/writing from/to the URLSearchParams object.
 
-type TSerializedParams<TURLParamKey extends string> = Partial<
+export type TSerializedParams<TURLParamKey extends string> = Partial<
   Record<TURLParamKey, string | null>
 >;
 
 export interface IUseUrlParamsArgs<
-  TURLParamKey extends string,
-  TKeyPrefix extends string,
   TDeserializedParams,
+  TPersistenceKeyPrefix extends string,
+  TURLParamKey extends string,
 > {
-  keyPrefix?: DisallowCharacters<TKeyPrefix, ":">;
+  isEnabled?: boolean;
+  persistenceKeyPrefix?: DisallowCharacters<TPersistenceKeyPrefix, ":">;
   keys: DisallowCharacters<TURLParamKey, ":">[];
   defaultValue: TDeserializedParams;
   serialize: (
@@ -36,37 +37,38 @@ export interface IUseUrlParamsArgs<
   ) => TDeserializedParams;
 }
 
-export type TURLParamStateTuple<TDeserializedParams> = readonly [
+export type TURLParamStateTuple<TDeserializedParams> = [
   TDeserializedParams,
   (newParams: Partial<TDeserializedParams>) => void,
 ];
 
 export const useUrlParams = <
-  TURLParamKey extends string,
-  TKeyPrefix extends string,
   TDeserializedParams,
+  TKeyPrefix extends string,
+  TURLParamKey extends string,
 >({
-  keyPrefix,
+  isEnabled = true,
+  persistenceKeyPrefix,
   keys,
   defaultValue,
   serialize,
   deserialize,
 }: IUseUrlParamsArgs<
-  TURLParamKey,
+  TDeserializedParams,
   TKeyPrefix,
-  TDeserializedParams
+  TURLParamKey
 >): TURLParamStateTuple<TDeserializedParams> => {
   type TPrefixedURLParamKey = TURLParamKey | `${TKeyPrefix}:${TURLParamKey}`;
 
   const navigate = useNavigate();
 
   const withPrefix = (key: TURLParamKey): TPrefixedURLParamKey =>
-    keyPrefix ? `${keyPrefix}:${key}` : key;
+    persistenceKeyPrefix ? `${persistenceKeyPrefix}:${key}` : key;
 
   const withPrefixes = (
     serializedParams: TSerializedParams<TURLParamKey>
   ): TSerializedParams<TPrefixedURLParamKey> =>
-    keyPrefix
+    persistenceKeyPrefix
       ? objectKeys(serializedParams).reduce(
           (obj, key) => ({
             ...obj,
@@ -96,18 +98,25 @@ export const useUrlParams = <
   // We use useLocation here so we are re-rendering when the params change.
   const urlParams = new URLSearchParams(useLocation().search);
   // We un-prefix the params object here so the deserialize function doesn't have to care about the keyPrefix.
-  const serializedParams = keys.reduce(
-    (obj, key) => ({
-      ...obj,
-      [key]: urlParams.get(withPrefix(key)),
-    }),
-    {} as TSerializedParams<TURLParamKey>
-  );
-  const allParamsEmpty = keys.every((key) => !serializedParams[key]);
-  const params = allParamsEmpty ? defaultValue : deserialize(serializedParams);
+
+  let allParamsEmpty = true;
+  let params: TDeserializedParams = defaultValue;
+  if (isEnabled) {
+    const serializedParams = keys.reduce(
+      (obj, key) => ({
+        ...obj,
+        [key]: urlParams.get(withPrefix(key)),
+      }),
+      {} as TSerializedParams<TURLParamKey>
+    );
+    allParamsEmpty = keys.every((key) => !serializedParams[key]);
+    params = allParamsEmpty ? defaultValue : deserialize(serializedParams);
+  }
 
   React.useEffect(() => {
     if (allParamsEmpty) setParams(defaultValue);
+    // Leaving this rule enabled results in a cascade of unnecessary useCallbacks:
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allParamsEmpty]);
 
   return [params, setParams];

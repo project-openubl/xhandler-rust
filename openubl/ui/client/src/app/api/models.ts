@@ -1,7 +1,12 @@
-export type New<T extends { id: number }> = Omit<T, "id">;
-export type Only<T extends { id: number }> = Pick<T, "id">;
+export enum MimeType {
+  TAR = "tar",
+  YAML = "yaml",
+}
 
-export interface ApiFilter {
+/** Mark an object as "New" therefore does not have an `id` field. */
+export type New<T extends { id: number }> = Omit<T, "id">;
+
+export interface HubFilter {
   field: string;
   operator?: "=" | "!=" | "~" | ">" | ">=" | "<" | "<=";
   value:
@@ -13,8 +18,8 @@ export interface ApiFilter {
       };
 }
 
-export interface ApiRequestParams {
-  filters?: ApiFilter[];
+export interface HubRequestParams {
+  filters?: HubFilter[];
   sort?: {
     field: string;
     direction: "asc" | "desc";
@@ -25,10 +30,10 @@ export interface ApiRequestParams {
   };
 }
 
-export interface ApiPaginatedResult<T> {
+export interface HubPaginatedResult<T> {
   data: T[];
   total: number;
-  params: ApiRequestParams;
+  params: HubRequestParams;
 }
 
 //

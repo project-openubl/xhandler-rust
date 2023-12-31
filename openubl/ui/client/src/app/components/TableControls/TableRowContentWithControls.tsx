@@ -1,16 +1,23 @@
 import React from "react";
 import { Td } from "@patternfly/react-table";
-import { useTableControlProps } from "@app/hooks/table-controls";
+import { ITableControls } from "@app/hooks/table-controls";
 
 export interface ITableRowContentWithControlsProps<
   TItem,
   TColumnKey extends string,
   TSortableColumnKey extends TColumnKey,
+  TFilterCategoryKey extends string = string,
+  TPersistenceKeyPrefix extends string = string,
 > {
-  expandableVariant?: "single" | "compound" | null;
-  isSelectable?: boolean;
-  propHelpers: ReturnType<
-    typeof useTableControlProps<TItem, TColumnKey, TSortableColumnKey>
+  isExpansionEnabled?: boolean;
+  expandableVariant?: "single" | "compound";
+  isSelectionEnabled?: boolean;
+  propHelpers: ITableControls<
+    TItem,
+    TColumnKey,
+    TSortableColumnKey,
+    TFilterCategoryKey,
+    TPersistenceKeyPrefix
   >["propHelpers"];
   item: TItem;
   rowIndex: number;
@@ -22,9 +29,10 @@ export const TableRowContentWithControls = <
   TColumnKey extends string,
   TSortableColumnKey extends TColumnKey,
 >({
-  expandableVariant = null,
-  isSelectable = false,
-  propHelpers: { getSingleExpandTdProps, getSelectCheckboxTdProps },
+  isExpansionEnabled = false,
+  expandableVariant,
+  isSelectionEnabled = false,
+  propHelpers: { getSingleExpandButtonTdProps, getSelectCheckboxTdProps },
   item,
   rowIndex,
   children,
@@ -32,10 +40,10 @@ export const TableRowContentWithControls = <
   ITableRowContentWithControlsProps<TItem, TColumnKey, TSortableColumnKey>
 >) => (
   <>
-    {expandableVariant === "single" ? (
-      <Td {...getSingleExpandTdProps({ item, rowIndex })} />
+    {isExpansionEnabled && expandableVariant === "single" ? (
+      <Td {...getSingleExpandButtonTdProps({ item, rowIndex })} />
     ) : null}
-    {isSelectable ? (
+    {isSelectionEnabled ? (
       <Td {...getSelectCheckboxTdProps({ item, rowIndex })} />
     ) : null}
     {children}

@@ -104,7 +104,7 @@ export const Projects: React.FC = () => {
     getSortValues: (item) => ({
       name: item?.name || "",
     }),
-    hasPagination: true,
+    isPaginationEnabled: true,
   });
 
   const {

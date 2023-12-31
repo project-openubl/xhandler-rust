@@ -27,10 +27,7 @@ import {
 } from "@patternfly/react-table";
 
 import { SimplePagination } from "@app/components/SimplePagination";
-import {
-  FilterToolbar,
-  FilterType,
-} from "@app/components/FilterToolbar";
+import { FilterToolbar, FilterType } from "@app/components/FilterToolbar";
 import {
   ConditionalTableBody,
   TableHeaderContentWithControls,
@@ -105,7 +102,7 @@ export const Projects: React.FC = () => {
     getSortValues: (item) => ({
       name: item?.name || "",
     }),
-    hasPagination: true,
+    isPaginationEnabled: true,
   });
 
   const {

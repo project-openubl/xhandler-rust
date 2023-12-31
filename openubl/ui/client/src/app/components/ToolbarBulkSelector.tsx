@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { Button, PaginationProps, ToolbarItem } from "@patternfly/react-core";
+import { useTranslation } from "react-i18next";
 import {
+  Button,
   Dropdown,
   DropdownItem,
-  DropdownToggle,
-  DropdownToggleCheckbox,
-} from "@patternfly/react-core/deprecated";
+  DropdownList,
+  MenuToggle,
+  MenuToggleCheckbox,
+  PaginationProps,
+  ToolbarItem,
+} from "@patternfly/react-core";
 
 import AngleDownIcon from "@patternfly/react-icons/dist/esm/icons/angle-down-icon";
 import AngleRightIcon from "@patternfly/react-icons/dist/esm/icons/angle-right-icon";
@@ -35,6 +39,9 @@ export const ToolbarBulkSelector = <T,>({
 }: React.PropsWithChildren<
   IToolbarBulkSelectorProps<T>
 >): JSX.Element | null => {
+  // i18
+  const { t } = useTranslation();
+
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleCollapseAll = (collapse: boolean) => {
@@ -63,7 +70,6 @@ export const ToolbarBulkSelector = <T,>({
     }
     return state;
   };
-  const [bulkSelectOpen, setBulkSelectOpen] = React.useState(false);
   const handleSelectAll = (checked: boolean) => {
     onSelectAll(!!checked);
   };
@@ -77,7 +83,7 @@ export const ToolbarBulkSelector = <T,>({
       key="select-none"
       component="button"
     >
-      Select none (0 items)
+      {t("actions.selectNone")} (0 items)
     </DropdownItem>,
     <DropdownItem
       onClick={() => {
@@ -90,7 +96,7 @@ export const ToolbarBulkSelector = <T,>({
       key="select-page"
       component="button"
     >
-      Select page ({currentPageItems.length} items)
+      {t("actions.selectPage")} ({currentPageItems.length} items)
     </DropdownItem>,
     <DropdownItem
       onClick={() => {
@@ -100,7 +106,7 @@ export const ToolbarBulkSelector = <T,>({
       key="select-all"
       component="button"
     >
-      Select all ({paginationProps.itemCount})
+      {t("actions.selectAll")} ({paginationProps.itemCount})
     </DropdownItem>,
   ];
 
@@ -109,31 +115,33 @@ export const ToolbarBulkSelector = <T,>({
       {isExpandable && <ToolbarItem>{collapseAllBtn()}</ToolbarItem>}
       <ToolbarItem>
         <Dropdown
-          toggle={
-            <DropdownToggle
-              splitButtonItems={[
-                <DropdownToggleCheckbox
-                  id="bulk-selected-items-checkbox"
-                  key="bulk-select-checkbox"
-                  aria-label="Select all"
-                  onChange={() => {
-                    if (getBulkSelectState() !== false) {
-                      onSelectAll(false);
-                    } else {
-                      onSelectAll(true);
-                    }
-                  }}
-                  isChecked={getBulkSelectState()}
-                />,
-              ]}
-              onToggle={(_, isOpen) => {
-                setBulkSelectOpen(isOpen);
+          isOpen={isOpen}
+          toggle={(toggleRef) => (
+            <MenuToggle
+              ref={toggleRef}
+              onClick={() => setIsOpen(!isOpen)}
+              splitButtonOptions={{
+                items: [
+                  <MenuToggleCheckbox
+                    id="bulk-selected-items-checkbox"
+                    key="bulk-select-checkbox"
+                    aria-label="Select all"
+                    onChange={() => {
+                      if (getBulkSelectState() !== false) {
+                        onSelectAll(false);
+                      } else {
+                        onSelectAll(true);
+                      }
+                    }}
+                    isChecked={getBulkSelectState()}
+                  />,
+                ],
               }}
             />
-          }
-          isOpen={bulkSelectOpen}
-          dropdownItems={dropdownItems}
-        ></Dropdown>
+          )}
+        >
+          <DropdownList>{dropdownItems}</DropdownList>
+        </Dropdown>
       </ToolbarItem>
     </>
   );
