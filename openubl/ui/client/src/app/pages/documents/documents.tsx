@@ -27,7 +27,10 @@ import {
 } from "@patternfly/react-table";
 
 import { SimplePagination } from "@app/components/SimplePagination";
-import { FilterToolbar, FilterType } from "@app/components/FilterToolbar";
+import {
+  FilterToolbar,
+  FilterType,
+} from "@app/components/FilterToolbar";
 import {
   ConditionalTableBody,
   TableHeaderContentWithControls,
@@ -41,7 +44,6 @@ import {
 } from "@app/queries/projects";
 
 import { Project } from "@app/api/models";
-import { ProjectForm } from "./components/project-form";
 import { ConfirmDialog } from "@app/components/ConfirmDialog";
 import { NotificationsContext } from "@app/components/NotificationsContext";
 import { getAxiosErrorMessage } from "@app/utils/utils";
@@ -193,7 +195,7 @@ export const Projects: React.FC = () => {
                         rowIndex={rowIndex}
                       >
                         <Td width={15} {...getTdProps({ columnKey: "name" })}>
-                          <NavLink to={`/projects/${item.id}/documents`}>
+                          <NavLink to={`/projects/${item.id}`}>
                             {item.name}
                           </NavLink>
                         </Td>
@@ -233,40 +235,6 @@ export const Projects: React.FC = () => {
           />
         </div>
       </PageSection>
-
-      <Modal
-        id="create-edit-project-modal"
-        title={projectToUpdate ? "Actualizar proyecto" : "Nuevo proyecto"}
-        variant={ModalVariant.medium}
-        isOpen={isCreateUpdateModalOpen}
-        onClose={closeCreateUpdateModal}
-      >
-        <ProjectForm
-          project={projectToUpdate ? projectToUpdate : undefined}
-          onClose={closeCreateUpdateModal}
-        />
-      </Modal>
-
-      {isConfirmDialogOpen && (
-        <ConfirmDialog
-          title={"Eliminar proyecto"}
-          isOpen={true}
-          titleIconVariant={"warning"}
-          message={`Estas seguro de querer eliminar este proyecto?`}
-          confirmBtnVariant={ButtonVariant.danger}
-          confirmBtnLabel="Eliminar"
-          cancelBtnLabel="Cancelar"
-          onCancel={() => setIsConfirmDialogOpen(false)}
-          onClose={() => setIsConfirmDialogOpen(false)}
-          onConfirm={() => {
-            if (projectIdToDelete) {
-              deleteOrg(projectIdToDelete);
-              setProjectIdToDelete(undefined);
-            }
-            setIsConfirmDialogOpen(false);
-          }}
-        />
-      )}
     </>
   );
 };

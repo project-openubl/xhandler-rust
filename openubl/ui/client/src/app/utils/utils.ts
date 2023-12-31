@@ -78,6 +78,14 @@ export const numStr = (num: number | undefined): string => {
   return String(num);
 };
 
+export const parseMaybeNumericString = (
+  numOrStr: string | undefined | null
+): string | number | null => {
+  if (numOrStr === undefined || numOrStr === null) return null;
+  const num = Number(numOrStr);
+  return isNaN(num) ? numOrStr : num;
+};
+
 export const objectKeys = <T extends Object>(obj: T) =>
   Object.keys(obj) as (keyof T)[];
 

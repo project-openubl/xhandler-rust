@@ -4,8 +4,8 @@ import { Page } from "@patternfly/react-core";
 
 import { HeaderApp } from "./header";
 import { SidebarApp } from "./sidebar";
-import { Notifications } from "@app/shared/components/Notifications";
-import { PageContentWithDrawerProvider } from "@app/shared/components/PageDrawerContext";
+import { Notifications } from "@app/components/Notifications";
+import { PageContentWithDrawerProvider } from "@app/components/PageDrawerContext";
 
 interface DefaultLayoutProps {
   children?: React.ReactNode;
