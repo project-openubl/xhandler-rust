@@ -86,4 +86,6 @@ pub fn configure(config: &mut web::ServiceConfig) {
     config.service(health::readiness);
     config.service(project::list_projects);
     config.service(project::create_project);
+    config.service(project::update_project);
+    config.service(project::delete_project);
 }

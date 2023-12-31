@@ -15,7 +15,7 @@ use crate::system::error::Error;
 use crate::system::InnerSystem;
 
 impl InnerSystem {
-    pub async fn get_projects_by_user_id(
+    pub async fn list_projects(
         &self,
         user_id: &str,
         tx: Transactional<'_>,
@@ -60,9 +60,15 @@ impl InnerSystem {
     pub async fn get_project(
         &self,
         id: i32,
+        user_id: &str,
         tx: Transactional<'_>,
     ) -> Result<Option<ProjectContext>, Error> {
         Ok(project::Entity::find_by_id(id)
+            .join(
+                JoinType::InnerJoin,
+                user_role::Relation::Project.def().rev(),
+            )
+            .filter(entity::user_role::Column::UserId.eq(user_id))
             .one(&self.connection(tx))
             .await?
             .map(|project| (self, project).into()))
@@ -91,6 +97,22 @@ impl From<(&InnerSystem, project::Model)> for ProjectContext {
 }
 
 impl ProjectContext {
+    pub async fn update(&self, model: &project::Model, tx: Transactional<'_>) -> Result<(), Error> {
+        let mut entity: project::ActiveModel = self.project.clone().into();
+
+        entity.name = Set(model.name.clone());
+        entity.description = Set(model.description.clone());
+
+        entity.update(&self.system.connection(tx)).await?;
+        Ok(())
+    }
+
+    pub async fn delete(&self, tx: Transactional<'_>) -> Result<(), Error> {
+        let entity: project::ActiveModel = self.project.clone().into();
+        entity.delete(&self.system.connection(tx)).await?;
+        Ok(())
+    }
+
     pub async fn set_owner(&self, user_id: &str, tx: Transactional<'_>) -> Result<(), Error> {
         let entity = user_role::ActiveModel {
             project_id: Set(self.project.id),
