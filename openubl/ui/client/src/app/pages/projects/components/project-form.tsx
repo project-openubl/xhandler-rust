@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 import { object, string } from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useTranslation } from "react-i18next";
 
 import {
   ActionGroup,
@@ -40,6 +41,7 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
   project,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const { pushNotification } = useContext(NotificationsContext);
 
   const { projects } = useFetchProjects();
@@ -53,7 +55,7 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
       .matches(/[a-z0-9]([-a-z0-9]*[a-z0-9])?/)
       .test(
         "Duplicate name",
-        "Un proyecto con el mismo nombre ya existe. Use un nombre diferente.",
+        "A project with this name already exists. Use a different name.",
         (value) =>
           duplicateFieldCheck("name", projects, project || null, value || "")
       ),
@@ -76,13 +78,17 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
 
   const onCreateProjectSuccess = (_: Project) =>
     pushNotification({
-      title: "Proyecto creado",
+      title: t("toastr.success.created", {
+        type: t("terms.project"),
+      }),
       variant: "success",
     });
 
   const onCreateProjectError = (error: AxiosError) => {
     pushNotification({
-      title: "Error al crear el proyecto",
+      title: t("toastr.fail.create", {
+        type: t("terms.project").toLowerCase(),
+      }),
       variant: "danger",
     });
   };
@@ -94,13 +100,17 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
 
   const onUpdateProjectSuccess = (_: Project) =>
     pushNotification({
-      title: "Proyecto guardado",
+      title: t("toastr.success.saved", {
+        type: t("terms.project"),
+      }),
       variant: "success",
     });
 
   const onUpdateProjectError = (error: AxiosError) => {
     pushNotification({
-      title: "Error al guardar los datos",
+      title: t("toastr.fail.save", {
+        type: t("terms.project").toLowerCase(),
+      }),
       variant: "danger",
     });
   };
@@ -128,14 +138,14 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
       <HookFormPFTextInput
         control={control}
         name="name"
-        label="Name"
+        label={t("terms.name")}
         fieldId="name"
         isRequired
       />
       <HookFormPFTextArea
         control={control}
         name="description"
-        label="Description"
+        label={t("terms.description")}
         fieldId="description"
         resizeOrientation="vertical"
       />
@@ -148,7 +158,7 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
           variant={ButtonVariant.primary}
           isDisabled={!isValid || isSubmitting || isValidating || !isDirty}
         >
-          {!project ? "Create" : "Save"}
+          {!project ? t("terms.create") : t("terms.save")}
         </Button>
         <Button
           type="button"
@@ -158,7 +168,7 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
           isDisabled={isSubmitting || isValidating}
           onClick={onClose}
         >
-          Cancel
+          {t("terms.cancel")}
         </Button>
       </ActionGroup>
     </Form>

@@ -84,5 +84,6 @@ pub struct AppState {
 pub fn configure(config: &mut web::ServiceConfig) {
     config.service(health::liveness);
     config.service(health::readiness);
+    config.service(project::list_projects);
     config.service(project::create_project);
 }

@@ -1,44 +1,68 @@
 use std::fmt::{Debug, Formatter};
 
 use sea_orm::ActiveValue::Set;
-use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, QuerySelect, RelationTrait,
+};
+use sea_query::JoinType;
 
+use openubl_entity as entity;
 use openubl_entity::project;
+use openubl_entity::user_role;
 
 use crate::db::Transactional;
 use crate::system::error::Error;
 use crate::system::InnerSystem;
 
 impl InnerSystem {
+    pub async fn get_projects_by_user_id(
+        &self,
+        user_id: &str,
+        tx: Transactional<'_>,
+    ) -> Result<Vec<ProjectContext>, Error> {
+        Ok(project::Entity::find()
+            .join(
+                JoinType::InnerJoin,
+                user_role::Relation::Project.def().rev(),
+            )
+            .filter(entity::user_role::Column::UserId.eq(user_id))
+            .all(&self.connection(tx))
+            .await?
+            .drain(0..)
+            .map(|project| (self, project).into())
+            .collect())
+    }
+
     pub async fn create_project(
         &self,
         model: &project::Model,
+        user_id: &str,
         tx: Transactional<'_>,
     ) -> Result<ProjectContext, Error> {
-        if let Some(found) = self.get_project(&model.name, tx).await? {
-            Ok(found)
-        } else {
-            let entity = project::ActiveModel {
-                name: Set(model.name.clone()),
-                description: Set(model.description.clone()),
-                sunat_username: Set(model.sunat_username.clone()),
-                sunat_password: Set(model.sunat_password.clone()),
-                sunat_factura_url: Set(model.sunat_factura_url.clone()),
-                sunat_guia_url: Set(model.sunat_guia_url.clone()),
-                sunat_percepcion_retencion_url: Set(model.sunat_percepcion_retencion_url.clone()),
-            };
+        let project_entity = project::ActiveModel {
+            name: Set(model.name.clone()),
+            description: Set(model.description.clone()),
+            ..Default::default()
+        };
 
-            Ok((self, entity.insert(&self.connection(tx)).await?).into())
-        }
+        let result = project_entity.insert(&self.connection(tx)).await?;
+
+        let user_role_entity = user_role::ActiveModel {
+            project_id: Set(result.id),
+            user_id: Set(user_id.to_string()),
+            role: Set(user_role::Role::Owner),
+        };
+        user_role_entity.insert(&self.connection(tx)).await?;
+
+        Ok((self, result).into())
     }
 
     pub async fn get_project(
         &self,
-        name: &str,
+        id: i32,
         tx: Transactional<'_>,
     ) -> Result<Option<ProjectContext>, Error> {
-        Ok(project::Entity::find()
-            .filter(project::Column::Name.eq(name))
+        Ok(project::Entity::find_by_id(id)
             .one(&self.connection(tx))
             .await?
             .map(|project| (self, project).into()))
@@ -67,17 +91,13 @@ impl From<(&InnerSystem, project::Model)> for ProjectContext {
 }
 
 impl ProjectContext {
-    // pub async fn set_owner(&self, tx: Transactional<'_>) -> Result<Vec<ProjectContext>, Error> {
-    //     Ok(advisory::Entity::find()
-    //         .join(
-    //             JoinType::Join,
-    //             advisory_vulnerability::Relation::Advisory.def().rev(),
-    //         )
-    //         .filter(advisory_vulnerability::Column::VulnerabilityId.eq(self.cve.id))
-    //         .all(&self.system.connection(tx))
-    //         .await?
-    //         .drain(0..)
-    //         .map(|advisory| (&self.system, advisory).into())
-    //         .collect())
-    // }
+    pub async fn set_owner(&self, user_id: &str, tx: Transactional<'_>) -> Result<(), Error> {
+        let entity = user_role::ActiveModel {
+            project_id: Set(self.project.id),
+            user_id: Set(user_id.to_string()),
+            role: Set(user_role::Role::Owner),
+        };
+        entity.insert(&self.system.connection(tx)).await?;
+        Ok(())
+    }
 }

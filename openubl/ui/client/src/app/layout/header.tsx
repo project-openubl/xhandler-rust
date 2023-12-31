@@ -1,4 +1,6 @@
-import React, { useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
+import { useAuth } from "react-oidc-context";
+import { useNavigate } from "react-router-dom";
 
 import {
   Avatar,
@@ -22,18 +24,19 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
+
 import BarsIcon from "@patternfly/react-icons/dist/js/icons/bars-icon";
 import QuestionCircleIcon from "@patternfly/react-icons/dist/esm/icons/question-circle-icon";
 import EllipsisVIcon from "@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon";
 import HelpIcon from "@patternfly/react-icons/dist/esm/icons/help-icon";
 
+import i18n from "@app/i18n";
+import { useLocalStorage } from "@app/hooks/useStorage";
 import { APP_BRAND, BrandType, isAuthRequired } from "@app/Constants";
-import { useAuth } from "react-oidc-context";
 
 import { AboutApp } from "./about";
 import openublBrandImage from "@app/images/Openubl-white-logo.svg";
 import imgAvatar from "../images/avatar.svg";
-import { useNavigate } from "react-router-dom";
 
 export const HeaderApp: React.FC = () => {
   const auth = (isAuthRequired && useAuth()) || undefined;
@@ -41,8 +44,15 @@ export const HeaderApp: React.FC = () => {
   const navigate = useNavigate();
 
   const [isAboutOpen, toggleIsAboutOpen] = useReducer((state) => !state, false);
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   const [isKebabDropdownOpen, setIsKebabDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+
+  const [lang, setLang] = useLocalStorage({ key: "lang", defaultValue: "es" });
+
+  useEffect(() => {
+    i18n.changeLanguage(lang);
+  }, [lang]);
 
   const kebabDropdownItems = (
     <>
@@ -97,6 +107,40 @@ export const HeaderApp: React.FC = () => {
                   variant="icon-button-group"
                   visibility={{ default: "hidden", lg: "visible" }}
                 >
+                  <ToolbarItem>
+                    <Dropdown
+                      isOpen={isLangDropdownOpen}
+                      onSelect={() =>
+                        setIsLangDropdownOpen(!isLangDropdownOpen)
+                      }
+                      onOpenChange={(isOpen: boolean) =>
+                        setIsLangDropdownOpen(isOpen)
+                      }
+                      popperProps={{ position: "right" }}
+                      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                        <MenuToggle
+                          ref={toggleRef}
+                          onClick={() =>
+                            setIsLangDropdownOpen(!isLangDropdownOpen)
+                          }
+                          isExpanded={isLangDropdownOpen}
+                          variant="plainText"
+                          aria-label="About"
+                        >
+                          {lang}
+                        </MenuToggle>
+                      )}
+                    >
+                      <DropdownList>
+                        <DropdownItem key="es" onClick={() => setLang("es")}>
+                          Español
+                        </DropdownItem>
+                        <DropdownItem key="en" onClick={() => setLang("en")}>
+                          Ingles
+                        </DropdownItem>
+                      </DropdownList>
+                    </Dropdown>
+                  </ToolbarItem>
                   <ToolbarItem>
                     <Button
                       aria-label="About"

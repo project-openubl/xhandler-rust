@@ -3,7 +3,7 @@
 module.exports = {
   createOldCatalogs: true, // Save the \_old files
 
-  indentation: 4, // Indentation of the catalog files
+  indentation: 2, // Indentation of the catalog files
 
   keepRemoved: true, // Keep keys from the catalog that are no longer in code
 

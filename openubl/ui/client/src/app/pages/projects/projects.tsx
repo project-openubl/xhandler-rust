@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { AxiosError } from "axios";
 
 import {
@@ -47,11 +48,12 @@ import { NotificationsContext } from "@app/components/NotificationsContext";
 import { getAxiosErrorMessage } from "@app/utils/utils";
 
 export const Projects: React.FC = () => {
+  const { t } = useTranslation();
   const { pushNotification } = useContext(NotificationsContext);
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
     useState<boolean>(false);
-  const [projectIdToDelete, setProjectIdToDelete] = React.useState<number>();
+  const [projectToDelete, setProjectToDelete] = React.useState<Project>();
 
   const [createUpdateModalState, setCreateUpdateModalState] = useState<
     "create" | Project | null
@@ -62,7 +64,7 @@ export const Projects: React.FC = () => {
 
   const onDeleteOrgSuccess = () => {
     pushNotification({
-      title: "Proyecto eliminado",
+      title: t("terms.projectDeleted"),
       variant: "success",
     });
   };
@@ -76,7 +78,7 @@ export const Projects: React.FC = () => {
 
   const { projects, isFetching, fetchError, refetch } = useFetchProjects();
 
-  const { mutate: deleteOrg } = useDeleteProjectMutation(
+  const { mutate: deleteproject } = useDeleteProjectMutation(
     onDeleteOrgSuccess,
     onDeleteOrgError
   );
@@ -85,16 +87,19 @@ export const Projects: React.FC = () => {
     idProperty: "id",
     items: projects,
     columnNames: {
-      name: "Name",
-      description: "Description",
+      name: t("terms.name"),
+      description: t("terms.description"),
     },
     hasActionsColumn: true,
     filterCategories: [
       {
         key: "q",
-        title: "Name",
+        title: t("terms.name"),
         type: FilterType.search,
-        placeholderText: "Search by name...",
+        placeholderText:
+          t("actions.filterBy", {
+            what: t("terms.name").toLowerCase(),
+          }) + "...",
         getItemValue: (item) => item.name || "",
       },
     ],
@@ -125,7 +130,7 @@ export const Projects: React.FC = () => {
   };
 
   const deleteRow = (row: Project) => {
-    setProjectIdToDelete(row.id);
+    setProjectToDelete(row);
     setIsConfirmDialogOpen(true);
   };
 
@@ -133,7 +138,7 @@ export const Projects: React.FC = () => {
     <>
       <PageSection variant={PageSectionVariants.light}>
         <TextContent>
-          <Text component="h1">Proyectos</Text>
+          <Text component="h1">{t("terms.projects")}</Text>
         </TextContent>
       </PageSection>
       <PageSection>
@@ -154,7 +159,7 @@ export const Projects: React.FC = () => {
                     variant={ButtonVariant.primary}
                     onClick={() => setCreateUpdateModalState("create")}
                   >
-                    Crear proyecto
+                    {t("actions.createNew")}
                   </Button>
                 </ToolbarItem>
               </ToolbarGroup>
@@ -208,11 +213,11 @@ export const Projects: React.FC = () => {
                           <ActionsColumn
                             items={[
                               {
-                                title: "Editar",
+                                title: t("actions.edit"),
                                 onClick: () => setCreateUpdateModalState(item),
                               },
                               {
-                                title: "Eliminar",
+                                title: t("actions.delete"),
                                 onClick: () => deleteRow(item),
                               },
                             ]}
@@ -236,7 +241,9 @@ export const Projects: React.FC = () => {
 
       <Modal
         id="create-edit-project-modal"
-        title={projectToUpdate ? "Actualizar proyecto" : "Nuevo proyecto"}
+        title={t(projectToUpdate ? "dialog.title.update" : "dialog.title.new", {
+          what: t("terms.project").toLowerCase(),
+        })}
         variant={ModalVariant.medium}
         isOpen={isCreateUpdateModalOpen}
         onClose={closeCreateUpdateModal}
@@ -249,19 +256,22 @@ export const Projects: React.FC = () => {
 
       {isConfirmDialogOpen && (
         <ConfirmDialog
-          title={"Eliminar proyecto"}
+          title={t("dialog.title.deleteWithName", {
+            what: t("terms.project").toLowerCase(),
+            name: projectToDelete?.name,
+          })}
           isOpen={true}
           titleIconVariant={"warning"}
-          message={`Estas seguro de querer eliminar este proyecto?`}
+          message={t("dialog.message.delete")}
           confirmBtnVariant={ButtonVariant.danger}
-          confirmBtnLabel="Eliminar"
-          cancelBtnLabel="Cancelar"
+          confirmBtnLabel={t("actions.delete")}
+          cancelBtnLabel={t("actions.cancel")}
           onCancel={() => setIsConfirmDialogOpen(false)}
           onClose={() => setIsConfirmDialogOpen(false)}
           onConfirm={() => {
-            if (projectIdToDelete) {
-              deleteOrg(projectIdToDelete);
-              setProjectIdToDelete(undefined);
+            if (projectToDelete) {
+              deleteproject(projectToDelete.id);
+              setProjectToDelete(undefined);
             }
             setIsConfirmDialogOpen(false);
           }}

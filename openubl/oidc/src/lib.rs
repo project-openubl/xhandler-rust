@@ -7,7 +7,10 @@ pub struct UserClaims {
     pub iss: String,
     pub sub: String,
     pub aud: String,
-    pub name: String,
-    pub email: Option<String>,
-    pub email_verified: Option<bool>,
+}
+
+impl UserClaims {
+    pub fn user_id(&self) -> String {
+        self.sub.clone()
+    }
 }
