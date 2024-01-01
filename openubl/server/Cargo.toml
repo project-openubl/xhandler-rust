@@ -18,7 +18,7 @@ actix-web = "4.4.0"
 serde = { version = "1.0.193", features = ["derive"] }
 sea-orm = { version = "0.12.10", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
 clap = { version = "4.4.11", features = ["derive", "env"] }
-anyhow = "1.0.76"
+anyhow = "1.0.78"
 env_logger = "0.10.1"
 thiserror = "1.0.50"
 utoipa = { version = "4.1.0", features = ["actix_extras"] }
