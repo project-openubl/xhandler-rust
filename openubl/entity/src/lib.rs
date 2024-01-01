@@ -3,4 +3,5 @@
 pub mod prelude;
 
 pub mod project;
+pub mod ubl_document;
 pub mod user_role;
