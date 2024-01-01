@@ -39,7 +39,7 @@ impl Run {
     pub async fn run(self) -> anyhow::Result<ExitCode> {
         env_logger::init();
 
-        // DB
+        // Database
         let system = match self.bootstrap {
             true => {
                 InnerSystem::bootstrap(

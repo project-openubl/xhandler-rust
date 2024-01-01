@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::Path;
 
+use anyhow::anyhow;
 use xml::name::OwnedName;
 use xml::reader::XmlEvent;
 use xml::EventReader;
@@ -30,13 +31,8 @@ pub struct UblMetadata {
     pub voided_line_document_type_code: Option<String>,
 }
 
-#[derive(Debug)]
-pub struct UblMetadataError {
-    pub message: String,
-}
-
 impl UblFile {
-    pub fn metadata(&self) -> Result<UblMetadata, UblMetadataError> {
+    pub fn metadata(&self) -> anyhow::Result<UblMetadata> {
         let event_reader = EventReader::from_str(&self.file_content);
 
         enum Wrapper {
@@ -147,9 +143,9 @@ impl UblFile {
                 ruc,
                 voided_line_document_type_code,
             }),
-            _ => Err(UblMetadataError {
-                message: "document_type, document_id, and ruc were not found".to_string(),
-            }),
+            _ => Err(anyhow!(
+                "document_type, document_id, and ruc were not found"
+            )),
         }
     }
 }

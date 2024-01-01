@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use anyhow::anyhow;
 use xml::name::OwnedName;
 use xml::reader::XmlEvent;
 use xml::EventReader;
@@ -13,14 +14,8 @@ pub struct CdrMetadata {
     pub notes: Vec<String>,
 }
 
-/// Error occurred while reading the XML CDR
-#[derive(Debug)]
-pub struct CdrReadError {
-    pub message: String,
-}
-
 impl FromStr for CdrMetadata {
-    type Err = CdrReadError;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let event_reader = EventReader::from_str(s);
@@ -107,9 +102,9 @@ impl FromStr for CdrMetadata {
                 response_code,
                 notes,
             }),
-            _ => Err(CdrReadError {
-                message: "Could not find response_code and description inside the xml".to_string(),
-            }),
+            _ => Err(anyhow!(
+                "Could not find response_code and description inside the xml"
+            )),
         }
     }
 }

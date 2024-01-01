@@ -1,13 +1,13 @@
 use actix_4_jwt_auth::AuthenticatedUser;
-use actix_multipart::form::MultipartForm;
 use actix_multipart::form::tempfile::TempFile;
-use actix_web::{post, Responder, web};
+use actix_multipart::form::MultipartForm;
+use actix_web::{post, web, Responder};
 
 use openubl_oidc::UserClaims;
 use xsender::prelude::{FromPath, UblFile};
 
-use crate::AppState;
 use crate::server::Error;
+use crate::AppState;
 
 #[derive(Debug, MultipartForm)]
 struct UploadForm {
@@ -22,14 +22,13 @@ pub async fn upload_file(
     MultipartForm(form): MultipartForm<UploadForm>,
     _user: AuthenticatedUser<UserClaims>,
 ) -> Result<impl Responder, Error> {
-    // for f in form.files {
-    //     let ubl_file = UblFile::from_path(f.file.path())?;
-    //     let ubl_metadata = ubl_file.metadata()?;
-    //
-    //     let filename = f.file.path().to_str().expect("hello");
-    //     let file_id = state.storage.upload(filename).await?;
-    //     // f.file.persist(path).unwrap();
-    // }
+    for f in form.files {
+        let ubl_file = UblFile::from_path(f.file.path())?;
+        ubl_file.metadata()?;
+
+        let filename = f.file.path().to_str().expect("hello");
+        state.storage.upload(filename).await?;
+    }
 
     Ok("Live")
 }
