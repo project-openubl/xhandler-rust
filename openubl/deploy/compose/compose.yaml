@@ -51,6 +51,8 @@ services:
     environment:
       MINIO_ROOT_USER: "admin"
       MINIO_ROOT_PASSWORD: "password"
+      MINIO_ACCESS_KEY: "accesskey"
+      MINIO_SECRET_KEY: "secretkey"
       MINIO_NOTIFY_NATS_ENABLE_OPENUBL: "on"
       MINIO_NOTIFY_NATS_ADDRESS_OPENUBL: "nats:4222"
       MINIO_NOTIFY_NATS_SUBJECT_OPENUBL: "openubl"

@@ -70,17 +70,13 @@ impl Run {
             },
         };
 
-        // Create temporary folder where to upload multipart
-        let tmp_dir = "./tmp";
-        std::fs::create_dir_all(tmp_dir)?;
-
         HttpServer::new(move || {
             App::new()
                 .app_data(web::Data::from(app_state.clone()))
                 .wrap(Logger::default())
                 .wrap(oidc_validator.clone())
                 .app_data(oidc.clone())
-                .app_data(TempFileConfig::default().directory(tmp_dir))
+                .app_data(TempFileConfig::default())
                 .configure(configure)
         })
         .bind(self.bind_addr)?
