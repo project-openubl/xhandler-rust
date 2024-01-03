@@ -1,0 +1,10 @@
+[package]
+name = "openubl-integration-tests"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+actix-web = "4.4.1"
+testcontainers = "0.15.0"
+testcontainers-modules = { version = "0.2.1", features = ["postgres"] }
