@@ -1,8 +1,8 @@
-use testcontainers::clients::Cli;
 use crate::database::DatabaseServer;
 use crate::messaging::MessagingServer;
 use crate::oidc::OidcServer;
 use crate::storage::StorageServer;
+use testcontainers::clients::Cli;
 
 pub mod database;
 pub mod messaging;
@@ -11,7 +11,7 @@ pub mod oidc;
 pub mod storage;
 
 pub enum TestProfile {
-    Prod(Cli)
+    Prod(Cli),
 }
 
 // impl TestProfile<'_> {
