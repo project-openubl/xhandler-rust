@@ -8,33 +8,68 @@ services:
       POSTGRES_DB: "openubl"
       POSTGRES_USER: "user"
       POSTGRES_PASSWORD: "password"
-    restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U user -d openubl" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 3s
+      retries: 3
 
   keycloak:
     image: quay.io/keycloak/keycloak:23.0.3
     command: start-dev
     ports:
       - "9001:8080"
-    expose:
-      - "8080"
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
   keycloak-init:
     image: quay.io/keycloak/keycloak:23.0.3
-    depends_on:
-      keycloak:
-        condition: service_started
-    volumes:
-      - ./scripts/keycloak:/tmp/keycloak:z
     entrypoint: /usr/bin/bash
     command: /tmp/keycloak/setup.sh
     environment:
       KEYCLOAK_SERVER_URL: http://keycloak:8080
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - ./scripts/keycloak:/tmp/keycloak:z
+    depends_on:
+      keycloak:
+        condition: service_started
+
+  nats:
+    image: nats:latest
+    command: -m 8222 -js
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
+  minio:
+    image: quay.io/minio/minio:latest
+    command: server /data
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ROOT_USER: "admin"
+      MINIO_ROOT_PASSWORD: "password"
+      MINIO_ACCESS_KEY: "accesskey"
+      MINIO_SECRET_KEY: "secretkey"
+      MINIO_NOTIFY_NATS_ENABLE_OPENUBL: "on"
+      MINIO_NOTIFY_NATS_ADDRESS_OPENUBL: "nats:4222"
+      MINIO_NOTIFY_NATS_SUBJECT_OPENUBL: "openubl"
+    healthcheck:
+      test: timeout 5s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      nats:
+        condition: service_started
+  minio-init:
+    image: quay.io/minio/minio:latest
+    entrypoint: /usr/bin/bash
+    command: /tmp/minio/setup.sh
+    volumes:
+      - ./scripts/minio:/tmp/minio:z
+    depends_on:
+      minio:
+        condition: service_healthy

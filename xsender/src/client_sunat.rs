@@ -1,12 +1,13 @@
 use std::str::FromStr;
 
+use anyhow::anyhow;
+use reqwest::StatusCode;
+
 use crate::constants::HTTP_CLIENT;
 use crate::models::{Credentials, SendFileTarget, SoapFileTargetAction, VerifyTicketTarget};
 use crate::soap::envelope::{BodyData, EnvelopeData, FileData, ToStringXml};
-use crate::soap::send_file_response::{SendFileXmlResponse, SendFileXmlResponseFromStrError};
-use crate::soap::verify_ticket_response::{
-    VerifyTicketXmlResponse, VerifyTicketXmlResponseFromStrError,
-};
+use crate::soap::send_file_response::SendFileXmlResponse;
+use crate::soap::verify_ticket_response::VerifyTicketXmlResponse;
 
 #[derive(Default)]
 pub struct ClientSUNAT {}
@@ -16,17 +17,28 @@ pub struct File {
     pub base_64: String,
 }
 
-#[derive(Debug)]
-pub struct ErrorClientSUNAT {
-    pub kind: Layer,
+#[derive(Debug, thiserror::Error)]
+pub enum ClientSunatErr {
+    #[error("Http client error")]
+    HttpClient(reqwest::Error),
+    #[error("Unexpected response from server")]
+    Response(StatusCode),
+    #[error("Error while creating the template")]
+    Templating(tera::Error),
+    #[error(transparent)]
+    Any(#[from] anyhow::Error),
 }
 
-#[derive(Debug)]
-pub enum Layer {
-    Templating(String),
-    Request(reqwest::Error),
-    ReadingResponse,
-    ServiceUnavailable(String),
+impl From<reqwest::Error> for ClientSunatErr {
+    fn from(e: reqwest::Error) -> Self {
+        Self::HttpClient(e)
+    }
+}
+
+impl From<tera::Error> for ClientSunatErr {
+    fn from(e: tera::Error) -> Self {
+        Self::Templating(e)
+    }
 }
 
 pub enum SendFileResponse {
@@ -56,7 +68,7 @@ impl ClientSUNAT {
         target: &SendFileTarget,
         file: &File,
         credentials: &Credentials,
-    ) -> Result<SendFileResponse, ErrorClientSUNAT> {
+    ) -> Result<SendFileResponse, ClientSunatErr> {
         match &target {
             SendFileTarget::Soap(url, action) => {
                 let envelope_body = match action {
@@ -97,9 +109,7 @@ impl ClientSUNAT {
 
                 let response_status = response.status();
                 if !response_status.is_success() {
-                    return Err(ErrorClientSUNAT {
-                        kind: Layer::ServiceUnavailable(response_status.to_string()),
-                    });
+                    return Err(ClientSunatErr::Response(response_status));
                 }
 
                 let body = response.text().await?;
@@ -107,11 +117,7 @@ impl ClientSUNAT {
 
                 Ok(response_body.into())
             }
-            SendFileTarget::Rest(_, _) => Err(ErrorClientSUNAT {
-                kind: Layer::ServiceUnavailable(
-                    "SendFileTarget::Rest not implemented yet".to_string(),
-                ),
-            }),
+            SendFileTarget::Rest(_, _) => Err(ClientSunatErr::Any(anyhow!("Not implemented"))),
         }
     }
 
@@ -120,7 +126,7 @@ impl ClientSUNAT {
         target: &VerifyTicketTarget,
         ticket: &str,
         credentials: &Credentials,
-    ) -> Result<VerifyTicketResponse, ErrorClientSUNAT> {
+    ) -> Result<VerifyTicketResponse, ClientSunatErr> {
         match &target {
             VerifyTicketTarget::Soap(url) => {
                 let envelope = EnvelopeData {
@@ -142,9 +148,7 @@ impl ClientSUNAT {
 
                 let response_status = response.status();
                 if !response_status.is_success() {
-                    return Err(ErrorClientSUNAT {
-                        kind: Layer::ServiceUnavailable(response_status.to_string()),
-                    });
+                    return Err(ClientSunatErr::Response(response_status));
                 }
 
                 let body = response.text().await?;
@@ -152,11 +156,7 @@ impl ClientSUNAT {
 
                 Ok(response_body.into())
             }
-            VerifyTicketTarget::Rest(_) => Err(ErrorClientSUNAT {
-                kind: Layer::ServiceUnavailable(
-                    "SendFileTarget::Rest not implemented yet".to_string(),
-                ),
-            }),
+            VerifyTicketTarget::Rest(_) => Err(ClientSunatErr::Any(anyhow!("Not implemented"))),
         }
     }
 }
@@ -185,38 +185,6 @@ impl From<VerifyTicketXmlResponse> for VerifyTicketResponse {
                 code: error.code,
                 message: error.message,
             }),
-        }
-    }
-}
-
-impl From<reqwest::Error> for ErrorClientSUNAT {
-    fn from(error: reqwest::Error) -> Self {
-        Self {
-            kind: Layer::Request(error),
-        }
-    }
-}
-
-impl From<tera::Error> for ErrorClientSUNAT {
-    fn from(value: tera::Error) -> Self {
-        Self {
-            kind: Layer::Templating(value.to_string()),
-        }
-    }
-}
-
-impl From<SendFileXmlResponseFromStrError> for ErrorClientSUNAT {
-    fn from(_: SendFileXmlResponseFromStrError) -> Self {
-        Self {
-            kind: Layer::ReadingResponse,
-        }
-    }
-}
-
-impl From<VerifyTicketXmlResponseFromStrError> for ErrorClientSUNAT {
-    fn from(_: VerifyTicketXmlResponseFromStrError) -> Self {
-        Self {
-            kind: Layer::ReadingResponse,
         }
     }
 }

@@ -1,3 +1,18 @@
+# CLI
+
+Generate migration and apply it:
+
+```shell
+sea-orm-cli migrate generate NAME_OF_MIGRATION
+sea-orm-cli migrate -u postgres://user:password@localhost/openubl
+```
+
+Generate entity files of database `openubl` to `entity/src`
+
+```shell
+sea-orm-cli generate entity -u postgres://user:password@localhost/openubl -o entity/src
+```
+
 # Running Migrator CLI
 
 - Generate a new migration file

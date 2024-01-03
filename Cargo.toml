@@ -10,4 +10,5 @@ members = [
     "openubl/server",
     "openubl/cli",
     "openubl/oidc",
+    "openubl/storage",
 ]

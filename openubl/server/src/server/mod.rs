@@ -5,7 +5,9 @@ use actix_web::body::BoxBody;
 use actix_web::{HttpResponse, ResponseError};
 
 use openubl_api::system;
+use openubl_storage::StorageSystemErr;
 
+pub mod files;
 pub mod health;
 pub mod project;
 
@@ -13,11 +15,23 @@ pub mod project;
 pub enum Error {
     #[error(transparent)]
     System(system::error::Error),
+    #[error(transparent)]
+    Io(std::io::Error),
+    #[error(transparent)]
+    Storage(#[from] StorageSystemErr),
+    #[error(transparent)]
+    Any(#[from] anyhow::Error),
 }
 
 impl From<system::error::Error> for Error {
-    fn from(inner: system::error::Error) -> Self {
-        Self::System(inner)
+    fn from(e: system::error::Error) -> Self {
+        Self::System(e)
+    }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(e: std::io::Error) -> Self {
+        Self::Io(e)
     }
 }
 
@@ -42,6 +56,13 @@ impl ResponseError for Error {
             Self::System(err) => {
                 HttpResponse::InternalServerError().json(ErrorInformation::new("System", err))
             }
+            Self::Io(err) => {
+                HttpResponse::InternalServerError().json(ErrorInformation::new("System IO", err))
+            }
+            Self::Storage(err) => HttpResponse::InternalServerError()
+                .json(ErrorInformation::new("System storage", err)),
+            Self::Any(err) => HttpResponse::InternalServerError()
+                .json(ErrorInformation::new("System unknown", err)),
         }
     }
 }

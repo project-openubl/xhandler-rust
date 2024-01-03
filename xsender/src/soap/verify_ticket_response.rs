@@ -1,3 +1,4 @@
+use anyhow::anyhow;
 use std::str::FromStr;
 
 use xml::name::OwnedName;
@@ -20,11 +21,8 @@ pub struct VerifyTicketXmlStatus {
     pub status_code: String,
 }
 
-#[derive(Debug)]
-pub struct VerifyTicketXmlResponseFromStrError {}
-
 impl FromStr for VerifyTicketXmlResponse {
-    type Err = VerifyTicketXmlResponseFromStrError;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let event_reader = EventReader::from_str(s);
@@ -114,7 +112,9 @@ impl FromStr for VerifyTicketXmlResponse {
                 }))
             }
             (_, _, Some(code), Some(message)) => Ok(Self::Fault(SoapFault { code, message })),
-            _ => Err(VerifyTicketXmlResponseFromStrError {}),
+            _ => Err(anyhow!(
+                "Could not extract the expected data from ticket response"
+            )),
         }
     }
 }

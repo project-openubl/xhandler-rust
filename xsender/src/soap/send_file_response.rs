@@ -1,3 +1,4 @@
+use anyhow::anyhow;
 use std::str::FromStr;
 
 use xml::name::OwnedName;
@@ -18,11 +19,8 @@ pub enum SendFileXmlResponse {
     Fault(SoapFault),
 }
 
-#[derive(Debug)]
-pub struct SendFileXmlResponseFromStrError {}
-
 impl FromStr for SendFileXmlResponse {
-    type Err = SendFileXmlResponseFromStrError;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let event_reader = EventReader::from_str(s);
@@ -118,7 +116,7 @@ impl FromStr for SendFileXmlResponse {
             (Some(cdr_base64), _, _, _) => Ok(Self::Cdr(cdr_base64)),
             (_, Some(ticket), _, _) => Ok(Self::Ticket(ticket)),
             (_, _, Some(code), Some(message)) => Ok(Self::Fault(SoapFault { code, message })),
-            _ => Err(SendFileXmlResponseFromStrError {}),
+            _ => Err(anyhow!("Could not read the expected data")),
         }
     }
 }

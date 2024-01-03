@@ -1,8 +1,8 @@
 use std::io::{Cursor, Read, Write};
 
 use base64::engine::general_purpose;
-use base64::{DecodeError, Engine};
-use zip::result::{ZipError, ZipResult};
+use base64::Engine;
+use zip::result::ZipResult;
 use zip::write::FileOptions;
 use zip::{ZipArchive, ZipWriter};
 
@@ -22,12 +22,7 @@ pub fn create_zip(filename_without_extension: &str, content: &str) -> ZipResult<
     Ok(data)
 }
 
-#[derive(Debug)]
-pub struct ExtractCdrFromBase64ZipError {
-    pub message: String,
-}
-
-pub fn extract_cdr_from_base64_zip(base64: &str) -> Result<String, ExtractCdrFromBase64ZipError> {
+pub fn extract_cdr_from_base64_zip(base64: &str) -> anyhow::Result<String> {
     let zip_buf = general_purpose::STANDARD.decode(base64)?;
     let reader = Cursor::new(zip_buf);
     let mut archive = ZipArchive::new(reader)?;
@@ -42,30 +37,6 @@ pub fn extract_cdr_from_base64_zip(base64: &str) -> Result<String, ExtractCdrFro
     }
 
     Ok(cdr_xml_content)
-}
-
-impl From<DecodeError> for ExtractCdrFromBase64ZipError {
-    fn from(e: DecodeError) -> Self {
-        ExtractCdrFromBase64ZipError {
-            message: e.to_string(),
-        }
-    }
-}
-
-impl From<ZipError> for ExtractCdrFromBase64ZipError {
-    fn from(e: ZipError) -> Self {
-        ExtractCdrFromBase64ZipError {
-            message: e.to_string(),
-        }
-    }
-}
-
-impl From<std::io::Error> for ExtractCdrFromBase64ZipError {
-    fn from(e: std::io::Error) -> Self {
-        ExtractCdrFromBase64ZipError {
-            message: e.to_string(),
-        }
-    }
 }
 
 #[cfg(test)]

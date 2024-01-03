@@ -4,12 +4,13 @@ use std::sync::Arc;
 
 use actix_4_jwt_auth::biscuit::{Validation, ValidationOptions};
 use actix_4_jwt_auth::{Oidc, OidcBiscuitValidator, OidcConfig};
+use actix_multipart::form::tempfile::TempFileConfig;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 
 use openubl_api::system::InnerSystem;
 use openubl_common::config::Database;
-use openubl_oidc::config;
+use openubl_storage::StorageSystem;
 
 use crate::server::{health, project};
 
@@ -28,13 +29,17 @@ pub struct Run {
     pub bootstrap: bool,
 
     #[command(flatten)]
-    pub oidc: config::Oidc,
+    pub oidc: openubl_oidc::config::Oidc,
+
+    #[command(flatten)]
+    pub storage: openubl_storage::config::Storage,
 }
 
 impl Run {
     pub async fn run(self) -> anyhow::Result<ExitCode> {
         env_logger::init();
 
+        // Database
         let system = match self.bootstrap {
             true => {
                 InnerSystem::bootstrap(
@@ -49,8 +54,12 @@ impl Run {
             false => InnerSystem::with_config(&self.database).await?,
         };
 
-        let app_state = Arc::new(AppState { system });
+        // Storage
+        let storage = StorageSystem::new(&self.storage)?;
 
+        let app_state = Arc::new(AppState { system, storage });
+
+        // Oidc
         let oidc = Oidc::new(OidcConfig::Issuer(self.oidc.auth_server_url.clone().into()))
             .await
             .unwrap();
@@ -67,6 +76,7 @@ impl Run {
                 .wrap(Logger::default())
                 .wrap(oidc_validator.clone())
                 .app_data(oidc.clone())
+                .app_data(TempFileConfig::default())
                 .configure(configure)
         })
         .bind(self.bind_addr)?
@@ -79,6 +89,7 @@ impl Run {
 
 pub struct AppState {
     pub system: InnerSystem,
+    pub storage: StorageSystem,
 }
 
 pub fn configure(config: &mut web::ServiceConfig) {

@@ -10,6 +10,7 @@ openubl-api = { path = "../api" }
 openubl-common = { path = "../common" }
 openubl-entity = { path = "../entity" }
 openubl-oidc = { path = "../oidc" }
+openubl-storage = { path = "../storage" }
 
 xsender = { path = "../../xsender" }
 xbuilder = { path = "../../xbuilder" }
@@ -25,3 +26,5 @@ utoipa = { version = "4.1.0", features = ["actix_extras"] }
 utoipa-swagger-ui = { version = "5.0.0", features = ["actix-web"] }
 actix-web-httpauth = "0.8.1"
 actix-4-jwt-auth = { version = "1.2.0" }
+actix-multipart = "0.6.1"
+minio = "0.1.0"

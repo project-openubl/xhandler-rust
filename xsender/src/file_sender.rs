@@ -8,23 +8,35 @@ use crate::analyzer::{
     filename_formatted_without_extension, send_file_target, verify_ticket_target,
 };
 use crate::client_sunat::{
-    ClientSUNAT, ErrorClientSUNAT, ErrorResponse, File, SendFileResponse, VerifyTicketResponse,
+    ClientSUNAT, ClientSunatErr, ErrorResponse, File, SendFileResponse, VerifyTicketResponse,
 };
 use crate::models::{Credentials, SendFileTarget, Urls, VerifyTicketTarget};
 use crate::prelude::VerifyTicketStatus;
-use crate::soap::cdr::{CdrMetadata, CdrReadError};
-use crate::ubl_file::{UblFile, UblMetadataError};
-use crate::zip_manager::{create_zip, extract_cdr_from_base64_zip, ExtractCdrFromBase64ZipError};
+use crate::soap::cdr::CdrMetadata;
+use crate::ubl_file::UblFile;
+use crate::zip_manager::{create_zip, extract_cdr_from_base64_zip};
 
 pub struct FileSender {
     pub urls: Urls,
     pub credentials: Credentials,
 }
 
-#[derive(Debug)]
-pub struct FileSenderError {
-    pub message: String,
-    pub client_error: Option<ErrorClientSUNAT>,
+#[derive(Debug, thiserror::Error)]
+pub enum FileSenderErr {
+    #[error("Couldn't infer the target destinations of file")]
+    TargetDiscovery,
+    #[error("An error while creating/reading the zip file")]
+    ZipRead(ZipError),
+    #[error(transparent)]
+    ClientSunat(#[from] ClientSunatErr),
+    #[error(transparent)]
+    Any(#[from] anyhow::Error),
+}
+
+impl From<ZipError> for FileSenderErr {
+    fn from(e: ZipError) -> Self {
+        Self::ZipRead(e)
+    }
 }
 
 pub struct SendFileResponseWrapper {
@@ -49,10 +61,7 @@ pub enum VerifyTicketAggregatedResponse {
 }
 
 impl FileSender {
-    pub async fn send_file(
-        &self,
-        xml: &UblFile,
-    ) -> Result<SendFileResponseWrapper, FileSenderError> {
+    pub async fn send_file(&self, xml: &UblFile) -> Result<SendFileResponseWrapper, FileSenderErr> {
         let metadata = xml.metadata()?;
 
         let filename_without_extension = filename_formatted_without_extension(
@@ -60,20 +69,14 @@ impl FileSender {
             &metadata.document_id,
             &metadata.ruc,
         )
-        .ok_or(FileSenderError {
-            message: "Could not determine the filename of the file to be sent".to_string(),
-            client_error: None,
-        })?;
+        .ok_or(FileSenderErr::TargetDiscovery)?;
 
         let send_target = send_file_target(
             &metadata.document_type,
             &metadata.voided_line_document_type_code,
             &self.urls,
         )
-        .ok_or(FileSenderError {
-            message: "Could not determine the target for the file to be sent".to_string(),
-            client_error: None,
-        })?;
+        .ok_or(FileSenderErr::TargetDiscovery)?;
         let verify_ticket_target = verify_ticket_target(
             &metadata.document_type,
             &metadata.voided_line_document_type_code,
@@ -117,7 +120,7 @@ impl FileSender {
         &self,
         target: &VerifyTicketTarget,
         ticket: &str,
-    ) -> Result<VerifyTicketResponseWrapper, FileSenderError> {
+    ) -> Result<VerifyTicketResponseWrapper, FileSenderErr> {
         let client = ClientSUNAT::default();
         let result = client
             .verify_ticket(target, ticket, &self.credentials)
@@ -138,50 +141,5 @@ impl FileSender {
         };
 
         Ok(VerifyTicketResponseWrapper { response })
-    }
-}
-
-impl From<UblMetadataError> for FileSenderError {
-    fn from(value: UblMetadataError) -> Self {
-        Self {
-            message: value.message.to_string(),
-            client_error: None,
-        }
-    }
-}
-
-impl From<ZipError> for FileSenderError {
-    fn from(value: ZipError) -> Self {
-        Self {
-            message: value.to_string(),
-            client_error: None,
-        }
-    }
-}
-
-impl From<ErrorClientSUNAT> for FileSenderError {
-    fn from(value: ErrorClientSUNAT) -> Self {
-        Self {
-            message: "Error while sending the file".to_string(),
-            client_error: Some(value),
-        }
-    }
-}
-
-impl From<ExtractCdrFromBase64ZipError> for FileSenderError {
-    fn from(_: ExtractCdrFromBase64ZipError) -> Self {
-        Self {
-            message: "Error extracting CDR from base64".to_string(),
-            client_error: None,
-        }
-    }
-}
-
-impl From<CdrReadError> for FileSenderError {
-    fn from(_: CdrReadError) -> Self {
-        Self {
-            message: "Error while reading CDR".to_string(),
-            client_error: None,
-        }
     }
 }
