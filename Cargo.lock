@@ -2530,7 +2530,6 @@ dependencies = [
  "utoipa-swagger-ui",
  "xbuilder",
  "xsender",
- "zip",
 ]
 
 [[package]]

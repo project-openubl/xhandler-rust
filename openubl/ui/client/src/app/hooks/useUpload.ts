@@ -247,7 +247,7 @@ export const useUpload = <T, E>({
   };
 
   return {
-    uploads: state.uploads,
+    uploads: state.uploads as Map<File, Upload<T, E>>,
     handleUpload,
     handleCancelUpload,
     handleRemoveUpload,

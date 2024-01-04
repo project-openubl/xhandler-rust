@@ -72,6 +72,7 @@ impl StorageSystem {
 
     pub async fn upload(
         &self,
+        project_id: i32,
         file_path: &str,
         filename: &str,
     ) -> Result<String, StorageSystemErr> {
@@ -80,12 +81,17 @@ impl StorageSystem {
 
         match self {
             StorageSystem::FileSystem(workspace) => {
-                let new_path = Path::new(workspace).join(&zip_name);
-                rename(zip_path, new_path)?;
+                let object_name = Path::new(workspace)
+                    .join(project_id.to_string())
+                    .join(&zip_name);
+
+                rename(zip_path, object_name)?;
                 Ok(zip_name.clone())
             }
             StorageSystem::Minio(bucket, client) => {
-                let object = &UploadObjectArgs::new(bucket, &zip_name, &zip_path)?;
+                let object_name = format!("{project_id}/{zip_name}");
+
+                let object = &UploadObjectArgs::new(bucket, &object_name, &zip_path)?;
                 let response = client.upload_object(object).await?;
 
                 // Clear temp files

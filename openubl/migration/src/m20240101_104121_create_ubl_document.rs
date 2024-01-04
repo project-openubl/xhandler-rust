@@ -28,11 +28,7 @@ impl MigrationTrait for Migration {
                             .string()
                             .not_null(),
                     )
-                    .col(
-                        ColumnDef::new(UblDocument::BajaTipoDocumentoCodigo)
-                            .string()
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(UblDocument::BajaTipoDocumentoCodigo).string())
                     .foreign_key(
                         ForeignKey::create()
                             .from_col(UblDocument::ProjectId)
