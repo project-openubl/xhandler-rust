@@ -12,7 +12,7 @@ use openubl_api::system::InnerSystem;
 use openubl_common::config::Database;
 use openubl_storage::StorageSystem;
 
-use crate::server::{health, project};
+use crate::server::{health, project, files};
 
 pub mod server;
 
@@ -95,8 +95,12 @@ pub struct AppState {
 pub fn configure(config: &mut web::ServiceConfig) {
     config.service(health::liveness);
     config.service(health::readiness);
+
     config.service(project::list_projects);
     config.service(project::create_project);
+    config.service(project::get_project);
     config.service(project::update_project);
     config.service(project::delete_project);
+
+    config.service(files::upload_file);
 }

@@ -6,6 +6,7 @@ import {
   DrawerContent,
   DrawerContentBody,
   DrawerHead,
+  DrawerPanelBody,
   DrawerPanelContent,
   DrawerPanelContentProps,
 } from "@patternfly/react-core";
@@ -13,7 +14,7 @@ import pageStyles from "@patternfly/react-styles/css/components/Page/page";
 
 const usePageDrawerState = () => {
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState(false);
-  const [drawerChildren, setDrawerChildren] =
+  const [drawerPanelContent, setDrawerPanelContent] =
     React.useState<React.ReactNode>(null);
   const [drawerPanelContentProps, setDrawerPanelContentProps] = React.useState<
     Partial<DrawerPanelContentProps>
@@ -23,8 +24,8 @@ const usePageDrawerState = () => {
   return {
     isDrawerExpanded,
     setIsDrawerExpanded,
-    drawerChildren,
-    setDrawerChildren,
+    drawerPanelContent,
+    setDrawerPanelContent,
     drawerPanelContentProps,
     setDrawerPanelContentProps,
     drawerPageKey,
@@ -38,8 +39,8 @@ type PageDrawerState = ReturnType<typeof usePageDrawerState>;
 const PageDrawerContext = React.createContext<PageDrawerState>({
   isDrawerExpanded: false,
   setIsDrawerExpanded: () => {},
-  drawerChildren: null,
-  setDrawerChildren: () => {},
+  drawerPanelContent: null,
+  setDrawerPanelContent: () => {},
   drawerPanelContentProps: {},
   setDrawerPanelContentProps: () => {},
   drawerPageKey: "",
@@ -58,7 +59,7 @@ export const PageContentWithDrawerProvider: React.FC<
   const {
     isDrawerExpanded,
     drawerFocusRef,
-    drawerChildren,
+    drawerPanelContent,
     drawerPanelContentProps,
     drawerPageKey,
   } = pageDrawerState;
@@ -80,7 +81,7 @@ export const PageContentWithDrawerProvider: React.FC<
                 key={drawerPageKey}
                 {...drawerPanelContentProps}
               >
-                {drawerChildren}
+                {drawerPanelContent}
               </DrawerPanelContent>
             }
           >
@@ -98,6 +99,7 @@ let numPageDrawerContentInstances = 0;
 export interface IPageDrawerContentProps {
   isExpanded: boolean;
   onCloseClick: () => void; // Should be used to update local state such that `isExpanded` becomes false.
+  header?: React.ReactNode;
   children: React.ReactNode; // The content to show in the drawer when `isExpanded` is true.
   drawerPanelContentProps?: Partial<DrawerPanelContentProps>; // Additional props for the DrawerPanelContent component.
   focusKey?: string | number; // A unique key representing the object being described in the drawer. When this changes, the drawer will regain focus.
@@ -105,17 +107,18 @@ export interface IPageDrawerContentProps {
 }
 
 export const PageDrawerContent: React.FC<IPageDrawerContentProps> = ({
-  isExpanded: localIsExpandedProp,
+  isExpanded,
   onCloseClick,
+  header = null,
   children,
-  drawerPanelContentProps: localDrawerPanelContentProps,
+  drawerPanelContentProps,
   focusKey,
   pageKey: localPageKeyProp,
 }) => {
   const {
     setIsDrawerExpanded,
     drawerFocusRef,
-    setDrawerChildren,
+    setDrawerPanelContent,
     setDrawerPanelContentProps,
     setDrawerPageKey,
   } = React.useContext(PageDrawerContext);
@@ -137,12 +140,12 @@ export const PageDrawerContent: React.FC<IPageDrawerContentProps> = ({
   // This is the ONLY place where `setIsDrawerExpanded` should be called.
   // To expand/collapse the drawer, use the `isExpanded` prop when rendering PageDrawerContent.
   React.useEffect(() => {
-    setIsDrawerExpanded(localIsExpandedProp);
+    setIsDrawerExpanded(isExpanded);
     return () => {
       setIsDrawerExpanded(false);
-      setDrawerChildren(null);
+      setDrawerPanelContent(null);
     };
-  }, [localIsExpandedProp]);
+  }, [isExpanded, setDrawerPanelContent, setIsDrawerExpanded]);
 
   // Same with pageKey and drawerPanelContentProps, keep them in sync with the local prop on PageDrawerContent.
   React.useEffect(() => {
@@ -150,33 +153,48 @@ export const PageDrawerContent: React.FC<IPageDrawerContentProps> = ({
     return () => {
       setDrawerPageKey("");
     };
-  }, [localPageKeyProp]);
+  }, [localPageKeyProp, setDrawerPageKey]);
 
   React.useEffect(() => {
-    setDrawerPanelContentProps(localDrawerPanelContentProps || {});
-  }, [localDrawerPanelContentProps]);
+    setDrawerPanelContentProps(drawerPanelContentProps || {});
+  }, [drawerPanelContentProps, setDrawerPanelContentProps]);
 
   // If the drawer is already expanded describing app A, then the user clicks app B, we want to send focus back to the drawer.
-  React.useEffect(() => {
-    drawerFocusRef?.current?.focus();
-  }, [focusKey]);
+
+  // TODO: This introduces a layout issue bug when clicking in between the columns of a table.
+  // React.useEffect(() => {
+  //   drawerFocusRef?.current?.focus();
+  // }, [drawerFocusRef, focusKey]);
 
   React.useEffect(() => {
-    setDrawerChildren(
-      <DrawerHead>
-        <span tabIndex={0} ref={drawerFocusRef}>
-          {children}
-        </span>
-        <DrawerActions>
-          <DrawerCloseButton
-            // We call onCloseClick here instead of setIsDrawerExpanded
-            // because we want the isExpanded prop of PageDrawerContent to be the source of truth.
-            onClick={onCloseClick}
-          />
-        </DrawerActions>
-      </DrawerHead>
+    const drawerHead = header === null ? children : header;
+    const drawerPanelBody = header === null ? null : children;
+
+    setDrawerPanelContent(
+      <>
+        <DrawerHead>
+          <span tabIndex={isExpanded ? 0 : -1} ref={drawerFocusRef}>
+            {drawerHead}
+          </span>
+          <DrawerActions>
+            <DrawerCloseButton
+              // We call onCloseClick here instead of setIsDrawerExpanded
+              // because we want the isExpanded prop of PageDrawerContent to be the source of truth.
+              onClick={onCloseClick}
+            />
+          </DrawerActions>
+        </DrawerHead>
+        <DrawerPanelBody>{drawerPanelBody}</DrawerPanelBody>
+      </>
     );
-  }, [children]);
+  }, [
+    children,
+    drawerFocusRef,
+    header,
+    isExpanded,
+    onCloseClick,
+    setDrawerPanelContent,
+  ]);
 
   return null;
 };
