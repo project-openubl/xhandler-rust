@@ -43,3 +43,12 @@ export interface Project {
   name: string;
   description?: string;
 }
+
+export interface UblDocument {
+  id: number;
+  file_id: string,
+  ruc: string,
+  serie_numero: string,
+  tipo_documento: string,
+  baja_tipo_documento_codigo?: string,
+}

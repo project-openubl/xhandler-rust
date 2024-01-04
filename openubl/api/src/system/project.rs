@@ -8,6 +8,7 @@ use sea_query::JoinType;
 
 use openubl_entity as entity;
 use openubl_entity::project;
+use openubl_entity::ubl_document;
 use openubl_entity::user_role;
 
 use crate::db::Transactional;
@@ -113,13 +114,23 @@ impl ProjectContext {
         Ok(())
     }
 
-    pub async fn set_owner(&self, user_id: &str, tx: Transactional<'_>) -> Result<(), Error> {
-        let entity = user_role::ActiveModel {
+    pub async fn create_document(
+        &self,
+        model: &ubl_document::Model,
+        tx: Transactional<'_>,
+    ) -> Result<ubl_document::Model, Error> {
+        let entity = ubl_document::ActiveModel {
             project_id: Set(self.project.id),
-            user_id: Set(user_id.to_string()),
-            role: Set(user_role::Role::Owner),
+            file_id: Set(model.file_id.clone()),
+            ruc: Set(model.ruc.clone()),
+            serie_numero: Set(model.serie_numero.clone()),
+            tipo_documento: Set(model.tipo_documento.clone()),
+            baja_tipo_documento_codigo: Set(model.baja_tipo_documento_codigo.clone()),
+            ..Default::default()
         };
-        entity.insert(&self.system.connection(tx)).await?;
-        Ok(())
+
+        let result = entity.insert(&self.system.connection(tx)).await?;
+
+        Ok(result)
     }
 }

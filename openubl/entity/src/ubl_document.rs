@@ -14,7 +14,7 @@ pub struct Model {
     pub ruc: String,
     pub serie_numero: String,
     pub tipo_documento: String,
-    pub baja_tipo_documento_codigo: String,
+    pub baja_tipo_documento_codigo: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

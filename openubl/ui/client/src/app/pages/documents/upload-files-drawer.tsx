@@ -2,6 +2,8 @@ import * as React from "react";
 import { FileRejection } from "react-dropzone";
 import {
   DropEvent,
+  HelperText,
+  HelperTextItem,
   List,
   ListItem,
   Modal,
@@ -24,6 +26,7 @@ import {
 
 import { useUpload } from "@app/hooks/useUpload";
 import { uploadFile } from "@app/api/rest";
+import { UblDocument } from "@app/api/models";
 
 export interface IUploadFilesDrawerProps
   extends Pick<IPageDrawerContentProps, "onCloseClick"> {
@@ -34,7 +37,10 @@ export const UploadFilesDrawer: React.FC<IUploadFilesDrawerProps> = ({
   projectId,
   onCloseClick,
 }) => {
-  const { uploads, handleUpload, handleRemoveUpload } = useUpload({
+  const { uploads, handleUpload, handleRemoveUpload } = useUpload<
+    UblDocument,
+    { message: string }
+  >({
     parallel: true,
     uploadFn: (formData, config) => {
       return uploadFile(projectId!, formData, config);
@@ -133,6 +139,21 @@ export const UploadFilesDrawer: React.FC<IUploadFilesDrawerProps> = ({
                     : upload.response
                       ? "success"
                       : undefined
+                }
+                progressHelperText={
+                  upload.error ? (
+                    <HelperText isLiveRegion>
+                      <HelperTextItem variant="error">
+                        {upload.error.response?.data.message}
+                      </HelperTextItem>
+                    </HelperText>
+                  ) : upload.response ? (
+                    <HelperText isLiveRegion>
+                      <HelperTextItem variant="default">
+                        {`Document ${upload.response.data.serie_numero} uploaded`}
+                      </HelperTextItem>
+                    </HelperText>
+                  ) : undefined
                 }
               />
             ))}

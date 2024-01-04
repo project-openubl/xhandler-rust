@@ -1,5 +1,11 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { HubPaginatedResult, HubRequestParams, New, Project } from "./models";
+import {
+  HubPaginatedResult,
+  HubRequestParams,
+  New,
+  Project,
+  UblDocument,
+} from "./models";
 import { serializeRequestParamsForHub } from "@app/hooks/table-controls";
 
 const HUB = "/hub";
@@ -48,4 +54,5 @@ export const uploadFile = (
   projectId: number | string,
   formData: FormData,
   config?: AxiosRequestConfig
-) => axios.post<void>(`${PROJECTS}/${projectId}/files`, formData, config);
+) =>
+  axios.post<UblDocument>(`${PROJECTS}/${projectId}/files`, formData, config);
