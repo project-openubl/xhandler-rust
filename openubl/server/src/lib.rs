@@ -12,7 +12,7 @@ use openubl_api::system::InnerSystem;
 use openubl_common::config::Database;
 use openubl_storage::StorageSystem;
 
-use crate::server::{health, project, files};
+use crate::server::{files, health, project};
 
 pub mod server;
 

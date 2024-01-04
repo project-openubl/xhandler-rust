@@ -72,9 +72,7 @@ pub async fn get_project(
         .map_err(Error::System)?
     {
         None => Ok(HttpResponse::NotFound().finish()),
-        Some(ctx) => {
-            Ok(HttpResponse::Ok().json(ctx.project))
-        }
+        Some(ctx) => Ok(HttpResponse::Ok().json(ctx.project)),
     }
 }
 

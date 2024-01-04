@@ -1,5 +1,5 @@
 use std::fs;
-use std::fs::{File, rename};
+use std::fs::{rename, File};
 use std::io::{Read, Write};
 use std::path::Path;
 use std::str::FromStr;
@@ -70,7 +70,11 @@ impl StorageSystem {
         }
     }
 
-    pub async fn upload(&self, file_path: &str, filename: &str) -> Result<String, StorageSystemErr> {
+    pub async fn upload(
+        &self,
+        file_path: &str,
+        filename: &str,
+    ) -> Result<String, StorageSystemErr> {
         let zip_name = format!("{}.zip", Uuid::new_v4());
         let zip_path = zip_file(&zip_name, file_path, filename)?;
 
@@ -94,11 +98,16 @@ impl StorageSystem {
     }
 }
 
-
-pub fn zip_file(zip_filename: &str, full_path_of_file_to_be_zipped: &str, file_name_to_be_used_in_zip: &str) -> ZipResult<String> {
+pub fn zip_file(
+    zip_filename: &str,
+    full_path_of_file_to_be_zipped: &str,
+    file_name_to_be_used_in_zip: &str,
+) -> ZipResult<String> {
     let mut file = File::open(full_path_of_file_to_be_zipped)?;
     let file_path = Path::new(full_path_of_file_to_be_zipped);
-    let file_directory = file_path.parent().ok_or(ZipError::InvalidArchive("Could not find the parent folder of given file"))?;
+    let file_directory = file_path.parent().ok_or(ZipError::InvalidArchive(
+        "Could not find the parent folder of given file",
+    ))?;
 
     let zip_path = file_directory.join(zip_filename);
     let zip_file = File::create(zip_path.as_path())?;
@@ -116,6 +125,8 @@ pub fn zip_file(zip_filename: &str, full_path_of_file_to_be_zipped: &str, file_n
 
     zip.finish()?;
 
-    let result = zip_path.to_str().ok_or(ZipError::InvalidArchive("Could not determine with zip filename"))?;
+    let result = zip_path.to_str().ok_or(ZipError::InvalidArchive(
+        "Could not determine with zip filename",
+    ))?;
     Ok(result.to_string())
 }
