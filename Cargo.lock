@@ -2530,6 +2530,7 @@ dependencies = [
  "utoipa-swagger-ui",
  "xbuilder",
  "xsender",
+ "zip",
 ]
 
 [[package]]
@@ -2542,6 +2543,7 @@ dependencies = [
  "serde",
  "thiserror",
  "uuid",
+ "zip",
 ]
 
 [[package]]

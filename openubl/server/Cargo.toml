@@ -28,3 +28,4 @@ actix-web-httpauth = "0.8.1"
 actix-4-jwt-auth = { version = "1.2.0" }
 actix-multipart = "0.6.1"
 minio = "0.1.0"
+zip = "0.6.6"

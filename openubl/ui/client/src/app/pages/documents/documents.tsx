@@ -1,12 +1,10 @@
-import React, { useContext, useState } from "react";
-import { NavLink } from "react-router-dom";
-import { AxiosError } from "axios";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { NavLink, useParams } from "react-router-dom";
 
 import {
   Button,
   ButtonVariant,
-  Modal,
-  ModalVariant,
   PageSection,
   PageSectionVariants,
   Text,
@@ -26,11 +24,8 @@ import {
   Tr,
 } from "@patternfly/react-table";
 
+import { FilterToolbar, FilterType } from "@app/components/FilterToolbar";
 import { SimplePagination } from "@app/components/SimplePagination";
-import {
-  FilterToolbar,
-  FilterType,
-} from "@app/components/FilterToolbar";
 import {
   ConditionalTableBody,
   TableHeaderContentWithControls,
@@ -38,50 +33,19 @@ import {
 } from "@app/components/TableControls";
 
 import { useLocalTableControls } from "@app/hooks/table-controls";
-import {
-  useFetchProjects,
-  useDeleteProjectMutation,
-} from "@app/queries/projects";
+import { useFetchProjects } from "@app/queries/projects";
 
-import { Project } from "@app/api/models";
-import { ConfirmDialog } from "@app/components/ConfirmDialog";
-import { NotificationsContext } from "@app/components/NotificationsContext";
-import { getAxiosErrorMessage } from "@app/utils/utils";
+import { UploadFilesDrawer } from "./upload-files-drawer";
 
 export const Projects: React.FC = () => {
-  const { pushNotification } = useContext(NotificationsContext);
+  const { t } = useTranslation();
+  const { projectId } = useParams();
 
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
-    useState<boolean>(false);
-  const [projectIdToDelete, setProjectIdToDelete] = React.useState<number>();
-
-  const [createUpdateModalState, setCreateUpdateModalState] = useState<
-    "create" | Project | null
+  const [uploadFilesToProjectId, setUploadFilesToProjectId] = useState<
+    string | number | null
   >(null);
-  const isCreateUpdateModalOpen = createUpdateModalState !== null;
-  const projectToUpdate =
-    createUpdateModalState !== "create" ? createUpdateModalState : null;
-
-  const onDeleteOrgSuccess = () => {
-    pushNotification({
-      title: "Proyecto eliminado",
-      variant: "success",
-    });
-  };
-
-  const onDeleteOrgError = (error: AxiosError) => {
-    pushNotification({
-      title: getAxiosErrorMessage(error),
-      variant: "danger",
-    });
-  };
 
   const { projects, isFetching, fetchError, refetch } = useFetchProjects();
-
-  const { mutate: deleteOrg } = useDeleteProjectMutation(
-    onDeleteOrgSuccess,
-    onDeleteOrgError
-  );
 
   const tableControls = useLocalTableControls({
     idProperty: "id",
@@ -121,21 +85,11 @@ export const Projects: React.FC = () => {
     },
   } = tableControls;
 
-  const closeCreateUpdateModal = () => {
-    setCreateUpdateModalState(null);
-    refetch;
-  };
-
-  const deleteRow = (row: Project) => {
-    setProjectIdToDelete(row.id);
-    setIsConfirmDialogOpen(true);
-  };
-
   return (
     <>
       <PageSection variant={PageSectionVariants.light}>
         <TextContent>
-          <Text component="h1">Proyectos</Text>
+          <Text component="h1">{t("terms.documents")}</Text>
         </TextContent>
       </PageSection>
       <PageSection>
@@ -154,15 +108,26 @@ export const Projects: React.FC = () => {
                     id="create-project"
                     aria-label="Create new project"
                     variant={ButtonVariant.primary}
-                    onClick={() => setCreateUpdateModalState("create")}
+                    // onClick={() => setCreateUpdateModalState("create")}
                   >
                     Crear proyecto
+                  </Button>
+                </ToolbarItem>
+                <ToolbarItem>
+                  <Button
+                    type="button"
+                    id="upload-files"
+                    aria-label="Upload files"
+                    variant={ButtonVariant.secondary}
+                    onClick={() => setUploadFilesToProjectId(projectId || null)}
+                  >
+                    Upload files
                   </Button>
                 </ToolbarItem>
               </ToolbarGroup>
               <ToolbarItem {...paginationToolbarItemProps}>
                 <SimplePagination
-                  idPrefix="projects-table"
+                  idPrefix="documents-table"
                   isTop
                   paginationProps={paginationProps}
                 />
@@ -208,16 +173,18 @@ export const Projects: React.FC = () => {
                         </Td>
                         <Td isActionCell>
                           <ActionsColumn
-                            items={[
-                              {
-                                title: "Editar",
-                                onClick: () => setCreateUpdateModalState(item),
-                              },
-                              {
-                                title: "Eliminar",
-                                onClick: () => deleteRow(item),
-                              },
-                            ]}
+                            items={
+                              [
+                                // {
+                                //   title: "Editar",
+                                //   onClick: () => setCreateUpdateModalState(item),
+                                // },
+                                // {
+                                //   title: "Eliminar",
+                                //   onClick: () => deleteRow(item),
+                                // },
+                              ]
+                            }
                           />
                         </Td>
                       </TableRowContentWithControls>
@@ -229,11 +196,16 @@ export const Projects: React.FC = () => {
           </Table>
 
           <SimplePagination
-            idPrefix="projects-table"
+            idPrefix="documents-table"
             isTop={false}
             paginationProps={paginationProps}
           />
         </div>
+
+        <UploadFilesDrawer
+          projectId={uploadFilesToProjectId}
+          onCloseClick={() => setUploadFilesToProjectId(null)}
+        />
       </PageSection>
     </>
   );

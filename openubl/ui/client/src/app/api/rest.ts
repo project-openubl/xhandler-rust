@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { HubPaginatedResult, HubRequestParams, New, Project } from "./models";
 import { serializeRequestParamsForHub } from "@app/hooks/table-controls";
 
@@ -43,3 +43,9 @@ export const updateProject = (obj: Project) =>
 
 export const deleteProject = (id: number | string) =>
   axios.delete<void>(`${PROJECTS}/${id}`);
+
+export const uploadFile = (
+  projectId: number | string,
+  formData: FormData,
+  config?: AxiosRequestConfig
+) => axios.post<void>(`${PROJECTS}/${projectId}/files`, formData, config);

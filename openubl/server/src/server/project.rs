@@ -56,6 +56,26 @@ pub async fn create_project(
     }
 }
 
+#[utoipa::path(responses((status = 200, description = "Get project")))]
+#[get("/projects/{project_id}")]
+pub async fn get_project(
+    state: web::Data<AppState>,
+    path: web::Path<i32>,
+    user: AuthenticatedUser<UserClaims>,
+) -> Result<impl Responder, Error> {
+    let project_id = path.into_inner();
+
+    match state
+        .system
+        .get_project(project_id, &user.claims.user_id(), Transactional::None)
+        .await
+        .map_err(Error::System)?
+    {
+        None => Ok(HttpResponse::NotFound().finish()),
+        Some(ctx) => Ok(HttpResponse::Ok().json(ctx.project)),
+    }
+}
+
 #[utoipa::path(responses((status = 204, description = "Update project")))]
 #[put("/projects/{project_id}")]
 pub async fn update_project(

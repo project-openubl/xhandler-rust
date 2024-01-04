@@ -24,7 +24,7 @@ pub struct MinioStorage {
     #[arg(id = "storage-minio-host", long, env = "STORAGE_MINIO_HOST")]
     pub host: String,
     #[arg(
-        id = "minio-bucket",
+        id = "storage-minio-bucket",
         long,
         env = "STORAGE_MINIO_BUCKET",
         default_value = "openubl"
