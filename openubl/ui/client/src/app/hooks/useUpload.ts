@@ -80,7 +80,7 @@ const reducer = <T, E>(
   action: Action<T, E>
 ): Status<T, E> => {
   switch (action.type) {
-    case "queueUpload":
+    case "queueUpload": {
       return {
         ...state,
         uploads: new Map(state.uploads).set(action.payload.file, {
@@ -89,7 +89,8 @@ const reducer = <T, E>(
           cancelFn: action.payload.cancelFn,
         }),
       };
-    case "updateUploadProgress":
+    }
+    case "updateUploadProgress": {
       return {
         ...state,
         uploads: new Map(state.uploads).set(action.payload.file, {
@@ -98,7 +99,8 @@ const reducer = <T, E>(
           status: "inProgress",
         }),
       };
-    case "finishUploadSuccessfully":
+    }
+    case "finishUploadSuccessfully": {
       return {
         ...state,
         uploads: new Map(state.uploads).set(action.payload.file, {
@@ -108,7 +110,8 @@ const reducer = <T, E>(
           response: action.payload.response,
         }),
       };
-    case "finishUploadWithError":
+    }
+    case "finishUploadWithError": {
       return {
         ...state,
         uploads: new Map(state.uploads).set(action.payload.file, {
@@ -118,13 +121,15 @@ const reducer = <T, E>(
           wasCancelled: action.payload.error?.message === CANCEL_MESSAGE,
         }),
       };
-    case "removeUpload":
+    }
+    case "removeUpload": {
       const newUploads = new Map(state.uploads);
       newUploads.delete(action.payload.file);
       return {
         ...state,
         uploads: newUploads,
       };
+    }
     default:
       throw new Error();
   }
