@@ -2,6 +2,7 @@ use std::borrow::Cow;
 use std::fmt::Display;
 
 use actix_web::body::BoxBody;
+use actix_web::http::StatusCode;
 use actix_web::{HttpResponse, ResponseError};
 
 use openubl_api::system;
@@ -19,6 +20,8 @@ pub enum Error {
     Io(std::io::Error),
     #[error(transparent)]
     Storage(#[from] StorageSystemErr),
+    #[error("Invalid request {msg:?}")]
+    BadRequest { msg: String, status: StatusCode },
     #[error(transparent)]
     Any(#[from] anyhow::Error),
 }
@@ -61,6 +64,9 @@ impl ResponseError for Error {
             }
             Self::Storage(err) => HttpResponse::InternalServerError()
                 .json(ErrorInformation::new("System storage", err)),
+            Self::BadRequest { msg, status } => {
+                HttpResponse::build(*status).json(ErrorInformation::new("Bad request", msg))
+            }
             Self::Any(err) => HttpResponse::InternalServerError()
                 .json(ErrorInformation::new("System unknown", err)),
         }

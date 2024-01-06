@@ -29,6 +29,7 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(ColumnDef::new(UblDocument::BajaTipoDocumentoCodigo).string())
+                    .col(ColumnDef::new(UblDocument::Sha256).string().not_null())
                     .foreign_key(
                         ForeignKey::create()
                             .from_col(UblDocument::ProjectId)
@@ -57,4 +58,5 @@ enum UblDocument {
     SerieNumero,
     TipoDocumento,
     BajaTipoDocumentoCodigo,
+    Sha256,
 }

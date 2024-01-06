@@ -114,6 +114,23 @@ impl ProjectContext {
         Ok(())
     }
 
+    pub async fn get_document_by_ubl_params(
+        &self,
+        ruc: &str,
+        document_type: &str,
+        document_id: &str,
+        sha256: &str,
+        tx: Transactional<'_>,
+    ) -> Result<Option<ubl_document::Model>, Error> {
+        Ok(ubl_document::Entity::find()
+            .filter(entity::ubl_document::Column::Ruc.eq(ruc))
+            .filter(entity::ubl_document::Column::TipoDocumento.eq(document_type))
+            .filter(entity::ubl_document::Column::SerieNumero.eq(document_id))
+            .filter(entity::ubl_document::Column::Sha256.eq(sha256))
+            .one(&self.system.connection(tx))
+            .await?)
+    }
+
     pub async fn create_document(
         &self,
         model: &ubl_document::Model,
@@ -126,6 +143,7 @@ impl ProjectContext {
             serie_numero: Set(model.serie_numero.clone()),
             tipo_documento: Set(model.tipo_documento.clone()),
             baja_tipo_documento_codigo: Set(model.baja_tipo_documento_codigo.clone()),
+            sha256: Set(model.sha256.clone()),
             ..Default::default()
         };
 

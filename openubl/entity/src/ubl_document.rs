@@ -15,6 +15,7 @@ pub struct Model {
     pub serie_numero: String,
     pub tipo_documento: String,
     pub baja_tipo_documento_codigo: Option<String>,
+    pub sha256: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

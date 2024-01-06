@@ -70,32 +70,40 @@ impl StorageSystem {
         }
     }
 
-    pub async fn upload(
+    pub async fn upload_ubl_xml(
         &self,
         project_id: i32,
-        file_path: &str,
-        filename: &str,
+        ruc: &str,
+        document_type: &str,
+        document_id: &str,
+        file_sha246: &str,
+        file_full_path: &str,
     ) -> Result<String, StorageSystemErr> {
-        let zip_name = format!("{}.zip", Uuid::new_v4());
-        let zip_path = zip_file(&zip_name, file_path, filename)?;
+        let file_name_inside_zip = format!("{ruc}-{}.xml", document_id.to_uppercase());
+        let zip_path = zip_file(file_full_path, &file_name_inside_zip)?;
+
+        let short_sha256: String = file_sha246.chars().take(7).collect();
+        let zip_name = format!("{}_{short_sha256}.zip", document_id.to_uppercase());
 
         match self {
             StorageSystem::FileSystem(workspace) => {
                 let object_name = Path::new(workspace)
                     .join(project_id.to_string())
+                    .join(ruc)
+                    .join(document_type)
                     .join(&zip_name);
 
                 rename(zip_path, object_name)?;
                 Ok(zip_name.clone())
             }
             StorageSystem::Minio(bucket, client) => {
-                let object_name = format!("{project_id}/{zip_name}");
+                let object_name = format!("{project_id}/{ruc}/{document_type}/{zip_name}");
 
                 let object = &UploadObjectArgs::new(bucket, &object_name, &zip_path)?;
                 let response = client.upload_object(object).await?;
 
                 // Clear temp files
-                fs::remove_file(file_path)?;
+                fs::remove_file(file_full_path)?;
                 fs::remove_file(zip_path)?;
 
                 Ok(response.object_name)
@@ -105,10 +113,11 @@ impl StorageSystem {
 }
 
 pub fn zip_file(
-    zip_filename: &str,
     full_path_of_file_to_be_zipped: &str,
     file_name_to_be_used_in_zip: &str,
 ) -> ZipResult<String> {
+    let zip_filename = format!("{}.zip", Uuid::new_v4());
+
     let mut file = File::open(full_path_of_file_to_be_zipped)?;
     let file_path = Path::new(full_path_of_file_to_be_zipped);
     let file_directory = file_path.parent().ok_or(ZipError::InvalidArchive(
