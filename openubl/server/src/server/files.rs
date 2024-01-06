@@ -1,6 +1,7 @@
 use actix_4_jwt_auth::AuthenticatedUser;
 use actix_multipart::form::tempfile::TempFile;
 use actix_multipart::form::MultipartForm;
+use actix_web::http::StatusCode;
 use actix_web::{post, web, HttpResponse, Responder};
 use anyhow::anyhow;
 
@@ -28,51 +29,77 @@ pub async fn upload_file(
 ) -> Result<impl Responder, Error> {
     let project_id = path.into_inner();
 
-    match state
+    let ctx = state
         .system
         .get_project(project_id, &user.claims.user_id(), Transactional::None)
         .await
         .map_err(Error::System)?
-    {
-        None => Ok(HttpResponse::NotFound().finish()),
-        Some(ctx) => {
-            match form.files.first() {
-                None => Ok(HttpResponse::BadRequest().finish()),
-                Some(temp_file) => {
-                    // Read file
-                    let ubl_file = UblFile::from_path(temp_file.file.path())?;
-                    let file_metadata = ubl_file.metadata()?;
+        .ok_or(Error::BadRequest {
+            status: StatusCode::NOT_FOUND,
+            msg: "Project not found".to_string(),
+        })?;
 
-                    // Upload to storage
-                    let file_path = temp_file.file.path().to_str().ok_or(Error::Any(anyhow!(
-                        "Could not extract the file path of the temp file"
-                    )))?;
-                    let filename = temp_file
-                        .file_name
-                        .clone()
-                        .unwrap_or("file.xml".to_string());
-                    let file_id = state
-                        .storage
-                        .upload(ctx.project.id, file_path, &filename)
-                        .await?;
+    let temp_file = form.files.first().ok_or(Error::BadRequest {
+        status: StatusCode::BAD_REQUEST,
+        msg: "No file found to be processed".to_string(),
+    })?;
 
-                    // Create file
-                    let document_model = ubl_document::Model {
-                        id: 0,
-                        project_id: ctx.project.id,
-                        file_id,
-                        ruc: file_metadata.ruc,
-                        serie_numero: file_metadata.document_id,
-                        tipo_documento: file_metadata.document_type,
-                        baja_tipo_documento_codigo: file_metadata.voided_line_document_type_code,
-                    };
+    // Read file
+    let ubl_file = UblFile::from_path(temp_file.file.path())?;
+    let file_metadata = ubl_file.metadata()?;
+    let file_sha256 = ubl_file.sha256();
 
-                    let document = ctx
-                        .create_document(&document_model, Transactional::None)
-                        .await?;
-                    Ok(HttpResponse::Created().json(document))
-                }
-            }
+    // Verify file so we don't upload the same file twice
+    let prev_file = ctx
+        .get_document_by_ubl_params(
+            &file_metadata.ruc,
+            &file_metadata.document_type,
+            &file_metadata.document_id,
+            &file_sha256,
+            Transactional::None,
+        )
+        .await?;
+
+    match &prev_file {
+        None => {
+            // Upload to storage
+            let file_path = temp_file.file.path().to_str().ok_or(Error::Any(anyhow!(
+                "Could not extract the file path of the temp file"
+            )))?;
+
+            let file_id = state
+                .storage
+                .upload_ubl_xml(
+                    ctx.project.id,
+                    &file_metadata.ruc,
+                    &file_metadata.document_type,
+                    &file_metadata.document_id,
+                    &file_sha256,
+                    file_path,
+                )
+                .await?;
+
+            // Create file
+            let document_model = ubl_document::Model {
+                id: 0,
+                project_id: ctx.project.id,
+                file_id,
+                ruc: file_metadata.ruc,
+                serie_numero: file_metadata.document_id,
+                tipo_documento: file_metadata.document_type,
+                baja_tipo_documento_codigo: file_metadata.voided_line_document_type_code,
+                sha256: file_sha256,
+            };
+
+            let document = ctx
+                .create_document(&document_model, Transactional::None)
+                .await?;
+
+            Ok(HttpResponse::Created().json(document))
         }
+        Some(_) => Err(Error::BadRequest {
+            status: StatusCode::CONFLICT,
+            msg: "File already uploaded".to_string(),
+        }),
     }
 }

@@ -2,6 +2,7 @@ use std::fs;
 use std::path::Path;
 
 use anyhow::anyhow;
+use sha2::{Digest, Sha256};
 use xml::name::OwnedName;
 use xml::reader::XmlEvent;
 use xml::EventReader;
@@ -138,15 +139,22 @@ impl UblFile {
 
         match (document_type, document_id, ruc) {
             (Some(document_type), Some(document_id), Some(ruc)) => Ok(UblMetadata {
-                document_type,
-                document_id,
-                ruc,
-                voided_line_document_type_code,
+                document_type: document_type.trim().to_string(),
+                document_id: document_id.trim().to_string(),
+                ruc: ruc.trim().to_string(),
+                voided_line_document_type_code: voided_line_document_type_code
+                    .map(|e| e.trim().to_string()),
             }),
             _ => Err(anyhow!(
                 "document_type, document_id, and ruc were not found"
             )),
         }
+    }
+
+    pub fn sha256(&self) -> String {
+        let mut hasher = Sha256::new();
+        hasher.update(self.file_content.as_bytes());
+        format!("{:x}", hasher.finalize())
     }
 }
 
