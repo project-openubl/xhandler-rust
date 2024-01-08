@@ -1,13 +1,13 @@
 use std::fs;
-use std::fs::{File, rename};
+use std::fs::{rename, File};
 use std::io::{Read, Write};
 use std::path::Path;
 use std::str::FromStr;
 
 use anyhow::anyhow;
-use aws_config::BehaviorVersion;
 use aws_config::meta::region::RegionProviderChain;
 use aws_config::retry::RetryConfig;
+use aws_config::BehaviorVersion;
 use aws_sdk_s3::client::Client as S3Client;
 use aws_sdk_s3::error::SdkError;
 use aws_sdk_s3::operation::get_object::GetObjectError;
@@ -128,12 +128,10 @@ impl From<ZipError> for StorageSystemErr {
 impl StorageSystem {
     pub async fn new(config: &Storage) -> anyhow::Result<Self> {
         match config {
-            Storage::Local(config) => {
-                Ok(Self::FileSystem(Directories {
-                    ubl: config.dir_ubl.clone(),
-                    index: config.dir_index.clone(),
-                }))
-            }
+            Storage::Local(config) => Ok(Self::FileSystem(Directories {
+                ubl: config.dir_ubl.clone(),
+                index: config.dir_index.clone(),
+            })),
             Storage::Minio(config) => {
                 let static_provider =
                     StaticProvider::new(&config.access_key, &config.secret_key, None);

@@ -25,11 +25,7 @@ pub struct LocalStorage {
 
 #[derive(clap::Args, Debug)]
 pub struct MinioStorage {
-    #[arg(
-        id = "storage-minio-host",
-        long,
-        env = "STORAGE_MINIO_HOST"
-    )]
+    #[arg(id = "storage-minio-host", long, env = "STORAGE_MINIO_HOST")]
     pub host: String,
 
     #[arg(
@@ -65,11 +61,7 @@ pub struct MinioStorage {
 
 #[derive(clap::Args, Debug)]
 pub struct S3Storage {
-    #[arg(
-        id = "storage-s3-region",
-        long,
-        env = "STORAGE_S3_REGION"
-    )]
+    #[arg(id = "storage-s3-region", long, env = "STORAGE_S3_REGION")]
     pub region: String,
 
     #[arg(
@@ -88,17 +80,9 @@ pub struct S3Storage {
     )]
     pub bucket_index: String,
 
-    #[arg(
-        id = "storage-s3-access-key",
-        long,
-        env = "STORAGE_S3_ACCESS_KEY"
-    )]
+    #[arg(id = "storage-s3-access-key", long, env = "STORAGE_S3_ACCESS_KEY")]
     pub access_key: String,
 
-    #[arg(
-        id = "storage-s3-secret-key",
-        long,
-        env = "STORAGE_S3_SECRET_KEY"
-    )]
+    #[arg(id = "storage-s3-secret-key", long, env = "STORAGE_S3_SECRET_KEY")]
     pub secret_key: String,
 }
