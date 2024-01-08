@@ -31,7 +31,7 @@ pub struct Run {
     #[command(flatten)]
     pub oidc: openubl_oidc::config::Oidc,
 
-    #[command(flatten)]
+    #[command(subcommand)]
     pub storage: openubl_storage::config::Storage,
 }
 
@@ -55,7 +55,7 @@ impl Run {
         };
 
         // Storage
-        let storage = StorageSystem::new(&self.storage)?;
+        let storage = StorageSystem::new(&self.storage).await?;
 
         let app_state = Arc::new(AppState { system, storage });
 

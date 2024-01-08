@@ -112,7 +112,9 @@ impl UblFile {
                             Some("cbc"),
                             "CustomerAssignedAccountID",
                         ) => {
-                            ruc = Some(current_text.clone());
+                            if ruc.is_none() {
+                                ruc = Some(current_text.clone())
+                            }
                         }
                         (
                             Some(Wrapper::VoidedDocumentsLine),
@@ -120,7 +122,9 @@ impl UblFile {
                             Some("cbc"),
                             "DocumentTypeCode",
                         ) => {
-                            voided_line_document_type_code = Some(current_text.clone());
+                            if voided_line_document_type_code.is_none() {
+                                voided_line_document_type_code = Some(current_text.clone());
+                            }
                         }
                         _ => {}
                     };
@@ -184,5 +188,12 @@ mod tests {
             metadata2.voided_line_document_type_code.as_deref(),
             Some("01")
         );
+
+        let file3 = UblFile::from_path(Path::new(&format!("{RESOURCES}/150101-F001-11.xml")));
+        let metadata3 = file3.unwrap().metadata().unwrap();
+        assert_eq!(metadata3.document_type, "Invoice");
+        assert_eq!(metadata3.document_id, "F001-11");
+        assert_eq!(metadata3.ruc, "20602516025");
+        assert_eq!(metadata3.voided_line_document_type_code, None);
     }
 }

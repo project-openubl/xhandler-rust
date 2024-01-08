@@ -73,10 +73,14 @@ impl FromStr for CdrMetadata {
 
                     match (&current_wrapper, &namespace, &prefix, local_name) {
                         (Some(Wrapper::Response), Some(CBC_NS), Some("cbc"), "ResponseCode") => {
-                            response_code = Some(current_text.clone());
+                            if response_code.is_none() {
+                                response_code = Some(current_text.clone());
+                            }
                         }
                         (Some(Wrapper::Response), Some(CBC_NS), Some("cbc"), "Description") => {
-                            description = Some(current_text.clone());
+                            if description.is_none() {
+                                description = Some(current_text.clone());
+                            }
                         }
                         (Some(Wrapper::Note), Some(CBC_NS), Some("cbc"), "Note") => {
                             notes.push(current_text.clone());

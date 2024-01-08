@@ -78,16 +78,24 @@ impl FromStr for VerifyTicketXmlResponse {
 
                     match (&current_wrapper, local_name) {
                         (Some(Wrapper::StatusResponse), "content") => {
-                            cdr_base64 = Some(current_text.clone());
+                            if cdr_base64.is_none() {
+                                cdr_base64 = Some(current_text.clone());
+                            }
                         }
                         (Some(Wrapper::StatusResponse), "statusCode") => {
-                            status_code = Some(current_text.clone());
+                            if status_code.is_none() {
+                                status_code = Some(current_text.clone());
+                            }
                         }
                         (Some(Wrapper::Fault), "faultcode") => {
-                            fault_code = Some(current_text.clone());
+                            if fault_code.is_none() {
+                                fault_code = Some(current_text.clone());
+                            }
                         }
                         (Some(Wrapper::Fault), "faultstring") => {
-                            fault_message = Some(current_text.clone());
+                            if fault_message.is_none() {
+                                fault_message = Some(current_text.clone());
+                            }
                         }
                         _ => {}
                     };
