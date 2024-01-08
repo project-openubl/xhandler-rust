@@ -86,16 +86,24 @@ impl FromStr for SendFileXmlResponse {
 
                     match (&current_wrapper, local_name) {
                         (Some(Wrapper::SendBillResponse), "applicationResponse") => {
-                            cdr_base64 = Some(current_text.clone());
+                            if cdr_base64.is_none() {
+                                cdr_base64 = Some(current_text.clone());
+                            }
                         }
                         (Some(Wrapper::SendSummaryResponse), "ticket") => {
-                            ticket = Some(current_text.clone());
+                            if ticket.is_none() {
+                                ticket = Some(current_text.clone());
+                            }
                         }
                         (Some(Wrapper::Fault), "faultcode") => {
-                            fault_code = Some(current_text.clone());
+                            if fault_code.is_none() {
+                                fault_code = Some(current_text.clone());
+                            }
                         }
                         (Some(Wrapper::Fault), "faultstring") => {
-                            fault_message = Some(current_text.clone());
+                            if fault_message.is_none() {
+                                fault_message = Some(current_text.clone());
+                            }
                         }
                         _ => {}
                     };
