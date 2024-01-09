@@ -1,4 +1,4 @@
-#[derive(Clone, Debug, PartialEq, Eq, serde::Deserialize, serde::Serialize, IntoParams)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
 pub struct SearchOptions {
     /// Return index "explain" output
     #[serde(default)]

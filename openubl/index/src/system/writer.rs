@@ -89,52 +89,54 @@ impl<INDEX: WriteIndex> IndexStore<INDEX> {
     }
 
     pub fn new(config: &SearchEngine, index: INDEX) -> Result<Self, Error> {
-        match config.mode {
-            IndexMode::File => {
-                let path = config
-                    .index_dir
-                    .clone()
-                    .unwrap_or_else(|| {
-                        use rand::RngCore;
-                        let r = rand::thread_rng().next_u32();
-                        std::env::temp_dir().join(format!("index.{}", r))
-                    })
-                    .join(index.name());
-
-                let schema = index.schema();
-                let settings = index.settings();
-                let tokenizers = index.tokenizers()?;
-
-                let index_dir = IndexDirectory::new(&path)?;
-                let inner = index_dir.build(settings, schema, tokenizers)?;
-                let name = index.name().to_string();
-                Ok(Self {
-                    inner: RwLock::new(inner),
-                    index_writer_memory_bytes: config.index_writer_memory_bytes.as_u64() as usize,
-                    index_dir: Some(RwLock::new(index_dir)),
-                    index,
-                })
-            }
-            IndexMode::S3 => {
-                // let bucket = config.bucket.clone().try_into()?;
-                let schema = index.schema();
-                let settings = index.settings();
-                let tokenizers = index.tokenizers()?;
-                let builder = Index::builder()
-                    .schema(schema)
-                    .settings(settings)
-                    .tokenizers(tokenizers);
-                let dir = S3Directory::new(bucket);
-                let inner = builder.open_or_create(dir)?;
-                let name = index.name().to_string();
-                Ok(Self {
-                    inner: RwLock::new(inner),
-                    index_writer_memory_bytes: config.index_writer_memory_bytes.as_u64() as usize,
-                    index_dir: None,
-                    index,
-                })
-            }
-        }
+        todo!()
+        // match config.mode {
+        //     IndexMode::File => {
+        //         let path = config
+        //             .index_dir
+        //             .clone()
+        //             .unwrap_or_else(|| {
+        //                 use rand::RngCore;
+        //                 let r = rand::thread_rng().next_u32();
+        //                 std::env::temp_dir().join(format!("index.{}", r))
+        //             })
+        //             .join(index.name());
+        //
+        //         let schema = index.schema();
+        //         let settings = index.settings();
+        //         let tokenizers = index.tokenizers()?;
+        //
+        //         let index_dir = IndexDirectory::new(&path)?;
+        //         let inner = index_dir.build(settings, schema, tokenizers)?;
+        //         let name = index.name().to_string();
+        //         Ok(Self {
+        //             inner: RwLock::new(inner),
+        //             index_writer_memory_bytes: config.index_writer_memory_bytes.as_u64() as usize,
+        //             index_dir: Some(RwLock::new(index_dir)),
+        //             index,
+        //         })
+        //     }
+        //     IndexMode::S3 => {
+        //         todo!("To be implemented");
+        //         // let bucket = config.bucket.clone().try_into()?;
+        //         // let schema = index.schema();
+        //         // let settings = index.settings();
+        //         // let tokenizers = index.tokenizers()?;
+        //         // let builder = Index::builder()
+        //         //     .schema(schema)
+        //         //     .settings(settings)
+        //         //     .tokenizers(tokenizers);
+        //         // let dir = S3Directory::new(bucket);
+        //         // let inner = builder.open_or_create(dir)?;
+        //         // let name = index.name().to_string();
+        //         // Ok(Self {
+        //         //     inner: RwLock::new(inner),
+        //         //     index_writer_memory_bytes: config.index_writer_memory_bytes.as_u64() as usize,
+        //         //     index_dir: None,
+        //         //     index,
+        //         // })
+        //     }
+        // }
     }
 
     pub fn index(&self) -> &INDEX {

@@ -25,21 +25,6 @@ pub struct SearchEngine {
         default_value = "default_value_t = ByteSize::mb(256)"
     )]
     pub index_writer_memory_bytes: bytesize::ByteSize,
-
-    #[arg(
-        id = "search-engine-dir",
-        long,
-        env = "SEARCH_ENGINE_DIR",
-        default_value = "indexes"
-    )]
-    pub index_dir: Option<std::path::PathBuf>,
-    #[arg(
-        id = "search-engine-dir",
-        long,
-        env = "SEARCH_ENGINE_BUCKET",
-        default_value = "openubl-indexes"
-    )]
-    pub bucket: String,
 }
 
 #[derive(Clone, Debug, clap::ValueEnum)]

@@ -11,5 +11,5 @@ members = [
     "openubl/cli",
     "openubl/oidc",
     "openubl/storage",
-#    "openubl/index",
+    "openubl/index",
 ]

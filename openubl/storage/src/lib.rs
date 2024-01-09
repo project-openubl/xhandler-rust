@@ -29,20 +29,18 @@ pub mod config;
 
 const INDEX_PATH: &str = "/index";
 
-pub struct Directories {
-    ubl: String,
-    index: String,
+pub struct LocalDir {
+    path: String,
 }
 
-pub struct Buckets {
-    ubl: String,
-    index: String,
+pub struct Bucket {
+    name: String,
 }
 
 pub enum StorageSystem {
-    FileSystem(Directories),
-    Minio(Buckets, MinioClient),
-    S3(Buckets, S3Client),
+    FileSystem(LocalDir),
+    Minio(Bucket, MinioClient),
+    S3(Bucket, S3Client),
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -128,9 +126,8 @@ impl From<ZipError> for StorageSystemErr {
 impl StorageSystem {
     pub async fn new(config: &Storage) -> anyhow::Result<Self> {
         match config {
-            Storage::Local(config) => Ok(Self::FileSystem(Directories {
-                ubl: config.dir_ubl.clone(),
-                index: config.dir_index.clone(),
+            Storage::Local(config) => Ok(Self::FileSystem(LocalDir {
+                path: config.local_dir.clone(),
             })),
             Storage::Minio(config) => {
                 let static_provider =
@@ -142,9 +139,8 @@ impl StorageSystem {
                     None,
                 )?;
                 Ok(Self::Minio(
-                    Buckets {
-                        ubl: config.bucket_ubl.clone(),
-                        index: config.bucket_index.clone(),
+                    Bucket {
+                        name: config.bucket.clone(),
                     },
                     client,
                 ))
@@ -167,9 +163,8 @@ impl StorageSystem {
 
                 let client = S3Client::new(&sdk_config);
                 Ok(Self::S3(
-                    Buckets {
-                        ubl: config.bucket_ubl.clone(),
-                        index: config.bucket_index.clone(),
+                    Bucket {
+                        name: config.bucket.clone(),
                     },
                     client,
                 ))
@@ -180,7 +175,7 @@ impl StorageSystem {
     pub async fn put_index(&self, name: &str, index: &[u8]) -> Result<(), StorageSystemErr> {
         match self {
             StorageSystem::FileSystem(directories) => {
-                let file_path = Path::new(&directories.index).join(name);
+                let file_path = Path::new(&directories.path).join(name);
                 let mut file = File::create(file_path)?;
                 file.write_all(index)?;
 
@@ -202,7 +197,7 @@ impl StorageSystem {
                 temp_file.write_all(index)?;
 
                 let object_name = format!("{}/{}", INDEX_PATH, name);
-                let object = &UploadObjectArgs::new(&buckets.index, &object_name, &temp_file_path)?;
+                let object = &UploadObjectArgs::new(&buckets.name, &object_name, &temp_file_path)?;
                 client.upload_object(object).await?;
 
                 Ok(())
@@ -212,7 +207,7 @@ impl StorageSystem {
                 let body = ByteStream::from(index.to_vec());
                 client
                     .put_object()
-                    .bucket(&buckets.index)
+                    .bucket(&buckets.name)
                     .key(object_name)
                     .body(body)
                     .send()
@@ -225,12 +220,12 @@ impl StorageSystem {
     pub async fn get_index(&self, name: &str) -> Result<Vec<u8>, StorageSystemErr> {
         match self {
             StorageSystem::FileSystem(directories) => {
-                let file_path = Path::new(&directories.index).join(name);
+                let file_path = Path::new(&directories.path).join(name);
                 Ok(fs::read(file_path)?)
             }
             StorageSystem::Minio(buckets, client) => {
                 let object_name = format!("{}/{}", INDEX_PATH, name);
-                let object = &GetObjectArgs::new(&buckets.index, &object_name)?;
+                let object = &GetObjectArgs::new(&buckets.name, &object_name)?;
                 let response = client.get_object(object).await?;
                 Ok(response.bytes().await?.to_vec())
             }
@@ -238,7 +233,7 @@ impl StorageSystem {
                 let object_name = format!("{}/{}", INDEX_PATH, name);
                 let mut response = client
                     .get_object()
-                    .bucket(&buckets.index)
+                    .bucket(&buckets.name)
                     .key(object_name)
                     .send()
                     .await?;
@@ -270,7 +265,7 @@ impl StorageSystem {
 
         match self {
             StorageSystem::FileSystem(directories) => {
-                let object_name = Path::new(&directories.ubl)
+                let object_name = Path::new(&directories.path)
                     .join(project_id.to_string())
                     .join(ruc)
                     .join(document_type)
@@ -282,7 +277,7 @@ impl StorageSystem {
             StorageSystem::Minio(bucket, client) => {
                 let object_name = format!("{project_id}/{ruc}/{document_type}/{zip_name}");
 
-                let object = &UploadObjectArgs::new(&bucket.ubl, &object_name, &zip_path)?;
+                let object = &UploadObjectArgs::new(&bucket.name, &object_name, &zip_path)?;
                 let response = client.upload_object(object).await?;
 
                 // Clear temp files
@@ -297,7 +292,7 @@ impl StorageSystem {
 
                 client
                     .put_object()
-                    .bucket(&buckets.ubl)
+                    .bucket(&buckets.name)
                     .key(&object_name)
                     .body(object)
                     .send()

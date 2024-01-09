@@ -16,8 +16,6 @@ export const useFetchProjects = () => {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [ProjectsQueryKey],
     queryFn: getProjects,
-    onError: (error: AxiosError) => console.log("error, ", error),
-    keepPreviousData: true,
   });
   return {
     projects: data || [],
@@ -32,7 +30,6 @@ export const useFetchProjectById = (id?: number | string) => {
     queryKey: [ProjectsQueryKey, id],
     queryFn: () =>
       id === undefined ? Promise.resolve(undefined) : getProjectById(id),
-    onError: (error: AxiosError) => console.log("error", error),
     enabled: id !== undefined,
   });
 
@@ -53,7 +50,7 @@ export const useCreateProjectMutation = (
     mutationFn: createProject,
     onSuccess: ({ data }, _payload) => {
       onSuccess(data);
-      queryClient.invalidateQueries([ProjectsQueryKey]);
+      queryClient.invalidateQueries({ queryKey: [ProjectsQueryKey] });
     },
     onError,
   });
@@ -68,7 +65,7 @@ export const useUpdateProjectMutation = (
     mutationFn: updateProject,
     onSuccess: (_res, payload) => {
       onSuccess(payload);
-      queryClient.invalidateQueries([ProjectsQueryKey]);
+      queryClient.invalidateQueries({ queryKey: [ProjectsQueryKey] });
     },
     onError: onError,
   });
@@ -80,21 +77,21 @@ export const useDeleteProjectMutation = (
 ) => {
   const queryClient = useQueryClient();
 
-  const { isLoading, mutate, error } = useMutation({
+  const { isPending, mutate, error } = useMutation({
     mutationFn: deleteProject,
     onSuccess: (_res, id) => {
       onSuccess(id);
-      queryClient.invalidateQueries([ProjectsQueryKey]);
+      queryClient.invalidateQueries({ queryKey: [ProjectsQueryKey] });
     },
     onError: (err: AxiosError, id) => {
       onError(err, id);
-      queryClient.invalidateQueries([ProjectsQueryKey]);
+      queryClient.invalidateQueries({ queryKey: [ProjectsQueryKey] });
     },
   });
 
   return {
     mutate,
-    isLoading,
+    isPending,
     error,
   };
 };
