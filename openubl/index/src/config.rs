@@ -1,49 +1,31 @@
-use std::fmt::Display;
+#[derive(clap::Subcommand, Debug)]
+pub enum SearchEngine {
+    Local(LocalEngine),
+}
 
 #[derive(clap::Args, Debug)]
-pub struct SearchEngine {
-    /// Synchronization interval for index persistence.
+pub struct LocalEngine {
     #[arg(
-    id = "search-engine-mode",
-    long,
-    env = "SEARCH_ENGINE_MODE",
-    default_value_t = IndexMode::File
+        id = "search-engine-local-dir",
+        long,
+        env = "SEARCH_ENGINE_LOCAL_DIR",
+        default_value = "index"
     )]
-    pub mode: IndexMode,
+    pub index_dir: String,
 
     #[arg(
-        id = "search-engine-sync-interval",
+        id = "search-engine-local-sync-interval",
         long,
-        env = "SEARCH_ENGINE_SYNC_INTERVAL",
+        env = "SEARCH_ENGINE_LOCAL_SYNC_INTERVAL",
         default_value = "30S"
     )]
     pub sync_interval: humantime::Duration,
+
     #[arg(
-        id = "search-engine-writer-memory",
+        id = "search-engine-local-writer-memory",
         long,
-        env = "SEARCH_ENGINE_WRITER_MEMORY",
+        env = "SEARCH_ENGINE_LOCAL_WRITER_MEMORY",
         default_value = "default_value_t = ByteSize::mb(256)"
     )]
     pub index_writer_memory_bytes: bytesize::ByteSize,
-}
-
-#[derive(Clone, Debug, clap::ValueEnum)]
-pub enum IndexMode {
-    File,
-    S3,
-}
-
-impl Display for IndexMode {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::File => write!(f, "file"),
-            Self::S3 => write!(f, "s3"),
-        }
-    }
-}
-
-impl Default for IndexMode {
-    fn default() -> Self {
-        Self::File
-    }
 }

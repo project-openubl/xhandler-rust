@@ -4,7 +4,6 @@ use std::io::{Read, Write};
 use std::path::Path;
 use std::str::FromStr;
 
-use anyhow::anyhow;
 use aws_config::meta::region::RegionProviderChain;
 use aws_config::retry::RetryConfig;
 use aws_config::BehaviorVersion;
@@ -14,7 +13,7 @@ use aws_sdk_s3::operation::get_object::GetObjectError;
 use aws_sdk_s3::operation::put_object::PutObjectError;
 use aws_sdk_s3::primitives::{ByteStream, ByteStreamError};
 use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
-use minio::s3::args::{GetObjectArgs, UploadObjectArgs};
+use minio::s3::args::UploadObjectArgs;
 use minio::s3::client::Client as MinioClient;
 use minio::s3::creds::StaticProvider;
 use minio::s3::http::BaseUrl;
@@ -27,8 +26,6 @@ use crate::config::Storage;
 
 pub mod config;
 
-const INDEX_PATH: &str = "/index";
-
 pub struct LocalDir {
     path: String,
 }
@@ -38,7 +35,7 @@ pub struct Bucket {
 }
 
 pub enum StorageSystem {
-    FileSystem(LocalDir),
+    Local(LocalDir),
     Minio(Bucket, MinioClient),
     S3(Bucket, S3Client),
 }
@@ -126,7 +123,7 @@ impl From<ZipError> for StorageSystemErr {
 impl StorageSystem {
     pub async fn new(config: &Storage) -> anyhow::Result<Self> {
         match config {
-            Storage::Local(config) => Ok(Self::FileSystem(LocalDir {
+            Storage::Local(config) => Ok(Self::Local(LocalDir {
                 path: config.local_dir.clone(),
             })),
             Storage::Minio(config) => {
@@ -172,82 +169,6 @@ impl StorageSystem {
         }
     }
 
-    pub async fn put_index(&self, name: &str, index: &[u8]) -> Result<(), StorageSystemErr> {
-        match self {
-            StorageSystem::FileSystem(directories) => {
-                let file_path = Path::new(&directories.path).join(name);
-                let mut file = File::create(file_path)?;
-                file.write_all(index)?;
-
-                Ok(())
-            }
-            StorageSystem::Minio(buckets, client) => {
-                let temp_filename = Uuid::new_v4().to_string();
-
-                let temp_dir = tempfile::tempdir()?;
-                let temp_file_path = temp_dir
-                    .into_path()
-                    .join(&temp_filename)
-                    .to_str()
-                    .map(|e| e.to_string())
-                    .ok_or(StorageSystemErr::Any(anyhow!(
-                        "Could not determine with filename of created index"
-                    )))?;
-                let mut temp_file = File::create(&temp_file_path)?;
-                temp_file.write_all(index)?;
-
-                let object_name = format!("{}/{}", INDEX_PATH, name);
-                let object = &UploadObjectArgs::new(&buckets.name, &object_name, &temp_file_path)?;
-                client.upload_object(object).await?;
-
-                Ok(())
-            }
-            StorageSystem::S3(buckets, client) => {
-                let object_name = format!("{}/{}", INDEX_PATH, name);
-                let body = ByteStream::from(index.to_vec());
-                client
-                    .put_object()
-                    .bucket(&buckets.name)
-                    .key(object_name)
-                    .body(body)
-                    .send()
-                    .await?;
-                Ok(())
-            }
-        }
-    }
-
-    pub async fn get_index(&self, name: &str) -> Result<Vec<u8>, StorageSystemErr> {
-        match self {
-            StorageSystem::FileSystem(directories) => {
-                let file_path = Path::new(&directories.path).join(name);
-                Ok(fs::read(file_path)?)
-            }
-            StorageSystem::Minio(buckets, client) => {
-                let object_name = format!("{}/{}", INDEX_PATH, name);
-                let object = &GetObjectArgs::new(&buckets.name, &object_name)?;
-                let response = client.get_object(object).await?;
-                Ok(response.bytes().await?.to_vec())
-            }
-            StorageSystem::S3(buckets, client) => {
-                let object_name = format!("{}/{}", INDEX_PATH, name);
-                let mut response = client
-                    .get_object()
-                    .bucket(&buckets.name)
-                    .key(object_name)
-                    .send()
-                    .await?;
-
-                let mut result: Vec<u8> = vec![];
-                while let Some(bytes) = response.body.try_next().await? {
-                    result.append(&mut bytes.to_vec());
-                }
-
-                Ok(result)
-            }
-        }
-    }
-
     pub async fn upload_ubl_xml(
         &self,
         project_id: i32,
@@ -264,7 +185,7 @@ impl StorageSystem {
         let zip_name = format!("{}_{short_sha256}.zip", document_id.to_uppercase());
 
         match self {
-            StorageSystem::FileSystem(directories) => {
+            StorageSystem::Local(directories) => {
                 let object_name = Path::new(&directories.path)
                     .join(project_id.to_string())
                     .join(ruc)

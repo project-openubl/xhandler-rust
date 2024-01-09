@@ -3230,6 +3230,7 @@ dependencies = [
  "openubl-api",
  "openubl-common",
  "openubl-entity",
+ "openubl-index",
  "openubl-oidc",
  "openubl-storage",
  "sea-orm",

@@ -11,6 +11,7 @@ openubl-common = { path = "../common" }
 openubl-entity = { path = "../entity" }
 openubl-oidc = { path = "../oidc" }
 openubl-storage = { path = "../storage" }
+openubl-index = { path = "../index" }
 
 xsender = { path = "../../xsender" }
 xbuilder = { path = "../../xbuilder" }
