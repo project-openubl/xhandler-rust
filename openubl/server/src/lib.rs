@@ -10,7 +10,6 @@ use actix_web::{web, App, HttpServer};
 
 use openubl_api::system::InnerSystem;
 use openubl_common::config::Database;
-use openubl_index::system::SearchEngineSystem;
 use openubl_storage::StorageSystem;
 
 use crate::server::{files, health, project};
@@ -34,7 +33,6 @@ pub struct Run {
 
     #[command(subcommand)]
     pub storage: openubl_storage::config::Storage,
-
     // #[command(flatten)]
     // pub search_engine: openubl_index::config::SearchEngine,
 }

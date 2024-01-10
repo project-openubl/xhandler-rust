@@ -1,5 +1,5 @@
+use tantivy::directory::MmapDirectory;
 use tantivy::{Index, IndexWriter, TantivyError};
-use tantivy::directory::{MmapDirectory};
 
 use crate::config::SearchEngine;
 use crate::system::ubl_document::UblDocumentIndex;
@@ -37,7 +37,8 @@ impl SearchEngineSystem {
                 let directory = MmapDirectory::open(&config.index_dir)?;
                 let index = Index::open_or_create(directory, ubl_document_index.schema.clone())?;
 
-                let index_writer = index.writer(config.index_writer_memory_bytes.as_u64() as usize)?;
+                let index_writer =
+                    index.writer(config.index_writer_memory_bytes.as_u64() as usize)?;
                 Ok(Self::Local(index_writer))
             }
         }

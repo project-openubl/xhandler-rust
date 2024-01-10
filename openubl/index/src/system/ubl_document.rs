@@ -1,5 +1,5 @@
-use tantivy::Document;
 use tantivy::schema::{Field, Schema, STORED, TEXT};
+use tantivy::Document;
 
 use crate::system::{IndexError, SearchEngineSystem};
 
