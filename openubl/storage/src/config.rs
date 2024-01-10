@@ -8,19 +8,12 @@ pub enum Storage {
 #[derive(clap::Args, Debug)]
 pub struct LocalStorage {
     #[arg(
-        id = "storage-local-dir-ubl",
+        id = "storage-local-dir",
         long,
-        env = "STORAGE_LOCAL_DIR_UBL",
-        default_value = "openubl_ubl"
+        env = "STORAGE_LOCAL_DIR",
+        default_value = "storage"
     )]
-    pub dir_ubl: String,
-    #[arg(
-        id = "storage-local-dir-index",
-        long,
-        env = "STORAGE_LOCAL_DIR_INDEX",
-        default_value = "openubl_index"
-    )]
-    pub dir_index: String,
+    pub local_dir: String,
 }
 
 #[derive(clap::Args, Debug)]
@@ -29,20 +22,12 @@ pub struct MinioStorage {
     pub host: String,
 
     #[arg(
-        id = "storage-minio-bucket-ubl",
+        id = "storage-minio-bucket",
         long,
-        env = "STORAGE_MINIO_BUCKET_UBL",
-        default_value = "ubl"
+        env = "STORAGE_MINIO_BUCKET",
+        default_value = "openubl"
     )]
-    pub bucket_ubl: String,
-
-    #[arg(
-        id = "storage-minio-bucket-index",
-        long,
-        env = "STORAGE_MINIO_BUCKET_INDEX",
-        default_value = "index"
-    )]
-    pub bucket_index: String,
+    pub bucket: String,
 
     #[arg(
         id = "storage-minio-access-key",
@@ -65,20 +50,12 @@ pub struct S3Storage {
     pub region: String,
 
     #[arg(
-        id = "storage-s3-bucket-ubl",
+        id = "storage-s3-bucket",
         long,
-        env = "STORAGE_S3_BUCKET_UBL",
-        default_value = "ubl"
+        env = "STORAGE_S3_BUCKET",
+        default_value = "openubl"
     )]
-    pub bucket_ubl: String,
-
-    #[arg(
-        id = "storage-s3-bucket-index",
-        long,
-        env = "STORAGE_S3_BUCKET_INDEX",
-        default_value = "index"
-    )]
-    pub bucket_index: String,
+    pub bucket: String,
 
     #[arg(id = "storage-s3-access-key", long, env = "STORAGE_S3_ACCESS_KEY")]
     pub access_key: String,

@@ -33,11 +33,24 @@ pub struct Run {
 
     #[command(subcommand)]
     pub storage: openubl_storage::config::Storage,
+    // #[command(flatten)]
+    // pub search_engine: openubl_index::config::SearchEngine,
 }
 
 impl Run {
     pub async fn run(self) -> anyhow::Result<ExitCode> {
         env_logger::init();
+
+        // Oidc
+        let oidc = Oidc::new(OidcConfig::Issuer(self.oidc.auth_server_url.clone().into()))
+            .await
+            .unwrap();
+        let oidc_validator = OidcBiscuitValidator {
+            options: ValidationOptions {
+                issuer: Validation::Validate(self.oidc.auth_server_url.clone()),
+                ..ValidationOptions::default()
+            },
+        };
 
         // Database
         let system = match self.bootstrap {
@@ -57,18 +70,10 @@ impl Run {
         // Storage
         let storage = StorageSystem::new(&self.storage).await?;
 
-        let app_state = Arc::new(AppState { system, storage });
+        // Search Engine
+        // let search_engine = SearchEngineSystem::new(&self.search_engine).await?;
 
-        // Oidc
-        let oidc = Oidc::new(OidcConfig::Issuer(self.oidc.auth_server_url.clone().into()))
-            .await
-            .unwrap();
-        let oidc_validator = OidcBiscuitValidator {
-            options: ValidationOptions {
-                issuer: Validation::Validate(self.oidc.auth_server_url.clone()),
-                ..ValidationOptions::default()
-            },
-        };
+        let app_state = Arc::new(AppState { system, storage });
 
         HttpServer::new(move || {
             App::new()
@@ -90,6 +95,7 @@ impl Run {
 pub struct AppState {
     pub system: InnerSystem,
     pub storage: StorageSystem,
+    // pub search_engine: SearchEngineSystem,
 }
 
 pub fn configure(config: &mut web::ServiceConfig) {

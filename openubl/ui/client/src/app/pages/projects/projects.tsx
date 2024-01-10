@@ -12,30 +12,17 @@ import {
   PageSectionVariants,
   Text,
   TextContent,
-  Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
+import { ActionsColumn, Td as TdAction } from "@patternfly/react-table";
 import {
-  ActionsColumn,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from "@patternfly/react-table";
-
-import { SimplePagination } from "@app/components/SimplePagination";
-import { FilterToolbar, FilterType } from "@app/components/FilterToolbar";
-import {
+  useClientTableBatteries,
   ConditionalTableBody,
-  TableHeaderContentWithControls,
-  TableRowContentWithControls,
-} from "@app/components/TableControls";
+  FilterType,
+} from "@mturley-latest/react-table-batteries";
 
-import { useLocalTableControls } from "@app/hooks/table-controls";
 import {
   useFetchProjects,
   useDeleteProjectMutation,
@@ -83,44 +70,55 @@ export const Projects: React.FC = () => {
     onDeleteOrgError
   );
 
-  const tableControls = useLocalTableControls({
+  const tableControls = useClientTableBatteries({
+    persistTo: "urlParams",
     idProperty: "id",
     items: projects,
+    isLoading: isFetching,
     columnNames: {
       name: t("terms.name"),
       description: t("terms.description"),
     },
     hasActionsColumn: true,
-    filterCategories: [
-      {
-        key: "q",
-        title: t("terms.name"),
-        type: FilterType.search,
-        placeholderText:
-          t("actions.filterBy", {
-            what: t("terms.name").toLowerCase(),
-          }) + "...",
-        getItemValue: (item) => item.name || "",
-      },
-    ],
-    sortableColumns: ["name"],
-    getSortValues: (item) => ({
-      name: item?.name || "",
-    }),
-    isPaginationEnabled: true,
+    filter: {
+      isEnabled: true,
+      filterCategories: [
+        {
+          key: "q",
+          title: t("terms.name"),
+          type: FilterType.search,
+          placeholderText:
+            t("actions.filterBy", {
+              what: t("terms.name").toLowerCase(),
+            }) + "...",
+          getItemValue: (item) => item.name || "",
+        },
+      ],
+    },
+    sort: {
+      isEnabled: true,
+      sortableColumns: ["name"],
+      getSortValues: (project) => ({
+        name: project?.name || "",
+      }),
+    },
+    pagination: { isEnabled: true },
   });
 
   const {
     currentPageItems,
     numRenderedColumns,
-    propHelpers: {
-      toolbarProps,
-      filterToolbarProps,
-      paginationToolbarItemProps,
-      paginationProps,
-      tableProps,
-      getThProps,
-      getTdProps,
+    components: {
+      Table,
+      Thead,
+      Tr,
+      Th,
+      Tbody,
+      Td,
+      Toolbar,
+      FilterToolbar,
+      PaginationToolbarItem,
+      Pagination,
     },
   } = tableControls;
 
@@ -147,9 +145,9 @@ export const Projects: React.FC = () => {
             backgroundColor: "var(--pf-v5-global--BackgroundColor--100)",
           }}
         >
-          <Toolbar {...toolbarProps}>
+          <Toolbar>
             <ToolbarContent>
-              <FilterToolbar {...filterToolbarProps} />
+              <FilterToolbar id="project-toolbar" />
               <ToolbarGroup variant="button-group">
                 <ToolbarItem>
                   <Button
@@ -163,23 +161,21 @@ export const Projects: React.FC = () => {
                   </Button>
                 </ToolbarItem>
               </ToolbarGroup>
-              <ToolbarItem {...paginationToolbarItemProps}>
-                <SimplePagination
-                  idPrefix="projects-table"
-                  isTop
-                  paginationProps={paginationProps}
+              <PaginationToolbarItem>
+                <Pagination
+                  variant="top"
+                  isCompact
+                  widgetId="projects-pagination-top"
                 />
-              </ToolbarItem>
+              </PaginationToolbarItem>
             </ToolbarContent>
           </Toolbar>
 
-          <Table {...tableProps} aria-label="Projects table">
+          <Table aria-label="Projects table">
             <Thead>
-              <Tr>
-                <TableHeaderContentWithControls {...tableControls}>
-                  <Th {...getThProps({ columnKey: "name" })} />
-                  <Th {...getThProps({ columnKey: "description" })} />
-                </TableHeaderContentWithControls>
+              <Tr isHeaderRow>
+                <Th columnKey="name" />
+                <Th columnKey="description" />
               </Tr>
             </Thead>
             <ConditionalTableBody
@@ -188,53 +184,46 @@ export const Projects: React.FC = () => {
               isNoData={projects.length === 0}
               numRenderedColumns={numRenderedColumns}
             >
-              {currentPageItems?.map((item, rowIndex) => {
-                return (
-                  <Tbody key={item.name}>
-                    <Tr>
-                      <TableRowContentWithControls
-                        {...tableControls}
-                        item={item}
-                        rowIndex={rowIndex}
+              <Tbody>
+                {currentPageItems?.map((item, rowIndex) => {
+                  return (
+                    <Tr key={item.name} item={item} rowIndex={rowIndex}>
+                      <Td width={15} columnKey="name">
+                        <NavLink to={`/projects/${item.id}/documents`}>
+                          {item.name}
+                        </NavLink>
+                      </Td>
+                      <Td
+                        width={20}
+                        modifier="truncate"
+                        columnKey="description"
                       >
-                        <Td width={15} {...getTdProps({ columnKey: "name" })}>
-                          <NavLink to={`/projects/${item.id}/documents`}>
-                            {item.name}
-                          </NavLink>
-                        </Td>
-                        <Td
-                          width={20}
-                          modifier="truncate"
-                          {...getTdProps({ columnKey: "description" })}
-                        >
-                          {item.description}
-                        </Td>
-                        <Td isActionCell>
-                          <ActionsColumn
-                            items={[
-                              {
-                                title: t("actions.edit"),
-                                onClick: () => setCreateUpdateModalState(item),
-                              },
-                              {
-                                title: t("actions.delete"),
-                                onClick: () => deleteRow(item),
-                              },
-                            ]}
-                          />
-                        </Td>
-                      </TableRowContentWithControls>
+                        {item.description}
+                      </Td>
+                      <TdAction isActionCell>
+                        <ActionsColumn
+                          items={[
+                            {
+                              title: t("actions.edit"),
+                              onClick: () => setCreateUpdateModalState(item),
+                            },
+                            {
+                              title: t("actions.delete"),
+                              onClick: () => deleteRow(item),
+                            },
+                          ]}
+                        />
+                      </TdAction>
                     </Tr>
-                  </Tbody>
-                );
-              })}
+                  );
+                })}
+              </Tbody>
             </ConditionalTableBody>
           </Table>
-
-          <SimplePagination
-            idPrefix="projects-table"
-            isTop={false}
-            paginationProps={paginationProps}
+          <Pagination
+            variant="bottom"
+            isCompact
+            widgetId="projects-pagination-bottom"
           />
         </div>
       </PageSection>

@@ -52,9 +52,9 @@ services:
     environment:
       MINIO_ROOT_USER: "admin"
       MINIO_ROOT_PASSWORD: "password"
-      MINIO_NOTIFY_NATS_ENABLE_UBL: "on"
-      MINIO_NOTIFY_NATS_ADDRESS_UBL: "nats:4222"
-      MINIO_NOTIFY_NATS_SUBJECT_UBL: "ubl"
+      MINIO_NOTIFY_NATS_ENABLE_OPENUBL: "on"
+      MINIO_NOTIFY_NATS_ADDRESS_OPENUBL: "nats:4222"
+      MINIO_NOTIFY_NATS_SUBJECT_OPENUBL: "openubl"
     healthcheck:
       test: timeout 5s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1
       interval: 10s
