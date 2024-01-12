@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 openubl-storage = { path = "../storage" }
 
-clap = {version = "4.4.11", features = ["derive", "env"]}
+clap = {version = "4.4.16", features = ["derive", "env"]}
 anyhow = "1.0.78"
 thiserror = "1.0.53"
 tantivy = "0.21.1"
