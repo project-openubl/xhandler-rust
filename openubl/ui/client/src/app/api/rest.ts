@@ -17,17 +17,17 @@ interface ApiSearchResult<T> {
   data: T[];
 }
 
-export const getApiPaginatedResult = <T>(
+export const getHubPaginatedResult = <T>(
   url: string,
   params: HubRequestParams = {}
 ): Promise<HubPaginatedResult<T>> =>
   axios
-    .get<ApiSearchResult<T>>(url, {
+    .get<T[]>(url, {
       params: serializeRequestParamsForHub(params),
     })
-    .then(({ data }) => ({
-      data: data.data,
-      total: data.total,
+    .then(({ data, headers }) => ({
+      data,
+      total: headers["x-total"] ? parseInt(headers["x-total"], 10) : 0,
       params,
     }));
 
@@ -56,3 +56,13 @@ export const uploadFile = (
   config?: AxiosRequestConfig
 ) =>
   axios.post<UblDocument>(`${PROJECTS}/${projectId}/files`, formData, config);
+
+export const getUblDocuments = (
+  projectId?: number | string,
+  params: HubRequestParams = {}
+) => {
+  return getHubPaginatedResult<UblDocument>(
+    `${PROJECTS}/${projectId}/documents`,
+    params
+  );
+};

@@ -84,10 +84,10 @@ pub async fn upload_file(
                 id: 0,
                 project_id: ctx.project.id,
                 file_id,
-                ruc: file_metadata.ruc,
-                serie_numero: file_metadata.document_id,
-                tipo_documento: file_metadata.document_type,
-                baja_tipo_documento_codigo: file_metadata.voided_line_document_type_code,
+                supplier_id: file_metadata.ruc,
+                document_id: file_metadata.document_id,
+                document_type: file_metadata.document_type,
+                voided_document_code: file_metadata.voided_line_document_type_code,
                 sha256: file_sha256,
             };
 

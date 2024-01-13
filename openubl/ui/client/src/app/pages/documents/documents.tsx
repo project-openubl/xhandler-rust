@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import {
   Button,
@@ -9,32 +9,21 @@ import {
   PageSectionVariants,
   Text,
   TextContent,
-  Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import {
-  ActionsColumn,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from "@patternfly/react-table";
+import { ActionsColumn, Td as TdAction } from "@patternfly/react-table";
 
-import { FilterToolbar, FilterType } from "@app/components/FilterToolbar";
-import { SimplePagination } from "@app/components/SimplePagination";
+import { getHubRequestParams } from "@app/hooks/table-controls";
+
+import { useFetchUblDocuments } from "@app/queries/ubl-documents";
 import {
   ConditionalTableBody,
-  TableHeaderContentWithControls,
-  TableRowContentWithControls,
-} from "@app/components/TableControls";
-
-import { useLocalTableControls } from "@app/hooks/table-controls";
-import { useFetchProjects } from "@app/queries/projects";
-
+  FilterType,
+  useTablePropHelpers,
+  useTableState,
+} from "@mturley-latest/react-table-batteries";
 import { UploadFilesDrawer } from "./upload-files-drawer";
 
 export const Projects: React.FC = () => {
@@ -45,45 +34,72 @@ export const Projects: React.FC = () => {
     string | number | null
   >(null);
 
-  const { projects, isFetching, fetchError, refetch } = useFetchProjects();
-
-  const tableControls = useLocalTableControls({
-    idProperty: "id",
-    items: projects,
+  const tableState = useTableState({
+    persistTo: "urlParams",
+    persistenceKeyPrefix: "d",
     columnNames: {
-      name: "Name",
-      description: "Description",
+      supplierId: "Supplier ID",
+      documentType: "Type",
+      documentId: "ID",
     },
-    hasActionsColumn: true,
-    filterCategories: [
-      {
-        key: "q",
-        title: "Name",
-        type: FilterType.search,
-        placeholderText: "Search by name...",
-        getItemValue: (item) => item.name || "",
-      },
-    ],
-    sortableColumns: ["name"],
-    getSortValues: (item) => ({
-      name: item?.name || "",
-    }),
-    isPaginationEnabled: true,
+    filter: {
+      isEnabled: true,
+      filterCategories: [
+        {
+          key: "documentId",
+          title: "ID",
+          type: FilterType.search,
+          placeholderText: "Search by ID...",
+        },
+      ],
+    },
+    sort: {
+      isEnabled: true,
+      sortableColumns: [],
+    },
+    pagination: { isEnabled: true },
+  });
+
+  const { filter, sort, pagination, cacheKey } = tableState;
+
+  const hubRequestParams = React.useMemo(() => {
+    let result = getHubRequestParams({
+      filterState: filter,
+      sortState: sort,
+      paginationState: pagination,
+    });
+    return result;
+  }, [cacheKey]);
+
+  const { isFetching, result, fetchError } = useFetchUblDocuments(
+    projectId,
+    hubRequestParams
+  );
+
+  const tableProps = useTablePropHelpers({
+    ...tableState,
+    idProperty: "id",
+    isLoading: isFetching,
+    currentPageItems: result.data,
+    totalItemCount: result.total,
   });
 
   const {
     currentPageItems,
     numRenderedColumns,
-    propHelpers: {
-      toolbarProps,
-      filterToolbarProps,
-      paginationToolbarItemProps,
-      paginationProps,
-      tableProps,
-      getThProps,
-      getTdProps,
+    components: {
+      Table,
+      Thead,
+      Tr,
+      Th,
+      Tbody,
+      Td,
+      Toolbar,
+      FilterToolbar,
+      PaginationToolbarItem,
+      Pagination,
     },
-  } = tableControls;
+  } = tableProps;
 
   return (
     <>
@@ -98,21 +114,10 @@ export const Projects: React.FC = () => {
             backgroundColor: "var(--pf-v5-global--BackgroundColor--100)",
           }}
         >
-          <Toolbar {...toolbarProps}>
+          <Toolbar>
             <ToolbarContent>
-              <FilterToolbar {...filterToolbarProps} />
+              <FilterToolbar id="document-toolbar" />
               <ToolbarGroup variant="button-group">
-                <ToolbarItem>
-                  <Button
-                    type="button"
-                    id="create-project"
-                    aria-label="Create new project"
-                    variant={ButtonVariant.primary}
-                    // onClick={() => setCreateUpdateModalState("create")}
-                  >
-                    Crear proyecto
-                  </Button>
-                </ToolbarItem>
                 <ToolbarItem>
                   <Button
                     type="button"
@@ -125,80 +130,57 @@ export const Projects: React.FC = () => {
                   </Button>
                 </ToolbarItem>
               </ToolbarGroup>
-              <ToolbarItem {...paginationToolbarItemProps}>
-                <SimplePagination
-                  idPrefix="documents-table"
-                  isTop
-                  paginationProps={paginationProps}
+              <PaginationToolbarItem>
+                <Pagination
+                  variant="top"
+                  isCompact
+                  widgetId="documents-pagination-top"
                 />
-              </ToolbarItem>
+              </PaginationToolbarItem>
             </ToolbarContent>
           </Toolbar>
 
-          <Table {...tableProps} aria-label="Projects table">
+          <Table aria-label="Documents table">
             <Thead>
-              <Tr>
-                <TableHeaderContentWithControls {...tableControls}>
-                  <Th {...getThProps({ columnKey: "name" })} />
-                  <Th {...getThProps({ columnKey: "description" })} />
-                </TableHeaderContentWithControls>
+              <Tr isHeaderRow>
+                <Th columnKey="supplierId" />
+                <Th columnKey="documentType" />
+                <Th columnKey="documentId" />
               </Tr>
             </Thead>
             <ConditionalTableBody
               isLoading={isFetching}
               isError={!!fetchError}
-              isNoData={projects.length === 0}
+              isNoData={result.data.length === 0}
               numRenderedColumns={numRenderedColumns}
             >
-              {currentPageItems?.map((item, rowIndex) => {
-                return (
-                  <Tbody key={item.name}>
-                    <Tr>
-                      <TableRowContentWithControls
-                        {...tableControls}
-                        item={item}
-                        rowIndex={rowIndex}
-                      >
-                        <Td width={15} {...getTdProps({ columnKey: "name" })}>
-                          <NavLink to={`/projects/${item.id}`}>
-                            {item.name}
-                          </NavLink>
-                        </Td>
-                        <Td
-                          width={20}
-                          modifier="truncate"
-                          {...getTdProps({ columnKey: "description" })}
-                        >
-                          {item.description}
-                        </Td>
-                        <Td isActionCell>
-                          <ActionsColumn
-                            items={
-                              [
-                                // {
-                                //   title: "Editar",
-                                //   onClick: () => setCreateUpdateModalState(item),
-                                // },
-                                // {
-                                //   title: "Eliminar",
-                                //   onClick: () => deleteRow(item),
-                                // },
-                              ]
-                            }
-                          />
-                        </Td>
-                      </TableRowContentWithControls>
+              <Tbody>
+                {currentPageItems?.map((item, rowIndex) => {
+                  return (
+                    <Tr key={item.id} item={item} rowIndex={rowIndex}>
+                      <Td width={15} columnKey="supplierId">
+                        {item.supplier_id}
+                      </Td>
+                      <Td width={15} columnKey="documentType">
+                        {item.document_type}
+                      </Td>
+                      <Td width={15} columnKey="documentId">
+                        {item.document_id}
+                      </Td>
+                      <TdAction isActionCell>
+                        <ActionsColumn items={[]} />
+                      </TdAction>
                     </Tr>
-                  </Tbody>
-                );
-              })}
+                  );
+                })}
+              </Tbody>
             </ConditionalTableBody>
           </Table>
 
-          <SimplePagination
-            idPrefix="documents-table"
-            isTop={false}
-            paginationProps={paginationProps}
+          <Pagination
+            variant="bottom"
+            isCompact
+            widgetId="documents-pagination-bottom"
           />
         </div>
 

@@ -21,14 +21,14 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(UblDocument::ProjectId).integer().not_null())
                     .col(ColumnDef::new(UblDocument::FileId).string().not_null())
-                    .col(ColumnDef::new(UblDocument::Ruc).string().not_null())
-                    .col(ColumnDef::new(UblDocument::SerieNumero).string().not_null())
+                    .col(ColumnDef::new(UblDocument::SupplierId).string().not_null())
+                    .col(ColumnDef::new(UblDocument::DocumentId).string().not_null())
                     .col(
-                        ColumnDef::new(UblDocument::TipoDocumento)
+                        ColumnDef::new(UblDocument::DocumentType)
                             .string()
                             .not_null(),
                     )
-                    .col(ColumnDef::new(UblDocument::BajaTipoDocumentoCodigo).string())
+                    .col(ColumnDef::new(UblDocument::VoidedDocumentCode).string())
                     .col(ColumnDef::new(UblDocument::Sha256).string().not_null())
                     .foreign_key(
                         ForeignKey::create()
@@ -54,9 +54,9 @@ enum UblDocument {
     Id,
     ProjectId,
     FileId,
-    Ruc,
-    SerieNumero,
-    TipoDocumento,
-    BajaTipoDocumentoCodigo,
+    DocumentType,
+    DocumentId,
+    SupplierId,
+    VoidedDocumentCode,
     Sha256,
 }

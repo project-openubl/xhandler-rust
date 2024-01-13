@@ -47,8 +47,8 @@ export interface Project {
 export interface UblDocument {
   id: number;
   file_id: string,
-  ruc: string,
-  serie_numero: string,
-  tipo_documento: string,
-  baja_tipo_documento_codigo?: string,
+  document_type: string,
+  document_id: string,
+  supplier_id: string,
+  voided_document_code?: string,
 }
