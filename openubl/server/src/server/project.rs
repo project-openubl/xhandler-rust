@@ -1,7 +1,9 @@
 use actix_4_jwt_auth::AuthenticatedUser;
+use actix_web::http::StatusCode;
 use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
 
-use openubl_api::db::Transactional;
+use openubl_api::db::{Paginated, Transactional};
+use openubl_api::system::project::ProjectContext;
 use openubl_entity::project;
 use openubl_oidc::UserClaims;
 
@@ -56,6 +58,23 @@ pub async fn create_project(
     }
 }
 
+async fn get_project_ctx(
+    state: &web::Data<AppState>,
+    project_id: i32,
+    user: &AuthenticatedUser<UserClaims>,
+    tx: Transactional<'_>,
+) -> Result<ProjectContext, Error> {
+    state
+        .system
+        .get_project(project_id, &user.claims.user_id(), tx)
+        .await
+        .map_err(Error::System)?
+        .ok_or(Error::BadRequest {
+            status: StatusCode::NOT_FOUND,
+            msg: "Project not found".to_string(),
+        })
+}
+
 #[utoipa::path(responses((status = 200, description = "Get project")))]
 #[get("/projects/{project_id}")]
 pub async fn get_project(
@@ -64,16 +83,9 @@ pub async fn get_project(
     user: AuthenticatedUser<UserClaims>,
 ) -> Result<impl Responder, Error> {
     let project_id = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
 
-    match state
-        .system
-        .get_project(project_id, &user.claims.user_id(), Transactional::None)
-        .await
-        .map_err(Error::System)?
-    {
-        None => Ok(HttpResponse::NotFound().finish()),
-        Some(ctx) => Ok(HttpResponse::Ok().json(ctx.project)),
-    }
+    Ok(HttpResponse::Ok().json(ctx.project))
 }
 
 #[utoipa::path(responses((status = 204, description = "Update project")))]
@@ -85,19 +97,10 @@ pub async fn update_project(
     user: AuthenticatedUser<UserClaims>,
 ) -> Result<impl Responder, Error> {
     let project_id = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
 
-    match state
-        .system
-        .get_project(project_id, &user.claims.user_id(), Transactional::None)
-        .await
-        .map_err(Error::System)?
-    {
-        None => Ok(HttpResponse::NotFound().finish()),
-        Some(ctx) => {
-            ctx.update(&json, Transactional::None).await?;
-            Ok(HttpResponse::NoContent().finish())
-        }
-    }
+    ctx.update(&json, Transactional::None).await?;
+    Ok(HttpResponse::NoContent().finish())
 }
 
 #[utoipa::path(responses((status = 204, description = "Delete project")))]
@@ -108,17 +111,29 @@ pub async fn delete_project(
     user: AuthenticatedUser<UserClaims>,
 ) -> Result<impl Responder, Error> {
     let project_id = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
 
-    match state
-        .system
-        .get_project(project_id, &user.claims.user_id(), Transactional::None)
+    ctx.delete(Transactional::None).await?;
+    Ok(HttpResponse::NoContent().finish())
+}
+
+#[utoipa::path(responses((status = 200, description = "List documents")))]
+#[get("/projects/{project_id}/documents")]
+pub async fn list_documents(
+    state: web::Data<AppState>,
+    path: web::Path<i32>,
+    paginated: web::Query<Paginated>,
+    user: AuthenticatedUser<UserClaims>,
+) -> Result<impl Responder, Error> {
+    let project_id = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
+
+    let results = ctx
+        .list_documents(paginated.into_inner(), Transactional::None)
         .await
-        .map_err(Error::System)?
-    {
-        None => Ok(HttpResponse::NotFound().finish()),
-        Some(ctx) => {
-            ctx.delete(Transactional::None).await?;
-            Ok(HttpResponse::NoContent().finish())
-        }
-    }
+        .map_err(Error::System)?;
+
+    Ok(HttpResponse::Ok()
+        .append_header(("x-total", results.num_items))
+        .json(results.results))
 }

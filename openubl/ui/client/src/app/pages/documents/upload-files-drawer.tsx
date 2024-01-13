@@ -28,6 +28,9 @@ import { useUpload } from "@app/hooks/useUpload";
 import { uploadFile } from "@app/api/rest";
 import { UblDocument } from "@app/api/models";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { UblDocumentsQueryKey } from "@app/queries/ubl-documents";
+
 export interface IUploadFilesDrawerProps
   extends Pick<IPageDrawerContentProps, "onCloseClick"> {
   projectId: string | number | null;
@@ -37,6 +40,8 @@ export const UploadFilesDrawer: React.FC<IUploadFilesDrawerProps> = ({
   projectId,
   onCloseClick,
 }) => {
+  const queryClient = useQueryClient();
+
   const { uploads, handleUpload, handleRemoveUpload } = useUpload<
     UblDocument,
     { message: string }
@@ -44,6 +49,11 @@ export const UploadFilesDrawer: React.FC<IUploadFilesDrawerProps> = ({
     parallel: true,
     uploadFn: (formData, config) => {
       return uploadFile(projectId!, formData, config);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [UblDocumentsQueryKey, projectId],
+      });
     },
   });
 
@@ -126,11 +136,11 @@ export const UploadFilesDrawer: React.FC<IUploadFilesDrawerProps> = ({
             statusToggleText={`${successFileCount} of ${uploads.size} files uploaded`}
             statusToggleIcon={statusIcon}
           >
-            {Array.from(uploads.entries()).map(([file, upload]) => (
+            {Array.from(uploads.entries()).map(([file, upload], index) => (
               <MultipleFileUploadStatusItem
                 fileIcon={<FileIcon />}
                 file={file}
-                key={file.name}
+                key={`${file.name}-${index}`}
                 onClearClick={() => removeFiles([file])}
                 progressValue={upload.progress}
                 progressVariant={
@@ -150,7 +160,7 @@ export const UploadFilesDrawer: React.FC<IUploadFilesDrawerProps> = ({
                   ) : upload.response ? (
                     <HelperText isLiveRegion>
                       <HelperTextItem variant="default">
-                        {`Document ${upload.response.data.serie_numero} uploaded`}
+                        {`Document ${upload.response.data.document_id} uploaded`}
                       </HelperTextItem>
                     </HelperText>
                   ) : undefined

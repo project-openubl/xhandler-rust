@@ -11,10 +11,10 @@ pub struct Model {
     pub id: i32,
     pub project_id: i32,
     pub file_id: String,
-    pub ruc: String,
-    pub serie_numero: String,
-    pub tipo_documento: String,
-    pub baja_tipo_documento_codigo: Option<String>,
+    pub document_type: String,
+    pub document_id: String,
+    pub supplier_id: String,
+    pub voided_document_code: Option<String>,
     pub sha256: String,
 }
 

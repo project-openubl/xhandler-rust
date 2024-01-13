@@ -2,6 +2,7 @@ use sea_orm::{
     ConnectionTrait, DatabaseConnection, DatabaseTransaction, DbBackend, DbErr, ExecResult,
     QueryResult, Statement,
 };
+use serde::Deserialize;
 
 #[derive(Copy, Clone)]
 pub enum Transactional<'db> {
@@ -59,12 +60,31 @@ impl ConnectionTrait for ConnectionOrTransaction<'_> {
     }
 }
 
+#[derive(Deserialize)]
 pub struct Paginated {
-    pub page_size: u64,
-    pub page: u64,
+    pub limit: u64,
+    pub offset: u64,
 }
 
-#[derive(Debug, Clone)]
+impl Default for Paginated {
+    fn default() -> Self {
+        Paginated {
+            offset: 0,
+            limit: 10,
+        }
+    }
+}
+
+impl Paginated {
+    pub fn page_number(&self) -> u64 {
+        self.offset * self.limit
+    }
+
+    pub fn page_size(&self) -> u64 {
+        self.limit
+    }
+}
+
 pub struct PaginatedResults<R> {
     pub results: Vec<R>,
     pub num_items: u64,

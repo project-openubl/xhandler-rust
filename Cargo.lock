@@ -3149,6 +3149,7 @@ dependencies = [
  "openubl-migration",
  "sea-orm",
  "sea-query",
+ "serde",
  "serde_json",
  "thiserror",
 ]
