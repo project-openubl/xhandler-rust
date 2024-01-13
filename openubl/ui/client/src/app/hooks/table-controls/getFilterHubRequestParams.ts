@@ -2,9 +2,9 @@ import { HubFilter, HubRequestParams } from "@app/api/models";
 import { objectKeys } from "@app/utils/utils";
 import {
   FilterCategory,
+  FilterState,
   getFilterLogicOperator,
-} from "@app/components/FilterToolbar";
-import { IFilterState } from "./useFilterState";
+} from "@mturley-latest/react-table-batteries";
 
 /**
  * Helper function for getFilterHubRequestParams
@@ -61,7 +61,7 @@ export interface IGetFilterHubRequestParamsArgs<
   /**
    * The "source of truth" state for the filter feature (returned by useFilterState)
    */
-  filterState?: IFilterState<TFilterCategoryKey>;
+  filter?: FilterState<TFilterCategoryKey>;
   /**
    * Definitions of the filters to be used (must include `getItemValue` functions for each category when performing filtering locally)
    */
@@ -78,7 +78,7 @@ export const getFilterHubRequestParams = <
   TItem,
   TFilterCategoryKey extends string = string,
 >({
-  filterState,
+  filter,
   filterCategories,
   implicitFilters,
 }: IGetFilterHubRequestParamsArgs<
@@ -87,15 +87,15 @@ export const getFilterHubRequestParams = <
 >): Partial<HubRequestParams> => {
   if (
     !implicitFilters?.length &&
-    (!filterState ||
+    (!filter ||
       !filterCategories ||
-      objectKeys(filterState.filterValues).length === 0)
+      objectKeys(filter.filterValues).length === 0)
   ) {
     return {};
   }
   const filters: HubFilter[] = [];
-  if (filterState) {
-    const { filterValues } = filterState;
+  if (filter) {
+    const { filterValues } = filter;
     objectKeys(filterValues).forEach((categoryKey) => {
       const filterCategory = filterCategories?.find(
         (category) => category.key === categoryKey
@@ -164,10 +164,10 @@ export const serializeFilterForHub = (filter: HubFilter): string => {
     typeof value === "string"
       ? wrapInQuotesAndEscape(value)
       : typeof value === "number"
-      ? `"${value}"`
-      : `(${value.list
-          .map(wrapInQuotesAndEscape)
-          .join(value.operator === "OR" ? "|" : ",")})`;
+        ? `"${value}"`
+        : `(${value.list
+            .map(wrapInQuotesAndEscape)
+            .join(value.operator === "OR" ? "|" : ",")})`;
   return `${field}${operator}${joinedValue}`;
 };
 

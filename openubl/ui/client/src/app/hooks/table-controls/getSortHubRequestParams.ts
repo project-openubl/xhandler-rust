@@ -1,5 +1,5 @@
 import { HubRequestParams } from "@app/api/models";
-import { ISortState } from "./useSortState";
+import { SortState } from "@mturley-latest/react-table-batteries";
 
 /**
  * Args for getSortHubRequestParams
@@ -11,7 +11,7 @@ export interface IGetSortHubRequestParamsArgs<
   /**
    * The "source of truth" state for the sort feature (returned by usePaginationState)
    */
-  sortState?: ISortState<TSortableColumnKey>;
+  sort?: SortState<TSortableColumnKey>;
   /**
    * A map of `columnKey` values (keys of the `columnNames` object passed to useTableControlState) to the field keys used by the hub API for sorting on those columns
    * - Keys and values in this object will usually be the same, but sometimes we need to present a hub field with a different name/key or have a column that is a composite of multiple hub fields.
@@ -25,7 +25,7 @@ export interface IGetSortHubRequestParamsArgs<
  * @see getHubRequestParams
  */
 export const getSortHubRequestParams = <TSortableColumnKey extends string>({
-  sortState,
+  sort: sortState,
   hubSortFieldKeys,
 }: IGetSortHubRequestParamsArgs<TSortableColumnKey>): Partial<HubRequestParams> => {
   if (!sortState?.activeSort || !hubSortFieldKeys) return {};

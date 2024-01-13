@@ -3,22 +3,20 @@
 
 import { HubRequestParams } from "@app/api/models";
 import {
-  IGetFilterHubRequestParamsArgs,
-  getFilterHubRequestParams,
   serializeFilterRequestParamsForHub,
-} from "./filtering";
+  getFilterHubRequestParams,
+  IGetFilterHubRequestParamsArgs,
+} from "./getFilterHubRequestParams";
 import {
-  IGetSortHubRequestParamsArgs,
-  getSortHubRequestParams,
   serializeSortRequestParamsForHub,
-} from "./sorting";
+  getSortHubRequestParams,
+  IGetSortHubRequestParamsArgs,
+} from "./getSortHubRequestParams";
 import {
-  IGetPaginationHubRequestParamsArgs,
-  getPaginationHubRequestParams,
   serializePaginationRequestParamsForHub,
-} from "./pagination";
-
-// TODO move this outside this directory as part of decoupling Konveyor-specific code from table-controls.
+  getPaginationHubRequestParams,
+  IGetPaginationHubRequestParamsArgs,
+} from "./getPaginationHubRequestParams";
 
 /**
  * Returns params required to fetch server-filtered/sorted/paginated data from the hub API.

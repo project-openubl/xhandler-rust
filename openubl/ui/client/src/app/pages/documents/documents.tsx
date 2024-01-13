@@ -46,6 +46,26 @@ export const Projects: React.FC = () => {
       isEnabled: true,
       filterCategories: [
         {
+          key: "type",
+          title: "Type",
+          type: FilterType.multiselect,
+          selectOptions: [
+            { key: "Invoice", value: "Invoice" },
+            { key: "CreditNote", value: "Credit note" },
+            { key: "DebitNote", value: "Debit note" },
+          ]
+        },
+        {
+          key: "supplier_id",
+          title: "Supplier",
+          type: FilterType.multiselect,
+          selectOptions: [
+            { key: "Invoice", value: "Invoice" },
+            { key: "CreditNote", value: "Credit note" },
+            { key: "DebitNote", value: "Debit note" },
+          ]
+        },
+        {
           key: "documentId",
           title: "ID",
           type: FilterType.search,
@@ -60,15 +80,12 @@ export const Projects: React.FC = () => {
     pagination: { isEnabled: true },
   });
 
-  const { filter, sort, pagination, cacheKey } = tableState;
-
+  const { filter, cacheKey } = tableState;
   const hubRequestParams = React.useMemo(() => {
-    let result = getHubRequestParams({
-      filterState: filter,
-      sortState: sort,
-      paginationState: pagination,
+    return getHubRequestParams({
+      ...tableState,
+      filterCategories: filter.filterCategories,
     });
-    return result;
   }, [cacheKey]);
 
   const { isFetching, result, fetchError } = useFetchUblDocuments(
@@ -116,7 +133,7 @@ export const Projects: React.FC = () => {
         >
           <Toolbar>
             <ToolbarContent>
-              <FilterToolbar id="document-toolbar" />
+              <FilterToolbar id="document-toolbar" {...{ showFiltersSideBySide: true }} />
               <ToolbarGroup variant="button-group">
                 <ToolbarItem>
                   <Button
