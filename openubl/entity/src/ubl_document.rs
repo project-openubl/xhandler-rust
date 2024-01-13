@@ -15,6 +15,7 @@ pub struct Model {
     pub document_id: String,
     pub supplier_id: String,
     pub voided_document_code: Option<String>,
+    pub digest_value: Option<String>,
     pub sha256: String,
 }
 
