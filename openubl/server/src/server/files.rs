@@ -88,6 +88,7 @@ pub async fn upload_file(
                 document_id: file_metadata.document_id,
                 document_type: file_metadata.document_type,
                 voided_document_code: file_metadata.voided_line_document_type_code,
+                digest_value: file_metadata.digest_value,
                 sha256: file_sha256,
             };
 

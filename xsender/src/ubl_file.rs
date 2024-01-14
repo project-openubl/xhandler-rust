@@ -7,7 +7,7 @@ use xml::name::OwnedName;
 use xml::reader::XmlEvent;
 use xml::EventReader;
 
-use crate::constants::{CAC_NS, CBC_NS, SAC_NS};
+use crate::constants::{CAC_NS, CBC_NS, DS, SAC_NS};
 
 pub struct UblFile {
     pub file_content: String,
@@ -30,6 +30,7 @@ pub struct UblMetadata {
     pub document_id: String,
     pub ruc: String,
     pub voided_line_document_type_code: Option<String>,
+    pub digest_value: Option<String>,
 }
 
 impl UblFile {
@@ -37,6 +38,7 @@ impl UblFile {
         let event_reader = EventReader::from_str(&self.file_content);
 
         enum Wrapper {
+            Signature,
             AccountingSupplierParty,
             VoidedDocumentsLine,
         }
@@ -48,6 +50,7 @@ impl UblFile {
         let mut document_id: Option<String> = None;
         let mut ruc: Option<String> = None;
         let mut voided_line_document_type_code: Option<String> = None;
+        let mut digest_value: Option<String> = None;
 
         fn set_wrapper(
             is_start: bool,
@@ -59,6 +62,13 @@ impl UblFile {
             let local_name = name.local_name.as_str();
 
             match (namespace, prefix, local_name) {
+                (Some(DS), Some("ds"), "Signature") => {
+                    current_wrapper = if is_start {
+                        Some(Wrapper::Signature)
+                    } else {
+                        None
+                    }
+                }
                 (Some(CAC_NS), Some("cac"), "AccountingSupplierParty") => {
                     current_wrapper = if is_start {
                         Some(Wrapper::AccountingSupplierParty)
@@ -98,6 +108,11 @@ impl UblFile {
                         (None, Some(CBC_NS), Some("cbc"), "ID") => {
                             if document_id.is_none() {
                                 document_id = Some(current_text.clone());
+                            }
+                        }
+                        (Some(Wrapper::Signature), Some(DS), Some("ds"), "DigestValue") => {
+                            if digest_value.is_none() {
+                                digest_value = Some(current_text.clone());
                             }
                         }
                         (
@@ -148,6 +163,7 @@ impl UblFile {
                 ruc: ruc.trim().to_string(),
                 voided_line_document_type_code: voided_line_document_type_code
                     .map(|e| e.trim().to_string()),
+                digest_value: digest_value.map(|e| e.trim().to_string()),
             }),
             _ => Err(anyhow!(
                 "document_type, document_id, and ruc were not found"
@@ -178,6 +194,10 @@ mod tests {
         assert_eq!(metadata1.document_id, "F001-1");
         assert_eq!(metadata1.ruc, "12345678912");
         assert_eq!(metadata1.voided_line_document_type_code, None);
+        assert_eq!(
+            metadata1.digest_value.as_deref(),
+            Some("dUdjbsfAegqmI/hBripxnCim3XM=")
+        );
 
         let file2 = UblFile::from_path(Path::new(&format!("{RESOURCES}/RA-20200328-1.xml")));
         let metadata2 = file2.unwrap().metadata().unwrap();
@@ -188,6 +208,10 @@ mod tests {
             metadata2.voided_line_document_type_code.as_deref(),
             Some("01")
         );
+        assert_eq!(
+            metadata2.digest_value.as_deref(),
+            Some("JGeIFq43Y1Ajg3sJsOCD8faxoIM=")
+        );
 
         let file3 = UblFile::from_path(Path::new(&format!("{RESOURCES}/150101-F001-11.xml")));
         let metadata3 = file3.unwrap().metadata().unwrap();
@@ -195,5 +219,9 @@ mod tests {
         assert_eq!(metadata3.document_id, "F001-11");
         assert_eq!(metadata3.ruc, "20602516025");
         assert_eq!(metadata3.voided_line_document_type_code, None);
+        assert_eq!(
+            metadata3.digest_value.as_deref(),
+            Some("kLZdGqZX/X/f+g9+BerSzCT1aSU=")
+        );
     }
 }

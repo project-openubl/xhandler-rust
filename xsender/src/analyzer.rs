@@ -136,6 +136,7 @@ mod tests {
             document_id: String::from("F001-1"),
             ruc: String::from("123456789012"),
             voided_line_document_type_code: None,
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -160,6 +161,7 @@ mod tests {
             document_id: String::from("F001-1"),
             ruc: String::from("123456789012"),
             voided_line_document_type_code: None,
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -188,6 +190,7 @@ mod tests {
             document_id: String::from("FC01-1"),
             ruc: String::from("123456789012"),
             voided_line_document_type_code: None,
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -216,6 +219,7 @@ mod tests {
             document_id: String::from("FD01-1"),
             ruc: String::from("123456789012"),
             voided_line_document_type_code: None,
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -246,6 +250,7 @@ mod tests {
             document_type: String::from(DocumentType::VOIDED_DOCUMENTS),
             document_id: String::from("RA-20200328-1"),
             ruc: String::from("123456789012"),
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -280,6 +285,7 @@ mod tests {
             document_type: String::from(DocumentType::VOIDED_DOCUMENTS),
             document_id: String::from("RA-20200328-1"),
             ruc: String::from("123456789012"),
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -314,6 +320,7 @@ mod tests {
             document_type: String::from(DocumentType::VOIDED_DOCUMENTS),
             document_id: String::from("RA-20200328-1"),
             ruc: String::from("123456789012"),
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -348,6 +355,7 @@ mod tests {
             document_type: String::from(DocumentType::VOIDED_DOCUMENTS),
             document_id: String::from("RA-20200328-1"),
             ruc: String::from("123456789012"),
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -381,6 +389,7 @@ mod tests {
             document_id: String::from("RA-20200328-1"),
             ruc: String::from("123456789012"),
             voided_line_document_type_code: Some(String::from(Catalog1::RETENCION)),
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -414,6 +423,7 @@ mod tests {
             document_id: String::from("RA-20200328-1"),
             ruc: String::from("123456789012"),
             voided_line_document_type_code: Some(String::from(Catalog1::GUIA_REMISION_REMITENTE)),
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -438,6 +448,7 @@ mod tests {
             document_id: String::from("S001-1"),
             ruc: String::from("123456789012"),
             voided_line_document_type_code: None,
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -473,6 +484,7 @@ mod tests {
             document_id: String::from("S001-1"),
             ruc: String::from("123456789012"),
             voided_line_document_type_code: None,
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -504,6 +516,7 @@ mod tests {
             document_id: String::from("R001-1"),
             ruc: String::from("123456789012"),
             voided_line_document_type_code: None,
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(
@@ -535,6 +548,7 @@ mod tests {
             document_id: String::from("D001-1"),
             ruc: String::from("123456789012"),
             voided_line_document_type_code: None,
+            digest_value: None,
         };
 
         let document_delivery = send_file_target(

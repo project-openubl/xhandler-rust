@@ -29,6 +29,7 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(ColumnDef::new(UblDocument::VoidedDocumentCode).string())
+                    .col(ColumnDef::new(UblDocument::DigestValue).string())
                     .col(ColumnDef::new(UblDocument::Sha256).string().not_null())
                     .foreign_key(
                         ForeignKey::create()
@@ -58,5 +59,6 @@ enum UblDocument {
     DocumentId,
     SupplierId,
     VoidedDocumentCode,
+    DigestValue,
     Sha256,
 }

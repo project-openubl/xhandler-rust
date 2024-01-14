@@ -146,6 +146,7 @@ impl ProjectContext {
             document_id: Set(model.document_id.clone()),
             supplier_id: Set(model.supplier_id.clone()),
             voided_document_code: Set(model.voided_document_code.clone()),
+            digest_value: Set(model.digest_value.clone()),
             sha256: Set(model.sha256.clone()),
             ..Default::default()
         };
@@ -175,4 +176,6 @@ impl ProjectContext {
             num_items: pagination.num_items().await?,
         })
     }
+
+    pub fn a() {}
 }

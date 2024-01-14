@@ -2,6 +2,8 @@
 
 pub mod prelude;
 
+pub mod keystore;
+pub mod keystore_config;
 pub mod project;
 pub mod ubl_document;
 pub mod user_role;
