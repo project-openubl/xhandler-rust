@@ -9,5 +9,5 @@ edition = "2021"
 openubl-server = { path = "../server" }
 
 clap = { version = "4.4.11", features = ["derive", "env"] }
-anyhow = "1.0.76"
+anyhow = "1.0.79"
 actix-web = "4.4.1"
