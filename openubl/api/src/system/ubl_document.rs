@@ -1,5 +1,6 @@
-use crate::system::InnerSystem;
 use openubl_entity as entity;
+
+use crate::system::InnerSystem;
 
 pub struct UblDocumentContext {
     pub system: InnerSystem,
@@ -14,3 +15,19 @@ impl From<(&InnerSystem, entity::ubl_document::Model)> for UblDocumentContext {
         }
     }
 }
+
+// impl UblDocumentContext {
+//     fn send_to_sunat(credentials: &entity::credentials::Model) {
+//         FileSender {
+//             urls: Urls {
+//                 invoice: credentials.url_invoice.clone(),
+//                 perception_retention: credentials.url_perception_retention.clone(),
+//                 despatch: credentials.url_despatch.clone(),
+//             },
+//             credentials: Credentials {
+//                 username: credentials.username_sol.clone(),
+//                 password: credentials.password_sol.clone(),
+//             },
+//         };
+//     }
+// }
