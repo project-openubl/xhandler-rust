@@ -7,8 +7,10 @@ use migration::{Migrator, MigratorTrait};
 
 use crate::db::{ConnectionOrTransaction, Transactional};
 
+pub mod credentials;
 pub mod error;
 pub mod project;
+pub mod ubl_document;
 
 pub type System = Arc<InnerSystem>;
 

@@ -92,11 +92,11 @@ pub async fn upload_file(
                 sha256: file_sha256,
             };
 
-            let document = ctx
+            let document_ctx = ctx
                 .create_document(&document_model, Transactional::None)
                 .await?;
 
-            Ok(HttpResponse::Created().json(document))
+            Ok(HttpResponse::Created().json(document_ctx.ubl_document))
         }
         Some(_) => Err(Error::BadRequest {
             status: StatusCode::CONFLICT,

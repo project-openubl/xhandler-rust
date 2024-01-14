@@ -2,6 +2,7 @@
 
 pub mod prelude;
 
+pub mod credentials;
 pub mod keystore;
 pub mod keystore_config;
 pub mod project;

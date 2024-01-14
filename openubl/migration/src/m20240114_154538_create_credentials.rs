@@ -10,27 +10,35 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Keystore::Table)
+                    .table(Credentials::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Keystore::Id)
+                        ColumnDef::new(Credentials::Id)
                             .integer()
                             .not_null()
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Keystore::Name).string().not_null())
-                    .col(ColumnDef::new(Keystore::ProjectId).integer().not_null())
+                    .col(ColumnDef::new(Credentials::Name).string().not_null())
+                    .col(ColumnDef::new(Credentials::UsernameSol).string().not_null())
+                    .col(ColumnDef::new(Credentials::PasswordSol).string().not_null())
+                    .col(ColumnDef::new(Credentials::ClientId).string().not_null())
+                    .col(
+                        ColumnDef::new(Credentials::ClientSecret)
+                            .string()
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(Credentials::ProjectId).integer().not_null())
                     .foreign_key(
                         ForeignKey::create()
-                            .from_col(Keystore::ProjectId)
+                            .from_col(Credentials::ProjectId)
                             .to(Project::Table, Project::Id)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
                     .index(
                         Index::create()
-                            .col(Keystore::Name)
-                            .col(Keystore::ProjectId)
+                            .col(Credentials::Name)
+                            .col(Credentials::ProjectId)
                             .unique(),
                     )
                     .to_owned(),
@@ -40,15 +48,19 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(Keystore::Table).to_owned())
+            .drop_table(Table::drop().table(Credentials::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum Keystore {
+enum Credentials {
     Table,
     Id,
     Name,
+    UsernameSol,
+    PasswordSol,
+    ClientId,
+    ClientSecret,
     ProjectId,
 }

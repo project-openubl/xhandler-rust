@@ -86,6 +86,6 @@ impl Paginated {
 }
 
 pub struct PaginatedResults<R> {
-    pub results: Vec<R>,
+    pub items: Vec<R>,
     pub num_items: u64,
 }

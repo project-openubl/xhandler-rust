@@ -99,15 +99,27 @@ pub struct AppState {
 }
 
 pub fn configure(config: &mut web::ServiceConfig) {
+    // Health
     config.service(health::liveness);
     config.service(health::readiness);
 
+    // Project
     config.service(project::list_projects);
     config.service(project::create_project);
     config.service(project::get_project);
     config.service(project::update_project);
     config.service(project::delete_project);
+
+    // Files
+    config.service(files::upload_file);
+
+    // Documents
     config.service(project::list_documents);
 
-    config.service(files::upload_file);
+    // Credentials
+    config.service(project::list_credentials);
+    config.service(project::create_credentials);
+    config.service(project::get_credentials);
+    config.service(project::update_credentials);
+    config.service(project::delete_credentials);
 }
