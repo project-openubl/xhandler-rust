@@ -11,7 +11,7 @@ minio = "0.1.0"
 serde = { version = "1.0.193", features = ["derive"] }
 anyhow = "1.0.78"
 uuid = { version = "1.6.1", features = ["v4"] }
-thiserror = "1.0.53"
+thiserror = "1.0.56"
 zip = "0.6.6"
 tempfile = "3.9.0"
 reqwest = "0.11.23"
