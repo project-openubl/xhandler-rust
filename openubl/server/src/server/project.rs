@@ -4,11 +4,30 @@ use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
 
 use openubl_api::db::{Paginated, Transactional};
 use openubl_api::system::project::ProjectContext;
-use openubl_entity::project;
+use openubl_entity as entity;
 use openubl_oidc::UserClaims;
 
 use crate::server::Error;
 use crate::AppState;
+
+async fn get_project_ctx(
+    state: &web::Data<AppState>,
+    project_id: i32,
+    user: &AuthenticatedUser<UserClaims>,
+    tx: Transactional<'_>,
+) -> Result<ProjectContext, Error> {
+    state
+        .system
+        .get_project(project_id, &user.claims.user_id(), tx)
+        .await
+        .map_err(Error::System)?
+        .ok_or(Error::BadRequest {
+            status: StatusCode::NOT_FOUND,
+            msg: "Project not found".to_string(),
+        })
+}
+
+// Projects
 
 #[utoipa::path(responses((status = 200, description = "List projects")), )]
 #[get("/projects")]
@@ -34,7 +53,7 @@ pub async fn list_projects(
 #[post("/projects")]
 pub async fn create_project(
     state: web::Data<AppState>,
-    json: web::Json<project::Model>,
+    json: web::Json<entity::project::Model>,
     user: AuthenticatedUser<UserClaims>,
 ) -> Result<impl Responder, Error> {
     let prev = state
@@ -58,23 +77,6 @@ pub async fn create_project(
     }
 }
 
-async fn get_project_ctx(
-    state: &web::Data<AppState>,
-    project_id: i32,
-    user: &AuthenticatedUser<UserClaims>,
-    tx: Transactional<'_>,
-) -> Result<ProjectContext, Error> {
-    state
-        .system
-        .get_project(project_id, &user.claims.user_id(), tx)
-        .await
-        .map_err(Error::System)?
-        .ok_or(Error::BadRequest {
-            status: StatusCode::NOT_FOUND,
-            msg: "Project not found".to_string(),
-        })
-}
-
 #[utoipa::path(responses((status = 200, description = "Get project")))]
 #[get("/projects/{project_id}")]
 pub async fn get_project(
@@ -93,7 +95,7 @@ pub async fn get_project(
 pub async fn update_project(
     state: web::Data<AppState>,
     path: web::Path<i32>,
-    json: web::Json<project::Model>,
+    json: web::Json<entity::project::Model>,
     user: AuthenticatedUser<UserClaims>,
 ) -> Result<impl Responder, Error> {
     let project_id = path.into_inner();
@@ -117,6 +119,8 @@ pub async fn delete_project(
     Ok(HttpResponse::NoContent().finish())
 }
 
+// Documents
+
 #[utoipa::path(responses((status = 200, description = "List documents")))]
 #[get("/projects/{project_id}/documents")]
 pub async fn list_documents(
@@ -128,12 +132,125 @@ pub async fn list_documents(
     let project_id = path.into_inner();
     let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
 
-    let results = ctx
+    let result = ctx
         .list_documents(paginated.into_inner(), Transactional::None)
         .await
         .map_err(Error::System)?;
 
     Ok(HttpResponse::Ok()
-        .append_header(("x-total", results.num_items))
-        .json(results.results))
+        .append_header(("x-total", result.num_items))
+        .json(
+            result
+                .items
+                .into_iter()
+                .map(|e| e.ubl_document)
+                .collect::<Vec<_>>(),
+        ))
+}
+
+// Credentials
+
+#[utoipa::path(responses((status = 200, description = "List credentials")))]
+#[get("/projects/{project_id}/credentials")]
+pub async fn list_credentials(
+    state: web::Data<AppState>,
+    path: web::Path<i32>,
+    user: AuthenticatedUser<UserClaims>,
+) -> Result<impl Responder, Error> {
+    let project_id = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
+
+    let result = ctx
+        .list_credentials(Transactional::None)
+        .await
+        .map_err(Error::System)?
+        .into_iter()
+        .map(|e| e.credentials)
+        .collect::<Vec<_>>();
+
+    Ok(HttpResponse::Ok().json(result))
+}
+
+#[utoipa::path(responses((status = 200, description = "Create credentials")))]
+#[post("/projects/{project_id}/credentials")]
+pub async fn create_credentials(
+    state: web::Data<AppState>,
+    path: web::Path<i32>,
+    json: web::Json<entity::credentials::Model>,
+    user: AuthenticatedUser<UserClaims>,
+) -> Result<impl Responder, Error> {
+    let project_id = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
+
+    let credentials_ctx = ctx
+        .create_credentials(&json, Transactional::None)
+        .await
+        .map_err(Error::System)?;
+    Ok(HttpResponse::Ok().json(credentials_ctx.credentials))
+}
+
+#[utoipa::path(responses((status = 200, description = "Get credentials")))]
+#[get("/projects/{project_id}/credentials/{credentials_id}")]
+pub async fn get_credentials(
+    state: web::Data<AppState>,
+    path: web::Path<(i32, i32)>,
+    user: AuthenticatedUser<UserClaims>,
+) -> Result<impl Responder, Error> {
+    let (project_id, credentials_id) = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
+
+    let credentials_ctx = ctx
+        .get_credential(credentials_id, Transactional::None)
+        .await?
+        .ok_or(Error::BadRequest {
+            status: StatusCode::NOT_FOUND,
+            msg: "Project not found".to_string(),
+        })?;
+
+    Ok(HttpResponse::Ok().json(credentials_ctx.credentials))
+}
+
+#[utoipa::path(responses((status = 204, description = "Update credentials")))]
+#[put("/projects/{project_id}/credentials/{credentials_id}")]
+pub async fn update_credentials(
+    state: web::Data<AppState>,
+    path: web::Path<(i32, i32)>,
+    json: web::Json<entity::credentials::Model>,
+    user: AuthenticatedUser<UserClaims>,
+) -> Result<impl Responder, Error> {
+    let (project_id, credentials_id) = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
+
+    let credentials_ctx = ctx
+        .get_credential(credentials_id, Transactional::None)
+        .await?
+        .ok_or(Error::BadRequest {
+            status: StatusCode::NOT_FOUND,
+            msg: "Project not found".to_string(),
+        })?;
+
+    credentials_ctx.update(&json, Transactional::None).await?;
+    Ok(HttpResponse::NoContent().finish())
+}
+
+#[utoipa::path(responses((status = 204, description = "Delete credentials")))]
+#[delete("/projects/{project_id}/credentials/{credentials_id}")]
+pub async fn delete_credentials(
+    state: web::Data<AppState>,
+    path: web::Path<(i32, i32)>,
+    user: AuthenticatedUser<UserClaims>,
+) -> Result<impl Responder, Error> {
+    let (project_id, credentials_id) = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
+
+    let credentials_ctx = ctx
+        .get_credential(credentials_id, Transactional::None)
+        .await?
+        .ok_or(Error::BadRequest {
+            status: StatusCode::NOT_FOUND,
+            msg: "Project not found".to_string(),
+        })?;
+
+    credentials_ctx.delete(Transactional::None).await?;
+    Ok(HttpResponse::NoContent().finish())
 }

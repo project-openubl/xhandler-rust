@@ -11,7 +11,9 @@ use sea_query::Order::Desc;
 use openubl_entity as entity;
 
 use crate::db::{Paginated, PaginatedResults, Transactional};
+use crate::system::credentials::CredentialsContext;
 use crate::system::error::Error;
+use crate::system::ubl_document::UblDocumentContext;
 use crate::system::InnerSystem;
 
 impl InnerSystem {
@@ -117,6 +119,8 @@ impl ProjectContext {
         Ok(())
     }
 
+    // Documents
+
     pub async fn get_document_by_ubl_params(
         &self,
         ruc: &str,
@@ -124,21 +128,22 @@ impl ProjectContext {
         document_id: &str,
         sha256: &str,
         tx: Transactional<'_>,
-    ) -> Result<Option<entity::ubl_document::Model>, Error> {
+    ) -> Result<Option<UblDocumentContext>, Error> {
         Ok(entity::ubl_document::Entity::find()
             .filter(entity::ubl_document::Column::DocumentType.eq(document_type))
             .filter(entity::ubl_document::Column::DocumentId.eq(document_id))
             .filter(entity::ubl_document::Column::SupplierId.eq(ruc))
             .filter(entity::ubl_document::Column::Sha256.eq(sha256))
             .one(&self.system.connection(tx))
-            .await?)
+            .await?
+            .map(|e| (&self.system, e).into()))
     }
 
     pub async fn create_document(
         &self,
         model: &entity::ubl_document::Model,
         tx: Transactional<'_>,
-    ) -> Result<entity::ubl_document::Model, Error> {
+    ) -> Result<UblDocumentContext, Error> {
         let entity = entity::ubl_document::ActiveModel {
             project_id: Set(self.project.id),
             file_id: Set(model.file_id.clone()),
@@ -152,15 +157,14 @@ impl ProjectContext {
         };
 
         let result = entity.insert(&self.system.connection(tx)).await?;
-
-        Ok(result)
+        Ok((&self.system, result).into())
     }
 
     pub async fn list_documents(
         &self,
         paginated: Paginated,
         tx: Transactional<'_>,
-    ) -> Result<PaginatedResults<entity::ubl_document::Model>, Error> {
+    ) -> Result<PaginatedResults<UblDocumentContext>, Error> {
         let connection = self.system.connection(tx);
         let pagination = entity::ubl_document::Entity::find()
             .join(
@@ -172,10 +176,68 @@ impl ProjectContext {
             .paginate(&connection, paginated.page_size());
 
         Ok(PaginatedResults {
-            results: pagination.fetch_page(paginated.page_number()).await?,
+            items: pagination
+                .fetch_page(paginated.page_number())
+                .await?
+                .drain(0..)
+                .map(|advisory| (&self.system, advisory).into())
+                .collect::<Vec<UblDocumentContext>>(),
             num_items: pagination.num_items().await?,
         })
     }
 
-    pub fn a() {}
+    // Credentials
+
+    pub async fn get_credential(
+        &self,
+        id: i32,
+        tx: Transactional<'_>,
+    ) -> Result<Option<CredentialsContext>, Error> {
+        Ok(entity::credentials::Entity::find()
+            .join(
+                JoinType::InnerJoin,
+                entity::credentials::Relation::Project.def(),
+            )
+            .filter(entity::credentials::Column::Id.eq(id))
+            .filter(entity::credentials::Column::ProjectId.eq(self.project.id))
+            .one(&self.system.connection(tx))
+            .await?
+            .map(|e| (&self.system, e).into()))
+    }
+
+    pub async fn create_credentials(
+        &self,
+        model: &entity::credentials::Model,
+        tx: Transactional<'_>,
+    ) -> Result<CredentialsContext, Error> {
+        let entity = entity::credentials::ActiveModel {
+            project_id: Set(self.project.id),
+            name: Set(model.name.clone()),
+            username_sol: Set(model.username_sol.clone()),
+            password_sol: Set(model.password_sol.clone()),
+            client_id: Set(model.client_id.clone()),
+            client_secret: Set(model.client_secret.clone()),
+            ..Default::default()
+        };
+
+        let result = entity.insert(&self.system.connection(tx)).await?;
+        Ok((&self.system, result).into())
+    }
+
+    pub async fn list_credentials(
+        &self,
+        tx: Transactional<'_>,
+    ) -> Result<Vec<CredentialsContext>, Error> {
+        Ok(entity::credentials::Entity::find()
+            .join(
+                JoinType::InnerJoin,
+                entity::credentials::Relation::Project.def(),
+            )
+            .filter(entity::credentials::Column::ProjectId.eq(self.project.id))
+            .all(&self.system.connection(tx))
+            .await?
+            .drain(0..)
+            .map(|credentials| (&self.system, credentials).into())
+            .collect())
+    }
 }

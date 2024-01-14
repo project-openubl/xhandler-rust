@@ -27,6 +27,12 @@ impl MigrationTrait for Migration {
                             .to(Project::Table, Project::Id)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
+                    .index(
+                        Index::create()
+                            .col(Keystore::Name)
+                            .col(Keystore::ProjectId)
+                            .unique(),
+                    )
                     .to_owned(),
             )
             .await

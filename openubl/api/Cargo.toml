@@ -10,6 +10,8 @@ openubl-entity = {path = "../entity"}
 openubl-common = {path = "../common"}
 openubl-migration = {path = "../migration"}
 
+xsender = {path = "../../xsender"}
+
 sea-orm = { version = "0.12", features = [ "sea-query-binder", "sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
 sea-query = "0.30.5"
 async-trait = "0.1.75"
