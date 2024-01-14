@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "xbuilder",
     "xsender",
+#    "xsigner",
     "openubl/migration",
     "openubl/entity",
     "openubl/common",
@@ -11,5 +12,6 @@ members = [
     "openubl/cli",
     "openubl/oidc",
     "openubl/storage",
-    "openubl/index",
+#    "openubl/index",
+    "openubl/signature",
 ]

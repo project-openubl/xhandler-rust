@@ -3244,6 +3244,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "openubl-signature"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "thiserror",
+]
+
+[[package]]
 name = "openubl-storage"
 version = "0.1.0"
 dependencies = [

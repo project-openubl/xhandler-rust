@@ -15,10 +15,18 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::keystore::Entity")]
+    Keystore,
     #[sea_orm(has_many = "super::ubl_document::Entity")]
     UblDocument,
     #[sea_orm(has_many = "super::user_role::Entity")]
     UserRole,
+}
+
+impl Related<super::keystore::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Keystore.def()
+    }
 }
 
 impl Related<super::ubl_document::Entity> for Entity {
