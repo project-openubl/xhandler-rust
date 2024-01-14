@@ -30,7 +30,11 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Credentials::UrlInvoice).string().not_null())
                     .col(ColumnDef::new(Credentials::UrlDespatch).string().not_null())
-                    .col(ColumnDef::new(Credentials::UrlPerceptionRetention).string().not_null())
+                    .col(
+                        ColumnDef::new(Credentials::UrlPerceptionRetention)
+                            .string()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(Credentials::ProjectId).integer().not_null())
                     .foreign_key(
                         ForeignKey::create()
