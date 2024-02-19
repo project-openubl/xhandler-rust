@@ -16,7 +16,7 @@ reqwest = "0.11.22"
 regex = "1.10.2"
 base64 = "0.21.5"
 thiserror = "1.0.53"
-anyhow = "1.0.78"
+anyhow = "1.0.80"
 sha2 = "0.10.8"
 
 [dev-dependencies]
