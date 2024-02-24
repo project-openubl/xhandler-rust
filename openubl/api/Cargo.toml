@@ -9,6 +9,7 @@ edition = "2021"
 openubl-entity = {path = "../entity"}
 openubl-common = {path = "../common"}
 openubl-migration = {path = "../migration"}
+openubl-storage = { path = "../storage" }
 
 xsender = {path = "../../xsender"}
 

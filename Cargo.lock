@@ -3147,6 +3147,7 @@ dependencies = [
  "openubl-common",
  "openubl-entity",
  "openubl-migration",
+ "openubl-storage",
  "sea-orm",
  "sea-query",
  "serde",
@@ -3177,7 +3178,6 @@ name = "openubl-entity"
 version = "0.1.0"
 dependencies = [
  "sea-orm",
- "serde",
 ]
 
 [[package]]

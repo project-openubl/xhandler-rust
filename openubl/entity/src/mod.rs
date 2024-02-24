@@ -6,5 +6,6 @@ pub mod credentials;
 pub mod keystore;
 pub mod keystore_config;
 pub mod project;
+pub mod send_rule;
 pub mod ubl_document;
 pub mod user_role;

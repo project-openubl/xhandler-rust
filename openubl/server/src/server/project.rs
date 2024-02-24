@@ -7,6 +7,7 @@ use openubl_api::system::project::ProjectContext;
 use openubl_entity as entity;
 use openubl_oidc::UserClaims;
 
+use crate::dto::{CredentialsDto, NewCredentialsDto, ProjectDto, UblDocumentDto};
 use crate::server::Error;
 use crate::AppState;
 
@@ -43,8 +44,8 @@ pub async fn list_projects(
 
     Ok(HttpResponse::Ok().json(
         projects_ctx
-            .iter()
-            .map(|ctx| &ctx.project)
+            .into_iter()
+            .map(|ctx| ProjectDto::from(ctx.project))
             .collect::<Vec<_>>(),
     ))
 }
@@ -53,7 +54,7 @@ pub async fn list_projects(
 #[post("/projects")]
 pub async fn create_project(
     state: web::Data<AppState>,
-    json: web::Json<entity::project::Model>,
+    json: web::Json<ProjectDto>,
     user: AuthenticatedUser<UserClaims>,
 ) -> Result<impl Responder, Error> {
     let prev = state
@@ -64,14 +65,15 @@ pub async fn create_project(
         .iter()
         .any(|ctx| ctx.project.name == json.name);
 
+    let model = entity::project::Model::from(json.into_inner());
     match prev {
         false => {
             let project_ctx = state
                 .system
-                .create_project(&json, &user.claims.user_id(), Transactional::None)
+                .create_project(&model, &user.claims.user_id(), Transactional::None)
                 .await
                 .map_err(Error::System)?;
-            Ok(HttpResponse::Ok().json(project_ctx.project))
+            Ok(HttpResponse::Ok().json(ProjectDto::from(project_ctx.project)))
         }
         true => Ok(HttpResponse::Conflict().body("Another project has the same name")),
     }
@@ -87,7 +89,7 @@ pub async fn get_project(
     let project_id = path.into_inner();
     let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
 
-    Ok(HttpResponse::Ok().json(ctx.project))
+    Ok(HttpResponse::Ok().json(ProjectDto::from(ctx.project)))
 }
 
 #[utoipa::path(responses((status = 204, description = "Update project")))]
@@ -95,13 +97,14 @@ pub async fn get_project(
 pub async fn update_project(
     state: web::Data<AppState>,
     path: web::Path<i32>,
-    json: web::Json<entity::project::Model>,
+    json: web::Json<ProjectDto>,
     user: AuthenticatedUser<UserClaims>,
 ) -> Result<impl Responder, Error> {
     let project_id = path.into_inner();
     let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
 
-    ctx.update(&json, Transactional::None).await?;
+    let model = entity::project::Model::from(json.into_inner());
+    ctx.update(&model, Transactional::None).await?;
     Ok(HttpResponse::NoContent().finish())
 }
 
@@ -143,10 +146,86 @@ pub async fn list_documents(
             result
                 .items
                 .into_iter()
-                .map(|e| e.ubl_document)
+                .map(|e| UblDocumentDto::from(e.ubl_document))
                 .collect::<Vec<_>>(),
         ))
 }
+
+#[utoipa::path(responses((status = 200, description = "Get document's file")))]
+#[get("/projects/{project_id}/documents/{document_id}/file")]
+pub async fn get_document_file(
+    state: web::Data<AppState>,
+    path: web::Path<(i32, i32)>,
+    user: AuthenticatedUser<UserClaims>,
+) -> Result<impl Responder, Error> {
+    let (project_id, document_id) = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
+
+    let document_ctx = ctx
+        .get_document(document_id, Transactional::None)
+        .await?
+        .ok_or(Error::BadRequest {
+            status: StatusCode::NOT_FOUND,
+            msg: "Document not found".to_string(),
+        })?;
+
+    let xml_file = state
+        .storage
+        .download_ubl_xml(&document_ctx.ubl_document.file_id)
+        .await?;
+
+    Ok(HttpResponse::Ok()
+        .append_header(("Content-Type", "application/xml"))
+        .body(xml_file))
+}
+
+// #[utoipa::path(responses((status = 200, description = "Get document's file")))]
+// #[post("/projects/{project_id}/documents/{document_id}/send")]
+// pub async fn send_document(
+//     state: web::Data<AppState>,
+//     path: web::Path<(i32, i32)>,
+//     user: AuthenticatedUser<UserClaims>,
+// ) -> Result<impl Responder, Error> {
+//     let (project_id, document_id) = path.into_inner();
+//     let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
+//
+//     let document_ctx = ctx
+//         .get_document(document_id, Transactional::None)
+//         .await?
+//         .ok_or(Error::BadRequest {
+//             status: StatusCode::NOT_FOUND,
+//             msg: "Document not found".to_string(),
+//         })?;
+//
+//     let xml_file = state
+//         .storage
+//         .download_ubl_xml(&document_ctx.ubl_document.file_id)
+//         .await?;
+//
+//     let credentials_ctx = ctx
+//         .get_credential_for_supplier_id("", Transactional::None)
+//         .await?
+//         .ok_or(Error::BadRequest {
+//             status: StatusCode::BAD_REQUEST,
+//             msg: "There is no credentials that match the supplier id of the document".to_string(),
+//         })?;
+//
+//     // let a = FileSender {
+//     //     urls: Urls {
+//     //         invoice: "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService".to_string(),
+//     //         perception_retention:"https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService".to_string(),
+//     //         despatch: "https://api-cpe.sunat.gob.pe/v1/contribuyente/gem".to_string(),
+//     //     },
+//     //     credentials: Credentials {
+//     //         username: "12345678959MODDATOS".to_string(),
+//     //         password: "MODDATOS".to_string(),
+//     //     },
+//     // };
+//
+//     Ok(HttpResponse::Ok()
+//         .append_header(("Content-Type", "application/xml"))
+//         .body(xml_file))
+// }
 
 // Credentials
 
@@ -165,7 +244,7 @@ pub async fn list_credentials(
         .await
         .map_err(Error::System)?
         .into_iter()
-        .map(|e| e.credentials)
+        .map(|e| CredentialsDto::from(e.credentials))
         .collect::<Vec<_>>();
 
     Ok(HttpResponse::Ok().json(result))
@@ -176,17 +255,20 @@ pub async fn list_credentials(
 pub async fn create_credentials(
     state: web::Data<AppState>,
     path: web::Path<i32>,
-    json: web::Json<entity::credentials::Model>,
+    json: web::Json<NewCredentialsDto>,
     user: AuthenticatedUser<UserClaims>,
 ) -> Result<impl Responder, Error> {
     let project_id = path.into_inner();
     let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
 
+    let supplier_ids = json.supplier_ids_applied_to.clone();
+    let model = entity::credentials::Model::from(json.into_inner());
+
     let credentials_ctx = ctx
-        .create_credentials(&json, Transactional::None)
+        .create_credentials(&model, &supplier_ids, Transactional::None)
         .await
         .map_err(Error::System)?;
-    Ok(HttpResponse::Ok().json(credentials_ctx.credentials))
+    Ok(HttpResponse::Ok().json(CredentialsDto::from(credentials_ctx.credentials)))
 }
 
 #[utoipa::path(responses((status = 200, description = "Get credentials")))]
@@ -207,7 +289,7 @@ pub async fn get_credentials(
             msg: "Project not found".to_string(),
         })?;
 
-    Ok(HttpResponse::Ok().json(credentials_ctx.credentials))
+    Ok(HttpResponse::Ok().json(CredentialsDto::from(credentials_ctx.credentials)))
 }
 
 #[utoipa::path(responses((status = 204, description = "Update credentials")))]
@@ -215,7 +297,7 @@ pub async fn get_credentials(
 pub async fn update_credentials(
     state: web::Data<AppState>,
     path: web::Path<(i32, i32)>,
-    json: web::Json<entity::credentials::Model>,
+    json: web::Json<NewCredentialsDto>,
     user: AuthenticatedUser<UserClaims>,
 ) -> Result<impl Responder, Error> {
     let (project_id, credentials_id) = path.into_inner();
@@ -229,7 +311,8 @@ pub async fn update_credentials(
             msg: "Project not found".to_string(),
         })?;
 
-    credentials_ctx.update(&json, Transactional::None).await?;
+    let model = entity::credentials::Model::from(json.into_inner());
+    credentials_ctx.update(&model, Transactional::None).await?;
     Ok(HttpResponse::NoContent().finish())
 }
 

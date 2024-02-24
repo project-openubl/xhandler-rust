@@ -3,23 +3,25 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "credentials")]
+#[sea_orm(table_name = "send_rule")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub name: String,
-    pub username_sol: String,
-    pub password_sol: String,
-    pub client_id: String,
-    pub client_secret: String,
-    pub url_invoice: String,
-    pub url_despatch: String,
-    pub url_perception_retention: String,
+    pub supplier_id: String,
+    pub credentials_id: i32,
     pub project_id: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(
+        belongs_to = "super::credentials::Entity",
+        from = "Column::CredentialsId",
+        to = "super::credentials::Column::Id",
+        on_update = "NoAction",
+        on_delete = "Cascade"
+    )]
+    Credentials,
     #[sea_orm(
         belongs_to = "super::project::Entity",
         from = "Column::ProjectId",
@@ -28,19 +30,17 @@ pub enum Relation {
         on_delete = "Cascade"
     )]
     Project,
-    #[sea_orm(has_many = "super::send_rule::Entity")]
-    SendRule,
+}
+
+impl Related<super::credentials::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Credentials.def()
+    }
 }
 
 impl Related<super::project::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Project.def()
-    }
-}
-
-impl Related<super::send_rule::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::SendRule.def()
     }
 }
 

@@ -1,6 +1,7 @@
+use anyhow::anyhow;
 use std::fs;
-use std::fs::{rename, File};
-use std::io::{Read, Write};
+use std::fs::File;
+use std::io::{Cursor, Read, Write};
 use std::path::Path;
 use std::str::FromStr;
 
@@ -13,14 +14,13 @@ use aws_sdk_s3::operation::get_object::GetObjectError;
 use aws_sdk_s3::operation::put_object::PutObjectError;
 use aws_sdk_s3::primitives::{ByteStream, ByteStreamError};
 use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
-use minio::s3::args::UploadObjectArgs;
+use minio::s3::args::{GetObjectArgs, PutObjectArgs};
 use minio::s3::client::Client as MinioClient;
 use minio::s3::creds::StaticProvider;
 use minio::s3::http::BaseUrl;
-use uuid::Uuid;
 use zip::result::{ZipError, ZipResult};
 use zip::write::FileOptions;
-use zip::ZipWriter;
+use zip::{ZipArchive, ZipWriter};
 
 use crate::config::Storage;
 
@@ -147,7 +147,7 @@ impl StorageSystem {
                 let credentials_provider = aws_sdk_s3::config::Credentials::new(
                     &config.access_key,
                     &config.secret_key,
-                    Some("atestsessiontoken".to_string()),
+                    Some("test_session_token".to_string()),
                     None,
                     "",
                 );
@@ -169,6 +169,7 @@ impl StorageSystem {
         }
     }
 
+    /// Each file will be zipped before being uploaded to the Storage
     pub async fn upload_ubl_xml(
         &self,
         project_id: i32,
@@ -178,11 +179,15 @@ impl StorageSystem {
         file_sha246: &str,
         file_full_path: &str,
     ) -> Result<String, StorageSystemErr> {
+        // Create zip
         let file_name_inside_zip = format!("{ruc}-{}.xml", document_id.to_uppercase());
-        let zip_path = zip_file(file_full_path, &file_name_inside_zip)?;
 
-        let short_sha256: String = file_sha246.chars().take(7).collect();
-        let zip_name = format!("{}_{short_sha256}.zip", document_id.to_uppercase());
+        let zip_file = create_zip_from_path(file_full_path, &file_name_inside_zip)?;
+        let zip_file_name = format!(
+            "{}_{}.zip",
+            document_id.to_uppercase(),
+            file_sha246.chars().take(7).collect::<String>()
+        );
 
         match self {
             StorageSystem::Local(directories) => {
@@ -190,26 +195,32 @@ impl StorageSystem {
                     .join(project_id.to_string())
                     .join(ruc)
                     .join(document_type)
-                    .join(&zip_name);
+                    .join(&zip_file_name);
 
-                rename(zip_path, object_name)?;
-                Ok(zip_name.clone())
+                File::create(object_name)?.write_all(&zip_file)?;
+                Ok(zip_file_name.clone())
             }
             StorageSystem::Minio(bucket, client) => {
-                let object_name = format!("{project_id}/{ruc}/{document_type}/{zip_name}");
+                let object_name = format!("{project_id}/{ruc}/{document_type}/{zip_file_name}");
 
-                let object = &UploadObjectArgs::new(&bucket.name, &object_name, &zip_path)?;
-                let response = client.upload_object(object).await?;
+                let object_stream_size = zip_file.len();
+                let mut object_stream = Cursor::new(zip_file);
 
-                // Clear temp files
-                fs::remove_file(file_full_path)?;
-                fs::remove_file(zip_path)?;
+                let mut object = PutObjectArgs::new(
+                    &bucket.name,
+                    &object_name,
+                    &mut object_stream,
+                    Some(object_stream_size),
+                    None,
+                )?;
 
-                Ok(response.object_name)
+                client.put_object(&mut object).await?;
+
+                Ok(object_name)
             }
             StorageSystem::S3(buckets, client) => {
-                let object_name = format!("{project_id}/{ruc}/{document_type}/{zip_name}");
-                let object = ByteStream::from_path(&zip_path).await?;
+                let object_name = format!("{project_id}/{ruc}/{document_type}/{zip_file_name}");
+                let object = ByteStream::from(zip_file);
 
                 client
                     .put_object()
@@ -219,46 +230,77 @@ impl StorageSystem {
                     .send()
                     .await?;
 
-                // Clear temp files
-                fs::remove_file(file_full_path)?;
-                fs::remove_file(zip_path)?;
-
                 Ok(object_name)
             }
         }
     }
+
+    /// Each file will be unzipped after retrieved from storage
+    pub async fn download_ubl_xml(&self, file_id: &str) -> Result<String, StorageSystemErr> {
+        let zip_file = match self {
+            StorageSystem::Local(_) => fs::read(file_id)?,
+            StorageSystem::Minio(bucket, client) => {
+                let object = GetObjectArgs::new(&bucket.name, file_id)?;
+
+                client.get_object(&object).await?.bytes().await?.to_vec()
+            }
+            StorageSystem::S3(buckets, client) => client
+                .get_object()
+                .bucket(&buckets.name)
+                .key(file_id)
+                .send()
+                .await?
+                .body
+                .try_next()
+                .await?
+                .ok_or(StorageSystemErr::Any(anyhow!("Could not find response")))?
+                .to_vec(),
+        };
+
+        let xml_file = extract_first_file_from_zip(&zip_file)?.ok_or(StorageSystemErr::Any(
+            anyhow!("Could not extract first file from zip"),
+        ))?;
+
+        Ok(xml_file)
+    }
 }
 
-pub fn zip_file(
-    full_path_of_file_to_be_zipped: &str,
-    file_name_to_be_used_in_zip: &str,
-) -> ZipResult<String> {
-    let zip_filename = format!("{}.zip", Uuid::new_v4());
+pub fn create_zip_from_path(path: &str, file_name_inside_zip: &str) -> ZipResult<Vec<u8>> {
+    let file_content = fs::read_to_string(path)?;
+    create_zip_from_str(&file_content, file_name_inside_zip)
+}
 
-    let mut file = File::open(full_path_of_file_to_be_zipped)?;
-    let file_path = Path::new(full_path_of_file_to_be_zipped);
-    let file_directory = file_path.parent().ok_or(ZipError::InvalidArchive(
-        "Could not find the parent folder of given file",
-    ))?;
+pub fn create_zip_from_str(content: &str, file_name_inside_zip: &str) -> ZipResult<Vec<u8>> {
+    let mut data = Vec::new();
 
-    let zip_path = file_directory.join(zip_filename);
-    let zip_file = File::create(zip_path.as_path())?;
-    let mut zip = ZipWriter::new(zip_file);
+    {
+        let buff = Cursor::new(&mut data);
+        let mut zip = ZipWriter::new(buff);
 
-    let file_options = FileOptions::default()
-        .compression_method(zip::CompressionMethod::Bzip2)
-        .unix_permissions(0o755);
+        let file_options = FileOptions::default();
+        zip.start_file(file_name_inside_zip, file_options)?;
+        zip.write_all(content.as_bytes())?;
+        zip.finish()?;
+    }
 
-    zip.start_file(file_name_to_be_used_in_zip, file_options)?;
+    Ok(data)
+}
 
-    let mut buff = Vec::new();
-    file.read_to_end(&mut buff)?;
-    zip.write_all(&buff)?;
+pub fn extract_first_file_from_zip(zip_buf: &Vec<u8>) -> Result<Option<String>, std::io::Error> {
+    let reader = Cursor::new(zip_buf);
+    let mut archive = ZipArchive::new(reader)?;
 
-    zip.finish()?;
+    let mut result = None;
 
-    let result = zip_path.to_str().ok_or(ZipError::InvalidArchive(
-        "Could not determine with zip filename",
-    ))?;
-    Ok(result.to_string())
+    for index in 0..archive.len() {
+        let mut entry = archive.by_index(index)?;
+        if entry.is_file() {
+            let mut buffer = String::new();
+            entry.read_to_string(&mut buffer)?;
+            result = Some(buffer);
+            break;
+        }
+    }
+
+    Ok(result)
 }
