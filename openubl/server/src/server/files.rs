@@ -10,6 +10,7 @@ use openubl_entity::ubl_document;
 use openubl_oidc::UserClaims;
 use xsender::prelude::{FromPath, UblFile};
 
+use crate::dto::UblDocumentDto;
 use crate::server::Error;
 use crate::AppState;
 
@@ -96,7 +97,7 @@ pub async fn upload_file(
                 .create_document(&document_model, Transactional::None)
                 .await?;
 
-            Ok(HttpResponse::Created().json(document_ctx.ubl_document))
+            Ok(HttpResponse::Created().json(UblDocumentDto::from(document_ctx.ubl_document)))
         }
         Some(_) => Err(Error::BadRequest {
             status: StatusCode::CONFLICT,

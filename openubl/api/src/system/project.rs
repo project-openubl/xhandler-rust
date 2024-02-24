@@ -120,6 +120,22 @@ impl ProjectContext {
     }
 
     // Documents
+    pub async fn get_document(
+        &self,
+        id: i32,
+        tx: Transactional<'_>,
+    ) -> Result<Option<UblDocumentContext>, Error> {
+        Ok(entity::ubl_document::Entity::find()
+            .join(
+                JoinType::InnerJoin,
+                entity::credentials::Relation::Project.def(),
+            )
+            .filter(entity::credentials::Column::Id.eq(id))
+            .filter(entity::credentials::Column::ProjectId.eq(self.project.id))
+            .one(&self.system.connection(tx))
+            .await?
+            .map(|e| (&self.system, e).into()))
+    }
 
     pub async fn get_document_by_ubl_params(
         &self,
@@ -205,9 +221,31 @@ impl ProjectContext {
             .map(|e| (&self.system, e).into()))
     }
 
+    pub async fn get_credential_for_supplier_id(
+        &self,
+        supplier_id: &str,
+        tx: Transactional<'_>,
+    ) -> Result<Option<CredentialsContext>, Error> {
+        Ok(entity::credentials::Entity::find()
+            .join(
+                JoinType::InnerJoin,
+                entity::credentials::Relation::Project.def(),
+            )
+            .join(
+                JoinType::InnerJoin,
+                entity::credentials::Relation::SendRule.def(),
+            )
+            .filter(entity::send_rule::Column::SupplierId.eq(supplier_id))
+            .filter(entity::credentials::Column::ProjectId.eq(self.project.id))
+            .one(&self.system.connection(tx))
+            .await?
+            .map(|e| (&self.system, e).into()))
+    }
+
     pub async fn create_credentials(
         &self,
         model: &entity::credentials::Model,
+        supplier_ids: &[String],
         tx: Transactional<'_>,
     ) -> Result<CredentialsContext, Error> {
         let entity = entity::credentials::ActiveModel {
@@ -221,6 +259,20 @@ impl ProjectContext {
         };
 
         let result = entity.insert(&self.system.connection(tx)).await?;
+
+        let rules = supplier_ids
+            .iter()
+            .map(|supplier_id| entity::send_rule::ActiveModel {
+                supplier_id: Set(supplier_id.clone()),
+                credentials_id: Set(result.id),
+                project_id: Set(self.project.id),
+                ..Default::default()
+            })
+            .collect::<Vec<_>>();
+        let _rules = entity::send_rule::Entity::insert_many(rules)
+            .exec(&self.system.connection(tx))
+            .await?;
+
         Ok((&self.system, result).into())
     }
 

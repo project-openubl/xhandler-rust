@@ -2,10 +2,13 @@ use std::process::{ExitCode, Termination};
 
 use clap::Parser;
 
+mod sender;
+
 #[allow(clippy::large_enum_variant)]
 #[derive(clap::Subcommand, Debug)]
 pub enum Command {
-    Server(openubl_server::Run),
+    Server(openubl_server::ServerRun),
+    // Sender(SenderRun),
 }
 
 #[derive(clap::Parser, Debug)]
@@ -41,6 +44,7 @@ impl Cli {
     async fn run_command(self) -> anyhow::Result<ExitCode> {
         match self.command {
             Command::Server(run) => run.run().await,
+            // Command::Sender(run) => run.run().await
         }
     }
 }

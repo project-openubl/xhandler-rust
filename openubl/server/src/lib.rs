@@ -14,11 +14,12 @@ use openubl_storage::StorageSystem;
 
 use crate::server::{files, health, project};
 
+mod dto;
 pub mod server;
 
 /// Run the API server
 #[derive(clap::Args, Debug)]
-pub struct Run {
+pub struct ServerRun {
     #[arg(short, long, env, default_value = "[::1]:8080")]
     pub bind_addr: String,
 
@@ -37,7 +38,7 @@ pub struct Run {
     // pub search_engine: openubl_index::config::SearchEngine,
 }
 
-impl Run {
+impl ServerRun {
     pub async fn run(self) -> anyhow::Result<ExitCode> {
         env_logger::init();
 
