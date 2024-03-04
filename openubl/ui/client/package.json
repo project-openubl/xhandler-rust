@@ -28,7 +28,7 @@
     "@patternfly/react-charts": "^7.1.0",
     "@patternfly/react-code-editor": "^5.1.0",
     "@patternfly/react-core": "^5.1.0",
-    "@patternfly/react-table": "^5.1.0",
+    "@patternfly/react-table": "^5.2.1",
     "@patternfly/react-tokens": "^5.1.0",
     "@react-keycloak/web": "^3.4.0",
     "@tanstack/react-query": "^5.17.9",
