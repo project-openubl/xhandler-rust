@@ -26,7 +26,7 @@
     "@mturley-latest/react-table-batteries": "^1.0.4",
     "@patternfly/patternfly": "^5.0.2",
     "@patternfly/react-charts": "^7.1.0",
-    "@patternfly/react-code-editor": "^5.1.0",
+    "@patternfly/react-code-editor": "^5.2.1",
     "@patternfly/react-core": "^5.1.0",
     "@patternfly/react-table": "^5.1.0",
     "@patternfly/react-tokens": "^5.1.0",
