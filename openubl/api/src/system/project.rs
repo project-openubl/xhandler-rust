@@ -251,6 +251,7 @@ impl ProjectContext {
         let entity = entity::credentials::ActiveModel {
             project_id: Set(self.project.id),
             name: Set(model.name.clone()),
+            description: Set(model.description.clone()),
             username_sol: Set(model.username_sol.clone()),
             password_sol: Set(model.password_sol.clone()),
             client_id: Set(model.client_id.clone()),

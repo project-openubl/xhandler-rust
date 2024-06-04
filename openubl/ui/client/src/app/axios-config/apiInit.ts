@@ -1,9 +1,11 @@
 import axios from "axios";
+import { getUser } from "@app/oidc";
 
-export const initInterceptors = (access_token: string) => {
+export const initInterceptors = () => {
   axios.interceptors.request.use(
     (config) => {
-      const token = access_token;
+      const user = getUser();
+      const token = user?.access_token;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

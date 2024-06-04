@@ -41,10 +41,8 @@ const AuthEnabledOidcProvider: React.FC<IOidcProviderProps> = ({
   }, [auth.isAuthenticated, auth.isLoading]);
 
   React.useEffect(() => {
-    if (auth.user?.access_token) {
-      initInterceptors(auth.user.access_token);
-    }
-  }, [auth.user?.access_token]);
+    initInterceptors();
+  }, []);
 
   if (auth.isAuthenticated) {
     return <Suspense fallback={<AppPlaceholder />}>{children}</Suspense>;

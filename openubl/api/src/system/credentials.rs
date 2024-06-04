@@ -30,6 +30,7 @@ impl CredentialsContext {
         let mut entity: entity::credentials::ActiveModel = self.credentials.clone().into();
 
         entity.name = Set(model.name.clone());
+        entity.description = Set(model.description.clone());
         entity.username_sol = Set(model.username_sol.clone());
         entity.password_sol = Set(model.password_sol.clone());
         entity.client_id = Set(model.client_id.clone());
