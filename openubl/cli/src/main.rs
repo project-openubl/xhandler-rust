@@ -5,8 +5,7 @@ use std::time::Duration;
 
 use clap::Parser;
 use postgresql_embedded::PostgreSQL;
-use tokio::task::{LocalSet, spawn_local};
-
+use tokio::task::{spawn_local, LocalSet};
 
 #[allow(clippy::large_enum_variant)]
 #[derive(clap::Subcommand, Debug)]

@@ -3,8 +3,8 @@ use std::process::ExitCode;
 use std::sync::Arc;
 
 use actix_multipart::form::tempfile::TempFileConfig;
-use actix_web::{App, HttpServer, web};
 use actix_web::middleware::Logger;
+use actix_web::{web, App, HttpServer};
 
 use openubl_api::system::InnerSystem;
 use openubl_common::config::Database;
@@ -29,7 +29,6 @@ pub struct ServerRun {
 
     // #[command(flatten)]
     // pub oidc: openubl_oidc::config::Oidc,
-
     #[command(subcommand)]
     pub storage: openubl_storage::config::Storage,
 }

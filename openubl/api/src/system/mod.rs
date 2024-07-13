@@ -1,7 +1,7 @@
 use std::fmt::{Debug, Display, Formatter};
 use std::sync::Arc;
 
-use sea_orm::{ConnectionTrait, ConnectOptions, Database, DatabaseConnection, DbErr, Statement};
+use sea_orm::{ConnectOptions, ConnectionTrait, Database, DatabaseConnection, DbErr, Statement};
 
 use migration::{Migrator, MigratorTrait};
 
