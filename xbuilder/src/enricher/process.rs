@@ -11,17 +11,17 @@ trait ProcessCommon {
     fn process_common(&mut self);
 }
 
-trait ProcessInvoice {
-    fn process_invoice(&mut self);
-}
-
-trait ProcessCreditNote {
-    fn process_creditnote(&mut self);
-}
-
-trait ProcessDebitNote {
-    fn process_debitnote(&mut self);
-}
+// trait ProcessInvoice {
+//     fn process_invoice(&mut self);
+// }
+//
+// trait ProcessCreditNote {
+//     fn process_creditnote(&mut self);
+// }
+//
+// trait ProcessDebitNote {
+//     fn process_debitnote(&mut self);
+// }
 
 impl Process for Invoice {
     fn process(&mut self) {

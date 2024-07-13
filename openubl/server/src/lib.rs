@@ -2,11 +2,9 @@ use std::fmt::Debug;
 use std::process::ExitCode;
 use std::sync::Arc;
 
-use actix_4_jwt_auth::biscuit::{Validation, ValidationOptions};
-use actix_4_jwt_auth::{Oidc, OidcBiscuitValidator, OidcConfig};
 use actix_multipart::form::tempfile::TempFileConfig;
+use actix_web::{App, HttpServer, web};
 use actix_web::middleware::Logger;
-use actix_web::{web, App, HttpServer};
 
 use openubl_api::system::InnerSystem;
 use openubl_common::config::Database;
@@ -29,13 +27,11 @@ pub struct ServerRun {
     #[arg(long, env)]
     pub bootstrap: bool,
 
-    #[command(flatten)]
-    pub oidc: openubl_oidc::config::Oidc,
+    // #[command(flatten)]
+    // pub oidc: openubl_oidc::config::Oidc,
 
     #[command(subcommand)]
     pub storage: openubl_storage::config::Storage,
-    // #[command(flatten)]
-    // pub search_engine: openubl_index::config::SearchEngine,
 }
 
 impl ServerRun {
@@ -43,15 +39,15 @@ impl ServerRun {
         env_logger::init();
 
         // Oidc
-        let oidc = Oidc::new(OidcConfig::Issuer(self.oidc.auth_server_url.clone().into()))
-            .await
-            .unwrap();
-        let oidc_validator = OidcBiscuitValidator {
-            options: ValidationOptions {
-                issuer: Validation::Validate(self.oidc.auth_server_url.clone()),
-                ..ValidationOptions::default()
-            },
-        };
+        // let oidc = Oidc::new(OidcConfig::Issuer(self.oidc.auth_server_url.clone().into()))
+        //     .await
+        //     .unwrap();
+        // let oidc_validator = OidcBiscuitValidator {
+        //     options: ValidationOptions {
+        //         issuer: Validation::Validate(self.oidc.auth_server_url.clone()),
+        //         ..ValidationOptions::default()
+        //     },
+        // };
 
         // Database
         let system = match self.bootstrap {
@@ -80,8 +76,8 @@ impl ServerRun {
             App::new()
                 .app_data(web::Data::from(app_state.clone()))
                 .wrap(Logger::default())
-                .wrap(oidc_validator.clone())
-                .app_data(oidc.clone())
+                // .wrap(oidc_validator.clone())
+                // .app_data(oidc.clone())
                 .app_data(TempFileConfig::default())
                 .configure(configure)
         })
