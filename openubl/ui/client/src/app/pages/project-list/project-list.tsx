@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { AxiosError } from "axios";
 
 import {
@@ -34,8 +33,7 @@ import { ConfirmDialog } from "@app/components/ConfirmDialog";
 import { NotificationsContext } from "@app/components/NotificationsContext";
 import { getAxiosErrorMessage } from "@app/utils/utils";
 
-export const Projects: React.FC = () => {
-  const { t } = useTranslation();
+export const ProjectList: React.FC = () => {
   const { pushNotification } = useContext(NotificationsContext);
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
@@ -51,7 +49,7 @@ export const Projects: React.FC = () => {
 
   const onDeleteOrgSuccess = () => {
     pushNotification({
-      title: t("terms.projectDeleted"),
+      title: "Proyecto eliminado",
       variant: "success",
     });
   };
@@ -71,13 +69,13 @@ export const Projects: React.FC = () => {
   );
 
   const tableControls = useClientTableBatteries({
-    persistTo: "urlParams",
+    persistTo: "state",
     idProperty: "id",
     items: projects,
     isLoading: isFetching,
     columnNames: {
-      name: t("terms.name"),
-      description: t("terms.description"),
+      name: "Nombre",
+      description: "Descripción",
     },
     hasActionsColumn: true,
     filter: {
@@ -85,12 +83,9 @@ export const Projects: React.FC = () => {
       filterCategories: [
         {
           key: "q",
-          title: t("terms.name"),
+          title: "Nombre",
           type: FilterType.search,
-          placeholderText:
-            t("actions.filterBy", {
-              what: t("terms.name").toLowerCase(),
-            }) + "...",
+          placeholderText: "Filtrar por nombre...",
           getItemValue: (item) => item.name || "",
         },
       ],
@@ -136,7 +131,7 @@ export const Projects: React.FC = () => {
     <>
       <PageSection variant={PageSectionVariants.light}>
         <TextContent>
-          <Text component="h1">{t("terms.projects")}</Text>
+          <Text component="h1">Proyectos</Text>
         </TextContent>
       </PageSection>
       <PageSection>
@@ -157,7 +152,7 @@ export const Projects: React.FC = () => {
                     variant={ButtonVariant.primary}
                     onClick={() => setCreateUpdateModalState("create")}
                   >
-                    {t("actions.createNew")}
+                    Crear Proyecto
                   </Button>
                 </ToolbarItem>
               </ToolbarGroup>
@@ -189,7 +184,7 @@ export const Projects: React.FC = () => {
                   return (
                     <Tr key={item.name} item={item} rowIndex={rowIndex}>
                       <Td width={15} columnKey="name">
-                        <NavLink to={`/projects/${item.id}/documents`}>
+                        <NavLink to={`/projects/${item.id}`}>
                           {item.name}
                         </NavLink>
                       </Td>
@@ -204,11 +199,11 @@ export const Projects: React.FC = () => {
                         <ActionsColumn
                           items={[
                             {
-                              title: t("actions.edit"),
+                              title: "Editar",
                               onClick: () => setCreateUpdateModalState(item),
                             },
                             {
-                              title: t("actions.delete"),
+                              title: "Eliminar",
                               onClick: () => deleteRow(item),
                             },
                           ]}
@@ -230,9 +225,7 @@ export const Projects: React.FC = () => {
 
       <Modal
         id="create-edit-project-modal"
-        title={t(projectToUpdate ? "dialog.title.update" : "dialog.title.new", {
-          what: t("terms.project").toLowerCase(),
-        })}
+        title={projectToUpdate ? "Actualizar proyecto" : "Nuevo proyecto"}
         variant={ModalVariant.medium}
         isOpen={isCreateUpdateModalOpen}
         onClose={closeCreateUpdateModal}
@@ -245,16 +238,13 @@ export const Projects: React.FC = () => {
 
       {isConfirmDialogOpen && (
         <ConfirmDialog
-          title={t("dialog.title.deleteWithName", {
-            what: t("terms.project").toLowerCase(),
-            name: projectToDelete?.name,
-          })}
+          title="Eliminar proyecto"
           isOpen={true}
           titleIconVariant={"warning"}
-          message={t("dialog.message.delete")}
+          message="¿Estas seguro de querer eliminar el proyecto?"
           confirmBtnVariant={ButtonVariant.danger}
-          confirmBtnLabel={t("actions.delete")}
-          cancelBtnLabel={t("actions.cancel")}
+          confirmBtnLabel="Eliminar"
+          cancelBtnLabel="Cancelar"
           onCancel={() => setIsConfirmDialogOpen(false)}
           onClose={() => setIsConfirmDialogOpen(false)}
           onConfirm={() => {

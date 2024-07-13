@@ -1,9 +1,8 @@
 import React, { useContext } from "react";
-import { AxiosError } from "axios";
-import { object, string } from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useTranslation } from "react-i18next";
+import { AxiosError } from "axios";
+import { object, string } from "yup";
 
 import {
   ActionGroup,
@@ -13,13 +12,12 @@ import {
 } from "@patternfly/react-core";
 
 import { New, Project } from "@app/api/models";
-import { duplicateFieldCheck } from "@app/utils/utils";
 import {
   useCreateProjectMutation,
-  useFetchProjectById,
   useFetchProjects,
   useUpdateProjectMutation,
 } from "@app/queries/projects";
+import { duplicateFieldCheck } from "@app/utils/utils";
 
 import {
   HookFormPFTextArea,
@@ -41,7 +39,6 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
   project,
   onClose,
 }) => {
-  const { t } = useTranslation();
   const { pushNotification } = useContext(NotificationsContext);
 
   const { projects } = useFetchProjects();
@@ -78,17 +75,13 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
 
   const onCreateProjectSuccess = (_: Project) =>
     pushNotification({
-      title: t("toastr.success.created", {
-        type: t("terms.project"),
-      }),
+      title: "Proyecto creado",
       variant: "success",
     });
 
   const onCreateProjectError = (error: AxiosError) => {
     pushNotification({
-      title: t("toastr.fail.create", {
-        type: t("terms.project").toLowerCase(),
-      }),
+      title: "Error al crear el proyecto",
       variant: "danger",
     });
   };
@@ -100,17 +93,13 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
 
   const onUpdateProjectSuccess = (_: Project) =>
     pushNotification({
-      title: t("toastr.success.saved", {
-        type: t("terms.project"),
-      }),
+      title: "Proyecto actualizado",
       variant: "success",
     });
 
   const onUpdateProjectError = (error: AxiosError) => {
     pushNotification({
-      title: t("toastr.fail.save", {
-        type: t("terms.project").toLowerCase(),
-      }),
+      title: "Error al actualizar el proyecto",
       variant: "danger",
     });
   };
@@ -138,14 +127,14 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
       <HookFormPFTextInput
         control={control}
         name="name"
-        label={t("terms.name")}
+        label="Nombre"
         fieldId="name"
         isRequired
       />
       <HookFormPFTextArea
         control={control}
         name="description"
-        label={t("terms.description")}
+        label="Descripción"
         fieldId="description"
         resizeOrientation="vertical"
       />
@@ -158,7 +147,7 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
           variant={ButtonVariant.primary}
           isDisabled={!isValid || isSubmitting || isValidating || !isDirty}
         >
-          {!project ? t("terms.create") : t("terms.save")}
+          {!project ? "Crear" : "Guardar"}
         </Button>
         <Button
           type="button"
@@ -168,7 +157,7 @@ export const ProjectForm: React.FC<IProjectFormProps> = ({
           isDisabled={isSubmitting || isValidating}
           onClick={onClose}
         >
-          {t("terms.cancel")}
+          Cancelar
         </Button>
       </ActionGroup>
     </Form>

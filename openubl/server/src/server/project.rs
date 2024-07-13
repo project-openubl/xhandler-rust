@@ -122,111 +122,6 @@ pub async fn delete_project(
     Ok(HttpResponse::NoContent().finish())
 }
 
-// Documents
-
-#[utoipa::path(responses((status = 200, description = "List documents")))]
-#[get("/projects/{project_id}/documents")]
-pub async fn list_documents(
-    state: web::Data<AppState>,
-    path: web::Path<i32>,
-    paginated: web::Query<Paginated>,
-    user: AuthenticatedUser<UserClaims>,
-) -> Result<impl Responder, Error> {
-    let project_id = path.into_inner();
-    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
-
-    let result = ctx
-        .list_documents(paginated.into_inner(), Transactional::None)
-        .await
-        .map_err(Error::System)?;
-
-    Ok(HttpResponse::Ok()
-        .append_header(("x-total", result.num_items))
-        .json(
-            result
-                .items
-                .into_iter()
-                .map(|e| UblDocumentDto::from(e.ubl_document))
-                .collect::<Vec<_>>(),
-        ))
-}
-
-#[utoipa::path(responses((status = 200, description = "Get document's file")))]
-#[get("/projects/{project_id}/documents/{document_id}/file")]
-pub async fn get_document_file(
-    state: web::Data<AppState>,
-    path: web::Path<(i32, i32)>,
-    user: AuthenticatedUser<UserClaims>,
-) -> Result<impl Responder, Error> {
-    let (project_id, document_id) = path.into_inner();
-    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
-
-    let document_ctx = ctx
-        .get_document(document_id, Transactional::None)
-        .await?
-        .ok_or(Error::BadRequest {
-            status: StatusCode::NOT_FOUND,
-            msg: "Document not found".to_string(),
-        })?;
-
-    let xml_file = state
-        .storage
-        .download_ubl_xml(&document_ctx.ubl_document.file_id)
-        .await?;
-
-    Ok(HttpResponse::Ok()
-        .append_header(("Content-Type", "application/xml"))
-        .body(xml_file))
-}
-
-// #[utoipa::path(responses((status = 200, description = "Get document's file")))]
-// #[post("/projects/{project_id}/documents/{document_id}/send")]
-// pub async fn send_document(
-//     state: web::Data<AppState>,
-//     path: web::Path<(i32, i32)>,
-//     user: AuthenticatedUser<UserClaims>,
-// ) -> Result<impl Responder, Error> {
-//     let (project_id, document_id) = path.into_inner();
-//     let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
-//
-//     let document_ctx = ctx
-//         .get_document(document_id, Transactional::None)
-//         .await?
-//         .ok_or(Error::BadRequest {
-//             status: StatusCode::NOT_FOUND,
-//             msg: "Document not found".to_string(),
-//         })?;
-//
-//     let xml_file = state
-//         .storage
-//         .download_ubl_xml(&document_ctx.ubl_document.file_id)
-//         .await?;
-//
-//     let credentials_ctx = ctx
-//         .get_credential_for_supplier_id("", Transactional::None)
-//         .await?
-//         .ok_or(Error::BadRequest {
-//             status: StatusCode::BAD_REQUEST,
-//             msg: "There is no credentials that match the supplier id of the document".to_string(),
-//         })?;
-//
-//     // let a = FileSender {
-//     //     urls: Urls {
-//     //         invoice: "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService".to_string(),
-//     //         perception_retention:"https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService".to_string(),
-//     //         despatch: "https://api-cpe.sunat.gob.pe/v1/contribuyente/gem".to_string(),
-//     //     },
-//     //     credentials: Credentials {
-//     //         username: "12345678959MODDATOS".to_string(),
-//     //         password: "MODDATOS".to_string(),
-//     //     },
-//     // };
-//
-//     Ok(HttpResponse::Ok()
-//         .append_header(("Content-Type", "application/xml"))
-//         .body(xml_file))
-// }
-
 // Credentials
 
 #[utoipa::path(responses((status = 200, description = "List credentials")))]
@@ -337,3 +232,108 @@ pub async fn delete_credentials(
     credentials_ctx.delete(Transactional::None).await?;
     Ok(HttpResponse::NoContent().finish())
 }
+
+// Documents
+
+#[utoipa::path(responses((status = 200, description = "List documents")))]
+#[get("/projects/{project_id}/documents")]
+pub async fn list_documents(
+    state: web::Data<AppState>,
+    path: web::Path<i32>,
+    paginated: web::Query<Paginated>,
+    user: AuthenticatedUser<UserClaims>,
+) -> Result<impl Responder, Error> {
+    let project_id = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
+
+    let result = ctx
+        .list_documents(paginated.into_inner(), Transactional::None)
+        .await
+        .map_err(Error::System)?;
+
+    Ok(HttpResponse::Ok()
+        .append_header(("x-total", result.num_items))
+        .json(
+            result
+                .items
+                .into_iter()
+                .map(|e| UblDocumentDto::from(e.ubl_document))
+                .collect::<Vec<_>>(),
+        ))
+}
+
+#[utoipa::path(responses((status = 200, description = "Get document's file")))]
+#[get("/projects/{project_id}/documents/{document_id}/file")]
+pub async fn get_document_file(
+    state: web::Data<AppState>,
+    path: web::Path<(i32, i32)>,
+    user: AuthenticatedUser<UserClaims>,
+) -> Result<impl Responder, Error> {
+    let (project_id, document_id) = path.into_inner();
+    let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
+
+    let document_ctx = ctx
+        .get_document(document_id, Transactional::None)
+        .await?
+        .ok_or(Error::BadRequest {
+            status: StatusCode::NOT_FOUND,
+            msg: "Document not found".to_string(),
+        })?;
+
+    let xml_file = state
+        .storage
+        .download_ubl_xml(&document_ctx.ubl_document.file_id)
+        .await?;
+
+    Ok(HttpResponse::Ok()
+        .append_header(("Content-Type", "application/xml"))
+        .body(xml_file))
+}
+
+// #[utoipa::path(responses((status = 200, description = "Get document's file")))]
+// #[post("/projects/{project_id}/documents/{document_id}/send")]
+// pub async fn send_document(
+//     state: web::Data<AppState>,
+//     path: web::Path<(i32, i32)>,
+//     user: AuthenticatedUser<UserClaims>,
+// ) -> Result<impl Responder, Error> {
+//     let (project_id, document_id) = path.into_inner();
+//     let ctx = get_project_ctx(&state, project_id, &user, Transactional::None).await?;
+//
+//     let document_ctx = ctx
+//         .get_document(document_id, Transactional::None)
+//         .await?
+//         .ok_or(Error::BadRequest {
+//             status: StatusCode::NOT_FOUND,
+//             msg: "Document not found".to_string(),
+//         })?;
+//
+//     let xml_file = state
+//         .storage
+//         .download_ubl_xml(&document_ctx.ubl_document.file_id)
+//         .await?;
+//
+//     let credentials_ctx = ctx
+//         .get_credential_for_supplier_id("", Transactional::None)
+//         .await?
+//         .ok_or(Error::BadRequest {
+//             status: StatusCode::BAD_REQUEST,
+//             msg: "There is no credentials that match the supplier id of the document".to_string(),
+//         })?;
+//
+//     // let a = FileSender {
+//     //     urls: Urls {
+//     //         invoice: "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService".to_string(),
+//     //         perception_retention:"https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService".to_string(),
+//     //         despatch: "https://api-cpe.sunat.gob.pe/v1/contribuyente/gem".to_string(),
+//     //     },
+//     //     credentials: Credentials {
+//     //         username: "12345678959MODDATOS".to_string(),
+//     //         password: "MODDATOS".to_string(),
+//     //     },
+//     // };
+//
+//     Ok(HttpResponse::Ok()
+//         .append_header(("Content-Type", "application/xml"))
+//         .body(xml_file))
+// }

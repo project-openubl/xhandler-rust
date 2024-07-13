@@ -1,7 +1,7 @@
 use std::fmt::{Debug, Display, Formatter};
 use std::sync::Arc;
 
-use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbErr, Statement};
+use sea_orm::{ConnectOptions, ConnectionTrait, Database, DatabaseConnection, DbErr, Statement};
 
 use migration::{Migrator, MigratorTrait};
 
@@ -74,7 +74,11 @@ impl InnerSystem {
         let port = port.into().unwrap_or(5432);
         let url = format!("postgres://{username}:{password}@{host}:{port}/{db_name}");
         println!("connect to {}", url);
-        let db = Database::connect(url).await?;
+
+        let mut opt = ConnectOptions::new(url);
+        opt.min_connections(16);
+
+        let db = Database::connect(opt).await?;
 
         Migrator::refresh(&db).await?;
 

@@ -5,6 +5,7 @@ import {
   New,
   Project,
   UblDocument,
+  Credentials,
 } from "./models";
 import { serializeRequestParamsForHub } from "@app/hooks/table-controls";
 
@@ -66,3 +67,34 @@ export const getUblDocuments = (
     params
   );
 };
+
+export const getCredentials = (projectId: number | string) => {
+  return axios
+    .get<Credentials[]>(`${PROJECTS}/${projectId}/credentials`)
+    .then((response) => response.data);
+};
+
+export const getCredentialsById = (
+  projectId: number | string,
+  id: number | string
+) => {
+  return axios
+    .get<Credentials>(`${PROJECTS}/${projectId}/credentials/${id}`)
+    .then((response) => response.data);
+};
+
+export const createCredentials = (
+  projectId: number | string,
+  obj: New<Credentials>
+) => axios.post<Credentials>(`${PROJECTS}/${projectId}/credentials`, obj);
+
+export const updateCredentials = (
+  projectId: number | string,
+  obj: Credentials
+) =>
+  axios.put<Credentials>(`${PROJECTS}/${projectId}/credentials/${obj.id}`, obj);
+
+export const deleteCredentials = (
+  projectId: number | string,
+  id: number | string
+) => axios.delete<void>(`${PROJECTS}/${projectId}/credentials/${id}`);

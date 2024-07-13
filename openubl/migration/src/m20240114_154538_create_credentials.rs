@@ -20,6 +20,7 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Credentials::Name).string().not_null())
+                    .col(ColumnDef::new(Credentials::Description).string().null())
                     .col(ColumnDef::new(Credentials::UsernameSol).string().not_null())
                     .col(ColumnDef::new(Credentials::PasswordSol).string().not_null())
                     .col(ColumnDef::new(Credentials::ClientId).string().not_null())
@@ -65,6 +66,7 @@ pub enum Credentials {
     Table,
     Id,
     Name,
+    Description,
     UrlInvoice,
     UrlDespatch,
     UrlPerceptionRetention,

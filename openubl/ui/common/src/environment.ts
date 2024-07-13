@@ -55,7 +55,7 @@ export const buildOpenublEnv = ({
 
   OIDC_SERVER_URL,
   AUTH_REQUIRED = "false",
-  OIDC_CLIENT_ID: OIDC_CLIENT_ID = "openubl-ui",
+  OIDC_CLIENT_ID = "openubl-ui",
 
   PROFILE = "openubl",
   UI_INGRESS_PROXY_BODY_SIZE = "500m",

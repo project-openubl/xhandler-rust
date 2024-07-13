@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct ProjectDto {
-    pub id: i32,
+    pub id: Option<i32>,
     pub name: String,
     pub description: Option<String>,
 }
@@ -11,7 +11,7 @@ pub struct ProjectDto {
 impl From<entity::project::Model> for ProjectDto {
     fn from(value: entity::project::Model) -> Self {
         Self {
-            id: value.id,
+            id: Some(value.id),
             name: value.name.clone(),
             description: value.description.clone(),
         }
@@ -21,7 +21,7 @@ impl From<entity::project::Model> for ProjectDto {
 impl From<ProjectDto> for entity::project::Model {
     fn from(value: ProjectDto) -> Self {
         Self {
-            id: value.id,
+            id: value.id.unwrap_or(-1),
             name: value.name,
             description: value.description,
         }
@@ -53,6 +53,7 @@ impl From<entity::ubl_document::Model> for UblDocumentDto {
 pub struct CredentialsDto {
     pub id: i32,
     pub name: String,
+    pub description: Option<String>,
     pub username_sol: String,
     pub client_id: String,
     pub url_invoice: String,
@@ -63,6 +64,7 @@ pub struct CredentialsDto {
 #[derive(Serialize, Deserialize)]
 pub struct NewCredentialsDto {
     pub name: String,
+    pub description: Option<String>,
     pub username_sol: String,
     pub password_sol: String,
     pub client_id: String,
@@ -78,6 +80,7 @@ impl From<entity::credentials::Model> for CredentialsDto {
         Self {
             id: value.id,
             name: value.name.clone(),
+            description: value.description.clone(),
             username_sol: value.username_sol.clone(),
             client_id: value.client_id.clone(),
             url_invoice: value.url_invoice.clone(),
@@ -92,6 +95,7 @@ impl From<NewCredentialsDto> for entity::credentials::Model {
         Self {
             id: 0,
             name: value.name.clone(),
+            description: value.description.clone(),
             username_sol: value.username_sol.clone(),
             password_sol: value.password_sol,
             client_id: value.client_id.clone(),

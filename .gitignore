@@ -58,3 +58,5 @@ target
 # Added by cargo
 
 /target
+
+.openubl/
