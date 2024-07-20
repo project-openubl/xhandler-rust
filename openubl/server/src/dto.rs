@@ -37,7 +37,7 @@ pub struct CredentialsDto {
 #[derive(Serialize, Deserialize)]
 pub struct NewCredentialsDto {
     pub name: String,
-    pub description: Option<String>,    
+    pub description: Option<String>,
     pub username_sol: String,
     pub password_sol: String,
     pub client_id: String,
