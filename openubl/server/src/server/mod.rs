@@ -8,9 +8,9 @@ use actix_web::{HttpResponse, ResponseError};
 use openubl_api::system;
 use openubl_storage::StorageSystemErr;
 
-pub mod files;
+pub mod credentials;
+pub mod document;
 pub mod health;
-pub mod project;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

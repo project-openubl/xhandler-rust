@@ -2,34 +2,7 @@ use openubl_entity as entity;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct ProjectDto {
-    pub id: Option<i32>,
-    pub name: String,
-    pub description: Option<String>,
-}
-
-impl From<entity::project::Model> for ProjectDto {
-    fn from(value: entity::project::Model) -> Self {
-        Self {
-            id: Some(value.id),
-            name: value.name.clone(),
-            description: value.description.clone(),
-        }
-    }
-}
-
-impl From<ProjectDto> for entity::project::Model {
-    fn from(value: ProjectDto) -> Self {
-        Self {
-            id: value.id.unwrap_or(-1),
-            name: value.name,
-            description: value.description,
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct UblDocumentDto {
+pub struct DocumentDto {
     pub id: i32,
     pub supplier_id: String,
     pub document_id: String,
@@ -37,13 +10,13 @@ pub struct UblDocumentDto {
     pub voided_document_code: Option<String>,
 }
 
-impl From<entity::ubl_document::Model> for UblDocumentDto {
-    fn from(value: entity::ubl_document::Model) -> Self {
+impl From<entity::document::Model> for DocumentDto {
+    fn from(value: entity::document::Model) -> Self {
         Self {
             id: value.id,
             supplier_id: value.supplier_id.clone(),
-            document_id: value.document_id.clone(),
-            document_type: value.document_type.clone(),
+            document_id: value.identifier.clone(),
+            document_type: value.r#type.clone(),
             voided_document_code: value.voided_document_code.clone(),
         }
     }
@@ -103,7 +76,6 @@ impl From<NewCredentialsDto> for entity::credentials::Model {
             url_invoice: value.url_invoice.clone(),
             url_despatch: value.url_despatch.clone(),
             url_perception_retention: value.url_perception_retention.clone(),
-            project_id: 0,
         }
     }
 }

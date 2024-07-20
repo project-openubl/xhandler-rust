@@ -8,32 +8,17 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub name: String,
-    pub project_id: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(has_many = "super::keystore_config::Entity")]
     KeystoreConfig,
-    #[sea_orm(
-        belongs_to = "super::project::Entity",
-        from = "Column::ProjectId",
-        to = "super::project::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Cascade"
-    )]
-    Project,
 }
 
 impl Related<super::keystore_config::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::KeystoreConfig.def()
-    }
-}
-
-impl Related<super::project::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Project.def()
     }
 }
 

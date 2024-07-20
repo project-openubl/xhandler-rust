@@ -7,32 +7,16 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub project_id: i32,
     pub file_id: String,
     pub supplier_id: String,
-    pub document_id: String,
-    pub document_type: String,
+    pub identifier: String,
+    pub r#type: String,
     pub voided_document_code: Option<String>,
     pub digest_value: Option<String>,
     pub sha256: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::project::Entity",
-        from = "Column::ProjectId",
-        to = "super::project::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Cascade"
-    )]
-    Project,
-}
-
-impl Related<super::project::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Project.def()
-    }
-}
+pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

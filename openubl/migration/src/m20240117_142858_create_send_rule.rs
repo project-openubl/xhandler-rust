@@ -1,4 +1,3 @@
-use crate::m20231223_071007_create_project::Project;
 use crate::m20240114_154538_create_credentials::Credentials;
 use sea_orm_migration::prelude::*;
 
@@ -22,24 +21,11 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(SendRule::SupplierId).string().not_null())
                     .col(ColumnDef::new(SendRule::CredentialsId).integer().not_null())
-                    .col(ColumnDef::new(SendRule::ProjectId).integer().not_null())
                     .foreign_key(
                         ForeignKey::create()
                             .from_col(SendRule::CredentialsId)
                             .to(Credentials::Table, Credentials::Id)
                             .on_delete(ForeignKeyAction::Cascade),
-                    )
-                    .foreign_key(
-                        ForeignKey::create()
-                            .from_col(SendRule::ProjectId)
-                            .to(Project::Table, Project::Id)
-                            .on_delete(ForeignKeyAction::Cascade),
-                    )
-                    .index(
-                        Index::create()
-                            .col(SendRule::SupplierId)
-                            .col(SendRule::ProjectId)
-                            .unique(),
                     )
                     .to_owned(),
             )
@@ -59,5 +45,4 @@ enum SendRule {
     Id,
     SupplierId,
     CredentialsId,
-    ProjectId,
 }

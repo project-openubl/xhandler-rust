@@ -172,7 +172,6 @@ impl StorageSystem {
     /// Each file will be zipped before being uploaded to the Storage
     pub async fn upload_ubl_xml(
         &self,
-        project_id: i32,
         ruc: &str,
         document_type: &str,
         document_id: &str,
@@ -192,7 +191,6 @@ impl StorageSystem {
         match self {
             StorageSystem::Local(directories) => {
                 let object_name = Path::new(&directories.path)
-                    .join(project_id.to_string())
                     .join(ruc)
                     .join(document_type)
                     .join(&zip_file_name);
@@ -201,7 +199,7 @@ impl StorageSystem {
                 Ok(zip_file_name.clone())
             }
             StorageSystem::Minio(bucket, client) => {
-                let object_name = format!("{project_id}/{ruc}/{document_type}/{zip_file_name}");
+                let object_name = format!("{ruc}/{document_type}/{zip_file_name}");
 
                 let object_stream_size = zip_file.len();
                 let mut object_stream = Cursor::new(zip_file);
@@ -219,7 +217,7 @@ impl StorageSystem {
                 Ok(object_name)
             }
             StorageSystem::S3(buckets, client) => {
-                let object_name = format!("{project_id}/{ruc}/{document_type}/{zip_file_name}");
+                let object_name = format!("{ruc}/{document_type}/{zip_file_name}");
                 let object = ByteStream::from(zip_file);
 
                 client

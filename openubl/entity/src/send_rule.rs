@@ -9,7 +9,6 @@ pub struct Model {
     pub id: i32,
     pub supplier_id: String,
     pub credentials_id: i32,
-    pub project_id: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -22,25 +21,11 @@ pub enum Relation {
         on_delete = "Cascade"
     )]
     Credentials,
-    #[sea_orm(
-        belongs_to = "super::project::Entity",
-        from = "Column::ProjectId",
-        to = "super::project::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Cascade"
-    )]
-    Project,
 }
 
 impl Related<super::credentials::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Credentials.def()
-    }
-}
-
-impl Related<super::project::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Project.def()
     }
 }
 

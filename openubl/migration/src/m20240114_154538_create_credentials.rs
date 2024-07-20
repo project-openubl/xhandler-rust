@@ -1,4 +1,3 @@
-use crate::m20231223_071007_create_project::Project;
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
@@ -36,19 +35,6 @@ impl MigrationTrait for Migration {
                             .string()
                             .not_null(),
                     )
-                    .col(ColumnDef::new(Credentials::ProjectId).integer().not_null())
-                    .foreign_key(
-                        ForeignKey::create()
-                            .from_col(Credentials::ProjectId)
-                            .to(Project::Table, Project::Id)
-                            .on_delete(ForeignKeyAction::Cascade),
-                    )
-                    .index(
-                        Index::create()
-                            .col(Credentials::Name)
-                            .col(Credentials::ProjectId)
-                            .unique(),
-                    )
                     .to_owned(),
             )
             .await
@@ -74,5 +60,4 @@ pub enum Credentials {
     PasswordSol,
     ClientId,
     ClientSecret,
-    ProjectId,
 }

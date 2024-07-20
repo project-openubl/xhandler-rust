@@ -16,27 +16,12 @@ pub struct Model {
     pub url_invoice: String,
     pub url_despatch: String,
     pub url_perception_retention: String,
-    pub project_id: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::project::Entity",
-        from = "Column::ProjectId",
-        to = "super::project::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Cascade"
-    )]
-    Project,
     #[sea_orm(has_many = "super::send_rule::Entity")]
     SendRule,
-}
-
-impl Related<super::project::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Project.def()
-    }
 }
 
 impl Related<super::send_rule::Entity> for Entity {
