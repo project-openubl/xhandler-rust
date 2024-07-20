@@ -1,4 +1,3 @@
-use crate::m20231223_071007_create_project::Project;
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
@@ -20,19 +19,6 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Keystore::Name).string().not_null())
-                    .col(ColumnDef::new(Keystore::ProjectId).integer().not_null())
-                    .foreign_key(
-                        ForeignKey::create()
-                            .from_col(Keystore::ProjectId)
-                            .to(Project::Table, Project::Id)
-                            .on_delete(ForeignKeyAction::Cascade),
-                    )
-                    .index(
-                        Index::create()
-                            .col(Keystore::Name)
-                            .col(Keystore::ProjectId)
-                            .unique(),
-                    )
                     .to_owned(),
             )
             .await
@@ -50,5 +36,4 @@ pub enum Keystore {
     Table,
     Id,
     Name,
-    ProjectId,
 }

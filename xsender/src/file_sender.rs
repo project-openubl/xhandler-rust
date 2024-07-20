@@ -47,6 +47,7 @@ pub struct SendFileResponseWrapper {
 }
 
 pub enum SendFileAggregatedResponse {
+    /// (CDR in base64, CDR base64 decoded into an object)
     Cdr(String, CdrMetadata),
     Ticket(String),
     Error(ErrorResponse),
