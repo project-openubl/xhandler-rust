@@ -104,7 +104,7 @@ impl DocumentContext {
         tx: Transactional<'_>,
     ) -> Result<(), Error> {
         let mut entity = match &response_wrapper.response {
-            SendFileAggregatedResponse::Cdr(crd_base64, cdr) => entity::delivery::ActiveModel {
+            SendFileAggregatedResponse::Cdr(_crd_base64, cdr) => entity::delivery::ActiveModel {
                 document_id: Set(self.document.id),
                 response_cdr_response_code: Set(Some(cdr.response_code.clone())),
                 response_cdr_description: Set(Some(cdr.description.clone())),
