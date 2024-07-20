@@ -27,6 +27,7 @@ pub struct CredentialsDto {
     pub id: i32,
     pub name: String,
     pub description: Option<String>,
+    pub description: Option<String>,
     pub username_sol: String,
     pub client_id: String,
     pub url_invoice: String,
@@ -37,6 +38,7 @@ pub struct CredentialsDto {
 #[derive(Serialize, Deserialize)]
 pub struct NewCredentialsDto {
     pub name: String,
+    pub description: Option<String>,
     pub description: Option<String>,
     pub username_sol: String,
     pub password_sol: String,
@@ -54,6 +56,7 @@ impl From<entity::credentials::Model> for CredentialsDto {
             id: value.id,
             name: value.name.clone(),
             description: value.description.clone(),
+            description: value.description.clone(),
             username_sol: value.username_sol.clone(),
             client_id: value.client_id.clone(),
             url_invoice: value.url_invoice.clone(),
@@ -68,6 +71,7 @@ impl From<NewCredentialsDto> for entity::credentials::Model {
         Self {
             id: 0,
             name: value.name.clone(),
+            description: value.description.clone(),
             description: value.description.clone(),
             username_sol: value.username_sol.clone(),
             password_sol: value.password_sol,
