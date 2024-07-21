@@ -1,16 +1,3 @@
 [workspace]
 resolver = "2"
-members = [
-    "xbuilder",
-    "xsender",
-    "openubl/migration",
-    "openubl/entity",
-    "openubl/common",
-    "openubl/api",
-    "openubl/server",
-    "openubl/cli",
-    "openubl/storage",
-    "openubl/signature",
-]
-
-default-members = ["openubl/cli"]
+members = ["xbuilder", "xsender"]
