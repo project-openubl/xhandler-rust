@@ -3,7 +3,7 @@ use std::io::{Cursor, Read, Write};
 use base64::engine::general_purpose;
 use base64::Engine;
 use zip::result::ZipResult;
-use zip::write::FileOptions;
+use zip::write::SimpleFileOptions;
 use zip::{ZipArchive, ZipWriter};
 
 pub fn create_zip_from_str(content: &str, file_name_inside_zip: &str) -> ZipResult<Vec<u8>> {
@@ -13,7 +13,7 @@ pub fn create_zip_from_str(content: &str, file_name_inside_zip: &str) -> ZipResu
         let buff = Cursor::new(&mut data);
         let mut zip = ZipWriter::new(buff);
 
-        let file_options = FileOptions::default();
+        let file_options = SimpleFileOptions::default();
         zip.start_file(file_name_inside_zip, file_options)?;
         zip.write_all(content.as_bytes())?;
         zip.finish()?;
