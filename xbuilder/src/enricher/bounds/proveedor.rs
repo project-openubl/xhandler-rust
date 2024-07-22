@@ -5,7 +5,6 @@ use crate::models::invoice::Invoice;
 
 pub trait ProveedorGetter {
     fn get_proveedor(&self) -> &Proveedor;
-    fn get_proveedor_direccion(&self) -> &Option<Direccion>;
 }
 
 pub trait ProveedorSetter {
@@ -16,29 +15,17 @@ impl ProveedorGetter for Invoice {
     fn get_proveedor(&self) -> &Proveedor {
         &self.proveedor
     }
-
-    fn get_proveedor_direccion(&self) -> &Option<Direccion> {
-        &self.proveedor.direccion
-    }
 }
 
 impl ProveedorGetter for CreditNote {
     fn get_proveedor(&self) -> &Proveedor {
         &self.proveedor
     }
-
-    fn get_proveedor_direccion(&self) -> &Option<Direccion> {
-        &self.proveedor.direccion
-    }
 }
 
 impl ProveedorGetter for DebitNote {
     fn get_proveedor(&self) -> &Proveedor {
         &self.proveedor
-    }
-
-    fn get_proveedor_direccion(&self) -> &Option<Direccion> {
-        &self.proveedor.direccion
     }
 }
 

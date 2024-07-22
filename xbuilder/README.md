@@ -125,7 +125,7 @@ fn main() {
     };
 
     // Enrich object
-    credit_note.enrich(&defaults);
+    invoice.enrich(&defaults);
 
     // Render XML
     let xml = render_invoice(invoice);

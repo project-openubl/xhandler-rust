@@ -12,11 +12,3 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-
-  - package-ecosystem: "npm"
-    directory: "/openubl/ui"
-    schedule:
-      interval: "daily"
-    allow:
-      - dependency-name: "@patternfly/*"
-        dependency-type: "direct"

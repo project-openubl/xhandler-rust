@@ -8,11 +8,11 @@ use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
 
-pub mod bounds;
-pub mod fill;
-pub mod process;
-pub mod rules;
-pub mod summary;
+mod bounds;
+mod fill;
+mod process;
+mod rules;
+mod summary;
 
 pub struct Defaults {
     pub icb_tasa: Decimal,
