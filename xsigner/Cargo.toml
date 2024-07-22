@@ -6,11 +6,11 @@ license = "Apache-2.0"
 description = "Sign your XML files"
 
 [dependencies]
-thiserror = "1.0.53"
-anyhow = "1.0.78"
-rsa = "0.9.6"
-rand = "0.8.5"
-rcgen = "0.12.0"
-x509-parser = "0.15.1"
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+rsa = { workspace = true }
+rand = { workspace = true }
+rcgen = { workspace = true }
+x509-parser = { workspace = true }
 
 [dev-dependencies]

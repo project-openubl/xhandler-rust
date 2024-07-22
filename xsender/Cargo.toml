@@ -6,19 +6,19 @@ license = "Apache-2.0"
 description = "Sends XML files through SOAP - SUNAT"
 
 [dependencies]
-xml = "0.8.10"
-log = "0.4.20"
-zip = { version = "0.6.6" }
-tera = "1.19.1"
-lazy_static = "1.4.0"
-serde = { version = "1.0.193", features = ["derive"] }
-reqwest = "0.11.22"
-regex = "1.10.2"
-base64 = "0.21.5"
-thiserror = "1.0.53"
-anyhow = "1.0.78"
-sha2 = "0.10.8"
+xml = { workspace = true }
+log = { workspace = true }
+zip = { workspace = true }
+tera = { workspace = true }
+lazy_static = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+reqwest = { workspace = true }
+regex = { workspace = true }
+base64 = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+sha2 = { workspace = true }
 
 [dev-dependencies]
-serial_test = "2.0.0"
-tokio = { version = "1.35.1", features = ["macros"] }
+serial_test = { workspace = true }
+tokio = { workspace = true, features = ["macros"] }
