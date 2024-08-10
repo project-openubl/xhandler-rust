@@ -26,6 +26,7 @@ rand = "0.8.5"
 serial_test = "3.1.1"
 tokio = "1.35.1"
 xmlsec = "0.2.3"
+libxml = "0.3.3"
 x509-cert = "0.2.5"
 der = { version = "0.7.6" }
 spki = { version = "0.7.3" }

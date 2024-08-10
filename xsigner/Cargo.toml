@@ -9,12 +9,9 @@ description = "Sign your XML files"
 thiserror = { workspace = true }
 anyhow = { workspace = true }
 xmlsec = { workspace = true }
+libxml = { workspace = true }
 rsa = { workspace = true, features = ["sha2"] }
 x509-cert = { workspace = true, features = ["builder"] }
 der = { workspace = true, features = ["alloc", "derive", "flagset", "oid"] }
-
-# sha2 = { workspace = true, features = ["oid"] }
-# spki = { workspace = true, features = ["alloc"] }
-# rand = { workspace = true }
 
 [dev-dependencies]
