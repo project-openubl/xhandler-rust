@@ -4,7 +4,7 @@ members = ["xbuilder", "xsender", "xsigner"]
 
 [workspace.dependencies]
 chrono = { version = "0.4.31", features = ["serde"] }
-regex = "1.10.2"
+regex = "1.10.6"
 log = "0.4.20"
 tera = "1.19.1"
 lazy_static = "1.4.0"
