@@ -3,7 +3,7 @@ use rust_decimal_macros::dec;
 use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
 
-use crate::common::{assert_debit_note, debit_note_base, detalle_base};
+use crate::common::{assert_debit_note, debit_note_base};
 
 mod common;
 
@@ -18,13 +18,13 @@ async fn debit_note() {
                 descripcion: "Item1",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..debit_note_base()

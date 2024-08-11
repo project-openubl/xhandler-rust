@@ -4,7 +4,6 @@ use rust_decimal_macros::dec;
 use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
 
-use crate::common::detalle_base;
 use crate::common::invoice_base;
 use crate::common::{assert_invoice, cliente_base, proveedor_base};
 
@@ -22,14 +21,14 @@ async fn invoice_custom_unidad_medida() {
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 unidad_medida: Some("KGM"),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 unidad_medida: Some("KGM"),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
@@ -49,13 +48,13 @@ async fn invoice_custom_fecha_emision() {
                 descripcion: "Item1",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
@@ -90,13 +89,13 @@ async fn invoice_custom_cliente_direccion_and_contacto() {
                 descripcion: "Item1",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
@@ -135,13 +134,13 @@ async fn invoice_custom_proveedor_direccion_and_contacto() {
                 descripcion: "Item1",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
@@ -167,13 +166,13 @@ async fn invoice_custom_firmante() {
                 descripcion: "Item1",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
@@ -192,14 +191,14 @@ async fn invoice_with_icb_precio_unitario() {
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 icb_aplica: true,
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 icb_aplica: true,
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
@@ -218,14 +217,14 @@ async fn invoice_with_icb_precio_con_igv() {
                 cantidad: dec!(10),
                 precio_con_impuestos: Some(dec!(118)),
                 icb_aplica: true,
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(10),
                 precio_con_impuestos: Some(dec!(118)),
                 icb_aplica: true,
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
@@ -256,13 +255,13 @@ async fn invoice_with_custom_proveedor_direccion_not_null_and_codigo_local_null(
                 descripcion: "Item1",
                 cantidad: dec!(10),
                 precio: Some(dec!(118)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(10),
                 precio: Some(dec!(118)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()

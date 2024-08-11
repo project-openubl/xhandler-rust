@@ -5,7 +5,6 @@ use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
 
 use crate::common::assert_invoice;
-use crate::common::detalle_base;
 use crate::common::invoice_base;
 
 mod common;
@@ -43,7 +42,7 @@ async fn invoice_precio_unitario() {
                 cantidad: Decimal::ONE,
                 precio: Some(dec!(100)),
                 igv_tipo: Some(catalog7.code()),
-                ..detalle_base()
+                ..Default::default()
             }],
             ..invoice_base()
         };

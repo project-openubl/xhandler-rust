@@ -3,8 +3,8 @@ use rust_decimal_macros::dec;
 
 use xbuilder::prelude::*;
 
+use crate::common::assert_invoice;
 use crate::common::invoice_base;
-use crate::common::{assert_invoice, detalle_base};
 
 mod common;
 
@@ -18,7 +18,7 @@ async fn invoice_anticipos() {
             descripcion: "Item1",
             cantidad: Decimal::ONE,
             precio: Some(dec!(100)),
-            ..detalle_base()
+            ..Default::default()
         }],
         descuentos: vec![Descuento {
             monto: dec!(50),

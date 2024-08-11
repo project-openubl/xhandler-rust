@@ -3,7 +3,7 @@ use rust_decimal_macros::dec;
 use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
 
-use crate::common::{assert_credit_note, credit_note_base, detalle_base};
+use crate::common::{assert_credit_note, credit_note_base};
 
 mod common;
 
@@ -20,13 +20,13 @@ async fn credit_note_sistema_al_valor() {
                 precio: Some(dec!(100)),
                 isc_tasa: Some(dec!(0.17)),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..credit_note_base()
@@ -46,13 +46,13 @@ async fn credit_note_aplication_al_monto_fijo() {
                 precio: Some(dec!(100)),
                 isc_tasa: Some(dec!(0.20)),
                 isc_tipo: Some(Catalog8::AplicacionAlMontoFijo.code()),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..credit_note_base()
@@ -76,13 +76,13 @@ async fn credit_note_sistema_de_precios_de_venta_al_publico() {
                 precio: Some(dec!(100)),
                 isc_tasa: Some(dec!(0.10)),
                 isc_tipo: Some(Catalog8::SistemaDePreciosDeVentaAlPublico.code()),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..credit_note_base()
