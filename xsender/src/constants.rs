@@ -37,9 +37,9 @@ lazy_static::lazy_static! {
         tera
     };
 
-    pub static ref FACTURA_SERIE_REGEX: Regex = Regex::new("^[F|f].*$").expect("Invalid FACTURA_SERIE_REGEX");
-    pub static ref BOLETA_SERIE_REGEX: Regex = Regex::new("^[B|f].*$").expect("Invalid BOLETA_SERIE_REGEX");
-    pub static ref GUIA_REMISION_REMITENTE_SERIE_REGEX: Regex = Regex::new("^[T|t].*$").expect("Invalid GUIA_REMISION_REMITENTE_SERIE_REGEX");
-    pub static ref GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX: Regex = Regex::new("^[V|v].*$").expect("Invalid GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX");
-    pub static ref HTTP_CLIENT: Client = Client::builder().connection_verbose(true).build().expect("Could not create HTTP client");
+    pub static ref FACTURA_SERIE_REGEX: Result<Regex, regex::Error> = Regex::new("^[F|f].*$");
+    pub static ref BOLETA_SERIE_REGEX: Result<Regex, regex::Error> = Regex::new("^[B|f].*$");
+    pub static ref GUIA_REMISION_REMITENTE_SERIE_REGEX: Result<Regex, regex::Error> = Regex::new("^[T|t].*$");
+    pub static ref GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX: Result<Regex, regex::Error> = Regex::new("^[V|v].*$");
+    pub static ref HTTP_CLIENT: Result<Client, reqwest::Error> = Client::builder().connection_verbose(true).build();
 }

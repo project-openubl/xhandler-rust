@@ -1,4 +1,4 @@
-use log::warn;
+use anyhow::anyhow;
 
 use crate::constants::{
     BOLETA_SERIE_REGEX, FACTURA_SERIE_REGEX, GUIA_REMISION_REMITENTE_SERIE_REGEX,
@@ -71,44 +71,46 @@ pub fn filename_formatted_without_extension(
     document_type: &str,
     document_id: &str,
     ruc: &str,
-) -> Option<String> {
+) -> anyhow::Result<String> {
     match document_type {
         DocumentType::INVOICE => {
-            if FACTURA_SERIE_REGEX.is_match(document_id) {
-                Some(format!("{ruc}-{}-{document_id}", Catalog1::FACTURA))
-            } else if BOLETA_SERIE_REGEX.is_match(document_id) {
-                Some(format!("{ruc}-{}-{document_id}", Catalog1::BOLETA))
+            if FACTURA_SERIE_REGEX.as_ref()?.is_match(document_id) {
+                Ok(format!("{ruc}-{}-{document_id}", Catalog1::FACTURA))
+            } else if BOLETA_SERIE_REGEX.as_ref()?.is_match(document_id) {
+                Ok(format!("{ruc}-{}-{document_id}", Catalog1::BOLETA))
             } else {
-                warn!("Could not build filename from Invoice");
-                None
+                Err(anyhow!("Could not build filename from Invoice"))
             }
         }
-        DocumentType::CREDIT_NOTE => {
-            Some(format!("{ruc}-{}-{document_id}", Catalog1::NOTA_CREDITO))
-        }
-        DocumentType::DEBIT_NOTE => Some(format!("{ruc}-{}-{document_id}", Catalog1::NOTA_DEBITO)),
+        DocumentType::CREDIT_NOTE => Ok(format!("{ruc}-{}-{document_id}", Catalog1::NOTA_CREDITO)),
+        DocumentType::DEBIT_NOTE => Ok(format!("{ruc}-{}-{document_id}", Catalog1::NOTA_DEBITO)),
         DocumentType::VOIDED_DOCUMENTS | DocumentType::SUMMARY_DOCUMENTS => {
-            Some(format!("{ruc}-{document_id}"))
+            Ok(format!("{ruc}-{document_id}"))
         }
-        DocumentType::PERCEPTION => Some(format!("{ruc}-{}-{document_id}", Catalog1::PERCEPCION)),
-        DocumentType::RETENTION => Some(format!("{ruc}-{}-{document_id}", Catalog1::RETENCION)),
+        DocumentType::PERCEPTION => Ok(format!("{ruc}-{}-{document_id}", Catalog1::PERCEPCION)),
+        DocumentType::RETENTION => Ok(format!("{ruc}-{}-{document_id}", Catalog1::RETENCION)),
         DocumentType::DESPATCH_ADVICE => {
-            if GUIA_REMISION_REMITENTE_SERIE_REGEX.is_match(document_id) {
-                Some(format!(
+            if GUIA_REMISION_REMITENTE_SERIE_REGEX
+                .as_ref()?
+                .is_match(document_id)
+            {
+                Ok(format!(
                     "{ruc}-{}-{document_id}",
                     Catalog1::GUIA_REMISION_REMITENTE
                 ))
-            } else if GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX.is_match(document_id) {
-                Some(format!(
+            } else if GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX
+                .as_ref()?
+                .is_match(document_id)
+            {
+                Ok(format!(
                     "{ruc}-{}-{document_id}",
                     Catalog1::GUIA_REMISION_TRANSPORTISTA
                 ))
             } else {
-                warn!("Could not build filename from DespatchAdvice");
-                None
+                Err(anyhow!("Could not build filename from DespatchAdvice"))
             }
         }
-        _ => None,
+        _ => Err(anyhow!("Not supported document")),
     }
 }
 

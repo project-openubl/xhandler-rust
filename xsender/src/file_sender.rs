@@ -71,7 +71,7 @@ impl FileSender {
             &metadata.document_id,
             &metadata.ruc,
         )
-        .ok_or(FileSenderErr::TargetDiscovery)?;
+        .map_err(|_| FileSenderErr::TargetDiscovery)?;
 
         let send_target = send_file_target(
             &metadata.document_type,
