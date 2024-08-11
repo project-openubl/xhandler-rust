@@ -5,7 +5,7 @@ use rust_decimal::Decimal;
 use serde::Serialize;
 
 /// Quien provee el documento electronico. Quien genera o crea el documento.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Default)]
 pub struct Proveedor {
     pub ruc: &'static str,
     pub razon_social: &'static str,
@@ -22,7 +22,7 @@ pub struct Firmante {
 }
 
 /// Quien es el cliente de la transaccion
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Default)]
 pub struct Cliente {
     /// Catalog6
     pub tipo_documento_identidad: &'static str,
@@ -141,7 +141,7 @@ pub struct DocumentoRelacionado {
 }
 
 /// Detalle de las ventas en Boleta/Factura/Nota Credito/Nota Debito
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Default)]
 pub struct Detalle {
     pub descripcion: &'static str,
     pub cantidad: Decimal,

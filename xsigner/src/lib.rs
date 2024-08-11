@@ -95,6 +95,12 @@ impl XSigner {
         Ok(Self { xml_document })
     }
 
+    pub fn from_string(xml: &str) -> Result<Self, XmlParseError> {
+        let xml_parser = libxml::parser::Parser::default();
+        let xml_document = xml_parser.parse_string(xml)?;
+        Ok(Self { xml_document })
+    }
+
     pub fn sign(&self, key_pair: &RsaKeyPair) -> Result<(), SignErr> {
         let xml = &self.xml_document;
 

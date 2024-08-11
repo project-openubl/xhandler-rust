@@ -16,4 +16,10 @@ rust_decimal = { workspace = true, features = ["serde-str", "serde-with-str"] }
 rust_decimal_macros = { workspace = true }
 
 [dev-dependencies]
+libxml = { workspace = true }
+
+serial_test = { workspace = true }
+tokio = { workspace = true, features = ["macros"] }
+
 xsender = { path = "../xsender" }
+xsigner = { path = "../xsigner" }

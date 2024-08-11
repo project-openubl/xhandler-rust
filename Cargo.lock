@@ -1010,6 +1010,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "integration-tests"
+version = "0.1.0"
+dependencies = [
+ "rust_decimal",
+ "rust_decimal_macros",
+ "xbuilder",
+ "xsender",
+ "xsigner",
+]
+
+[[package]]
 name = "ipnet"
 version = "2.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2879,13 +2890,17 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "lazy_static",
+ "libxml",
  "log",
  "regex",
  "rust_decimal",
  "rust_decimal_macros",
  "serde",
+ "serial_test",
  "tera",
+ "tokio",
  "xsender",
+ "xsigner",
 ]
 
 [[package]]

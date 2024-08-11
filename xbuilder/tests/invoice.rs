@@ -1,5 +1,6 @@
 use chrono::{NaiveDate, NaiveTime};
 use rust_decimal_macros::dec;
+use serial_test::serial;
 
 use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
@@ -12,8 +13,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceTest";
 
-#[test]
-fn invoice_custom_unidad_medida() {
+#[serial]
+#[tokio::test]
+async fn invoice_custom_unidad_medida() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -34,7 +36,7 @@ fn invoice_custom_unidad_medida() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/customUnidadMedida.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/customUnidadMedida.xml")).await;
 }
 
 #[test]
