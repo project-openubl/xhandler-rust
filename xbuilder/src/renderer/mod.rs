@@ -1,7 +1,11 @@
+include!(concat!(env!("OUT_DIR"), "/generated.rs"));
+
+use std::cmp::Ordering;
 use std::collections::HashMap;
-use std::str::FromStr;
+use std::str::{from_utf8, FromStr};
 
 use rust_decimal::Decimal;
+use static_files::Resource;
 use tera::helpers::tests::{number_args_allowed, value_defined};
 use tera::{from_value, to_value, Context, Error, Function, Tera, Value};
 
@@ -111,13 +115,42 @@ pub fn credito(value: Option<&Value>, params: &[Value]) -> tera::Result<bool> {
 
 lazy_static::lazy_static! {
     pub static ref TEMPLATES: Tera = {
-        let mut tera = match Tera::new("src/templates/**/*.xml") {
-            Ok(t) => t,
-            Err(e) => {
-                println!("Parsing error(s): {}", e);
-                ::std::process::exit(1);
+        let mut tera = Tera::default();
+
+        let resources = generate();
+        let mut resources_sorted = resources.into_iter()
+            .filter(|(name, _content)| name.ends_with(".xml"))
+            .collect::<Vec<(&str, Resource)>>();
+        // Load the renderer files at the end to avoid dependency errors between templates
+        resources_sorted.sort_by(|(a,_),(b,_)| {
+            if a.starts_with("renderer") && b.starts_with("renderer") {
+                a.partial_cmp(b).unwrap_or(Ordering::Equal)
+            } else if a.starts_with("renderer") {
+                Ordering::Greater
+            } else if b.starts_with("renderer") {
+                Ordering::Less
+            } else {
+                a.partial_cmp(b).unwrap_or(Ordering::Equal)
             }
-        };
+        });
+        resources_sorted.iter().for_each(|(name, content)| {
+            match from_utf8(content.data) {
+                Ok(template_raw_content) => {
+                    match tera.add_raw_template(name, template_raw_content) {
+                        Ok(_) => {},
+                        Err(e) => {
+                            println!("Adding template error(s): {}", e);
+                            ::std::process::exit(1);
+                        }
+                    };
+                },
+                Err(e) => {
+                    println!("Parsing error(s): {}", e);
+                    ::std::process::exit(1);
+                }
+            };
+        });
+
         tera.register_function("catalog7_taxcategory", catalog7_taxcategory());
         tera.register_filter("multiply100", multiply100);
         tera.register_filter("round_decimal", round_decimal);
