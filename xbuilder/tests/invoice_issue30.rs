@@ -9,8 +9,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceIssue30Test";
 
-#[test]
-fn invoice_issue30() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_issue30() {
     let mut invoice = Invoice {
         proveedor: Proveedor {
             ruc: "12345678912",
@@ -26,5 +27,5 @@ fn invoice_issue30() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/with-precioUnitario.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/with-precioUnitario.xml")).await;
 }

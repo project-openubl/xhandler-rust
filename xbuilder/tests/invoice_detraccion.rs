@@ -9,8 +9,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDetraccionTest";
 
-#[test]
-fn invoice_detraccion() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_detraccion() {
     let mut invoice = Invoice {
         detalles: vec![Detalle {
             descripcion: "Item1",
@@ -28,5 +29,5 @@ fn invoice_detraccion() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/detraccion.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/detraccion.xml")).await;
 }

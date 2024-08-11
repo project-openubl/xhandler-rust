@@ -9,8 +9,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDireccionEntregaTest";
 
-#[test]
-fn invoice_direccion_entrega_min() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_direccion_entrega_min() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -39,11 +40,12 @@ fn invoice_direccion_entrega_min() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/direccionEntregaMin.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/direccionEntregaMin.xml")).await;
 }
 
-#[test]
-fn invoice_direccion_entrega_full() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_direccion_entrega_full() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -72,5 +74,5 @@ fn invoice_direccion_entrega_full() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/direccionEntregaFull.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/direccionEntregaFull.xml")).await;
 }

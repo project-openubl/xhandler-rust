@@ -9,8 +9,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDocumentoRelacionadoTest";
 
-#[test]
-fn invoice_documento_relacionado_y_orden_de_compra() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_documento_relacionado_y_orden_de_compra() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -34,5 +35,5 @@ fn invoice_documento_relacionado_y_orden_de_compra() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/documentoRelacionado.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/documentoRelacionado.xml")).await;
 }

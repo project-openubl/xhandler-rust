@@ -9,8 +9,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoicePercepcionTest";
 
-#[test]
-fn invoice_percepcion() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_percepcion() {
     let mut invoice = Invoice {
         percepcion: Some(Percepcion {
             tipo: "51",
@@ -28,5 +29,5 @@ fn invoice_percepcion() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/percepcion.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/percepcion.xml")).await;
 }

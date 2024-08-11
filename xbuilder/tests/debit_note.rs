@@ -9,8 +9,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/debitnote/DebitNoteTest";
 
-#[test]
-fn debit_note() {
+#[serial_test::serial]
+#[tokio::test]
+async fn debit_note() {
     let mut debit_note = DebitNote {
         detalles: vec![
             Detalle {
@@ -29,5 +30,5 @@ fn debit_note() {
         ..debit_note_base()
     };
 
-    assert_debit_note(&mut debit_note, &format!("{BASE}/MinData_RUC.xml"));
+    assert_debit_note(&mut debit_note, &format!("{BASE}/MinData_RUC.xml")).await;
 }

@@ -10,7 +10,7 @@ use crate::models::common::{
 };
 
 /// Boleta o Factura
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Default)]
 pub struct Invoice {
     pub leyendas: HashMap<&'static str, &'static str>,
 
