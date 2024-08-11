@@ -20,8 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: |
-          sudo apt-get -y install pkg-config xmlsec1 libxml2-dev libxmlsec1-dev libxmlsec1-openssl libclang-dev
+        use: ../actions/install-dependencies
       - name: Install clippy
         run: rustup component add clippy
       - run: cargo fmt --check
