@@ -1,6 +1,5 @@
 use chrono::{NaiveDate, NaiveTime};
 use rust_decimal_macros::dec;
-use serial_test::serial;
 
 use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
@@ -13,7 +12,7 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceTest";
 
-#[serial]
+#[serial_test::serial]
 #[tokio::test]
 async fn invoice_custom_unidad_medida() {
     let mut invoice = Invoice {
@@ -39,8 +38,9 @@ async fn invoice_custom_unidad_medida() {
     assert_invoice(&mut invoice, &format!("{BASE}/customUnidadMedida.xml")).await;
 }
 
-#[test]
-fn invoice_custom_fecha_emision() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_fecha_emision() {
     let mut invoice = Invoice {
         fecha_emision: NaiveDate::from_ymd_opt(2019, 1, 6),
         hora_emision: NaiveTime::from_hms_opt(0, 0, 0),
@@ -61,11 +61,12 @@ fn invoice_custom_fecha_emision() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/customFechaEmision.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/customFechaEmision.xml")).await;
 }
 
-#[test]
-fn invoice_custom_cliente_direccion_and_contacto() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_cliente_direccion_and_contacto() {
     let mut invoice = Invoice {
         cliente: Cliente {
             contacto: Some(Contacto {
@@ -104,11 +105,13 @@ fn invoice_custom_cliente_direccion_and_contacto() {
     assert_invoice(
         &mut invoice,
         &format!("{BASE}/customClienteDireccionAndContacto.xml"),
-    );
+    )
+    .await;
 }
 
-#[test]
-fn invoice_custom_proveedor_direccion_and_contacto() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_proveedor_direccion_and_contacto() {
     let mut invoice = Invoice {
         proveedor: Proveedor {
             contacto: Some(Contacto {
@@ -147,11 +150,13 @@ fn invoice_custom_proveedor_direccion_and_contacto() {
     assert_invoice(
         &mut invoice,
         &format!("{BASE}/customProveedorDireccionAndContacto.xml"),
-    );
+    )
+    .await;
 }
 
-#[test]
-fn invoice_custom_firmante() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_firmante() {
     let mut invoice = Invoice {
         firmante: Some(Firmante {
             ruc: "000000000000",
@@ -174,11 +179,12 @@ fn invoice_custom_firmante() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/customFirmante.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/customFirmante.xml")).await;
 }
 
-#[test]
-fn invoice_with_icb_precio_unitario() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_with_icb_precio_unitario() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -199,11 +205,12 @@ fn invoice_with_icb_precio_unitario() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/icb.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/icb.xml")).await;
 }
 
-#[test]
-fn invoice_with_icb_precio_con_igv() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_with_icb_precio_con_igv() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -224,11 +231,12 @@ fn invoice_with_icb_precio_con_igv() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/icb.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/icb.xml")).await;
 }
 
-#[test]
-fn invoice_with_custom_proveedor_direccion_not_null_and_codigo_local_null() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_with_custom_proveedor_direccion_not_null_and_codigo_local_null() {
     let mut invoice = Invoice {
         proveedor: Proveedor {
             direccion: Some(Direccion {
@@ -260,5 +268,5 @@ fn invoice_with_custom_proveedor_direccion_not_null_and_codigo_local_null() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/customCodigoLocal.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/customCodigoLocal.xml")).await;
 }

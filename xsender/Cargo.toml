@@ -10,6 +10,7 @@ xml = { workspace = true }
 log = { workspace = true }
 zip = { workspace = true }
 tera = { workspace = true }
+static-files = { workspace = true }
 lazy_static = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 reqwest = { workspace = true }
@@ -22,3 +23,6 @@ sha2 = { workspace = true }
 [dev-dependencies]
 serial_test = { workspace = true }
 tokio = { workspace = true, features = ["macros"] }
+
+[build-dependencies]
+static-files = { workspace = true }

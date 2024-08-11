@@ -9,8 +9,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/creditnote/CreditNoteIscTest";
 
-#[test]
-fn credit_note_sistema_al_valor() {
+#[serial_test::serial]
+#[tokio::test]
+async fn credit_note_sistema_al_valor() {
     let mut credit_note = CreditNote {
         detalles: vec![
             Detalle {
@@ -31,11 +32,12 @@ fn credit_note_sistema_al_valor() {
         ..credit_note_base()
     };
 
-    assert_credit_note(&mut credit_note, &format!("{BASE}/isc_sistemaAlValor.xml"));
+    assert_credit_note(&mut credit_note, &format!("{BASE}/isc_sistemaAlValor.xml")).await;
 }
 
-#[test]
-fn credit_note_aplication_al_monto_fijo() {
+#[serial_test::serial]
+#[tokio::test]
+async fn credit_note_aplication_al_monto_fijo() {
     let mut credit_note = CreditNote {
         detalles: vec![
             Detalle {
@@ -59,11 +61,13 @@ fn credit_note_aplication_al_monto_fijo() {
     assert_credit_note(
         &mut credit_note,
         &format!("{BASE}/isc_aplicacionAlMontoFijo.xml"),
-    );
+    )
+    .await;
 }
 
-#[test]
-fn credit_note_sistema_de_precios_de_venta_al_publico() {
+#[serial_test::serial]
+#[tokio::test]
+async fn credit_note_sistema_de_precios_de_venta_al_publico() {
     let mut credit_note = CreditNote {
         detalles: vec![
             Detalle {
@@ -87,5 +91,6 @@ fn credit_note_sistema_de_precios_de_venta_al_publico() {
     assert_credit_note(
         &mut credit_note,
         &format!("{BASE}/isc_sistemaDePreciosDeVentalAlPublico.xml"),
-    );
+    )
+    .await;
 }

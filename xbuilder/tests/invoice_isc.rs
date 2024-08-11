@@ -11,8 +11,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceIscTest";
 
-#[test]
-fn invoice_sistema_al_valor() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_sistema_al_valor() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -33,11 +34,12 @@ fn invoice_sistema_al_valor() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/isc_sistemaAlValor.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/isc_sistemaAlValor.xml")).await;
 }
 
-#[test]
-fn invoice_aplication_al_monto_fijo() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_aplication_al_monto_fijo() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -61,11 +63,13 @@ fn invoice_aplication_al_monto_fijo() {
     assert_invoice(
         &mut invoice,
         &format!("{BASE}/isc_aplicacionAlMontoFijo.xml"),
-    );
+    )
+    .await;
 }
 
-#[test]
-fn invoice_sistem_de_precios_de_venta_al_publico() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_sistem_de_precios_de_venta_al_publico() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -89,11 +93,13 @@ fn invoice_sistem_de_precios_de_venta_al_publico() {
     assert_invoice(
         &mut invoice,
         &format!("{BASE}/isc_sistemaDePreciosDeVentalAlPublico.xml"),
-    );
+    )
+    .await;
 }
 
-#[test]
-fn invoice_precio_con_impuestos() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_precio_con_impuestos() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -119,11 +125,12 @@ fn invoice_precio_con_impuestos() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/isc_precioConImpuestos.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/isc_precioConImpuestos.xml")).await;
 }
 
-#[test]
-fn invoice_mixed_tipo_igv() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_mixed_tipo_igv() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -181,5 +188,5 @@ fn invoice_mixed_tipo_igv() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/isc_mixedTipoIgv.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/isc_mixedTipoIgv.xml")).await;
 }

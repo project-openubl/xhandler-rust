@@ -2,12 +2,12 @@ use std::collections::HashMap;
 use std::fs;
 
 use chrono::NaiveDate;
+use libxml::tree::Document;
 use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 
 use xbuilder::prelude::*;
 
-use libxml::parser::Parser;
 use libxml::schemas::SchemaParserContext;
 use libxml::schemas::SchemaValidationContext;
 use xsender::prelude::Credentials;
@@ -22,12 +22,12 @@ use xsigner::XSigner;
 const INVOICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-Invoice-2.1.xsd";
 const CREDIT_NOTE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-CreditNote-2.1.xsd";
 const DEBIT_NOTE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-DebitNote-2.1.xsd";
-const DESPATCH_ADVICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-DespatchAdvice-2.1.xsd";
-const VOIDED_DOCUMENTS_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-VoidedDocuments-1.0.xsd";
-const SUMMARY_DOCUMENTS_XSD: &str =
+const _DESPATCH_ADVICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-DespatchAdvice-2.1.xsd";
+const _VOIDED_DOCUMENTS_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-VoidedDocuments-1.0.xsd";
+const _SUMMARY_DOCUMENTS_XSD: &str =
     "tests/resources/xsd/2.0/maindoc/UBLPE-SummaryDocuments-1.0.xsd";
-const PERCEPTION_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-Perception-1.0.xsd";
-const RETENTION_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-Retention-1.0.xsd";
+const _PERCEPTION_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-Perception-1.0.xsd";
+const _RETENTION_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-Retention-1.0.xsd";
 
 lazy_static::lazy_static! {
     pub static ref CLIENT: FileSender = FileSender {
@@ -215,6 +215,22 @@ pub fn detalle_base() -> Detalle {
     }
 }
 
+fn sign_xml(xml: &str) -> Document {
+    let private_key_from_file = fs::read_to_string("tests/resources/certificates/private.key")
+        .expect("Could not read private.key");
+    let certificate_from_file = fs::read_to_string("tests/resources/certificates/public.cer")
+        .expect("Could not read public.cer");
+
+    let rsa_key_pair =
+        RsaKeyPair::from_pkcs1_pem_and_certificate(&private_key_from_file, &certificate_from_file)
+            .expect("Could not initialize RsaKeyPair");
+
+    let signer = XSigner::from_string(xml).expect("Could parse xml");
+    signer.sign(&rsa_key_pair).expect("Could not sign document");
+
+    signer.xml_document
+}
+
 #[allow(dead_code)]
 pub async fn assert_invoice(invoice: &mut Invoice, snapshot_filename: &str) {
     let defaults = defaults_base();
@@ -223,28 +239,38 @@ pub async fn assert_invoice(invoice: &mut Invoice, snapshot_filename: &str) {
     let xml = invoice.render().expect("Could not render invoice");
 
     assert_snapshot(&xml, snapshot_filename);
-    // assert_xsd(&xml, INVOICE_XSD);
-    // assert_sunat(&xml).await;
+
+    let xml_signed = sign_xml(&xml);
+    assert_xsd(&xml_signed, INVOICE_XSD);
+    assert_sunat(&xml_signed).await;
 }
 
 #[allow(dead_code)]
-pub fn assert_credit_note(credit_note: &mut CreditNote, snapshot_filename: &str) {
+pub async fn assert_credit_note(credit_note: &mut CreditNote, snapshot_filename: &str) {
     let defaults = defaults_base();
     credit_note.enrich(&defaults);
 
     let xml = credit_note.render().expect("Could not render credit note");
 
-    assert_snapshot(&xml, snapshot_filename)
+    assert_snapshot(&xml, snapshot_filename);
+
+    let xml_signed = sign_xml(&xml);
+    assert_xsd(&xml_signed, CREDIT_NOTE_XSD);
+    assert_sunat(&xml_signed).await;
 }
 
 #[allow(dead_code)]
-pub fn assert_debit_note(debit_note: &mut DebitNote, snapshot_filename: &str) {
+pub async fn assert_debit_note(debit_note: &mut DebitNote, snapshot_filename: &str) {
     let defaults = defaults_base();
     debit_note.enrich(&defaults);
 
     let xml = debit_note.render().expect("Could not render debit note");
 
-    assert_snapshot(&xml, snapshot_filename)
+    assert_snapshot(&xml, snapshot_filename);
+
+    let xml_signed = sign_xml(&xml);
+    assert_xsd(&xml_signed, DEBIT_NOTE_XSD);
+    assert_sunat(&xml_signed).await;
 }
 
 fn assert_snapshot(expected: &str, snapshot_filename: &str) {
@@ -259,11 +285,7 @@ fn assert_snapshot(expected: &str, snapshot_filename: &str) {
     );
 }
 
-fn assert_xsd(xml_string: &str, schema: &str) {
-    let xml = Parser::default()
-        .parse_string(xml_string)
-        .expect("Expected to be able to parse XML Document from string");
-
+fn assert_xsd(xml: &Document, schema: &str) {
     let mut xsdparser = SchemaParserContext::from_file(schema);
     let xsd = SchemaValidationContext::from_parser(&mut xsdparser);
 
@@ -286,25 +308,9 @@ fn assert_xsd(xml_string: &str, schema: &str) {
     }
 }
 
-async fn assert_sunat(xml: &str) {
-    // Sign document
-    let private_key_from_file = fs::read_to_string("tests/resources/certificates/private.key")
-        .expect("Could not read private.key");
-    let certificate_from_file = fs::read_to_string("tests/resources/certificates/public.cer")
-        .expect("Could not read public.cer");
-
-    let rsa_key_pair =
-        RsaKeyPair::from_pkcs1_pem_and_certificate(&private_key_from_file, &certificate_from_file)
-            .expect("Could not initialize RsaKeyPair");
-
-    let signer = XSigner::from_string(xml).expect("Could parse xml");
-    signer.sign(&rsa_key_pair).expect("Could not sign document");
-
-    let signed_xml = signer.xml_document.to_string();
-
-    // Send document
+async fn assert_sunat(xml: &Document) {
     let xml_file = UblFile {
-        file_content: signed_xml,
+        file_content: xml.to_string(),
     };
 
     let result = CLIENT

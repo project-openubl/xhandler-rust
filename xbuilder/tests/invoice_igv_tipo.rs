@@ -33,8 +33,9 @@ static CATALOG7_VARIANTS: &[Catalog7] = &[
     Catalog7::Exportacion,
 ];
 
-#[test]
-fn invoice_precio_unitario() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_precio_unitario() {
     for catalog7 in CATALOG7_VARIANTS {
         let mut invoice = Invoice {
             detalles: vec![Detalle {
@@ -47,6 +48,6 @@ fn invoice_precio_unitario() {
             ..invoice_base()
         };
 
-        assert_invoice(&mut invoice, &format!("{BASE}/invoice_pu_{catalog7}.xml"));
+        assert_invoice(&mut invoice, &format!("{BASE}/invoice_pu_{catalog7}.xml")).await;
     }
 }

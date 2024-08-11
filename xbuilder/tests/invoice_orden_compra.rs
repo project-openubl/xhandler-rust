@@ -9,8 +9,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceOrdeDeCompraTest";
 
-#[test]
-fn invoice_custom_moneda() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_moneda() {
     let mut invoice = Invoice {
         orden_de_compra: Some("123456"),
         detalles: vec![
@@ -30,5 +31,5 @@ fn invoice_custom_moneda() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/ordenDeCompra.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/ordenDeCompra.xml")).await;
 }

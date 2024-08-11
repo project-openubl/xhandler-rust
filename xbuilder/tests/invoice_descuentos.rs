@@ -10,8 +10,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDescuentosTest";
 
-#[test]
-fn invoice_anticipos() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_anticipos() {
     let mut invoice = Invoice {
         detalles: vec![Detalle {
             descripcion: "Item1",
@@ -28,5 +29,5 @@ fn invoice_anticipos() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/descuentoGlobal.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/descuentoGlobal.xml")).await;
 }

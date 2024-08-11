@@ -9,8 +9,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceGuiasTest";
 
-#[test]
-fn invoice_guia_serie_t() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_guia_serie_t() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -33,5 +34,5 @@ fn invoice_guia_serie_t() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/guiaSerieT.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/guiaSerieT.xml")).await;
 }

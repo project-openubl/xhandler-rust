@@ -10,8 +10,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceMonedaTest";
 
-#[test]
-fn invoice_custom_moneda() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_moneda() {
     let mut invoice = Invoice {
         moneda: Some("USD"),
         detalles: vec![Detalle {
@@ -23,5 +24,5 @@ fn invoice_custom_moneda() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/customMoneda.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/customMoneda.xml")).await;
 }

@@ -10,8 +10,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceFormaPagoTest";
 
-#[test]
-fn invoice_forma_pago_contado_defecto() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_forma_pago_contado_defecto() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -30,11 +31,12 @@ fn invoice_forma_pago_contado_defecto() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/sinFormaPago.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/sinFormaPago.xml")).await;
 }
 
-#[test]
-fn invoice_forma_pago_credito() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_forma_pago_credito() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -67,5 +69,5 @@ fn invoice_forma_pago_credito() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/conFormaPago.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/conFormaPago.xml")).await;
 }

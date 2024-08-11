@@ -9,8 +9,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/creditnote/CreditNoteTest";
 
-#[test]
-fn credit_note() {
+#[serial_test::serial]
+#[tokio::test]
+async fn credit_note() {
     let mut credit_note = CreditNote {
         detalles: vec![
             Detalle {
@@ -29,5 +30,5 @@ fn credit_note() {
         ..credit_note_base()
     };
 
-    assert_credit_note(&mut credit_note, &format!("{BASE}/MinData_RUC.xml"));
+    assert_credit_note(&mut credit_note, &format!("{BASE}/MinData_RUC.xml")).await;
 }

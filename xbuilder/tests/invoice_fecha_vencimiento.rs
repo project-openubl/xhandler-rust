@@ -10,8 +10,9 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceFechaVencimientoTest";
 
-#[test]
-fn invoice_custom_moneda() {
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_moneda() {
     let mut invoice = Invoice {
         fecha_vencimiento: NaiveDate::from_ymd_opt(2022, 1, 1),
         detalles: vec![
@@ -31,5 +32,5 @@ fn invoice_custom_moneda() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/conFechaVencimiento.xml"));
+    assert_invoice(&mut invoice, &format!("{BASE}/conFechaVencimiento.xml")).await;
 }
