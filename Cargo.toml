@@ -15,7 +15,7 @@ rust_decimal = { version = "1.33.1", features = [
 ] }
 rust_decimal_macros = "1.33.1"
 xml = "0.8.10"
-zip = { version = "2.1.5" }
+zip = { version = "2.1.6" }
 reqwest = "0.12.5"
 base64 = "0.22.1"
 thiserror = "1.0.53"
