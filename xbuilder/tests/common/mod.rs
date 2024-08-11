@@ -299,7 +299,7 @@ fn assert_xsd(xml: &Document, schema: &str) {
 
     let mut xsd = xsd.unwrap();
 
-    if let Err(errors) = xsd.validate_document(&xml) {
+    if let Err(errors) = xsd.validate_document(xml) {
         for err in &errors {
             println!("{}", err.message.as_ref().unwrap());
         }
