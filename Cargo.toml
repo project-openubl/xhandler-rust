@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["xbuilder", "xsender"]
+members = ["xbuilder", "xsender", "xsigner"]
 
 [workspace.dependencies]
 chrono = { version = "0.4.31", features = ["serde"] }
@@ -23,9 +23,12 @@ anyhow = "1.0.78"
 sha2 = "0.10.8"
 rsa = "0.9.6"
 rand = "0.8.5"
-rcgen = "0.13.1"
-x509-parser = "0.16.0"
 serial_test = "3.1.1"
 tokio = "1.35.1"
+xmlsec = "0.2.3"
+libxml = "0.3.3"
+x509-cert = "0.2.5"
+der = { version = "0.7.6" }
+spki = { version = "0.7.3" }
 
 [patch.crates-io]

@@ -8,9 +8,10 @@ description = "Sign your XML files"
 [dependencies]
 thiserror = { workspace = true }
 anyhow = { workspace = true }
-rsa = { workspace = true }
-rand = { workspace = true }
-rcgen = { workspace = true }
-x509-parser = { workspace = true }
+xmlsec = { workspace = true }
+libxml = { workspace = true }
+rsa = { workspace = true, features = ["sha2"] }
+x509-cert = { workspace = true, features = ["builder"] }
+der = { workspace = true, features = ["alloc", "derive", "flagset", "oid"] }
 
 [dev-dependencies]

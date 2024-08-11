@@ -19,6 +19,8 @@ jobs:
     name: Lint
     steps:
       - uses: actions/checkout@v4
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
       - name: Install clippy
         run: rustup component add clippy
       - run: cargo fmt --check
@@ -30,4 +32,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
       - run: cargo test
