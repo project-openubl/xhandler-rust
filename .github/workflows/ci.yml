@@ -14,9 +14,9 @@ env:
   CI: true
 
 jobs:
-  test:
-    name: Tests
+  lint:
     runs-on: ubuntu-latest
+    name: Lint
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
@@ -26,4 +26,12 @@ jobs:
       - run: cargo fmt --check
       - run: cargo check
       - run: cargo clippy --all-targets --all-features -- -D warnings
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
       - run: cargo test
