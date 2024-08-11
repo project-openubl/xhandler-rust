@@ -10,7 +10,7 @@ use crate::models::common::{
 };
 
 /// Nota de credito
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Default)]
 pub struct CreditNote {
     pub leyendas: HashMap<&'static str, &'static str>,
 

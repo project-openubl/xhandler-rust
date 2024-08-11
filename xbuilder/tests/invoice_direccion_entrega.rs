@@ -2,8 +2,8 @@ use rust_decimal_macros::dec;
 
 use xbuilder::prelude::*;
 
+use crate::common::assert_invoice;
 use crate::common::invoice_base;
-use crate::common::{assert_invoice, detalle_base};
 
 mod common;
 
@@ -18,13 +18,13 @@ async fn invoice_direccion_entrega_min() {
                 descripcion: "Item1",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         direccion_entrega: Some(Direccion {
@@ -52,13 +52,13 @@ async fn invoice_direccion_entrega_full() {
                 descripcion: "Item1",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         direccion_entrega: Some(Direccion {

@@ -2,7 +2,7 @@ use rust_decimal_macros::dec;
 
 use xbuilder::prelude::*;
 
-use crate::common::{assert_invoice, detalle_base};
+use crate::common::assert_invoice;
 use crate::common::{invoice_base, proveedor_base};
 
 mod common;
@@ -22,7 +22,7 @@ async fn invoice_issue30() {
             descripcion: "Item1",
             cantidad: dec!(10),
             precio: Some(dec!(6.68)),
-            ..detalle_base()
+            ..Default::default()
         }],
         ..invoice_base()
     };

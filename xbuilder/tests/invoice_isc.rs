@@ -4,7 +4,6 @@ use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
 
 use crate::common::assert_invoice;
-use crate::common::detalle_base;
 use crate::common::invoice_base;
 
 mod common;
@@ -22,13 +21,13 @@ async fn invoice_sistema_al_valor() {
                 precio: Some(dec!(100)),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.17)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
@@ -48,13 +47,13 @@ async fn invoice_aplication_al_monto_fijo() {
                 precio: Some(dec!(100)),
                 isc_tipo: Some(Catalog8::AplicacionAlMontoFijo.code()),
                 isc_tasa: Some(dec!(0.20)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
@@ -78,13 +77,13 @@ async fn invoice_sistem_de_precios_de_venta_al_publico() {
                 precio: Some(dec!(100)),
                 isc_tipo: Some(Catalog8::SistemaDePreciosDeVentaAlPublico.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
@@ -109,7 +108,7 @@ async fn invoice_precio_con_impuestos() {
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.17)),
                 icb_aplica: true,
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
@@ -119,7 +118,7 @@ async fn invoice_precio_con_impuestos() {
                 isc_tasa: Some(dec!(0.17)),
                 icb_aplica: true,
                 igv_tipo: Some(Catalog7::GravadoRetiroPorPremio.code()),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
@@ -137,7 +136,7 @@ async fn invoice_mixed_tipo_igv() {
                 descripcion: "Item1",
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item2",
@@ -146,7 +145,7 @@ async fn invoice_mixed_tipo_igv() {
                 igv_tipo: Some(Catalog7::GravadoRetiroPorPremio.code()),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item3",
@@ -155,7 +154,7 @@ async fn invoice_mixed_tipo_igv() {
                 igv_tipo: Some(Catalog7::ExoneradoOperacionOnerosa.code()),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item4",
@@ -164,7 +163,7 @@ async fn invoice_mixed_tipo_igv() {
                 igv_tipo: Some(Catalog7::ExoneradoTransferenciaGratuita.code()),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item5",
@@ -173,7 +172,7 @@ async fn invoice_mixed_tipo_igv() {
                 igv_tipo: Some(Catalog7::InafectoOperacionOnerosa.code()),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base()
+                ..Default::default()
             },
             Detalle {
                 descripcion: "Item6",
@@ -182,7 +181,7 @@ async fn invoice_mixed_tipo_igv() {
                 igv_tipo: Some(Catalog7::InafectoRetiroPorBonificacion.code()),
                 isc_tipo: Some(Catalog8::SistemaAlValor.code()),
                 isc_tasa: Some(dec!(0.10)),
-                ..detalle_base()
+                ..Default::default()
             },
         ],
         ..invoice_base()
