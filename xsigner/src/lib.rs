@@ -204,7 +204,7 @@ impl XSigner {
         let mut sigctx = XmlSecSignatureContext::new();
         sigctx.insert_key(private_key);
 
-        sigctx.sign_document(xml).expect("Failed to sign document");
+        sigctx.sign_document(xml)?;
 
         Ok(())
     }

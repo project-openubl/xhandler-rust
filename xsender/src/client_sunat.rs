@@ -69,6 +69,10 @@ impl ClientSUNAT {
         file: &File,
         credentials: &Credentials,
     ) -> Result<SendFileResponse, ClientSunatErr> {
+        let client = HTTP_CLIENT
+            .as_ref()
+            .map_err(|_error| ClientSunatErr::Any(anyhow!("Could not initialize client")))?;
+
         match &target {
             SendFileTarget::Soap(url, action) => {
                 let envelope_body = match action {
@@ -98,8 +102,7 @@ impl ClientSUNAT {
 
                 let body = envelope.to_string_xml()?;
 
-                let response = HTTP_CLIENT
-                    .clone()
+                let response = client
                     .post(url)
                     .body(body)
                     .header("Content-Type", "text/xml; charset=utf-8")
@@ -127,6 +130,10 @@ impl ClientSUNAT {
         ticket: &str,
         credentials: &Credentials,
     ) -> Result<VerifyTicketResponse, ClientSunatErr> {
+        let client = HTTP_CLIENT
+            .as_ref()
+            .map_err(|_error| ClientSunatErr::Any(anyhow!("Could not initialize client")))?;
+
         match &target {
             VerifyTicketTarget::Soap(url) => {
                 let envelope = EnvelopeData {
@@ -137,8 +144,7 @@ impl ClientSUNAT {
 
                 let body = envelope.to_string_xml()?;
 
-                let response = HTTP_CLIENT
-                    .clone()
+                let response = client
                     .post(url)
                     .body(body)
                     .header("Content-Type", "text/xml; charset=utf-8")
