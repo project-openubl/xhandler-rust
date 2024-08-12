@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use anyhow::Result;
 use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog5, Catalog53, Catalog7, FromCode};
@@ -13,7 +14,7 @@ use crate::enricher::bounds::invoice::total_importe::{
 use crate::models::common::TotalImporteInvoice;
 
 pub trait InvoiceTotalImporteSummaryRule {
-    fn summary(&mut self) -> bool;
+    fn summary(&mut self) -> Result<bool>;
 }
 
 impl<T> InvoiceTotalImporteSummaryRule for T
@@ -25,9 +26,9 @@ where
         + InvoiceAnticiposGetter
         + IgvTasaGetter,
 {
-    fn summary(&mut self) -> bool {
+    fn summary(&mut self) -> Result<bool> {
         match &self.get_total_importe() {
-            Some(..) => false,
+            Some(..) => Ok(false),
             None => {
                 let total_impuestos = self
                     .get_detalles()
@@ -118,7 +119,7 @@ where
                     anticipos,
                     importe: importe_total,
                 });
-                true
+                Ok(true)
             }
         }
     }

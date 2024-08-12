@@ -15,42 +15,37 @@ pub struct Impuesto {
 pub fn cal_impuesto_by_tipo(detalles: &[Detalle], categoria: Catalog5) -> Impuesto {
     let stream: Vec<&Detalle> = detalles
         .iter()
-        .filter(|e| e.igv_tipo.is_some() && e.igv_tipo.is_some())
         .filter(|e| {
-            if let Ok(catalog7) = Catalog7::from_code(e.igv_tipo.unwrap()) {
-                categoria == catalog7.tax_category()
-            } else {
-                false
+            if let Some(igv_tipo) = e.igv_tipo {
+                if let Ok(catalog7) = Catalog7::from_code(igv_tipo) {
+                    return categoria == catalog7.tax_category();
+                }
             }
+            false
         })
         .collect();
 
     let base_imponible = stream
         .iter()
-        .map(|e| e.isc_base_imponible)
-        .filter(|e| e.is_some())
-        .fold(Decimal::ZERO, |a, b| a + b.unwrap());
+        .filter_map(|e| e.isc_base_imponible)
+        .fold(Decimal::ZERO, |a, b| a + b);
     let importe = stream
         .iter()
-        .map(|e| e.total_impuestos)
-        .filter(|e| e.is_some())
-        .fold(Decimal::ZERO, |a, b| a + b.unwrap());
+        .filter_map(|e| e.total_impuestos)
+        .fold(Decimal::ZERO, |a, b| a + b);
 
     let importe_isc = stream
         .iter()
-        .map(|e| e.isc)
-        .filter(|e| e.is_some())
-        .fold(Decimal::ZERO, |a, b| a + b.unwrap());
+        .filter_map(|e| e.isc)
+        .fold(Decimal::ZERO, |a, b| a + b);
     let importe_igv = stream
         .iter()
-        .map(|e| e.igv)
-        .filter(|e| e.is_some())
-        .fold(Decimal::ZERO, |a, b| a + b.unwrap());
+        .filter_map(|e| e.igv)
+        .fold(Decimal::ZERO, |a, b| a + b);
     let importe_icb = stream
         .iter()
-        .map(|e| e.icb)
-        .filter(|e| e.is_some())
-        .fold(Decimal::ZERO, |a, b| a + b.unwrap());
+        .filter_map(|e| e.icb)
+        .fold(Decimal::ZERO, |a, b| a + b);
 
     Impuesto {
         base_imponible,

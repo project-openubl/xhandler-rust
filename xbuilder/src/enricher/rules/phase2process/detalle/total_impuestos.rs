@@ -1,3 +1,4 @@
+use anyhow::Result;
 use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog7, FromCode};
@@ -10,7 +11,7 @@ use crate::enricher::bounds::detalle::total_impuestos::{
 };
 
 pub trait DetalleTotalImpuestosProcessRule {
-    fn process(&mut self) -> bool;
+    fn process(&mut self) -> Result<bool>;
 }
 
 impl<T> DetalleTotalImpuestosProcessRule for T
@@ -22,7 +23,7 @@ where
         + DetalleIcbGetter
         + DetalleIscGetter,
 {
-    fn process(&mut self) -> bool {
+    fn process(&mut self) -> Result<bool> {
         match (
             &self.get_total_impuestos(),
             &self.get_igv_tipo(),
@@ -40,12 +41,12 @@ where
 
                     let total = icb + igv_isc.0 + igv_isc.1;
                     self.set_total_impuestos(total);
-                    true
+                    Ok(true)
                 } else {
-                    false
+                    Ok(false)
                 }
             }
-            _ => false,
+            _ => Ok(false),
         }
     }
 }

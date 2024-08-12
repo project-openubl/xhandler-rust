@@ -82,14 +82,14 @@ where
 
         while changed {
             let results = [
-                FechaEmisionFillRule::fill(self, defaults),
-                FirmanteFillRule::fill(self),
-                IcbTasaFillRule::fill(self, defaults),
-                IgvTasaFillRule::fill(self, defaults),
-                IvapTasaFillRule::fill(self, defaults),
-                MonedaFillRule::fill(self),
-                ProveedorFillRule::fill(self),
-                DetallesFillRule::fill(self),
+                FechaEmisionFillRule::fill(self, defaults).map_or(false, |e| e),
+                FirmanteFillRule::fill(self).map_or(false, |e| e),
+                IcbTasaFillRule::fill(self, defaults).map_or(false, |e| e),
+                IgvTasaFillRule::fill(self, defaults).map_or(false, |e| e),
+                IvapTasaFillRule::fill(self, defaults).map_or(false, |e| e),
+                MonedaFillRule::fill(self).map_or(false, |e| e),
+                ProveedorFillRule::fill(self).map_or(false, |e| e),
+                DetallesFillRule::fill(self).map_or(false, |e| e),
             ];
 
             changed = results.contains(&true);
@@ -115,16 +115,16 @@ where
 
         while changed {
             let results = [
-                InvoiceAnticiposFillRule::fill(self),
-                InvoiceDescuentosFillRule::fill(self),
-                InvoiceFormaDePagoFillRule::fill(self),
-                InvoiceFormaDePagoTotalRule::fill(self),
-                InvoiceFormaDePagoTipoRule::fill(self),
-                InvoiceLeyendaDetraccionFillRule::fill(self),
-                InvoiceLeyendaDireccionEntregaFillRule::fill(self),
-                InvoiceLeyendaPercepcionFillRule::fill(self),
-                InvoiceTipoComprobanteFillRule::fill(self),
-                InvoiceTipoOperacionFillRule::fill(self),
+                InvoiceAnticiposFillRule::fill(self).map_or(false, |e| e),
+                InvoiceDescuentosFillRule::fill(self).map_or(false, |e| e),
+                InvoiceFormaDePagoFillRule::fill(self).map_or(false, |e| e),
+                InvoiceFormaDePagoTotalRule::fill(self).map_or(false, |e| e),
+                InvoiceFormaDePagoTipoRule::fill(self).map_or(false, |e| e),
+                InvoiceLeyendaDetraccionFillRule::fill(self).map_or(false, |e| e),
+                InvoiceLeyendaDireccionEntregaFillRule::fill(self).map_or(false, |e| e),
+                InvoiceLeyendaPercepcionFillRule::fill(self).map_or(false, |e| e),
+                InvoiceTipoComprobanteFillRule::fill(self).map_or(false, |e| e),
+                InvoiceTipoOperacionFillRule::fill(self).map_or(false, |e| e),
             ];
 
             changed = results.contains(&true);
@@ -141,8 +141,8 @@ where
 
         while changed {
             let results = [
-                NoteComprobanteAfectadoTipoFillRule::fill(self),
-                CreditNoteTipoFillRule::fill(self),
+                NoteComprobanteAfectadoTipoFillRule::fill(self).map_or(false, |e| e),
+                CreditNoteTipoFillRule::fill(self).map_or(false, |e| e),
             ];
 
             changed = results.contains(&true);
@@ -159,8 +159,8 @@ where
 
         while changed {
             let results = [
-                NoteComprobanteAfectadoTipoFillRule::fill(self),
-                DebitNoteTipoFillRule::fill(self),
+                NoteComprobanteAfectadoTipoFillRule::fill(self).map_or(false, |e| e),
+                DebitNoteTipoFillRule::fill(self).map_or(false, |e| e),
             ];
 
             changed = results.contains(&true);

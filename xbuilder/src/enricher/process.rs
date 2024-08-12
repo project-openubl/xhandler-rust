@@ -49,7 +49,7 @@ where
         let mut changed = true;
 
         while changed {
-            let results = [DetallesProcessRule::process(self)];
+            let results = [DetallesProcessRule::process(self).map_or(false, |e| e)];
 
             changed = results.contains(&true);
         }

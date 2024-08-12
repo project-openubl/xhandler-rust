@@ -1,15 +1,17 @@
+use anyhow::Result;
+
 use crate::enricher::bounds::proveedor::{ProveedorGetter, ProveedorSetter};
 use crate::models::common::Direccion;
 
 pub trait ProveedorFillRule {
-    fn fill(&mut self) -> bool;
+    fn fill(&mut self) -> Result<bool>;
 }
 
 impl<T> ProveedorFillRule for T
 where
     T: ProveedorGetter + ProveedorSetter,
 {
-    fn fill(&mut self) -> bool {
+    fn fill(&mut self) -> Result<bool> {
         match &self.get_proveedor().direccion {
             Some(direccion) => match direccion.codigo_local {
                 None => {
@@ -17,9 +19,9 @@ where
                         codigo_local: Some("0000"),
                         ..*direccion
                     });
-                    true
+                    Ok(true)
                 }
-                Some(_) => false,
+                Some(_) => Ok(false),
             },
             None => {
                 self.set_proveedor_direccion(Direccion {
@@ -32,7 +34,7 @@ where
                     ubigeo: None,
                     codigo_local: Some("0000"),
                 });
-                true
+                Ok(true)
             }
         }
     }

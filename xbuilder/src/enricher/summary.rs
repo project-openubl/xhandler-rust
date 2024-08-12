@@ -58,7 +58,7 @@ where
         let mut changed = true;
 
         while changed {
-            let results = [LeyendaIVAPSummaryRule::summary(self)];
+            let results = [LeyendaIVAPSummaryRule::summary(self).map_or(false, |e| e)];
 
             changed = results.contains(&true);
         }
@@ -77,10 +77,10 @@ where
 
         while changed {
             let results = [
-                InvoiceTotalImpuestosSummaryRule::summary(self),
-                InvoiceTotalImporteSummaryRule::summary(self),
-                PercepcionSummaryRule::summary(self),
-                DetraccionSummaryRule::summary(self),
+                InvoiceTotalImpuestosSummaryRule::summary(self).map_or(false, |e| e),
+                InvoiceTotalImporteSummaryRule::summary(self).map_or(false, |e| e),
+                PercepcionSummaryRule::summary(self).map_or(false, |e| e),
+                DetraccionSummaryRule::summary(self).map_or(false, |e| e),
             ];
 
             changed = results.contains(&true);
@@ -97,8 +97,8 @@ where
 
         while changed {
             let results = [
-                NoteTotalImpuestosSummaryRule::summary(self),
-                NoteTotalImporteSummaryRule::summary(self),
+                NoteTotalImpuestosSummaryRule::summary(self).map_or(false, |e| e),
+                NoteTotalImporteSummaryRule::summary(self).map_or(false, |e| e),
             ];
 
             changed = results.contains(&true);
@@ -115,8 +115,8 @@ where
 
         while changed {
             let results = [
-                NoteTotalImpuestosSummaryRule::summary(self),
-                NoteTotalImporteSummaryRule::summary(self),
+                NoteTotalImpuestosSummaryRule::summary(self).map_or(false, |e| e),
+                NoteTotalImporteSummaryRule::summary(self).map_or(false, |e| e),
             ];
 
             changed = results.contains(&true);

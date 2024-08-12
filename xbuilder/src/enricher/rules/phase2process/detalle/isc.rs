@@ -1,3 +1,4 @@
+use anyhow::Result;
 use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog7, Catalog7Group, FromCode};
@@ -7,7 +8,7 @@ use crate::enricher::bounds::detalle::isc_base_imponible::DetalleIscBaseImponibl
 use crate::enricher::bounds::detalle::isc_tasa::DetalleIscTasaGetter;
 
 pub trait DetalleISCProcessRule {
-    fn process(&mut self) -> bool;
+    fn process(&mut self) -> Result<bool>;
 }
 
 impl<T> DetalleISCProcessRule for T
@@ -18,7 +19,7 @@ where
         + DetalleIscTasaGetter
         + DetalleIgvTipoGetter,
 {
-    fn process(&mut self) -> bool {
+    fn process(&mut self) -> Result<bool> {
         match (
             &self.get_isc(),
             &self.get_isc_base_imponible(),
@@ -41,12 +42,12 @@ where
 
                     let isc = isc_base_imponible * tasa;
                     self.set_isc(isc);
-                    true
+                    Ok(true)
                 } else {
-                    false
+                    Ok(false)
                 }
             }
-            _ => false,
+            _ => Ok(false),
         }
     }
 }

@@ -1,3 +1,4 @@
+use anyhow::Result;
 use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog7, FromCode};
@@ -8,7 +9,7 @@ use crate::enricher::bounds::detalle::precio::{DetallePrecioGetter, DetallePreci
 use crate::enricher::bounds::detalle::precio_con_impuestos::DetallePrecioConImpuestosGetter;
 
 pub trait DetallePrecioProcessRule {
-    fn process(&mut self) -> bool;
+    fn process(&mut self) -> Result<bool>;
 }
 
 impl<T> DetallePrecioProcessRule for T
@@ -20,7 +21,7 @@ where
         + DetalleIgvTasaGetter
         + DetalleIscTasaGetter,
 {
-    fn process(&mut self) -> bool {
+    fn process(&mut self) -> Result<bool> {
         match (
             &self.get_precio(),
             &self.get_igv_tipo(),
@@ -39,9 +40,9 @@ where
                     };
 
                     self.set_precio(precio);
-                    true
+                    Ok(true)
                 } else {
-                    false
+                    Ok(false)
                 }
             }
             // Si operacion onerosa y precio es diferente de cero => modificarlo
@@ -49,15 +50,15 @@ where
                 if let Ok(catalog) = Catalog7::from_code(igv_tipo) {
                     if !catalog.onerosa() && precio > &Decimal::ZERO {
                         self.set_precio(Decimal::ZERO);
-                        true
+                        Ok(true)
                     } else {
-                        false
+                        Ok(false)
                     }
                 } else {
-                    false
+                    Ok(false)
                 }
             }
-            _ => false,
+            _ => Ok(false),
         }
     }
 }

@@ -1,3 +1,4 @@
+use anyhow::Result;
 use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog, Catalog53};
@@ -6,52 +7,54 @@ use crate::enricher::bounds::invoice::descuentos::{
 };
 
 pub trait InvoiceDescuentosFillRule {
-    fn fill(&mut self) -> bool;
+    fn fill(&mut self) -> Result<bool>;
 }
 
 impl<T> InvoiceDescuentosFillRule for T
 where
     T: InvoiceDescuentosGetter,
 {
-    fn fill(&mut self) -> bool {
-        self.get_descuentos()
+    fn fill(&mut self) -> Result<bool> {
+        let result = self
+            .get_descuentos()
             .iter_mut()
             .map(|descuento| {
                 let results = [
-                    DescuentoFactorRule::fill(descuento),
-                    DescuentoMontoBaseRule::fill(descuento),
-                    DescuentoTipoRule::fill(descuento),
+                    DescuentoFactorRule::fill(descuento).map_or(false, |e| e),
+                    DescuentoMontoBaseRule::fill(descuento).map_or(false, |e| e),
+                    DescuentoTipoRule::fill(descuento).map_or(false, |e| e),
                 ];
                 results.contains(&true)
             })
-            .any(|changed| changed)
+            .any(|changed| changed);
+        Ok(result)
     }
 }
 
 //
 
 pub trait DescuentoFactorRule {
-    fn fill(&mut self) -> bool;
+    fn fill(&mut self) -> Result<bool>;
 }
 
 pub trait DescuentoMontoBaseRule {
-    fn fill(&mut self) -> bool;
+    fn fill(&mut self) -> Result<bool>;
 }
 
 pub trait DescuentoTipoRule {
-    fn fill(&mut self) -> bool;
+    fn fill(&mut self) -> Result<bool>;
 }
 
 impl<T> DescuentoFactorRule for T
 where
     T: DescuentoGetter + DescuentoSetter,
 {
-    fn fill(&mut self) -> bool {
+    fn fill(&mut self) -> Result<bool> {
         match self.get_factor() {
-            Some(..) => false,
+            Some(..) => Ok(false),
             None => {
                 self.set_factor(Decimal::ONE);
-                true
+                Ok(true)
             }
         }
     }
@@ -61,12 +64,12 @@ impl<T> DescuentoMontoBaseRule for T
 where
     T: DescuentoGetter + DescuentoSetter,
 {
-    fn fill(&mut self) -> bool {
+    fn fill(&mut self) -> Result<bool> {
         match self.get_monto_base() {
-            Some(..) => false,
+            Some(..) => Ok(false),
             None => {
                 self.set_monto_base(self.get_monto());
-                true
+                Ok(true)
             }
         }
     }
@@ -76,12 +79,12 @@ impl<T> DescuentoTipoRule for T
 where
     T: DescuentoGetter + DescuentoSetter,
 {
-    fn fill(&mut self) -> bool {
+    fn fill(&mut self) -> Result<bool> {
         match self.get_tipo() {
-            Some(..) => false,
+            Some(..) => Ok(false),
             None => {
                 self.set_tipo(Catalog53::DescuentoGlobalNoAfectaBaseImponibleIgvIvap.code());
-                true
+                Ok(true)
             }
         }
     }

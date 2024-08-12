@@ -1,3 +1,4 @@
+use anyhow::Result;
 use log::warn;
 
 use crate::catalogs::{Catalog7, FromCode};
@@ -11,7 +12,7 @@ use crate::enricher::bounds::detalle::precio::DetallePrecioGetter;
 use crate::enricher::bounds::detalle::precio_referencia::DetallePrecioReferenciaGetter;
 
 pub trait DetalleIGVBaseImponibleProcessRule {
-    fn process(&mut self) -> bool;
+    fn process(&mut self) -> Result<bool>;
 }
 
 impl<T> DetalleIGVBaseImponibleProcessRule for T
@@ -24,7 +25,7 @@ where
         + DetallePrecioReferenciaGetter
         + DetalleIscGetter,
 {
-    fn process(&mut self) -> bool {
+    fn process(&mut self) -> Result<bool> {
         match (
             &self.get_igv_base_imponible(),
             &self.get_igv_tipo(),
@@ -41,13 +42,13 @@ where
                     };
 
                     self.set_igv_base_imponible(base_imponible + *isc);
-                    true
+                    Ok(true)
                 } else {
                     warn!("DetalleIGVBaseImponibleProcessRule: {igv_tipo} codigo no valido para Catalog7");
-                    false
+                    Ok(false)
                 }
             }
-            _ => false,
+            _ => Ok(false),
         }
     }
 }

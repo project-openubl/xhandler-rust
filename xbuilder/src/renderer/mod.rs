@@ -23,9 +23,9 @@ fn catalog7_taxcategory() -> impl Function {
                         Ok(catalog7) => {
                             let category = catalog7.tax_category();
                             match field.as_str() {
-                                "code" => Ok(to_value(category.code()).unwrap()),
-                                "nombre" => Ok(to_value(category.nombre()).unwrap()),
-                                "tipo" => Ok(to_value(category.tipo()).unwrap()),
+                                "code" => Ok(to_value(category.code())?),
+                                "nombre" => Ok(to_value(category.nombre())?),
+                                "tipo" => Ok(to_value(category.tipo())?),
                                 _ => Err("Parameter field not supported.".into()),
                             }
                         }
@@ -43,8 +43,12 @@ fn catalog7_taxcategory() -> impl Function {
 pub fn multiply100(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Error> {
     match value.as_str() {
         Some(string) => {
-            let decimal = Decimal::from_str(string).unwrap() * Decimal::from_str("100").unwrap();
-            Ok(to_value(decimal).unwrap())
+            let decimal =
+                Decimal::from_str(string).map_err(|err| tera::Error::msg(err.to_string()))?;
+            let hundred =
+                Decimal::from_str("100").map_err(|err| tera::Error::msg(err.to_string()))?;
+            let result = decimal * hundred;
+            Ok(to_value(result)?)
         }
         None => Err("number could not be parsed to string".into()),
     }
@@ -53,11 +57,10 @@ pub fn multiply100(value: &Value, _: &HashMap<String, Value>) -> Result<Value, E
 pub fn round_decimal(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Error> {
     match value.as_str() {
         Some(number) => {
-            let rounded = Decimal::from_str(number)
-                .unwrap()
-                .round_dp(2)
-                .trunc_with_scale(2);
-            Ok(to_value(rounded).unwrap())
+            let decimal =
+                Decimal::from_str(number).map_err(|err| tera::Error::msg(err.to_string()))?;
+            let rounded = decimal.round_dp(2).trunc_with_scale(2);
+            Ok(to_value(rounded)?)
         }
         None => Err("number could not be parsed to string".into()),
     }
@@ -67,7 +70,7 @@ pub fn currency(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Erro
     match value.as_str() {
         Some(number) => {
             let result = format!("{:.2}", number);
-            Ok(to_value(result).unwrap())
+            Ok(to_value(result)?)
         }
         None => Err("currency needs a number".into()),
     }
@@ -77,7 +80,7 @@ pub fn format03d(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Err
     match value.as_u64() {
         Some(number) => {
             let result = format!("{:03}", number);
-            Ok(to_value(result).unwrap())
+            Ok(to_value(result)?)
         }
         None => Err("format03d could not find a string".into()),
     }
