@@ -1,3 +1,4 @@
+use anyhow::Result;
 use rust_decimal::Decimal;
 
 use crate::enricher::bounds::invoice::percepcion::{
@@ -10,44 +11,44 @@ use crate::enricher::bounds::invoice::total_importe::InvoiceTotalImporteGetter;
 use crate::models::common::TotalImporteInvoice;
 
 pub trait PercepcionSummaryRule {
-    fn summary(&mut self) -> bool;
+    fn summary(&mut self) -> Result<bool>;
 }
 
 impl<T> PercepcionSummaryRule for T
 where
     T: InvoicePercepcionGetter + InvoiceTotalImporteGetter,
 {
-    fn summary(&mut self) -> bool {
+    fn summary(&mut self) -> Result<bool> {
         match (self.get_total_importe().clone(), self.get_percepcion()) {
             (Some(total_importe), Some(percepcion)) => [
-                PerceptionPorcentajeBaseRule::summary(percepcion),
-                PerceptionMontoBaseRule::summary(percepcion, &total_importe),
-                PerceptionMontoRule::summary(percepcion),
-                PerceptionMontoTotalRule::summary(percepcion),
+                PerceptionPorcentajeBaseRule::summary(percepcion).unwrap_or_default(),
+                PerceptionMontoBaseRule::summary(percepcion, &total_importe).unwrap_or_default(),
+                PerceptionMontoRule::summary(percepcion).unwrap_or_default(),
+                PerceptionMontoTotalRule::summary(percepcion).unwrap_or_default(),
             ]
             .contains(&true),
             _ => false,
         };
-        false
+        Ok(false)
     }
 }
 
 //
 
 pub trait PerceptionPorcentajeBaseRule {
-    fn summary(&mut self) -> bool;
+    fn summary(&mut self) -> Result<bool>;
 }
 
 impl<T> PerceptionPorcentajeBaseRule for T
 where
     T: InvoicePercepcionPorcentajeGetter + InvoicePercepcionPorcentajeSetter,
 {
-    fn summary(&mut self) -> bool {
+    fn summary(&mut self) -> Result<bool> {
         match &self.get_porcentaje() {
-            Some(_) => false,
+            Some(_) => Ok(false),
             None => {
                 self.set_porcentaje(Decimal::ONE);
-                true
+                Ok(true)
             }
         }
     }
@@ -56,19 +57,19 @@ where
 //
 
 pub trait PerceptionMontoBaseRule {
-    fn summary(&mut self, total_importe: &TotalImporteInvoice) -> bool;
+    fn summary(&mut self, total_importe: &TotalImporteInvoice) -> Result<bool>;
 }
 
 impl<T> PerceptionMontoBaseRule for T
 where
     T: InvoicePercepcionMontoBaseGetter + InvoicePercepcionMontoBaseSetter,
 {
-    fn summary(&mut self, total_importe: &TotalImporteInvoice) -> bool {
+    fn summary(&mut self, total_importe: &TotalImporteInvoice) -> Result<bool> {
         match &self.get_montobase() {
-            Some(_) => false,
+            Some(_) => Ok(false),
             None => {
                 self.set_montobase(total_importe.importe_sin_impuestos);
-                true
+                Ok(true)
             }
         }
     }
@@ -77,7 +78,7 @@ where
 //
 
 pub trait PerceptionMontoRule {
-    fn summary(&mut self) -> bool;
+    fn summary(&mut self) -> Result<bool>;
 }
 
 impl<T> PerceptionMontoRule for T
@@ -87,7 +88,7 @@ where
         + InvoicePercepcionMontoBaseGetter
         + InvoicePercepcionPorcentajeGetter,
 {
-    fn summary(&mut self) -> bool {
+    fn summary(&mut self) -> Result<bool> {
         match (
             self.get_monto(),
             self.get_montobase(),
@@ -95,9 +96,9 @@ where
         ) {
             (None, Some(monto_base), Some(porcentaje)) => {
                 self.set_monto(monto_base * porcentaje);
-                false
+                Ok(false)
             }
-            _ => false,
+            _ => Ok(false),
         }
     }
 }
@@ -105,7 +106,7 @@ where
 //
 
 pub trait PerceptionMontoTotalRule {
-    fn summary(&mut self) -> bool;
+    fn summary(&mut self) -> Result<bool>;
 }
 
 impl<T> PerceptionMontoTotalRule for T
@@ -115,7 +116,7 @@ where
         + InvoicePercepcionMontoBaseGetter
         + InvoicePercepcionMontoGetter,
 {
-    fn summary(&mut self) -> bool {
+    fn summary(&mut self) -> Result<bool> {
         match (
             self.get_montototal(),
             self.get_montobase(),
@@ -123,9 +124,9 @@ where
         ) {
             (None, Some(monto_total), Some(monto)) => {
                 self.set_montototal(monto_total + monto);
-                false
+                Ok(false)
             }
-            _ => false,
+            _ => Ok(false),
         }
     }
 }

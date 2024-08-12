@@ -58,7 +58,7 @@ where
         let mut changed = true;
 
         while changed {
-            let results = [LeyendaIVAPSummaryRule::summary(self)];
+            let results = [LeyendaIVAPSummaryRule::summary(self).unwrap_or_default()];
 
             changed = results.contains(&true);
         }
@@ -77,10 +77,10 @@ where
 
         while changed {
             let results = [
-                InvoiceTotalImpuestosSummaryRule::summary(self),
-                InvoiceTotalImporteSummaryRule::summary(self),
-                PercepcionSummaryRule::summary(self),
-                DetraccionSummaryRule::summary(self),
+                InvoiceTotalImpuestosSummaryRule::summary(self).unwrap_or_default(),
+                InvoiceTotalImporteSummaryRule::summary(self).unwrap_or_default(),
+                PercepcionSummaryRule::summary(self).unwrap_or_default(),
+                DetraccionSummaryRule::summary(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);
@@ -97,8 +97,8 @@ where
 
         while changed {
             let results = [
-                NoteTotalImpuestosSummaryRule::summary(self),
-                NoteTotalImporteSummaryRule::summary(self),
+                NoteTotalImpuestosSummaryRule::summary(self).unwrap_or_default(),
+                NoteTotalImporteSummaryRule::summary(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);
@@ -115,8 +115,8 @@ where
 
         while changed {
             let results = [
-                NoteTotalImpuestosSummaryRule::summary(self),
-                NoteTotalImporteSummaryRule::summary(self),
+                NoteTotalImpuestosSummaryRule::summary(self).unwrap_or_default(),
+                NoteTotalImporteSummaryRule::summary(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);

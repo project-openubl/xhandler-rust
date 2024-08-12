@@ -1,3 +1,5 @@
+use anyhow::Result;
+
 use crate::enricher::bounds::detalle::DetallesGetter;
 use crate::enricher::rules::phase2process::detalle::icb::DetalleICBProcessRule;
 use crate::enricher::rules::phase2process::detalle::icb_aplica::DetalleICBAplicaProcessRule;
@@ -11,37 +13,39 @@ use crate::enricher::rules::phase2process::detalle::precio_referencia::DetallePr
 use crate::enricher::rules::phase2process::detalle::total_impuestos::DetalleTotalImpuestosProcessRule;
 
 pub trait DetallesProcessRule {
-    fn process(&mut self) -> bool;
+    fn process(&mut self) -> Result<bool>;
 }
 
 impl<T> DetallesProcessRule for T
 where
     T: DetallesGetter,
 {
-    fn process(&mut self) -> bool {
-        self.get_detalles()
+    fn process(&mut self) -> Result<bool> {
+        let result = self
+            .get_detalles()
             .iter_mut()
             .map(|detalle| {
                 let results = [
-                    DetallePrecioProcessRule::process(detalle),
-                    DetallePrecioConImpuestosProcessRule::process(detalle),
-                    DetallePrecioReferenciaProcessRule::process(detalle),
+                    DetallePrecioProcessRule::process(detalle).unwrap_or_default(),
+                    DetallePrecioConImpuestosProcessRule::process(detalle).unwrap_or_default(),
+                    DetallePrecioReferenciaProcessRule::process(detalle).unwrap_or_default(),
                 ];
                 if results.contains(&true) {
                     true
                 } else {
                     let results = [
-                        DetalleICBProcessRule::process(detalle),
-                        DetalleICBAplicaProcessRule::process(detalle),
-                        DetalleIGVProcessRule::process(detalle),
-                        DetalleISCProcessRule::process(detalle),
-                        DetalleTotalImpuestosProcessRule::process(detalle),
-                        DetalleIGVBaseImponibleProcessRule::process(detalle),
-                        DetalleISCBaseImponibleProcessRule::process(detalle),
+                        DetalleICBProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleICBAplicaProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleIGVProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleISCProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleTotalImpuestosProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleIGVBaseImponibleProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleISCBaseImponibleProcessRule::process(detalle).unwrap_or_default(),
                     ];
                     results.contains(&true)
                 }
             })
-            .any(|changed| changed)
+            .any(|changed| changed);
+        Ok(result)
     }
 }

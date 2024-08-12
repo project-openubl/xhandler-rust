@@ -2932,6 +2932,7 @@ dependencies = [
 name = "xbuilder"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "chrono",
  "lazy_static",
  "libxml",
@@ -2943,6 +2944,7 @@ dependencies = [
  "serial_test",
  "static-files",
  "tera",
+ "thiserror",
  "tokio",
  "xsender",
  "xsigner",

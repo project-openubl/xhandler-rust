@@ -1,3 +1,4 @@
+use anyhow::{anyhow, Result};
 use rust_decimal::Decimal;
 
 use crate::enricher::bounds::detalle::DetallesGetter;
@@ -19,34 +20,43 @@ pub struct DetalleDefaults {
 }
 
 pub trait DetallesFillRule {
-    fn fill(&mut self) -> bool;
+    fn fill(&mut self) -> Result<bool>;
 }
 
 impl<T> DetallesFillRule for T
 where
     T: DetallesGetter + IgvTasaGetter + IcbTasaGetter + IvapTasaGetter,
 {
-    fn fill(&mut self) -> bool {
+    fn fill(&mut self) -> Result<bool> {
         let defaults = &DetalleDefaults {
-            igv_tasa: self.get_igv_tasa().expect("IGV Tasa could not be found"),
-            icb_tasa: self.get_icb_tasa().expect("IBC Tasa could not be found"),
-            ivap_tasa: self.get_ivap_tasa().expect("IVAP Tasa could not be found"),
+            igv_tasa: self
+                .get_igv_tasa()
+                .ok_or(anyhow!("IGV Tasa could not be found"))?,
+            icb_tasa: self
+                .get_icb_tasa()
+                .ok_or(anyhow!("IBC Tasa could not be found"))?,
+            ivap_tasa: self
+                .get_ivap_tasa()
+                .ok_or(anyhow!("IVAP Tasa could not be found"))?,
         };
 
-        self.get_detalles()
+        let result = self
+            .get_detalles()
             .iter_mut()
             .map(|detalle| {
                 let results = [
-                    DetalleICBTasaFillRule::fill(detalle, defaults),
-                    DetalleIGVTasaFillRule::fill(detalle, defaults),
-                    DetalleIGVTipoFillRule::fill(detalle, defaults),
-                    DetalleISCTasaFillRule::fill(detalle, defaults),
-                    DetalleISCTipoFillRule::fill(detalle, defaults),
-                    DetallePrecioReferenciaTipoFillRule::fill(detalle, defaults),
-                    DetalleUnidadMedidaFillRule::fill(detalle, defaults),
+                    DetalleICBTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                    DetalleIGVTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                    DetalleIGVTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
+                    DetalleISCTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                    DetalleISCTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
+                    DetallePrecioReferenciaTipoFillRule::fill(detalle, defaults)
+                        .unwrap_or_default(),
+                    DetalleUnidadMedidaFillRule::fill(detalle, defaults).unwrap_or_default(),
                 ];
                 results.contains(&true)
             })
-            .any(|changed| changed)
+            .any(|changed| changed);
+        Ok(result)
     }
 }

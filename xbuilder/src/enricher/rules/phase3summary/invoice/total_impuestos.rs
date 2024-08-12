@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use anyhow::Result;
 use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog5, Catalog53, FromCode};
@@ -11,7 +12,7 @@ use crate::enricher::rules::phase3summary::utils::cal_impuesto_by_tipo;
 use crate::models::common::TotalImpuestos;
 
 pub trait InvoiceTotalImpuestosSummaryRule {
-    fn summary(&mut self) -> bool;
+    fn summary(&mut self) -> Result<bool>;
 }
 
 impl<T> InvoiceTotalImpuestosSummaryRule for T
@@ -22,9 +23,9 @@ where
         + InvoiceDescuentosGetter
         + InvoiceAnticiposGetter,
 {
-    fn summary(&mut self) -> bool {
+    fn summary(&mut self) -> Result<bool> {
         match &self.get_total_impuestos() {
-            Some(..) => false,
+            Some(..) => Ok(false),
             None => {
                 let ivap = cal_impuesto_by_tipo(self.get_detalles(), Catalog5::ImpuestoArrozPilado);
                 let exportacion = cal_impuesto_by_tipo(self.get_detalles(), Catalog5::Exportacion);
@@ -148,7 +149,7 @@ where
                 };
 
                 self.set_total_impuestos(total_impuestos);
-                true
+                Ok(true)
             }
         }
     }
