@@ -22,8 +22,8 @@ where
             .iter_mut()
             .map(|anticipo| {
                 let results = [
-                    AnticipoTipoRule::fill(anticipo).map_or(false, |e| e),
-                    AnticipoComprobanteTipoRule::fill(anticipo).map_or(false, |e| e),
+                    AnticipoTipoRule::fill(anticipo).unwrap_or_default(),
+                    AnticipoComprobanteTipoRule::fill(anticipo).unwrap_or_default(),
                 ];
                 results.contains(&true)
             })

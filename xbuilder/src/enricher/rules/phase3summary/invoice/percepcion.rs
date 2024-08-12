@@ -21,10 +21,10 @@ where
     fn summary(&mut self) -> Result<bool> {
         match (self.get_total_importe().clone(), self.get_percepcion()) {
             (Some(total_importe), Some(percepcion)) => [
-                PerceptionPorcentajeBaseRule::summary(percepcion).map_or(false, |e| e),
-                PerceptionMontoBaseRule::summary(percepcion, &total_importe).map_or(false, |e| e),
-                PerceptionMontoRule::summary(percepcion).map_or(false, |e| e),
-                PerceptionMontoTotalRule::summary(percepcion).map_or(false, |e| e),
+                PerceptionPorcentajeBaseRule::summary(percepcion).unwrap_or_default(),
+                PerceptionMontoBaseRule::summary(percepcion, &total_importe).unwrap_or_default(),
+                PerceptionMontoRule::summary(percepcion).unwrap_or_default(),
+                PerceptionMontoTotalRule::summary(percepcion).unwrap_or_default(),
             ]
             .contains(&true),
             _ => false,

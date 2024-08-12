@@ -19,7 +19,7 @@ where
         match (self.get_total_importe().clone(), self.get_detraccion()) {
             (Some(total_importe), Some(detraccion)) => {
                 let results = [
-                    DetraccionMontoRule::summary(detraccion, &total_importe).map_or(false, |e| e)
+                    DetraccionMontoRule::summary(detraccion, &total_importe).unwrap_or_default()
                 ];
                 Ok(results.contains(&true))
             }

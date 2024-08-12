@@ -58,7 +58,7 @@ where
         let mut changed = true;
 
         while changed {
-            let results = [LeyendaIVAPSummaryRule::summary(self).map_or(false, |e| e)];
+            let results = [LeyendaIVAPSummaryRule::summary(self).unwrap_or_default()];
 
             changed = results.contains(&true);
         }
@@ -77,10 +77,10 @@ where
 
         while changed {
             let results = [
-                InvoiceTotalImpuestosSummaryRule::summary(self).map_or(false, |e| e),
-                InvoiceTotalImporteSummaryRule::summary(self).map_or(false, |e| e),
-                PercepcionSummaryRule::summary(self).map_or(false, |e| e),
-                DetraccionSummaryRule::summary(self).map_or(false, |e| e),
+                InvoiceTotalImpuestosSummaryRule::summary(self).unwrap_or_default(),
+                InvoiceTotalImporteSummaryRule::summary(self).unwrap_or_default(),
+                PercepcionSummaryRule::summary(self).unwrap_or_default(),
+                DetraccionSummaryRule::summary(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);
@@ -97,8 +97,8 @@ where
 
         while changed {
             let results = [
-                NoteTotalImpuestosSummaryRule::summary(self).map_or(false, |e| e),
-                NoteTotalImporteSummaryRule::summary(self).map_or(false, |e| e),
+                NoteTotalImpuestosSummaryRule::summary(self).unwrap_or_default(),
+                NoteTotalImporteSummaryRule::summary(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);
@@ -115,8 +115,8 @@ where
 
         while changed {
             let results = [
-                NoteTotalImpuestosSummaryRule::summary(self).map_or(false, |e| e),
-                NoteTotalImporteSummaryRule::summary(self).map_or(false, |e| e),
+                NoteTotalImpuestosSummaryRule::summary(self).unwrap_or_default(),
+                NoteTotalImporteSummaryRule::summary(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);

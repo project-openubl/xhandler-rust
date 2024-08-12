@@ -45,14 +45,14 @@ where
             .iter_mut()
             .map(|detalle| {
                 let results = [
-                    DetalleICBTasaFillRule::fill(detalle, defaults).map_or(false, |e| e),
-                    DetalleIGVTasaFillRule::fill(detalle, defaults).map_or(false, |e| e),
-                    DetalleIGVTipoFillRule::fill(detalle, defaults).map_or(false, |e| e),
-                    DetalleISCTasaFillRule::fill(detalle, defaults).map_or(false, |e| e),
-                    DetalleISCTipoFillRule::fill(detalle, defaults).map_or(false, |e| e),
+                    DetalleICBTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                    DetalleIGVTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                    DetalleIGVTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
+                    DetalleISCTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                    DetalleISCTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
                     DetallePrecioReferenciaTipoFillRule::fill(detalle, defaults)
-                        .map_or(false, |e| e),
-                    DetalleUnidadMedidaFillRule::fill(detalle, defaults).map_or(false, |e| e),
+                        .unwrap_or_default(),
+                    DetalleUnidadMedidaFillRule::fill(detalle, defaults).unwrap_or_default(),
                 ];
                 results.contains(&true)
             })

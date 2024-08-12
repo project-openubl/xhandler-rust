@@ -20,9 +20,9 @@ where
             .iter_mut()
             .map(|descuento| {
                 let results = [
-                    DescuentoFactorRule::fill(descuento).map_or(false, |e| e),
-                    DescuentoMontoBaseRule::fill(descuento).map_or(false, |e| e),
-                    DescuentoTipoRule::fill(descuento).map_or(false, |e| e),
+                    DescuentoFactorRule::fill(descuento).unwrap_or_default(),
+                    DescuentoMontoBaseRule::fill(descuento).unwrap_or_default(),
+                    DescuentoTipoRule::fill(descuento).unwrap_or_default(),
                 ];
                 results.contains(&true)
             })

@@ -26,21 +26,21 @@ where
             .iter_mut()
             .map(|detalle| {
                 let results = [
-                    DetallePrecioProcessRule::process(detalle).map_or(false, |e| e),
-                    DetallePrecioConImpuestosProcessRule::process(detalle).map_or(false, |e| e),
-                    DetallePrecioReferenciaProcessRule::process(detalle).map_or(false, |e| e),
+                    DetallePrecioProcessRule::process(detalle).unwrap_or_default(),
+                    DetallePrecioConImpuestosProcessRule::process(detalle).unwrap_or_default(),
+                    DetallePrecioReferenciaProcessRule::process(detalle).unwrap_or_default(),
                 ];
                 if results.contains(&true) {
                     true
                 } else {
                     let results = [
-                        DetalleICBProcessRule::process(detalle).map_or(false, |e| e),
-                        DetalleICBAplicaProcessRule::process(detalle).map_or(false, |e| e),
-                        DetalleIGVProcessRule::process(detalle).map_or(false, |e| e),
-                        DetalleISCProcessRule::process(detalle).map_or(false, |e| e),
-                        DetalleTotalImpuestosProcessRule::process(detalle).map_or(false, |e| e),
-                        DetalleIGVBaseImponibleProcessRule::process(detalle).map_or(false, |e| e),
-                        DetalleISCBaseImponibleProcessRule::process(detalle).map_or(false, |e| e),
+                        DetalleICBProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleICBAplicaProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleIGVProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleISCProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleTotalImpuestosProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleIGVBaseImponibleProcessRule::process(detalle).unwrap_or_default(),
+                        DetalleISCBaseImponibleProcessRule::process(detalle).unwrap_or_default(),
                     ];
                     results.contains(&true)
                 }
