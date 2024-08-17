@@ -2951,6 +2951,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "xhandler"
+version = "0.1.0"
+dependencies = [
+ "xbuilder",
+ "xsender",
+ "xsigner",
+]
+
+[[package]]
 name = "xml"
 version = "0.8.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
