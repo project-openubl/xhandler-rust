@@ -13,7 +13,7 @@ tera = { workspace = true }
 static-files = { workspace = true }
 lazy_static = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
-rust_decimal = { workspace = true, features = ["serde-str", "serde-with-str"] }
+rust_decimal = { workspace = true }
 rust_decimal_macros = { workspace = true }
 thiserror = { workspace = true }
 anyhow = { workspace = true }
