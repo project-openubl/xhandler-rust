@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["xbuilder", "xsender", "xsigner", "lib"]
+members = ["xbuilder", "xsender", "xsigner", "xhandler"]
 
 [workspace.dependencies]
 chrono = { version = "0.4.31", features = ["serde"] }
