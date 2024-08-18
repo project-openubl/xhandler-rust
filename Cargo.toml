@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["xbuilder", "xsender", "xsigner"]
+members = ["xbuilder", "xsender", "xsigner", "xhandler"]
 
 [workspace.dependencies]
 chrono = { version = "0.4.31", features = ["serde"] }
@@ -10,11 +10,8 @@ tera = "1.19.1"
 static-files = "0.2.1"
 lazy_static = "1.4.0"
 serde = { version = "1.0.208", features = ["derive"] }
-rust_decimal = { version = "1.33.1", features = [
-    "serde-str",
-    "serde-with-str",
-] }
-rust_decimal_macros = "1.33.1"
+rust_decimal = { version = "1.35" }
+rust_decimal_macros = "1.35"
 xml = "0.8.10"
 zip = { version = "2.1.6" }
 reqwest = "0.12.5"

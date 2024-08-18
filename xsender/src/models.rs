@@ -61,7 +61,7 @@ impl DocumentType {
     pub const RETENTION: &'static str = "Retention";
 }
 
-pub struct Catalog1 {}
+pub(crate) struct Catalog1 {}
 
 #[allow(dead_code)]
 impl Catalog1 {
