@@ -28,6 +28,8 @@ Create all Pull Requests using the prefixes of the following table:
 
 ### Fedora
 
+Instructions to setup:
+
 ```shell
 sudo dnf groupinstall "Development Tools"
 sudo dnf install libxml2-devel xmlsec1-devel pkg-config clang-devel
