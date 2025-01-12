@@ -1,0 +1,11 @@
+[package]
+name = "xhandler"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Creates XML files based on UBL under the standards of Peru."
+
+[dependencies]
+xbuilder = { path = "../xbuilder" }
+xsender = { path = "../xsender" }
+xsigner = { path = "../xsigner" }
