@@ -197,9 +197,7 @@ fn assert_xsd(xml: &Vec<u8>, schema: &str) {
 
 async fn assert_sunat(xml: &Vec<u8>) {
     let file_content = String::from_utf8_lossy(xml).to_string();
-    let xml_file = UblFile {
-        file_content,
-    };
+    let xml_file = UblFile { file_content };
 
     let result = CLIENT
         .send_file(&xml_file)
