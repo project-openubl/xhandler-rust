@@ -17,7 +17,7 @@ static-files = "0.2.1"
 lazy_static = "1.4.0"
 serde = { version = "1.0.208", features = ["derive"] }
 rust_decimal = { version = "1.36" }
-rust_decimal_macros = "1.35"
+rust_decimal_macros = "1.36"
 xml = "0.8.10"
 zip = { version = "2.2.2" }
 reqwest = "0.12.7"
