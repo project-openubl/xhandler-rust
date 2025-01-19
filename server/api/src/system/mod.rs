@@ -147,6 +147,6 @@ impl InnerSystem {
                 db_name: "".to_string(),
             },
         };
-        Self::bootstrap(&db).await.map(Arc::new)
+        Self::bootstrap(db).await.map(Arc::new)
     }
 }
