@@ -1,13 +1,21 @@
-use anyhow::anyhow;
+use base64::engine::general_purpose;
+use base64::Engine;
 use der::{DecodePem, EncodePem};
-use libxml::parser::XmlParseError;
-use libxml::tree::{Document, Namespace, Node};
-use libxml::xpath::Context;
+use openssl::error::ErrorStack;
+use openssl::hash::{hash, MessageDigest};
+use openssl::pkey::PKey;
+use openssl::rsa::Rsa;
+use openssl::sign::Signer;
+use quick_xml::events::{BytesEnd, BytesStart, Event};
 use rsa::pkcs1::{DecodeRsaPrivateKey, EncodeRsaPrivateKey};
 use rsa::pkcs8::LineEnding;
 use rsa::RsaPrivateKey;
+use std::io::Cursor;
+use std::{fs, io};
 use x509_cert::Certificate;
-use xmlsec::{XmlSecError, XmlSecKey, XmlSecKeyFormat, XmlSecSignatureContext};
+use xml_c14n::{
+    canonicalize_xml, CanonicalizationErrorCode, CanonicalizationMode, CanonicalizationOptions,
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum EncryptionError {
@@ -52,167 +60,147 @@ impl RsaKeyPair {
 
 #[derive(Debug, thiserror::Error)]
 pub enum SignErr {
-    #[error("Error while signing")]
-    Generic,
-    #[error("Error `{0}`")]
-    GenericWithMessage(String),
-    #[error("Error")]
-    Std(Box<dyn std::error::Error + Send + Sync>),
     #[error(transparent)]
     Pkcs1(#[from] rsa::pkcs1::Error),
     #[error(transparent)]
-    XmlSec(#[from] XmlSecError),
+    Key(#[from] ErrorStack),
     #[error(transparent)]
-    Any(#[from] anyhow::Error),
-}
-
-impl From<()> for SignErr {
-    fn from(_error: ()) -> Self {
-        Self::Generic
-    }
-}
-
-impl From<String> for SignErr {
-    fn from(error: String) -> Self {
-        Self::GenericWithMessage(error)
-    }
-}
-
-impl From<Box<dyn std::error::Error + Send + Sync>> for SignErr {
-    fn from(error: Box<dyn std::error::Error + Send + Sync>) -> Self {
-        Self::Std(error)
-    }
+    IO(#[from] io::Error),
+    #[error(transparent)]
+    Canonicalization(#[from] CanonicalizationErrorCode),
 }
 
 pub struct XSigner {
-    pub xml_document: Document,
+    pub xml_document: String,
 }
 
 impl XSigner {
-    pub fn from_file(filename: &str) -> Result<Self, XmlParseError> {
-        let xml_parser = libxml::parser::Parser::default();
-        let xml_document = xml_parser.parse_file(filename)?;
+    pub fn from_file(filename: &str) -> Result<Self, io::Error> {
+        let xml_document = fs::read_to_string(filename)?;
         Ok(Self { xml_document })
     }
 
-    pub fn from_string(xml: &str) -> Result<Self, XmlParseError> {
-        let xml_parser = libxml::parser::Parser::default();
-        let xml_document = xml_parser.parse_string(xml)?;
-        Ok(Self { xml_document })
-    }
+    pub fn sign(&self, key_pair: &RsaKeyPair) -> Result<Vec<u8>, SignErr> {
+        let canonicalize_options = CanonicalizationOptions {
+            mode: CanonicalizationMode::Canonical1_1,
+            keep_comments: true,
+            inclusive_ns_prefixes: vec![],
+        };
+        let xml_canonicalize = canonicalize_xml(&self.xml_document, canonicalize_options.clone())?;
 
-    pub fn sign(&self, key_pair: &RsaKeyPair) -> Result<(), SignErr> {
-        let xml = &self.xml_document;
+        // Generate digest
+        let digest = hash(MessageDigest::sha256(), xml_canonicalize.as_bytes())?;
+        let digest_base64 = general_purpose::STANDARD.encode(digest);
 
-        // Search Signature element
-        let context = Context::new(xml)?;
-        let signature_node = context.evaluate("//ds:Signature");
+        // Sign
+        let signed_info_string = format!(
+            "<ds:SignedInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\">
+                <ds:CanonicalizationMethod Algorithm=\"http://www.w3.org/2001/10/xml-exc-c14n#\"/>
+                <ds:SignatureMethod Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256\"/>
+                <ds:Reference URI=\"\">
+                    <ds:Transforms>
+                        <ds:Transform Algorithm=\"http://www.w3.org/2000/09/xmldsig#enveloped-signature\"/>
+                    </ds:Transforms>
+                    <ds:DigestMethod Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha256\"/>
+                    <ds:DigestValue>{digest_base64}</ds:DigestValue>
+                </ds:Reference>
+            </ds:SignedInfo>"
+        );
+        let signed_info_canonicalize =
+            canonicalize_xml(&signed_info_string, canonicalize_options.clone())?;
 
-        // Add the Signature xml tag
-        if signature_node.is_err() {
-            fn find_extension_content_node(node: Node) -> Option<Node> {
-                if let Some(ns) = node.get_namespace() {
-                    if ns.get_prefix() == "ext" && node.get_name() == "ExtensionContent" {
-                        return Some(node);
-                    }
-                }
-
-                for child in node.get_child_nodes().into_iter() {
-                    let result = find_extension_content_node(child);
-                    if result.is_some() {
-                        return result;
-                    }
-                }
-
-                None
-            }
-
-            let root = xml
-                .get_root_element()
-                .ok_or(SignErr::Any(anyhow!("Could not get the xml root element")))?;
-            let mut root_note = find_extension_content_node(root).ok_or(SignErr::Any(anyhow!(
-                "Could not find the ext:ExtensionContent tag"
-            )))?;
-
-            // Signature
-            let mut signature = Node::new("Signature", None, xml)?;
-            signature.set_attribute("Id", "PROJECT-OPENUBL")?;
-            let ns = Namespace::new("ds", "http://www.w3.org/2000/09/xmldsig#", &mut signature)?;
-            signature.set_namespace(&ns)?;
-
-            //
-            let mut signed_info = Node::new("SignedInfo", Some(ns.clone()), xml)?;
-            signature.add_child(&mut signed_info)?;
-
-            let mut canonicalization_method =
-                Node::new("CanonicalizationMethod", Some(ns.clone()), xml)?;
-            canonicalization_method.set_attribute(
-                "Algorithm",
-                "http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
-            )?;
-            signed_info.add_child(&mut canonicalization_method)?;
-
-            let mut signature_method = Node::new("SignatureMethod", Some(ns.clone()), xml)?;
-            signature_method
-                .set_attribute("Algorithm", "http://www.w3.org/2000/09/xmldsig#rsa-sha1")?;
-            signed_info.add_child(&mut signature_method)?;
-
-            let mut reference = Node::new("Reference", Some(ns.clone()), xml)?;
-            reference.set_attribute("URI", "")?;
-            signed_info.add_child(&mut reference)?;
-
-            let mut transforms = Node::new("Transforms", Some(ns.clone()), xml)?;
-            reference.add_child(&mut transforms)?;
-
-            let mut transform = Node::new("Transform", Some(ns.clone()), xml)?;
-            transform.set_attribute(
-                "Algorithm",
-                "http://www.w3.org/2000/09/xmldsig#enveloped-signature",
-            )?;
-            transforms.add_child(&mut transform)?;
-
-            let mut digest_method = Node::new("DigestMethod", Some(ns.clone()), xml)?;
-            digest_method.set_attribute("Algorithm", "http://www.w3.org/2000/09/xmldsig#sha1")?;
-            reference.add_child(&mut digest_method)?;
-
-            let mut digest_value = Node::new("DigestValue", Some(ns.clone()), xml)?;
-            reference.add_child(&mut digest_value)?;
-
-            let mut signature_value = Node::new("SignatureValue", Some(ns.clone()), xml)?;
-            signature.add_child(&mut signature_value)?;
-
-            let mut key_info = Node::new("KeyInfo", Some(ns.clone()), xml)?;
-            signature.add_child(&mut key_info)?;
-
-            let mut x509_data = Node::new("X509Data", Some(ns.clone()), xml)?;
-            key_info.add_child(&mut x509_data)?;
-
-            let mut x509_certificate = Node::new("X509Certificate", Some(ns.clone()), xml)?;
-            x509_data.add_child(&mut x509_certificate)?;
-
-            //
-            root_note.add_child(&mut signature)?;
-        }
-
-        let private_key_pem = key_pair.private_key_to_pem()?;
-        let private_key =
-            XmlSecKey::from_memory(private_key_pem.as_bytes(), XmlSecKeyFormat::Pem, None)?;
+        // Sign <ds:SignedInfo>
+        let pk_pem = key_pair.private_key_to_pem()?;
+        let rsa = Rsa::private_key_from_pem(pk_pem.as_bytes())?;
+        let pkey = PKey::from_rsa(rsa)?;
 
         let certificate_pem = key_pair.certificate_to_pem()?;
-        private_key.load_cert_from_memory(certificate_pem.as_bytes(), XmlSecKeyFormat::CertPem)?;
+        let pem_contents = certificate_pem
+            .lines()
+            .filter(|line| !line.starts_with("-----"))
+            .collect::<Vec<_>>()
+            .join("\n");
 
-        let mut sigctx = XmlSecSignatureContext::new();
-        sigctx.insert_key(private_key);
+        let mut signer = Signer::new(MessageDigest::sha256(), &pkey)?;
+        signer.update(signed_info_canonicalize.as_bytes())?;
+        let signature = signer.sign_to_vec()?;
+        let signature_base64 = general_purpose::STANDARD.encode(&signature);
 
-        sigctx.sign_document(xml)?;
+        // Signature
+        let signature_string = format!(
+            "<ds:Signature xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"PROJECT-OPENUBL\">
+                {signed_info_string}
+                <ds:SignatureValue>{signature_base64}</ds:SignatureValue>
+                <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>{pem_contents}</ds:X509Certificate>
+                    </ds:X509Data>
+                </ds:KeyInfo>
+            </ds:Signature>"
+        );
 
-        Ok(())
+        let mut xml_reader = quick_xml::Reader::from_str(&xml_canonicalize);
+        let mut xml_writer = quick_xml::Writer::new(Cursor::new(Vec::new()));
+
+        let mut inside_target_element = false;
+        let mut requires_closing_extension_content_tag = false;
+
+        loop {
+            match xml_reader.read_event() {
+                Ok(Event::Empty(e)) => {
+                    if e.name().as_ref() == b"ext:ExtensionContent" {
+                        inside_target_element = true;
+                        requires_closing_extension_content_tag = true;
+
+                        xml_writer
+                            .write_event(Event::Start(BytesStart::new("ext:ExtensionContent")))?;
+                    } else {
+                        assert!(xml_writer.write_event(Event::Start(e.clone())).is_ok());
+                    }
+                }
+                Ok(Event::Start(e)) => {
+                    assert!(xml_writer.write_event(Event::Start(e.clone())).is_ok());
+                    if e.name().as_ref() == b"ext:ExtensionContent" {
+                        inside_target_element = true;
+                    }
+                }
+                Ok(Event::End(e)) => {
+                    if inside_target_element {
+                        inside_target_element = false;
+
+                        let mut xml_content_reader = quick_xml::Reader::from_str(&signature_string);
+                        loop {
+                            match xml_content_reader.read_event() {
+                                Ok(Event::Eof) => break,
+                                Ok(e) => assert!(xml_writer.write_event(e).is_ok()),
+                                Err(e) => panic!(
+                                    "Error at position {}: {:?}",
+                                    xml_reader.error_position(),
+                                    e
+                                ),
+                            }
+                        }
+
+                        if requires_closing_extension_content_tag {
+                            xml_writer
+                                .write_event(Event::End(BytesEnd::new("ext:ExtensionContent")))?;
+                        }
+                    }
+                    assert!(xml_writer.write_event(Event::End(e.clone())).is_ok());
+                }
+                Ok(Event::Eof) => break,
+                Ok(e) => assert!(xml_writer.write_event(e).is_ok()),
+                Err(e) => panic!("Error at position {}: {:?}", xml_reader.error_position(), e),
+            }
+        }
+
+        let result = xml_writer.into_inner().into_inner();
+        Ok(result)
     }
 }
 
 #[cfg(test)]
 mod tests {
-
     use std::fs;
 
     use crate::RsaKeyPair;
@@ -247,7 +235,6 @@ mod tests {
             fs::read_to_string(format!("{RESOURCES}/public.cer")).expect("Could not read file");
 
         let xml_no_template = format!("{RESOURCES}/invoice_no_template.xml");
-        let xml_with_template = format!("{RESOURCES}/invoice_with_template.xml");
 
         let rsa_key_pair = RsaKeyPair::from_pkcs1_pem_and_certificate(
             &private_key_from_file,
@@ -257,14 +244,9 @@ mod tests {
 
         let document1 =
             XSigner::from_file(&xml_no_template).expect("Could read xml with no template");
-        let document2 =
-            XSigner::from_file(&xml_with_template).expect("Could read xml with template");
 
         document1
             .sign(&rsa_key_pair)
-            .expect("Could not sign document with no tempate");
-        document2
-            .sign(&rsa_key_pair)
-            .expect("Could not sign document with template");
+            .expect("Could not sign document with no template");
     }
 }
