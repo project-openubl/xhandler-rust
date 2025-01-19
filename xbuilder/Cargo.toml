@@ -1,9 +1,9 @@
 [package]
 name = "xbuilder"
-version = "0.1.0"
-edition = "2021"
-license = "Apache-2.0"
 description = "Creates XML files based on UBL under the standards of Peru."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [dependencies]
 chrono = { workspace = true, features = ["serde"] }
@@ -15,7 +15,6 @@ lazy_static = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 rust_decimal = { workspace = true }
 rust_decimal_macros = { workspace = true }
-thiserror = { workspace = true }
 anyhow = { workspace = true }
 
 [dev-dependencies]

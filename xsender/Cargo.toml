@@ -1,13 +1,12 @@
 [package]
 name = "xsender"
-version = "0.1.0"
-edition = "2021"
-license = "Apache-2.0"
 description = "Sends XML files through SOAP - SUNAT"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [dependencies]
 xml = { workspace = true }
-log = { workspace = true }
 zip = { workspace = true }
 tera = { workspace = true }
 static-files = { workspace = true }

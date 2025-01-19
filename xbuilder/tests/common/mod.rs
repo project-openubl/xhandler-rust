@@ -1,7 +1,7 @@
 use std::fs;
 
 use chrono::NaiveDate;
-use libxml::tree::Document;
+use libxml::parser::Parser;
 use rust_decimal_macros::dec;
 
 use xbuilder::prelude::*;
@@ -101,7 +101,7 @@ pub fn cliente_base() -> Cliente {
     }
 }
 
-fn sign_xml(xml: &str) -> Document {
+fn sign_xml(xml: &str) -> Vec<u8> {
     let private_key_from_file = fs::read_to_string("tests/resources/certificates/private.key")
         .expect("Could not read private.key");
     let certificate_from_file = fs::read_to_string("tests/resources/certificates/public.cer")
@@ -111,10 +111,10 @@ fn sign_xml(xml: &str) -> Document {
         RsaKeyPair::from_pkcs1_pem_and_certificate(&private_key_from_file, &certificate_from_file)
             .expect("Could not initialize RsaKeyPair");
 
-    let signer = XSigner::from_string(xml).expect("Could parse xml");
-    signer.sign(&rsa_key_pair).expect("Could not sign document");
-
-    signer.xml_document
+    let signer = XSigner {
+        xml_document: xml.to_string(),
+    };
+    signer.sign(&rsa_key_pair).expect("Could not sign document")
 }
 
 #[allow(dead_code)]
@@ -171,7 +171,7 @@ fn assert_snapshot(expected: &str, snapshot_filename: &str) {
     );
 }
 
-fn assert_xsd(xml: &Document, schema: &str) {
+fn assert_xsd(xml: &Vec<u8>, schema: &str) {
     let mut xsdparser = SchemaParserContext::from_file(schema);
     let xsd = SchemaValidationContext::from_parser(&mut xsdparser);
 
@@ -185,19 +185,19 @@ fn assert_xsd(xml: &Document, schema: &str) {
 
     let mut xsd = xsd.unwrap();
 
-    if let Err(errors) = xsd.validate_document(xml) {
+    let xml_document = Parser::default().parse_string(xml).unwrap();
+    if let Err(errors) = xsd.validate_document(&xml_document) {
         for err in &errors {
             println!("{}", err.message.as_ref().unwrap());
         }
 
-        panic!("Invalid XML accoding to XSD schema");
+        panic!("Invalid XML according to XSD schema");
     }
 }
 
-async fn assert_sunat(xml: &Document) {
-    let xml_file = UblFile {
-        file_content: xml.to_string(),
-    };
+async fn assert_sunat(xml: &[u8]) {
+    let file_content = String::from_utf8_lossy(xml).to_string();
+    let xml_file = UblFile { file_content };
 
     let result = CLIENT
         .send_file(&xml_file)
