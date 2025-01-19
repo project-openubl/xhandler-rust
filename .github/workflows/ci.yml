@@ -6,9 +6,6 @@ on:
       - "dependabot/**"
     paths-ignore:
       - 'README.md'
-  pull_request:
-    paths-ignore:
-      - 'README.md'
 
 env:
   CI: true
