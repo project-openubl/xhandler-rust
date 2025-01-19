@@ -1,16 +1,16 @@
-use anyhow::anyhow;
 use base64::engine::general_purpose;
 use base64::Engine;
 use der::{DecodePem, EncodePem};
-use libxml::parser::{Parser, XmlParseError};
-use libxml::tree::{Document, Node};
 use openssl::hash::{hash, MessageDigest};
 use openssl::pkey::PKey;
 use openssl::rsa::Rsa;
 use openssl::sign::Signer;
+use quick_xml::events::{BytesEnd, BytesStart, Event};
 use rsa::pkcs1::{DecodeRsaPrivateKey, EncodeRsaPrivateKey};
 use rsa::pkcs8::LineEnding;
 use rsa::RsaPrivateKey;
+use std::io::Cursor;
+use std::{fs, io};
 use x509_cert::Certificate;
 use xml_c14n::{canonicalize_xml, CanonicalizationMode, CanonicalizationOptions};
 
@@ -88,36 +88,26 @@ impl From<Box<dyn std::error::Error + Send + Sync>> for SignErr {
 }
 
 pub struct XSigner {
-    pub xml_document: Document,
+    pub xml_document: String,
 }
 
 impl XSigner {
-    pub fn from_file(filename: &str) -> Result<Self, XmlParseError> {
-        let xml_parser = libxml::parser::Parser::default();
-        let xml_document = xml_parser.parse_file(filename)?;
+    pub fn from_file(filename: &str) -> Result<Self, io::Error> {
+        let xml_document = fs::read_to_string(filename)?;
         Ok(Self { xml_document })
     }
 
-    pub fn from_string(xml: &str) -> Result<Self, XmlParseError> {
-        let xml_parser = libxml::parser::Parser::default();
-        let xml_document = xml_parser.parse_string(xml)?;
-        Ok(Self { xml_document })
-    }
-
-    pub fn sign(&self, key_pair: &RsaKeyPair) -> Result<(), SignErr> {
-        let xml = &self.xml_document;
-        let xml_string = xml.to_string();
-
+    pub fn sign(&self, key_pair: &RsaKeyPair) -> Result<Vec<u8>, SignErr> {
         let canonicalize_options = CanonicalizationOptions {
             mode: CanonicalizationMode::Canonical1_1,
-            keep_comments: false,
+            keep_comments: true,
             inclusive_ns_prefixes: vec![],
         };
-        let xml_canonicalize = canonicalize_xml(&xml_string, canonicalize_options.clone())
+        let xml_canonicalized = canonicalize_xml(&self.xml_document, canonicalize_options.clone())
             .expect("Could not canonicalize xml");
 
         // Generate digest
-        let digest = hash(MessageDigest::sha256(), xml_canonicalize.as_bytes())
+        let digest = hash(MessageDigest::sha256(), xml_canonicalized.as_bytes())
             .expect("Digest generation error");
         let digest_base64 = general_purpose::STANDARD.encode(digest);
 
@@ -159,31 +149,6 @@ impl XSigner {
         let signature = signer.sign_to_vec().expect("Error while signing");
         let signature_base64 = general_purpose::STANDARD.encode(&signature);
 
-        // Search Signature element
-        fn find_extension_content_node(node: Node) -> Option<Node> {
-            if let Some(ns) = node.get_namespace() {
-                if ns.get_prefix() == "ext" && node.get_name() == "ExtensionContent" {
-                    return Some(node);
-                }
-            }
-
-            for child in node.get_child_nodes().into_iter() {
-                let result = find_extension_content_node(child);
-                if result.is_some() {
-                    return result;
-                }
-            }
-
-            None
-        }
-
-        let xml_root_node = xml
-            .get_root_element()
-            .ok_or(SignErr::Any(anyhow!("Could not get the xml root element")))?;
-        let mut extension_content_node = find_extension_content_node(xml_root_node).ok_or(
-            SignErr::Any(anyhow!("Could not find the ext:ExtensionContent tag")),
-        )?;
-
         // Signature
         let signature_string = format!(
             "<ds:Signature xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"PROJECT-OPENUBL\">
@@ -197,17 +162,65 @@ impl XSigner {
             </ds:Signature>"
         );
 
-        let parser = Parser::default();
-        let signature_string_node = parser
-            .parse_string(&signature_string)
-            .expect("Could not parse Signature");
-        let mut signed_info_node_root = signature_string_node
-            .get_root_element()
-            .expect("Could not get root element of Signature");
-        signed_info_node_root.unlink();
+        let mut xml_reader = quick_xml::Reader::from_str(&xml_canonicalized);
+        let mut xml_writer = quick_xml::Writer::new(Cursor::new(Vec::new()));
 
-        extension_content_node.add_child(&mut signed_info_node_root)?;
-        Ok(())
+        let mut inside_target_element = false;
+        let mut requires_closing_extension_content_tag = false;
+
+        loop {
+            match xml_reader.read_event() {
+                Ok(Event::Empty(e)) => {
+                    if e.name().as_ref() == b"ext:ExtensionContent" {
+                        inside_target_element = true;
+                        requires_closing_extension_content_tag = true;
+
+                        xml_writer
+                            .write_event(Event::Start(BytesStart::new("ext:ExtensionContent")))
+                            .unwrap();
+                    } else {
+                        assert!(xml_writer.write_event(Event::Start(e.clone())).is_ok());
+                    }
+                }
+                Ok(Event::Start(e)) => {
+                    assert!(xml_writer.write_event(Event::Start(e.clone())).is_ok());
+                    if e.name().as_ref() == b"ext:ExtensionContent" {
+                        inside_target_element = true;
+                    }
+                }
+                Ok(Event::End(e)) => {
+                    if inside_target_element {
+                        inside_target_element = false;
+
+                        let mut xml_content_reader = quick_xml::Reader::from_str(&signature_string);
+                        loop {
+                            match xml_content_reader.read_event() {
+                                Ok(Event::Eof) => break,
+                                Ok(e) => assert!(xml_writer.write_event(e).is_ok()),
+                                Err(e) => panic!(
+                                    "Error at position {}: {:?}",
+                                    xml_reader.error_position(),
+                                    e
+                                ),
+                            }
+                        }
+
+                        if requires_closing_extension_content_tag {
+                            xml_writer
+                                .write_event(Event::End(BytesEnd::new("ext:ExtensionContent")))
+                                .unwrap();
+                        }
+                    }
+                    assert!(xml_writer.write_event(Event::End(e.clone())).is_ok());
+                }
+                Ok(Event::Eof) => break,
+                Ok(e) => assert!(xml_writer.write_event(e).is_ok()),
+                Err(e) => panic!("Error at position {}: {:?}", xml_reader.error_position(), e),
+            }
+        }
+
+        let result = xml_writer.into_inner().into_inner();
+        Ok(result)
     }
 }
 

@@ -9,6 +9,7 @@ description = "Sign your XML files"
 thiserror = { workspace = true }
 anyhow = { workspace = true }
 libxml = { workspace = true }
+quick-xml = { workspace = true }
 rsa = { workspace = true, features = ["sha2"] }
 x509-cert = { workspace = true, features = ["builder"] }
 der = { workspace = true, features = ["alloc", "derive", "flagset", "oid"] }

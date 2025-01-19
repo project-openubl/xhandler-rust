@@ -29,6 +29,7 @@ rsa = "0.9.6"
 serial_test = "3.1.1"
 tokio = "1.39.2"
 libxml = "0.3.3"
+quick-xml = "0.37.2"
 x509-cert = "0.2.5"
 der = { version = "0.7.6" }
 openssl = "0.10"
