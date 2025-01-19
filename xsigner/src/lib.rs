@@ -1,6 +1,7 @@
 use base64::engine::general_purpose;
 use base64::Engine;
 use der::{DecodePem, EncodePem};
+use openssl::error::ErrorStack;
 use openssl::hash::{hash, MessageDigest};
 use openssl::pkey::PKey;
 use openssl::rsa::Rsa;
@@ -12,7 +13,9 @@ use rsa::RsaPrivateKey;
 use std::io::Cursor;
 use std::{fs, io};
 use x509_cert::Certificate;
-use xml_c14n::{canonicalize_xml, CanonicalizationMode, CanonicalizationOptions};
+use xml_c14n::{
+    canonicalize_xml, CanonicalizationErrorCode, CanonicalizationMode, CanonicalizationOptions,
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum EncryptionError {
@@ -57,34 +60,14 @@ impl RsaKeyPair {
 
 #[derive(Debug, thiserror::Error)]
 pub enum SignErr {
-    #[error("Error while signing")]
-    Generic,
-    #[error("Error `{0}`")]
-    GenericWithMessage(String),
-    #[error("Error")]
-    Std(Box<dyn std::error::Error + Send + Sync>),
     #[error(transparent)]
     Pkcs1(#[from] rsa::pkcs1::Error),
     #[error(transparent)]
-    Any(#[from] anyhow::Error),
-}
-
-impl From<()> for SignErr {
-    fn from(_error: ()) -> Self {
-        Self::Generic
-    }
-}
-
-impl From<String> for SignErr {
-    fn from(error: String) -> Self {
-        Self::GenericWithMessage(error)
-    }
-}
-
-impl From<Box<dyn std::error::Error + Send + Sync>> for SignErr {
-    fn from(error: Box<dyn std::error::Error + Send + Sync>) -> Self {
-        Self::Std(error)
-    }
+    Key(#[from] ErrorStack),
+    #[error(transparent)]
+    IO(#[from] io::Error),
+    #[error(transparent)]
+    Canonicalization(#[from] CanonicalizationErrorCode),
 }
 
 pub struct XSigner {
@@ -103,12 +86,10 @@ impl XSigner {
             keep_comments: true,
             inclusive_ns_prefixes: vec![],
         };
-        let xml_canonicalized = canonicalize_xml(&self.xml_document, canonicalize_options.clone())
-            .expect("Could not canonicalize xml");
+        let xml_canonicalize = canonicalize_xml(&self.xml_document, canonicalize_options.clone())?;
 
         // Generate digest
-        let digest = hash(MessageDigest::sha256(), xml_canonicalized.as_bytes())
-            .expect("Digest generation error");
+        let digest = hash(MessageDigest::sha256(), xml_canonicalize.as_bytes())?;
         let digest_base64 = general_purpose::STANDARD.encode(digest);
 
         // Sign
@@ -126,13 +107,12 @@ impl XSigner {
             </ds:SignedInfo>"
         );
         let signed_info_canonicalize =
-            canonicalize_xml(&signed_info_string, canonicalize_options.clone())
-                .expect("Could not canonicalize xml");
+            canonicalize_xml(&signed_info_string, canonicalize_options.clone())?;
 
         // Sign <ds:SignedInfo>
         let pk_pem = key_pair.private_key_to_pem()?;
-        let rsa = Rsa::private_key_from_pem(pk_pem.as_bytes()).expect("Failed to parse PK");
-        let pkey = PKey::from_rsa(rsa).expect("Failed to convert RSA to PKey");
+        let rsa = Rsa::private_key_from_pem(pk_pem.as_bytes())?;
+        let pkey = PKey::from_rsa(rsa)?;
 
         let certificate_pem = key_pair.certificate_to_pem()?;
         let pem_contents = certificate_pem
@@ -141,12 +121,9 @@ impl XSigner {
             .collect::<Vec<_>>()
             .join("\n");
 
-        let mut signer =
-            Signer::new(MessageDigest::sha256(), &pkey).expect("Signer creation error");
-        signer
-            .update(signed_info_canonicalize.as_bytes())
-            .expect("Failed to update signer");
-        let signature = signer.sign_to_vec().expect("Error while signing");
+        let mut signer = Signer::new(MessageDigest::sha256(), &pkey)?;
+        signer.update(signed_info_canonicalize.as_bytes())?;
+        let signature = signer.sign_to_vec()?;
         let signature_base64 = general_purpose::STANDARD.encode(&signature);
 
         // Signature
@@ -162,7 +139,7 @@ impl XSigner {
             </ds:Signature>"
         );
 
-        let mut xml_reader = quick_xml::Reader::from_str(&xml_canonicalized);
+        let mut xml_reader = quick_xml::Reader::from_str(&xml_canonicalize);
         let mut xml_writer = quick_xml::Writer::new(Cursor::new(Vec::new()));
 
         let mut inside_target_element = false;
@@ -176,8 +153,7 @@ impl XSigner {
                         requires_closing_extension_content_tag = true;
 
                         xml_writer
-                            .write_event(Event::Start(BytesStart::new("ext:ExtensionContent")))
-                            .unwrap();
+                            .write_event(Event::Start(BytesStart::new("ext:ExtensionContent")))?;
                     } else {
                         assert!(xml_writer.write_event(Event::Start(e.clone())).is_ok());
                     }
@@ -207,8 +183,7 @@ impl XSigner {
 
                         if requires_closing_extension_content_tag {
                             xml_writer
-                                .write_event(Event::End(BytesEnd::new("ext:ExtensionContent")))
-                                .unwrap();
+                                .write_event(Event::End(BytesEnd::new("ext:ExtensionContent")))?;
                         }
                     }
                     assert!(xml_writer.write_event(Event::End(e.clone())).is_ok());
