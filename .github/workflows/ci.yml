@@ -9,6 +9,7 @@ on:
   pull_request:
     paths-ignore:
       - 'README.md'
+  merge_group: { }
 
 env:
   CI: true
