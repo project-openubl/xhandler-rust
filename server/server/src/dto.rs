@@ -1,5 +1,6 @@
 use openubl_entity as entity;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 #[derive(Serialize, Deserialize)]
 pub struct DocumentDto {
@@ -34,7 +35,7 @@ pub struct CredentialsDto {
     pub url_perception_retention: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub struct NewCredentialsDto {
     pub name: String,
     pub description: Option<String>,
