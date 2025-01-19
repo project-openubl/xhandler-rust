@@ -3,6 +3,11 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
+  "runArgs": [
+    "--privileged",
+    "--userns=keep-id"
+  ],
+  "remoteUser": "vscode",
   "features": {
     "ghcr.io/devcontainers/features/rust:1": {},
     "ghcr.io/devcontainers/features/node:1": {
