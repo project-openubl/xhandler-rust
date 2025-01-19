@@ -1,6 +1,19 @@
 [workspace]
 resolver = "2"
-members = ["xbuilder", "xsender", "xsigner", "xhandler"]
+members = [
+    "xbuilder",
+    "xsender",
+    "xsigner",
+    "xhandler",
+    "server/migration",
+    "server/entity",
+    "server/common",
+    "server/storage",
+    "server/api",
+    "server/server",
+    "server/cli",
+    "server/signature",
+]
 
 [workspace.package]
 version = "0.1.1"
@@ -20,7 +33,7 @@ rust_decimal = { version = "1.36" }
 rust_decimal_macros = "1.36"
 xml = "0.8.10"
 zip = { version = "2.2.2" }
-reqwest = "0.12.7"
+reqwest = "0.11"
 base64 = "0.22.1"
 thiserror = "1.0.53"
 anyhow = "1.0.95"
@@ -34,5 +47,34 @@ x509-cert = "0.2.5"
 der = { version = "0.7.6" }
 openssl = "0.10"
 xml_c14n = "0.3.0"
+
+xhandler = { path = "./xhandler" }
+openubl-migration = { path = "./server/migration" }
+openubl-entity = { path = "./server/entity" }
+openubl-common = { path = "./server/common" }
+openubl-storage = { path = "./server/storage" }
+openubl-api = { path = "./server/api" }
+openubl-server = { path = "./server/server" }
+
+async-std = { version = "1" }
+sea-orm = "1.0.0"
+sea-query = "0.31"
+clap = "4.4.11"
+minio = "0.1.0"
+serde_json = "1.x"
+uuid = "1.6.1"
+tempfile = "3.9.0"
+aws-sdk-s3 = "1.11.0"
+aws-config = "1.1.1"
+aws-smithy-runtime = "1.1.1"
+aws-smithy-runtime-api = "1.1.1"
+async-trait = "0.1.75"
+actix-web = "4.4.1"
+actix-web-httpauth = "0.8.1"
+env_logger = "0.11.5"
+utoipa = "4.1.0"
+utoipa-swagger-ui = "7.1.0"
+actix-4-jwt-auth = "1.2.0"
+actix-multipart = "0.7.2"
 
 [patch.crates-io]

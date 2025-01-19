@@ -1,7 +1,6 @@
 use sea_orm::ActiveValue::Set;
 use sea_orm::ColumnTrait;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
-use sea_query::Order::Desc;
 
 use openubl_entity as entity;
 use openubl_entity::delivery::{TargetSendFileProtocolAction, TargetVerifyTicketProtocolAction};
@@ -44,7 +43,7 @@ impl InnerSystem {
     ) -> Result<PaginatedResults<DocumentContext>, Error> {
         let connection = self.connection(tx);
         let pagination = entity::document::Entity::find()
-            .order_by(entity::document::Column::Id, Desc)
+            .order_by(entity::document::Column::Id, sea_orm::Order::Desc)
             .paginate(&connection, paginated.page_size());
 
         Ok(PaginatedResults {

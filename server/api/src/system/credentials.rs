@@ -2,7 +2,6 @@ use sea_orm::ActiveValue::Set;
 use sea_orm::ColumnTrait;
 use sea_orm::QueryFilter;
 use sea_orm::{ActiveModelTrait, EntityTrait, QuerySelect, RelationTrait};
-use sea_query::JoinType;
 
 use openubl_entity as entity;
 
@@ -43,7 +42,7 @@ impl InnerSystem {
     ) -> Result<Option<CredentialsContext>, Error> {
         let credential: Option<CredentialsContext> = entity::credentials::Entity::find()
             .join(
-                JoinType::InnerJoin,
+                sea_orm::JoinType::InnerJoin,
                 entity::credentials::Relation::SendRule.def(),
             )
             .filter(entity::send_rule::Column::SupplierId.eq(supplier_id))
@@ -57,7 +56,7 @@ impl InnerSystem {
             // If no credentials found, try the default one
             None => Ok(entity::credentials::Entity::find()
                 .join(
-                    JoinType::InnerJoin,
+                    sea_orm::JoinType::InnerJoin,
                     entity::credentials::Relation::SendRule.def(),
                 )
                 .filter(entity::send_rule::Column::SupplierId.eq("*"))
