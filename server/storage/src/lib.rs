@@ -5,6 +5,7 @@ use std::io::{Cursor, Read, Write};
 use std::path::Path;
 use std::str::FromStr;
 
+use crate::config::Storage;
 use aws_config::meta::region::RegionProviderChain;
 use aws_config::retry::RetryConfig;
 use aws_config::BehaviorVersion;
@@ -21,8 +22,6 @@ use minio::s3::http::BaseUrl;
 use zip::result::{ZipError, ZipResult};
 use zip::write::SimpleFileOptions;
 use zip::{ZipArchive, ZipWriter};
-
-use crate::config::Storage;
 
 pub mod config;
 
@@ -239,7 +238,13 @@ impl StorageSystem {
             StorageSystem::Local(_) => fs::read(file_id)?,
             StorageSystem::Minio(bucket, client) => {
                 let object = GetObjectArgs::new(&bucket.name, file_id)?;
-                client.get_object(&object).await?.bytes().await?.to_vec()
+                client
+                    .get_object(&object)
+                    .await?
+                    .bytes()
+                    .await
+                    .map_err(|e| StorageSystemErr::Any(anyhow!(e.to_string())))?
+                    .to_vec()
             }
             StorageSystem::S3(buckets, client) => client
                 .get_object()
