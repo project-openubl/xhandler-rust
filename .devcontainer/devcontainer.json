@@ -1,0 +1,28 @@
+{
+  "name": "xhandler-rust",
+  "dockerComposeFile": "docker-compose.yml",
+  "overrideCommand": true,
+  "shutdownAction": "stopCompose",
+  "service": "xhandler-rust",
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspace",
+  "onCreateCommand": "bash .devcontainer/onCreateCommand.sh",
+  "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
+  "forwardPorts": [
+    8080
+  ],
+  "customizations": {
+    "jetbrains": {
+      "backend": "RustRover"
+    },
+    "vscode": {
+      "extensions": [
+        "vadimcn.vscode-lldb",
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github"
+      ]
+    }
+  }
+}

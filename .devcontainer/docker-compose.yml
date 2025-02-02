@@ -1,0 +1,18 @@
+volumes:
+  cargo-cache:
+
+services:
+  xhandler-rust:
+    # https://github.com/microsoft/vscode-remote-release/issues/10215
+    image: localhost/xhandler-rust_devcontainer_xhandler-rust:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER_UID: ${USER_UID}
+    privileged: true
+    userns_mode: "keep-id"
+    command: tail -f /dev/null
+    volumes:
+      - ..:/workspace:cached
+      - cargo-cache:/home/vscode/.cargo
