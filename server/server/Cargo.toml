@@ -10,6 +10,7 @@ openubl-api = { workspace = true }
 openubl-common = { workspace = true }
 openubl-entity = { workspace = true }
 openubl-storage = { workspace = true }
+openubl-ui = { workspace = true }
 
 xhandler = { workspace = true }
 
@@ -30,4 +31,5 @@ utoipa-swagger-ui = { workspace = true, features = ["actix-web"] }
 actix-web-httpauth = { workspace = true }
 actix-4-jwt-auth = { workspace = true }
 actix-multipart = { workspace = true }
+actix-web-static-files = { workspace = true }
 minio = { workspace = true }
