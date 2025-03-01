@@ -1,2 +1,2 @@
-# Git autocomplete
-echo "source /usr/share/bash-completion/completions/git" >> ~/.bashrc
+# cd /workspace/server/ui && npm ci --ignore-scripts
+corepack enable pnpm

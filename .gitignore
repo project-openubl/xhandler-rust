@@ -60,3 +60,4 @@ target
 /target
 
 .openubl/
+.pnpm-store/

@@ -3,28 +3,25 @@
 
 [![Project Chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg?style=for-the-badge&logo=zulip)](https://projectopenubl.zulipchat.com/)
 
-# XBuilder y XSender
+## Libraries
 
-- Crea XML basados en SUNAT y UBL
-- Envia los XMLs a la SUNAT usando SOAP y REST
+XMLs basados en UBL y SUNAT
 
-### Create Pull Requests
+- [x] Crear
+- [x] Firmar
+- [x] Enviar
 
-Create all Pull Requests using the prefixes of the following table:
+## Server
 
-| Category      | Prefix    |
-|---------------|-----------|
-| Features      | feat:     |
-| Fixes         | fix:      |
-| Changes       | perf:     |
-| Changes       | refactor: |
-| Changes       | revert:   |
-| Changes       | style:    |
-| Tasks         | chore:    |
-| Build         | test:     |
-| Build         | build:    |
-| Build         | ci:       |
-| Documentation | docs:     |
+```shell
+cargo run --bin server
+```
+
+## Server UI
+
+```shell
+npm run dev --prefix server/ui
+```
 
 ## License
 
