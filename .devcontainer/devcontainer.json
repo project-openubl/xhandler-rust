@@ -8,8 +8,10 @@
   "workspaceFolder": "/workspace",
   "onCreateCommand": "bash .devcontainer/onCreateCommand.sh",
   "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
+  "postStartCommand": "bash .devcontainer/postStartCommand.sh",
   "forwardPorts": [
-    8080
+    8080,
+    5173
   ],
   "customizations": {
     "jetbrains": {
@@ -17,11 +19,13 @@
     },
     "vscode": {
       "extensions": [
+        "k--kato.intellij-idea-keybindings",
         "vadimcn.vscode-lldb",
         "rust-lang.rust-analyzer",
         "tamasfe.even-better-toml",
-        "github.vscode-github-actions",
-        "github.vscode-pull-request-github"
+        "dsznajder.es7-react-js-snippets",
+        "biomejs.biome",
+        "GitHub.vscode-github-actions"
       ]
     }
   }

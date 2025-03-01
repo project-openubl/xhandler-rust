@@ -1,5 +1,6 @@
 volumes:
   cargo-cache:
+  npm-cache:
 
 services:
   xhandler-rust:
@@ -16,3 +17,4 @@ services:
     volumes:
       - ..:/workspace:cached
       - cargo-cache:/home/vscode/.cargo
+      - npm-cache:/home/vscode/.npm
