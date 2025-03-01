@@ -280,6 +280,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "actix-web-static-files"
+version = "4.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "adf6d1ef6d7a60e084f9e0595e2a5234abda14e76c105ecf8e2d0e8800c41a1f"
+dependencies = [
+ "actix-web",
+ "derive_more",
+ "futures-util",
+ "static-files",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3123,6 +3135,7 @@ dependencies = [
  "actix-multipart",
  "actix-web",
  "actix-web-httpauth",
+ "actix-web-static-files",
  "anyhow",
  "clap",
  "env_logger",
@@ -3131,6 +3144,7 @@ dependencies = [
  "openubl-common",
  "openubl-entity",
  "openubl-storage",
+ "openubl-ui",
  "sea-orm",
  "serde",
  "thiserror 2.0.11",
@@ -3165,6 +3179,18 @@ dependencies = [
  "tokio",
  "uuid",
  "zip",
+]
+
+[[package]]
+name = "openubl-ui"
+version = "0.1.1"
+dependencies = [
+ "anyhow",
+ "base64 0.22.1",
+ "serde",
+ "serde_json",
+ "static-files",
+ "tera",
 ]
 
 [[package]]

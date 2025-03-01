@@ -13,6 +13,7 @@ members = [
     "server/server",
     "server/cli",
     "server/signature",
+    "server/ui/crate",
 ]
 
 [workspace.package]
@@ -55,6 +56,7 @@ openubl-common = { path = "./server/common" }
 openubl-storage = { path = "./server/storage" }
 openubl-api = { path = "./server/api" }
 openubl-server = { path = "./server/server" }
+openubl-ui = { path = "./server/ui/crate" }
 
 sea-orm = "1"
 sea-query = "0.32"
@@ -76,5 +78,6 @@ actix-web = "4.9"
 actix-web-httpauth = "0.8"
 actix-4-jwt-auth = "1.2"
 actix-multipart = "0.7"
+actix-web-static-files = "4"
 
 [patch.crates-io]

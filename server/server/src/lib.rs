@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fmt::Debug;
 use std::process::ExitCode;
 use std::sync::Arc;
@@ -15,9 +16,40 @@ use crate::server::credentials::{
 };
 use crate::server::document::{get_document_file, list_documents, send_document};
 use crate::server::health;
+use actix_web_static_files::{deps::static_files::Resource, ResourceFiles};
+use openubl_ui::{openubl_ui, UI};
 
 mod dto;
 pub mod server;
+
+pub struct UiResources {
+    resources: HashMap<&'static str, Resource>,
+}
+
+impl UiResources {
+    pub fn new(ui: &UI) -> anyhow::Result<Self> {
+        Ok(Self {
+            resources: openubl_ui(ui)?,
+        })
+    }
+
+    pub fn resources(&self) -> HashMap<&'static str, Resource> {
+        self.resources
+            .iter()
+            .map(|(k, v)| {
+                // unfortunately, we can't just clone, but we can do it ourselves
+                (
+                    *k,
+                    Resource {
+                        data: v.data,
+                        modified: v.modified,
+                        mime_type: v.mime_type,
+                    },
+                )
+            })
+            .collect()
+    }
+}
 
 /// Run the API server
 #[derive(clap::Args, Debug)]
@@ -39,6 +71,12 @@ impl ServerRun {
     pub async fn run(self) -> anyhow::Result<ExitCode> {
         env_logger::init();
 
+        // UI
+        let ui = UI {
+            version: "".to_string(),
+        };
+        let ui = Arc::new(UiResources::new(&ui)?);
+
         // Database
         let system = match self.bootstrap {
             true => InnerSystem::bootstrap(&self.database).await?,
@@ -56,6 +94,7 @@ impl ServerRun {
                 .wrap(Logger::default())
                 .app_data(TempFileConfig::default())
                 .configure(configure)
+                .service(ResourceFiles::new("/", ui.resources()).resolve_not_found_to(""))
         })
         .bind(self.bind_addr)?
         .run()
