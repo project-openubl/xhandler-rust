@@ -14,6 +14,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  server-image-build:
+    uses: project-openubl/release-tools/.github/workflows/build-push-images.yaml@main
+    with:
+      registry: "ghcr.io"
+      image_name: "${{ github.repository_owner }}/openubl-server"
+      containerfile: "./Dockerfile.server"
+      architectures: '[ "amd64", "arm64" ]'
+    secrets:
+      registry_username: ${{ github.actor }}
+      registry_password: ${{ secrets.GITHUB_TOKEN }}
+
   ui-image-build:
     uses: project-openubl/release-tools/.github/workflows/build-push-images.yaml@main
     with:
