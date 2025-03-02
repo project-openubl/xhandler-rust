@@ -5,8 +5,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "clean": "rm -rf ./dist",
-    "clean:all": "npm run clean && rm -rf ./node_modules",
+    "clean": "rimraf ./dist",
+    "clean:all": "rimraf ./dist ./node_modules",
     "check": "biome check .",
     "check:write": "biome check --write .",
     "prebuild": "npm run clean",

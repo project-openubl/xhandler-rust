@@ -8,10 +8,11 @@
 		"url": "https://github.com/project-openubl/xhandler-rust.git"
 	},
 	"scripts": {
-		"clean": "rm -rf ./dist && npm run clean -ws --if-present",
-		"clean:all": "npm run clean && rm -rf ./node_modules && npm run clean:all -ws --if-present",
+		"clean": "rimraf ./dist && npm run clean -ws --if-present",
+		"clean:all": "npm run clean:all -ws --if-present && rimraf ./dist ./node_modules",
+		"dist": "rimraf ./dist && copyfiles -e 'node_modules/**' entrypoint.sh '**/package.json' '*/dist/**/*' ./dist",
 		"check": "npm run check -ws --if-present",
-    	"check:write": "npm run check:write -ws --if-present",
+		"check:write": "npm run check:write -ws --if-present",
 		"build": "npm run build -ws --if-present",
 		"dev:common": "npm run dev -w common",
 		"dev:server": "npm run dev -w server",
@@ -19,11 +20,7 @@
 		"dev": "concurrently -n common,client -c 'white.bold.inverse,green.bold.inverse,blue.bold.inverse' 'npm:dev:common' 'npm:dev:client'",
 		"start": "npm run build -w common -w client && npm run start -w server"
 	},
-	"workspaces": [
-		"common",
-		"client",
-		"server"
-	],
+	"workspaces": ["common", "client", "server"],
 	"dependencies": {
 		"@types/express": "^4.17.21",
 		"http-proxy-middleware": "^2.0.6"
@@ -38,6 +35,8 @@
 		"@rollup/plugin-virtual": "^3.0.2",
 		"@types/node": "^22.8.1",
 		"concurrently": "^9.1.2",
+		"copyfiles": "^2.4.1",
+		"rimraf": "^6.0.1",
 		"rollup": "^3.29.5",
 		"rollup-plugin-copy": "^3.5.0",
 		"typescript": "^5.7.3"

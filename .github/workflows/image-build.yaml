@@ -1,0 +1,27 @@
+name: Multiple Architecture Image Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+      - "release-*"
+    tags:
+      - "v*"
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ui-image-build:
+    uses: project-openubl/release-tools/.github/workflows/build-push-images.yaml@main
+    with:
+      registry: "ghcr.io"
+      image_name: "${{ github.repository_owner }}/openubl-ui"
+      containerfile: "./Dockerfile.ui"
+      architectures: '[ "amd64", "arm64" ]'
+      extra-args: "--ulimit nofile=4096:4096"
+    secrets:
+      registry_username: ${{ github.actor }}
+      registry_password: ${{ secrets.GITHUB_TOKEN }}

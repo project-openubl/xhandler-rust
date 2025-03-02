@@ -34,7 +34,7 @@ jobs:
         uses: ./.github/actions/install-dependencies
       - run: cargo test
   
-  npm-lint:
+  npm-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
