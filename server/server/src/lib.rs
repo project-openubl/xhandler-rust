@@ -7,9 +7,13 @@ use actix_multipart::form::tempfile::TempFileConfig;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 
+use openapi::ApiDoc;
 use openubl_api::system::InnerSystem;
 use openubl_common::config::Database;
 use openubl_storage::StorageSystem;
+use utoipa::OpenApi;
+use utoipa_actix_web::AppExt;
+use utoipa_swagger_ui::SwaggerUi;
 
 use crate::server::credentials::{
     create_credentials, delete_credentials, get_credentials, list_credentials, update_credentials,
@@ -20,6 +24,7 @@ use actix_web_static_files::{deps::static_files::Resource, ResourceFiles};
 use openubl_ui::{openubl_ui, UI};
 
 mod dto;
+pub mod openapi;
 pub mod server;
 
 pub struct UiResources {
@@ -89,11 +94,25 @@ impl ServerRun {
         let app_state = Arc::new(AppState { system, storage });
 
         HttpServer::new(move || {
-            App::new()
-                .app_data(web::Data::from(app_state.clone()))
+            let (app, api) = App::new()
                 .wrap(Logger::default())
+                .into_utoipa_app()
+                //
+                .openapi(ApiDoc::openapi())
+                //
+                .app_data(web::Data::from(app_state.clone()))
                 .app_data(TempFileConfig::default())
-                .configure(configure)
+                // q
+                .service(utoipa_actix_web::scope("/q").configure(configure_q))
+                // API
+                .service(utoipa_actix_web::scope("/api").configure(configure_api))
+                .split_for_parts();
+
+            app
+                // Swagger
+                .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/openapi.json", api))
+                .service(web::redirect("/swagger-ui", "/swagger-ui/"))
+                // UI
                 .service(ResourceFiles::new("/", ui.resources()).resolve_not_found_to(""))
         })
         .bind(self.bind_addr)?
@@ -109,11 +128,13 @@ pub struct AppState {
     pub storage: StorageSystem,
 }
 
-pub fn configure(config: &mut web::ServiceConfig) {
+pub fn configure_q(config: &mut utoipa_actix_web::service_config::ServiceConfig) {
     // Health
     config.service(health::liveness);
     config.service(health::readiness);
+}
 
+pub fn configure_api(config: &mut utoipa_actix_web::service_config::ServiceConfig) {
     // Documents
     config.service(list_documents);
     config.service(get_document_file);
