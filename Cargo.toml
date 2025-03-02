@@ -13,6 +13,7 @@ members = [
     "server/server",
     "server/cli",
     "server/signature",
+    "server/xtask",
     "server/ui/crate",
 ]
 
@@ -73,6 +74,7 @@ aws-smithy-runtime-api = "1.7"
 async-trait = "0.1"
 env_logger = "0.11"
 utoipa = "5.3"
+utoipa-actix-web = "0.1"
 utoipa-swagger-ui = "9.0"
 actix-web = "4.9"
 actix-web-httpauth = "0.8"

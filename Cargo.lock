@@ -3149,6 +3149,7 @@ dependencies = [
  "serde",
  "thiserror 2.0.11",
  "utoipa",
+ "utoipa-actix-web",
  "utoipa-swagger-ui",
  "xhandler",
 ]
@@ -3191,6 +3192,16 @@ dependencies = [
  "serde_json",
  "static-files",
  "tera",
+]
+
+[[package]]
+name = "openubl-xtask"
+version = "0.1.1"
+dependencies = [
+ "anyhow",
+ "clap",
+ "openubl-server",
+ "tokio",
 ]
 
 [[package]]
@@ -4424,6 +4435,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_yaml"
+version = "0.9.34+deprecated"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a8b1a1a2ebf674015cc02edccce75287f1a0130d394307b36743c2f5d504b47"
+dependencies = [
+ "indexmap",
+ "itoa",
+ "ryu",
+ "serde",
+ "unsafe-libyaml",
+]
+
+[[package]]
 name = "serial_test"
 version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5423,6 +5447,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e70f2a8b45122e719eb623c01822704c4e0907e7e426a05927e1a1cfff5b75d0"
 
 [[package]]
+name = "unsafe-libyaml"
+version = "0.2.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "673aac59facbab8a9007c7f6108d11f63b603f7cabff99fabf650fea5c32b861"
+
+[[package]]
 name = "untrusted"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5466,7 +5496,19 @@ dependencies = [
  "indexmap",
  "serde",
  "serde_json",
+ "serde_yaml",
  "utoipa-gen",
+]
+
+[[package]]
+name = "utoipa-actix-web"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b7eda9c23c05af0fb812f6a177514047331dac4851a2c8e9c4b895d6d826967f"
+dependencies = [
+ "actix-service",
+ "actix-web",
+ "utoipa",
 ]
 
 [[package]]
