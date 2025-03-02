@@ -4,8 +4,10 @@ use anyhow::{anyhow, bail, Context};
 use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
 use serde::Serialize;
+use serde_json::Value;
 use static_files::resource::new_resource;
 use static_files::Resource;
+use std::cmp::max;
 use std::collections::HashMap;
 use std::str::from_utf8;
 use std::sync::OnceLock;
@@ -28,14 +30,31 @@ pub fn openubl_ui_resources() -> HashMap<&'static str, Resource> {
     resources
 }
 
-pub fn generate_index_html(ui: &UI, template_file: String) -> tera::Result<String> {
-    let template = template_file.replace("<%=", "{{").replace("%>", "}}");
+pub fn generate_index_html(
+    ui: &UI,
+    template_file: String,
+    branding_file_content: String,
+) -> tera::Result<String> {
+    let template = template_file
+        .replace("<%=", "{{")
+        .replace("%>", "}}")
+        .replace(
+            "?? branding.application.title",
+            "| default(value=branding.application.title)",
+        )
+        .replace(
+            "?? branding.application.title",
+            "| default(value=branding.application.title)",
+        );
 
     let env_json = serde_json::to_string(&ui)?;
     let env_base64 = BASE64_STANDARD.encode(env_json.as_bytes());
 
+    let branding: Value = serde_json::from_str(&branding_file_content)?;
+
     let mut context = tera::Context::new();
     context.insert("_env", &env_base64);
+    context.insert("branding", &branding);
 
     tera::Tera::one_off(&template, &context, true)
 }
@@ -44,19 +63,28 @@ pub fn openubl_ui(ui: &UI) -> anyhow::Result<HashMap<&'static str, Resource>> {
     let mut resources = generate();
 
     let template_file = resources.get("index.html.ejs");
+    let branding_file_content = resources.get("branding/strings.json");
 
     let result = INDEX_HTML.get_or_init(|| {
-        if let Some(template_file) = template_file {
-            let modified = template_file.modified;
+        if let (Some(template_file), Some(branding_file_content)) =
+            (template_file, branding_file_content)
+        {
+            let modified = max(template_file.modified, branding_file_content.modified);
             let template_file =
                 from_utf8(template_file.data).context("cannot interpret template as UTF-8")?;
+            let branding_file_content = from_utf8(branding_file_content.data)
+                .context("cannot interpret branding as UTF-8")?;
             Ok((
-                generate_index_html(ui, template_file.to_string())
-                    .expect("cannot generate index.html"),
+                generate_index_html(
+                    ui,
+                    template_file.to_string(),
+                    branding_file_content.to_string(),
+                )
+                .expect("cannot generate index.html"),
                 modified,
             ))
         } else {
-            bail!("Missing template");
+            bail!("Missing template or branding");
         }
     });
 

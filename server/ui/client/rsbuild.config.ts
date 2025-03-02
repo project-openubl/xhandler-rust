@@ -109,12 +109,12 @@ export default defineConfig({
         to: ".",
       },
       {
-        from: brandingPath,
+        from: faviconPath,
         to: ".",
       },
       {
-        from: faviconPath,
-        to: ".",
+        from: brandingPath,
+        to: "branding",
       },
     ],
   },
