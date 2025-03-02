@@ -4,9 +4,9 @@ use std::{fs, io};
 
 use static_files::resource_dir;
 
-static UI_DIR: &str = "../";
-static UI_DIST_DIR: &str = "../dist";
-static STATIC_DIR: &str = "target/generated";
+static UI_DIR: &str = "../client";
+static UI_DIST_DIR: &str = "../client/dist";
+static STATIC_DIR: &str = "./target/generated";
 
 #[cfg(windows)]
 static NPM_CMD: &str = "npm.cmd";
