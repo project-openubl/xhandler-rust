@@ -1,37 +1,45 @@
 {
-  "name": "openubl-ui",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "rsbuild build",
-    "check": "biome check --write",
-    "dev": "rsbuild dev",
-    "format": "biome format --write",
-    "preview": "rsbuild preview"
-  },
-  "dependencies": {
-    "@patternfly/patternfly": "^6.1.0",
-    "@patternfly/react-core": "^6.1.0",
-    "@patternfly/react-table": "^6.1.0",
-    "@patternfly/react-tokens": "^6.1.0",
-    "@tanstack/react-query": "^5.66.11",
-    "@tanstack/react-query-devtools": "^5.66.11",
-    "@tanstack/react-router": "^1.112.0",
-    "@tanstack/react-table": "^8.21.2",
-    "@tanstack/router-devtools": "^1.112.0",
-    "axios": "^1.8.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@rsbuild/core": "^1.2.8",
-    "@rsbuild/plugin-react": "^1.1.0",
-    "@tanstack/router-plugin": "^1.99.0",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
-    "raw-loader": "^4.0.2",
-    "typescript": "^5.7.3"
-  }
+	"name": "@openubl-ui/root",
+	"version": "1.0.0",
+	"license": "Apache-2.0",
+	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/project-openubl/xhandler-rust.git"
+	},
+	"scripts": {
+		"clean": "rm -rf ./dist && npm run clean -ws --if-present",
+		"clean:all": "npm run clean && rm -rf ./node_modules && npm run clean:all -ws --if-present",
+		"check": "npm run check -ws --if-present",
+    	"check:write": "npm run check:write -ws --if-present",
+		"build": "npm run build -ws --if-present",
+		"dev:common": "npm run dev -w common",
+		"dev:server": "npm run dev -w server",
+		"dev:client": "npm run dev -w client",
+		"dev": "concurrently -n common,client -c 'white.bold.inverse,green.bold.inverse,blue.bold.inverse' 'npm:dev:common' 'npm:dev:client'",
+		"start": "npm run build -w common -w client && npm run start -w server"
+	},
+	"workspaces": [
+		"common",
+		"client",
+		"server"
+	],
+	"dependencies": {
+		"@types/express": "^4.17.21",
+		"http-proxy-middleware": "^2.0.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@rollup/plugin-commonjs": "^28.0.2",
+		"@rollup/plugin-json": "^6.1.0",
+		"@rollup/plugin-node-resolve": "^16.0.0",
+		"@rollup/plugin-run": "^3.1.0",
+		"@rollup/plugin-typescript": "^12.1.2",
+		"@rollup/plugin-virtual": "^3.0.2",
+		"@types/node": "^22.8.1",
+		"concurrently": "^9.1.2",
+		"rollup": "^3.29.5",
+		"rollup-plugin-copy": "^3.5.0",
+		"typescript": "^5.7.3"
+	}
 }
