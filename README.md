@@ -17,11 +17,16 @@ XMLs basados en UBL y SUNAT
 cargo run --bin server
 ```
 
+- The server is running at http://localhost:8080
+- You can see Swagger UI at http://localhost:8080/swagger-ui
+
 ## Server UI
 
 ```shell
 npm run dev --prefix server/ui
 ```
+
+- The UI running at http://localhost:3000
 
 ## License
 
