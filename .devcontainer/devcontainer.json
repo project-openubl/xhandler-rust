@@ -26,7 +26,11 @@
         "dsznajder.es7-react-js-snippets",
         "biomejs.biome",
         "GitHub.vscode-github-actions"
-      ]
+      ],
+      "settings": {
+        "biome.searchInPath": false,
+        "biome.lspBin": "server/ui/node_modules/@biomejs/cli-linux-x64/biome"
+      }
     }
   }
 }

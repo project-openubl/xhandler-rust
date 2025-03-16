@@ -7,7 +7,7 @@ updates:
     schedule:
       interval: "weekly"
     commit-message:
-      prefix: ":seedling: "
+      prefix: ":ghost: "
 
   # Maintain dependencies for Cargo.toml
   - package-ecosystem: "cargo"
@@ -15,4 +15,15 @@ updates:
     schedule:
       interval: "weekly"
     commit-message:
-      prefix: ":seedling: "
+      prefix: ":ghost: "
+  
+  # Maintain dependencies for NPM
+  - package-ecosystem: "npm"
+    directory: "/server/ui"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: ":ghost: "
+    allow:
+      - dependency-name: "@patternfly/*"
+        dependency-type: "direct"
