@@ -1,2 +1,2 @@
 # cd /workspace/server/ui && npm ci --ignore-scripts
-corepack enable pnpm
+# corepack enable pnpm
