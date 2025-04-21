@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@patternfly/patternfly": "^6.1.0",
-    "@patternfly/react-core": "^6.1.0",
+    "@patternfly/react-core": "^6.2.1",
     "@patternfly/react-table": "^6.1.0",
     "@patternfly/react-tokens": "^6.1.0",
     "@tanstack/react-query": "^5.66.11",
