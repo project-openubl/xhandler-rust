@@ -13,7 +13,7 @@
     "start": "rsbuild preview"
   },
   "dependencies": {
-    "@patternfly/patternfly": "^6.1.0",
+    "@patternfly/patternfly": "^6.2.3",
     "@patternfly/react-core": "^6.1.0",
     "@patternfly/react-table": "^6.1.0",
     "@patternfly/react-tokens": "^6.1.0",
