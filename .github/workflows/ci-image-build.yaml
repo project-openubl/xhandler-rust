@@ -13,7 +13,7 @@ jobs:
       should-test: ${{ steps.check-changes.outputs.should-test }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: What files changed?
         id: changed
@@ -81,7 +81,7 @@ jobs:
 
     steps:
       - name: Checkout merge commit for PR${{ github.event.pull_request.number }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup QEMU to be able to build on ${{ matrix.architecture }}
         if: ${{ matrix.architecture != 'amd64' }}
