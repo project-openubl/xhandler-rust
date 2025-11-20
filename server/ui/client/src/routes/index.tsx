@@ -9,6 +9,7 @@ function HomeComponent() {
   return (
     <>
       <PageSection variant="default">
+        <Tabs></Tabs>
         <Content>
           <h1>Openubl</h1>
           <p>Fully hosted and managed service</p>
