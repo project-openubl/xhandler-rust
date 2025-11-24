@@ -44,7 +44,7 @@ rsa = "0.9"
 serial_test = "3.2"
 tokio = "1.48"
 libxml = "0.3"
-quick-xml = "0.37"
+quick-xml = "0.38"
 x509-cert = "0.2"
 der = { version = "0.7" }
 openssl = "0.10"
