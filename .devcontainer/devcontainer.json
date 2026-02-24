@@ -1,35 +1,26 @@
 {
-  "name": "xhandler-rust",
-  "dockerComposeFile": "docker-compose.yml",
-  "overrideCommand": true,
-  "shutdownAction": "stopCompose",
-  "service": "xhandler-rust",
-  "remoteUser": "vscode",
+  "name": "xhander-rust",
+  "dockerComposeFile": "./docker-compose.yml",
+  "service": "xhander-rust",
   "workspaceFolder": "/workspace",
-  "onCreateCommand": "bash .devcontainer/onCreateCommand.sh",
-  "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
-  "postStartCommand": "bash .devcontainer/postStartCommand.sh",
   "forwardPorts": [
-    8080,
-    5173
+    8080
   ],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "1.83.0"
+    }
+  },
   "customizations": {
-    "jetbrains": {
-      "backend": "RustRover"
-    },
     "vscode": {
       "extensions": [
-        "k--kato.intellij-idea-keybindings",
         "vadimcn.vscode-lldb",
         "rust-lang.rust-analyzer",
-        "tamasfe.even-better-toml",
-        "dsznajder.es7-react-js-snippets",
-        "biomejs.biome",
-        "GitHub.vscode-github-actions"
+        "tamasfe.even-better-toml"        
       ],
       "settings": {
-        "biome.searchInPath": false,
-        "biome.lspBin": "server/ui/node_modules/@biomejs/cli-linux-x64/biome"
+        "git.alwaysSignOff": true
       }
     }
   }
