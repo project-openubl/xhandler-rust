@@ -15,18 +15,14 @@ where
     T: InvoiceDescuentosGetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        let result = self
-            .get_descuentos()
-            .iter_mut()
-            .map(|descuento| {
-                let results = [
-                    DescuentoFactorRule::fill(descuento).unwrap_or_default(),
-                    DescuentoMontoBaseRule::fill(descuento).unwrap_or_default(),
-                    DescuentoTipoRule::fill(descuento).unwrap_or_default(),
-                ];
-                results.contains(&true)
-            })
-            .any(|changed| changed);
+        let result = self.get_descuentos().iter_mut().any(|descuento| {
+            let results = [
+                DescuentoFactorRule::fill(descuento).unwrap_or_default(),
+                DescuentoMontoBaseRule::fill(descuento).unwrap_or_default(),
+                DescuentoTipoRule::fill(descuento).unwrap_or_default(),
+            ];
+            results.contains(&true)
+        });
         Ok(result)
     }
 }
