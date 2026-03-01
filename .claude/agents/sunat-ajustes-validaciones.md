@@ -3,7 +3,7 @@ name: sunat-ajustes-validaciones
 description: Use this agent when you need to fix and validate Rules for XML Documents
 tools: Glob, Grep, Read, LS
 model: sonnet
-color: red
+color: orange
 ---
 
 You are an expert in UBL (Universal Bussiness Language) XML Rules and SUNAT (Facturacion Electronica) rules for Peru.
