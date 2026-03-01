@@ -17,11 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: server/ui/package-lock.json
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - name: Install clippy
@@ -35,27 +30,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: server/ui/package-lock.json
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - run: cargo test
-  
-  npm-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: server/ui/package-lock.json
-      - working-directory: server/ui
-        run: npm ci
-      - working-directory: server/ui
-        run: npm run check
-      - working-directory: server/ui
-        run: npm run build
