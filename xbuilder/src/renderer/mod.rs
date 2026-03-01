@@ -190,3 +190,21 @@ impl Renderer for DebitNote {
         TEMPLATES.render("renderer/debitNote.xml", &Context::from_serialize(self)?)
     }
 }
+
+impl Renderer for VoidedDocuments {
+    fn render(&self) -> tera::Result<String> {
+        TEMPLATES.render(
+            "renderer/voidedDocuments.xml",
+            &Context::from_serialize(self)?,
+        )
+    }
+}
+
+impl Renderer for SummaryDocuments {
+    fn render(&self) -> tera::Result<String> {
+        TEMPLATES.render(
+            "renderer/summaryDocuments.xml",
+            &Context::from_serialize(self)?,
+        )
+    }
+}

@@ -1,5 +1,5 @@
 ---
-name: sunat-greenter
+name: sunat-xhandler-java
 description: Use this agent to look for code inspiration from the competitors when implementing UBL XML Rules
 tools: Glob, Grep, Read, LS
 model: sonnet
