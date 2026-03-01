@@ -1,6 +1,9 @@
 pub mod common;
 pub mod credit_note;
 pub mod debit_note;
+pub mod despatch_advice;
 pub mod invoice;
+pub mod perception;
+pub mod retention;
 pub mod summary_documents;
 pub mod voided_documents;
