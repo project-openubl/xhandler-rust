@@ -62,8 +62,7 @@ impl UblFile {
             let local_name = name.local_name.as_str();
 
             match (namespace, prefix, local_name) {
-                (Some(DS), Some("ds"), "Signature")
-                | (Some(CAC_NS), Some("cac"), "Signature") => {
+                (Some(DS), Some("ds"), "Signature") | (Some(CAC_NS), Some("cac"), "Signature") => {
                     current_wrapper = if is_start {
                         Some(Wrapper::Signature)
                     } else {
