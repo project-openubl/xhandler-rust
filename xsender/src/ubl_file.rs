@@ -62,14 +62,16 @@ impl UblFile {
             let local_name = name.local_name.as_str();
 
             match (namespace, prefix, local_name) {
-                (Some(DS), Some("ds"), "Signature") => {
+                (Some(DS), Some("ds"), "Signature")
+                | (Some(CAC_NS), Some("cac"), "Signature") => {
                     current_wrapper = if is_start {
                         Some(Wrapper::Signature)
                     } else {
                         None
                     }
                 }
-                (Some(CAC_NS), Some("cac"), "AccountingSupplierParty") => {
+                (Some(CAC_NS), Some("cac"), "AccountingSupplierParty")
+                | (Some(CAC_NS), Some("cac"), "AgentParty") => {
                     current_wrapper = if is_start {
                         Some(Wrapper::AccountingSupplierParty)
                     } else {
@@ -223,5 +225,19 @@ mod tests {
             metadata3.digest_value.as_deref(),
             Some("kLZdGqZX/X/f+g9+BerSzCT1aSU=")
         );
+
+        let file4 = UblFile::from_path(Path::new(&format!("{RESOURCES}/P001-1.xml")));
+        let metadata4 = file4.unwrap().metadata().unwrap();
+        assert_eq!(metadata4.document_type, "Perception");
+        assert_eq!(metadata4.document_id, "P001-1");
+        assert_eq!(metadata4.ruc, "12345678912");
+        assert_eq!(metadata4.voided_line_document_type_code, None);
+
+        let file5 = UblFile::from_path(Path::new(&format!("{RESOURCES}/R001-1.xml")));
+        let metadata5 = file5.unwrap().metadata().unwrap();
+        assert_eq!(metadata5.document_type, "Retention");
+        assert_eq!(metadata5.document_id, "R001-1");
+        assert_eq!(metadata5.ruc, "12345678912");
+        assert_eq!(metadata5.voided_line_document_type_code, None);
     }
 }
