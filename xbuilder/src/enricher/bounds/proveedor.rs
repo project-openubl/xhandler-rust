@@ -2,6 +2,8 @@ use crate::models::common::{Direccion, Proveedor};
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
+use crate::models::perception::Perception;
+use crate::models::retention::Retention;
 use crate::models::summary_documents::SummaryDocuments;
 use crate::models::voided_documents::VoidedDocuments;
 
@@ -56,6 +58,18 @@ impl ProveedorGetter for VoidedDocuments {
 }
 
 impl ProveedorGetter for SummaryDocuments {
+    fn get_proveedor(&self) -> &Proveedor {
+        &self.proveedor
+    }
+}
+
+impl ProveedorGetter for Perception {
+    fn get_proveedor(&self) -> &Proveedor {
+        &self.proveedor
+    }
+}
+
+impl ProveedorGetter for Retention {
     fn get_proveedor(&self) -> &Proveedor {
         &self.proveedor
     }

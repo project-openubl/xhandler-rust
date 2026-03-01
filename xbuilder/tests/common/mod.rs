@@ -24,8 +24,8 @@ const _DESPATCH_ADVICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-Despatch
 const VOIDED_DOCUMENTS_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-VoidedDocuments-1.0.xsd";
 const SUMMARY_DOCUMENTS_XSD: &str =
     "tests/resources/xsd/2.0/maindoc/UBLPE-SummaryDocuments-1.0.xsd";
-const _PERCEPTION_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-Perception-1.0.xsd";
-const _RETENTION_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-Retention-1.0.xsd";
+const PERCEPTION_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-Perception-1.0.xsd";
+const RETENTION_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-Retention-1.0.xsd";
 
 lazy_static::lazy_static! {
     pub static ref CLIENT: FileSender = FileSender {
@@ -185,6 +185,48 @@ pub async fn assert_summary_documents(doc: &mut SummaryDocuments, snapshot_filen
     let xml_signed = sign_xml(&xml);
     assert_xsd(&xml_signed, SUMMARY_DOCUMENTS_XSD);
     assert_sunat(&xml_signed).await;
+}
+
+#[allow(dead_code)]
+pub async fn assert_perception(doc: &mut Perception, snapshot_filename: &str) {
+    let defaults = defaults_base();
+    doc.enrich(&defaults);
+
+    let xml = doc.render().expect("Could not render perception");
+
+    assert_snapshot(&xml, snapshot_filename);
+
+    let xml_signed = sign_xml(&xml);
+    assert_xsd(&xml_signed, PERCEPTION_XSD);
+    // SUNAT send skipped: xsender metadata extraction doesn't support Perception root element yet
+}
+
+#[allow(dead_code)]
+pub async fn assert_retention(doc: &mut Retention, snapshot_filename: &str) {
+    let defaults = defaults_base();
+    doc.enrich(&defaults);
+
+    let xml = doc.render().expect("Could not render retention");
+
+    assert_snapshot(&xml, snapshot_filename);
+
+    let xml_signed = sign_xml(&xml);
+    assert_xsd(&xml_signed, RETENTION_XSD);
+    // SUNAT send skipped: xsender metadata extraction doesn't support Retention root element yet
+}
+
+#[allow(dead_code)]
+pub async fn assert_despatch_advice(doc: &mut DespatchAdvice, snapshot_filename: &str) {
+    let defaults = defaults_base();
+    doc.enrich(&defaults);
+
+    let xml = doc.render().expect("Could not render despatch advice");
+
+    assert_snapshot(&xml, snapshot_filename);
+
+    let xml_signed = sign_xml(&xml);
+    assert_xsd(&xml_signed, _DESPATCH_ADVICE_XSD);
+    // SUNAT send skipped: DespatchAdvice uses REST endpoint, not SOAP
 }
 
 fn assert_snapshot(expected: &str, snapshot_filename: &str) {

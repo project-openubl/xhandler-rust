@@ -7,7 +7,10 @@ use crate::enricher::rules::phase3summary::note::total_importe::NoteTotalImporte
 use crate::enricher::rules::phase3summary::note::total_impuestos::NoteTotalImpuestosSummaryRule;
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
+use crate::models::despatch_advice::DespatchAdvice;
 use crate::models::invoice::Invoice;
+use crate::models::perception::Perception;
+use crate::models::retention::Retention;
 use crate::models::summary_documents::SummaryDocuments;
 use crate::models::voided_documents::VoidedDocuments;
 
@@ -57,6 +60,18 @@ impl Summary for VoidedDocuments {
 }
 
 impl Summary for SummaryDocuments {
+    fn summary(&mut self) {}
+}
+
+impl Summary for Perception {
+    fn summary(&mut self) {}
+}
+
+impl Summary for Retention {
+    fn summary(&mut self) {}
+}
+
+impl Summary for DespatchAdvice {
     fn summary(&mut self) {}
 }
 
