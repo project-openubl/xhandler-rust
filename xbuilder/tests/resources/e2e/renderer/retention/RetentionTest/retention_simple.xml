@@ -33,14 +33,16 @@
         </cac:DigitalSignatureAttachment>
     </cac:Signature>
     <cbc:ID>R001-1</cbc:ID>
-    <cbc:IssueDate>2022-01-31</cbc:IssueDate>    <cac:AgentParty>
+    <cbc:IssueDate>2022-01-31</cbc:IssueDate>
+    <cac:AgentParty>
         <cac:PartyIdentification>
             <cbc:ID schemeID="6">12345678912</cbc:ID>
         </cac:PartyIdentification>
         <cac:PartyLegalEntity>
             <cbc:RegistrationName><![CDATA[Softgreen S.A.C.]]></cbc:RegistrationName>
         </cac:PartyLegalEntity>
-    </cac:AgentParty>    <cac:ReceiverParty>
+    </cac:AgentParty>
+    <cac:ReceiverParty>
         <cac:PartyIdentification>
             <cbc:ID schemeID="6">12121212121</cbc:ID>
         </cac:PartyIdentification>
