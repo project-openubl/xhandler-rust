@@ -26,7 +26,7 @@ impl FromStr for CdrMetadata {
         }
 
         let mut current_wrapper: Option<Wrapper> = None;
-        let mut current_text: String = String::from("");
+        let mut current_text: String = String::new();
 
         // Send bill data
         let mut response_code: Option<String> = None;

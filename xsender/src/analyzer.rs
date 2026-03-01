@@ -74,9 +74,9 @@ pub fn filename_formatted_without_extension(
 ) -> anyhow::Result<String> {
     match document_type {
         DocumentType::INVOICE => {
-            if FACTURA_SERIE_REGEX.as_ref()?.is_match(document_id) {
+            if FACTURA_SERIE_REGEX.is_match(document_id) {
                 Ok(format!("{ruc}-{}-{document_id}", Catalog1::FACTURA))
-            } else if BOLETA_SERIE_REGEX.as_ref()?.is_match(document_id) {
+            } else if BOLETA_SERIE_REGEX.is_match(document_id) {
                 Ok(format!("{ruc}-{}-{document_id}", Catalog1::BOLETA))
             } else {
                 Err(anyhow!("Could not build filename from Invoice"))
@@ -90,18 +90,12 @@ pub fn filename_formatted_without_extension(
         DocumentType::PERCEPTION => Ok(format!("{ruc}-{}-{document_id}", Catalog1::PERCEPCION)),
         DocumentType::RETENTION => Ok(format!("{ruc}-{}-{document_id}", Catalog1::RETENCION)),
         DocumentType::DESPATCH_ADVICE => {
-            if GUIA_REMISION_REMITENTE_SERIE_REGEX
-                .as_ref()?
-                .is_match(document_id)
-            {
+            if GUIA_REMISION_REMITENTE_SERIE_REGEX.is_match(document_id) {
                 Ok(format!(
                     "{ruc}-{}-{document_id}",
                     Catalog1::GUIA_REMISION_REMITENTE
                 ))
-            } else if GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX
-                .as_ref()?
-                .is_match(document_id)
-            {
+            } else if GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX.is_match(document_id) {
                 Ok(format!(
                     "{ruc}-{}-{document_id}",
                     Catalog1::GUIA_REMISION_TRANSPORTISTA

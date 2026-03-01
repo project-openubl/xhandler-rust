@@ -32,7 +32,7 @@ impl FromStr for SendFileXmlResponse {
         }
 
         let mut current_wrapper: Option<Wrapper> = None;
-        let mut current_text: String = String::from("");
+        let mut current_text: String = String::new();
 
         // Send bill data
         let mut cdr_base64: Option<String> = None;

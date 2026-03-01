@@ -68,6 +68,8 @@ pub enum SignErr {
     IO(#[from] io::Error),
     #[error(transparent)]
     Canonicalization(#[from] CanonicalizationErrorCode),
+    #[error(transparent)]
+    QuickXml(#[from] quick_xml::Error),
 }
 
 pub struct XSigner {
@@ -155,14 +157,14 @@ impl XSigner {
                         xml_writer
                             .write_event(Event::Start(BytesStart::new("ext:ExtensionContent")))?;
                     } else {
-                        assert!(xml_writer.write_event(Event::Start(e.clone())).is_ok());
+                        xml_writer.write_event(Event::Start(e))?;
                     }
                 }
                 Ok(Event::Start(e)) => {
-                    assert!(xml_writer.write_event(Event::Start(e.clone())).is_ok());
                     if e.name().as_ref() == b"ext:ExtensionContent" {
                         inside_target_element = true;
                     }
+                    xml_writer.write_event(Event::Start(e))?;
                 }
                 Ok(Event::End(e)) => {
                     if inside_target_element {
@@ -172,12 +174,8 @@ impl XSigner {
                         loop {
                             match xml_content_reader.read_event() {
                                 Ok(Event::Eof) => break,
-                                Ok(e) => assert!(xml_writer.write_event(e).is_ok()),
-                                Err(e) => panic!(
-                                    "Error at position {}: {:?}",
-                                    xml_reader.error_position(),
-                                    e
-                                ),
+                                Ok(e) => xml_writer.write_event(e)?,
+                                Err(e) => return Err(SignErr::QuickXml(e)),
                             }
                         }
 
@@ -186,11 +184,11 @@ impl XSigner {
                                 .write_event(Event::End(BytesEnd::new("ext:ExtensionContent")))?;
                         }
                     }
-                    assert!(xml_writer.write_event(Event::End(e.clone())).is_ok());
+                    xml_writer.write_event(Event::End(e))?;
                 }
                 Ok(Event::Eof) => break,
-                Ok(e) => assert!(xml_writer.write_event(e).is_ok()),
-                Err(e) => panic!("Error at position {}: {:?}", xml_reader.error_position(), e),
+                Ok(e) => xml_writer.write_event(e)?,
+                Err(e) => return Err(SignErr::QuickXml(e)),
             }
         }
 
