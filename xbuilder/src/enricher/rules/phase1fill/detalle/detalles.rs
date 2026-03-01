@@ -40,23 +40,18 @@ where
                 .ok_or(anyhow!("IVAP Tasa could not be found"))?,
         };
 
-        let result = self
-            .get_detalles()
-            .iter_mut()
-            .map(|detalle| {
-                let results = [
-                    DetalleICBTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
-                    DetalleIGVTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
-                    DetalleIGVTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
-                    DetalleISCTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
-                    DetalleISCTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
-                    DetallePrecioReferenciaTipoFillRule::fill(detalle, defaults)
-                        .unwrap_or_default(),
-                    DetalleUnidadMedidaFillRule::fill(detalle, defaults).unwrap_or_default(),
-                ];
-                results.contains(&true)
-            })
-            .any(|changed| changed);
+        let result = self.get_detalles().iter_mut().any(|detalle| {
+            let results = [
+                DetalleICBTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                DetalleIGVTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                DetalleIGVTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
+                DetalleISCTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                DetalleISCTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
+                DetallePrecioReferenciaTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
+                DetalleUnidadMedidaFillRule::fill(detalle, defaults).unwrap_or_default(),
+            ];
+            results.contains(&true)
+        });
         Ok(result)
     }
 }
