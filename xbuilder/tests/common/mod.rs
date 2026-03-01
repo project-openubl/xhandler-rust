@@ -198,7 +198,7 @@ pub async fn assert_perception(doc: &mut Perception, snapshot_filename: &str) {
 
     let xml_signed = sign_xml(&xml);
     assert_xsd(&xml_signed, PERCEPTION_XSD);
-    // SUNAT send skipped: xsender metadata extraction doesn't support Perception root element yet
+    assert_sunat(&xml_signed).await;
 }
 
 #[allow(dead_code)]
@@ -212,7 +212,7 @@ pub async fn assert_retention(doc: &mut Retention, snapshot_filename: &str) {
 
     let xml_signed = sign_xml(&xml);
     assert_xsd(&xml_signed, RETENTION_XSD);
-    // SUNAT send skipped: xsender metadata extraction doesn't support Retention root element yet
+    assert_sunat(&xml_signed).await;
 }
 
 #[allow(dead_code)]
