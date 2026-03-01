@@ -5,16 +5,6 @@ members = [
     "xsender",
     "xsigner",
     "xhandler",
-    "server/migration",
-    "server/entity",
-    "server/common",
-    "server/storage",
-    "server/api",
-    "server/server",
-    "server/cli",
-    "server/signature",
-    "server/xtask",
-    "server/ui/crate",
 ]
 
 [workspace.package]
@@ -51,13 +41,6 @@ openssl = "0.10"
 xml_c14n = "0.3"
 
 xhandler = { path = "./xhandler" }
-openubl-migration = { path = "./server/migration" }
-openubl-entity = { path = "./server/entity" }
-openubl-common = { path = "./server/common" }
-openubl-storage = { path = "./server/storage" }
-openubl-api = { path = "./server/api" }
-openubl-server = { path = "./server/server" }
-openubl-ui = { path = "./server/ui/crate" }
 
 sea-orm = "1"
 sea-query = "0.32"

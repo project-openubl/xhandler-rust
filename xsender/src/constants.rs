@@ -17,29 +17,16 @@ lazy_static::lazy_static! {
 
         let resources = generate();
         resources.into_iter().filter(|(name, _content)| name.ends_with(".xml")).for_each(|(name, content)| {
-            match from_utf8(content.data) {
-                Ok(template_raw_content) => {
-                    match tera.add_raw_template(name, template_raw_content) {
-                        Ok(_) => {},
-                        Err(e) => {
-                            println!("Adding template error(s): {}", e);
-                            ::std::process::exit(1);
-                        }
-                    };
-                },
-                Err(e) => {
-                    println!("Parsing error(s): {}", e);
-                    ::std::process::exit(1);
-                }
-            };
+            let template_raw_content = from_utf8(content.data).expect("Template is not valid UTF-8");
+            tera.add_raw_template(name, template_raw_content).expect("Failed to add template");
         });
 
         tera
     };
 
-    pub static ref FACTURA_SERIE_REGEX: Result<Regex, regex::Error> = Regex::new("^[F|f].*$");
-    pub static ref BOLETA_SERIE_REGEX: Result<Regex, regex::Error> = Regex::new("^[B|f].*$");
-    pub static ref GUIA_REMISION_REMITENTE_SERIE_REGEX: Result<Regex, regex::Error> = Regex::new("^[T|t].*$");
-    pub static ref GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX: Result<Regex, regex::Error> = Regex::new("^[V|v].*$");
-    pub static ref HTTP_CLIENT: Result<Client, reqwest::Error> = Client::builder().connection_verbose(true).build();
+    pub static ref FACTURA_SERIE_REGEX: Regex = Regex::new("^[Ff].*$").expect("valid regex");
+    pub static ref BOLETA_SERIE_REGEX: Regex = Regex::new("^[Bb].*$").expect("valid regex");
+    pub static ref GUIA_REMISION_REMITENTE_SERIE_REGEX: Regex = Regex::new("^[Tt].*$").expect("valid regex");
+    pub static ref GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX: Regex = Regex::new("^[Vv].*$").expect("valid regex");
+    pub static ref HTTP_CLIENT: Client = Client::builder().connection_verbose(true).build().expect("Failed to build HTTP client");
 }

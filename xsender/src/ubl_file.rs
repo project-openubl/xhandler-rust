@@ -44,7 +44,7 @@ impl UblFile {
         }
 
         let mut current_wrapper: Option<Wrapper> = None;
-        let mut current_text: String = String::from("");
+        let mut current_text: String = String::new();
 
         let mut document_type: Option<String> = None;
         let mut document_id: Option<String> = None;
