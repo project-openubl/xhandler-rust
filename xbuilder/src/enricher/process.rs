@@ -2,6 +2,8 @@ use crate::enricher::rules::phase2process::detalle::detalles::DetallesProcessRul
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
+use crate::models::summary_documents::SummaryDocuments;
+use crate::models::voided_documents::VoidedDocuments;
 
 pub trait Process {
     fn process(&mut self);
@@ -39,6 +41,14 @@ impl Process for DebitNote {
     fn process(&mut self) {
         self.process_common();
     }
+}
+
+impl Process for VoidedDocuments {
+    fn process(&mut self) {}
+}
+
+impl Process for SummaryDocuments {
+    fn process(&mut self) {}
 }
 
 impl<T> ProcessCommon for T

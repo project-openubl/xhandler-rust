@@ -20,10 +20,16 @@ use crate::enricher::rules::phase1fill::note::creditnote::tipo_nota::CreditNoteT
 use crate::enricher::rules::phase1fill::note::debitnote::tipo_nota::DebitNoteTipoFillRule;
 use crate::enricher::rules::phase1fill::note::tipo_comprobante_afectado::NoteComprobanteAfectadoTipoFillRule;
 use crate::enricher::rules::phase1fill::proveedor::ProveedorFillRule;
+use crate::enricher::rules::phase1fill::summary_documents::documento_id::SummaryDocumentsDocumentoIdFillRule;
+use crate::enricher::rules::phase1fill::summary_documents::moneda::SummaryDocumentsMonedaFillRule;
+use crate::enricher::rules::phase1fill::voided_documents::documento_id::VoidedDocumentsDocumentoIdFillRule;
+use crate::enricher::rules::phase1fill::voided_documents::tipo_comprobante::VoidedDocumentsTipoComprobanteFillRule;
 use crate::enricher::Defaults;
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
+use crate::models::summary_documents::SummaryDocuments;
+use crate::models::voided_documents::VoidedDocuments;
 
 pub trait Fill {
     fn fill(&mut self, defaults: &Defaults);
@@ -45,6 +51,14 @@ trait FillDebitNote {
     fn fill_debit_note(&mut self, defaults: &Defaults);
 }
 
+trait FillVoidedDocuments {
+    fn fill_voided_documents(&mut self, defaults: &Defaults);
+}
+
+trait FillSummaryDocuments {
+    fn fill_summary_documents(&mut self, defaults: &Defaults);
+}
+
 impl Fill for Invoice {
     fn fill(&mut self, defaults: &Defaults) {
         self.fill_common(defaults);
@@ -63,6 +77,18 @@ impl Fill for DebitNote {
     fn fill(&mut self, defaults: &Defaults) {
         self.fill_common(defaults);
         self.fill_debit_note(defaults);
+    }
+}
+
+impl Fill for VoidedDocuments {
+    fn fill(&mut self, defaults: &Defaults) {
+        self.fill_voided_documents(defaults);
+    }
+}
+
+impl Fill for SummaryDocuments {
+    fn fill(&mut self, defaults: &Defaults) {
+        self.fill_summary_documents(defaults);
     }
 }
 
@@ -161,6 +187,52 @@ where
             let results = [
                 NoteComprobanteAfectadoTipoFillRule::fill(self).unwrap_or_default(),
                 DebitNoteTipoFillRule::fill(self).unwrap_or_default(),
+            ];
+
+            changed = results.contains(&true);
+        }
+    }
+}
+
+impl<T> FillVoidedDocuments for T
+where
+    T: FechaEmisionFillRule
+        + FirmanteFillRule
+        + VoidedDocumentsTipoComprobanteFillRule
+        + VoidedDocumentsDocumentoIdFillRule,
+{
+    fn fill_voided_documents(&mut self, defaults: &Defaults) {
+        let mut changed = true;
+
+        while changed {
+            let results = [
+                FechaEmisionFillRule::fill(self, defaults).unwrap_or_default(),
+                FirmanteFillRule::fill(self).unwrap_or_default(),
+                VoidedDocumentsTipoComprobanteFillRule::fill(self).unwrap_or_default(),
+                VoidedDocumentsDocumentoIdFillRule::fill(self).unwrap_or_default(),
+            ];
+
+            changed = results.contains(&true);
+        }
+    }
+}
+
+impl<T> FillSummaryDocuments for T
+where
+    T: FechaEmisionFillRule
+        + FirmanteFillRule
+        + SummaryDocumentsMonedaFillRule
+        + SummaryDocumentsDocumentoIdFillRule,
+{
+    fn fill_summary_documents(&mut self, defaults: &Defaults) {
+        let mut changed = true;
+
+        while changed {
+            let results = [
+                FechaEmisionFillRule::fill(self, defaults).unwrap_or_default(),
+                FirmanteFillRule::fill(self).unwrap_or_default(),
+                SummaryDocumentsMonedaFillRule::fill(self).unwrap_or_default(),
+                SummaryDocumentsDocumentoIdFillRule::fill(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);

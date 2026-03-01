@@ -8,3 +8,5 @@ pub mod ivap_tasa;
 pub mod moneda;
 pub mod note;
 pub mod proveedor;
+pub mod summary_documents;
+pub mod voided_documents;

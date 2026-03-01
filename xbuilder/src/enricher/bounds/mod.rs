@@ -10,4 +10,6 @@ pub mod moneda;
 pub mod note;
 pub mod proveedor;
 pub mod serie_numero;
+pub mod summary_documents;
 pub mod total_impuestos;
+pub mod voided_documents;

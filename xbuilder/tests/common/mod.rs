@@ -21,8 +21,8 @@ const INVOICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-Invoice-2.1.xsd";
 const CREDIT_NOTE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-CreditNote-2.1.xsd";
 const DEBIT_NOTE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-DebitNote-2.1.xsd";
 const _DESPATCH_ADVICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-DespatchAdvice-2.1.xsd";
-const _VOIDED_DOCUMENTS_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-VoidedDocuments-1.0.xsd";
-const _SUMMARY_DOCUMENTS_XSD: &str =
+const VOIDED_DOCUMENTS_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-VoidedDocuments-1.0.xsd";
+const SUMMARY_DOCUMENTS_XSD: &str =
     "tests/resources/xsd/2.0/maindoc/UBLPE-SummaryDocuments-1.0.xsd";
 const _PERCEPTION_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-Perception-1.0.xsd";
 const _RETENTION_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-Retention-1.0.xsd";
@@ -159,6 +159,34 @@ pub async fn assert_debit_note(debit_note: &mut DebitNote, snapshot_filename: &s
     assert_sunat(&xml_signed).await;
 }
 
+#[allow(dead_code)]
+pub async fn assert_voided_documents(doc: &mut VoidedDocuments, snapshot_filename: &str) {
+    let defaults = defaults_base();
+    doc.enrich(&defaults);
+
+    let xml = doc.render().expect("Could not render voided documents");
+
+    assert_snapshot(&xml, snapshot_filename);
+
+    let xml_signed = sign_xml(&xml);
+    assert_xsd(&xml_signed, VOIDED_DOCUMENTS_XSD);
+    assert_sunat(&xml_signed).await;
+}
+
+#[allow(dead_code)]
+pub async fn assert_summary_documents(doc: &mut SummaryDocuments, snapshot_filename: &str) {
+    let defaults = defaults_base();
+    doc.enrich(&defaults);
+
+    let xml = doc.render().expect("Could not render summary documents");
+
+    assert_snapshot(&xml, snapshot_filename);
+
+    let xml_signed = sign_xml(&xml);
+    assert_xsd(&xml_signed, SUMMARY_DOCUMENTS_XSD);
+    assert_sunat(&xml_signed).await;
+}
+
 fn assert_snapshot(expected: &str, snapshot_filename: &str) {
     let snapshot_file_content = fs::read_to_string(snapshot_filename);
     assert!(snapshot_file_content.is_ok());
@@ -211,12 +239,15 @@ async fn assert_sunat(xml: &[u8]) {
 
     match documet_type.as_str() {
         DocumentType::VOIDED_DOCUMENTS | DocumentType::SUMMARY_DOCUMENTS => {
-            let result = match result.response {
+            let result = match &result.response {
                 SendFileAggregatedResponse::Cdr(_, _) => false,
                 SendFileAggregatedResponse::Ticket(_) => true,
-                SendFileAggregatedResponse::Error(_) => false,
+                SendFileAggregatedResponse::Error(e) => {
+                    println!("SUNAT Error: code={} message={}", e.code, e.message);
+                    false
+                }
             };
-            assert!(result)
+            assert!(result, "Expected Ticket response from SUNAT")
         }
         _ => {
             let result = match result.response {

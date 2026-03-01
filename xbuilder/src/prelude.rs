@@ -4,4 +4,6 @@ pub use crate::models::common::*;
 pub use crate::models::credit_note::*;
 pub use crate::models::debit_note::*;
 pub use crate::models::invoice::*;
+pub use crate::models::summary_documents::*;
+pub use crate::models::voided_documents::*;
 pub use crate::renderer::Renderer;
