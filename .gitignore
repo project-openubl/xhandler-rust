@@ -61,3 +61,5 @@ target
 
 .openubl/
 .pnpm-store/
+/managed_context
+/test_suite_analysis
