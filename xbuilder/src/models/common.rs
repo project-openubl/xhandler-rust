@@ -140,12 +140,29 @@ pub struct DocumentoRelacionado {
     pub serie_numero: &'static str,
 }
 
+/// Código estándar GS1/GTIN para identificación de producto
+#[derive(Clone, Debug, Serialize)]
+pub struct CodigoGS1 {
+    /// Código GS1/GTIN del producto
+    pub codigo: &'static str,
+    /// Tipo de estructura GTIN: e.g. "GTIN-8", "GTIN-13", "GTIN-14"
+    pub tipo: &'static str,
+}
+
 /// Detalle de las ventas en Boleta/Factura/Nota Credito/Nota Debito
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Detalle {
     pub descripcion: &'static str,
     pub cantidad: Decimal,
     pub unidad_medida: Option<&'static str>,
+
+    /// Código del producto del vendedor (SellersItemIdentification)
+    pub codigo: Option<&'static str>,
+    /// Código de producto SUNAT - Catalog25 (CommodityClassification)
+    pub codigo_sunat: Option<&'static str>,
+    /// Código estándar GS1/GTIN (StandardItemIdentification).
+    /// Incluye el código y el tipo de estructura GTIN (e.g. "GTIN-8", "GTIN-13", "GTIN-14").
+    pub codigo_gs1: Option<CodigoGS1>,
 
     /// Precio + bool. True si el precio incluye impuestos, false si no incluye impuestos
     pub precio: Option<Decimal>,
