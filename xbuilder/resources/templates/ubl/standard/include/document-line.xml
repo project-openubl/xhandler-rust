@@ -58,6 +58,21 @@
         </cac:TaxTotal>
         <cac:Item>
             <cbc:Description><![CDATA[{{item.descripcion | escape}}]]></cbc:Description>
+            {%- if item.codigo %}
+            <cac:SellersItemIdentification>
+                <cbc:ID>{{item.codigo}}</cbc:ID>
+            </cac:SellersItemIdentification>
+            {%- endif %}
+            {%- if item.codigo_gs1 %}
+            <cac:StandardItemIdentification>
+                <cbc:ID schemeID="{{item.codigo_gs1.tipo}}">{{item.codigo_gs1.codigo}}</cbc:ID>
+            </cac:StandardItemIdentification>
+            {%- endif %}
+            {%- if item.codigo_sunat %}
+            <cac:CommodityClassification>
+                <cbc:ItemClassificationCode listID="UNSPSC" listAgencyName="GS1 US" listName="Item Classification">{{item.codigo_sunat}}</cbc:ItemClassificationCode>
+            </cac:CommodityClassification>
+            {%- endif %}
         </cac:Item>
         <cac:Price>
             <cbc:PriceAmount currencyID="{{moneda}}">{{item.precio | round_decimal}}</cbc:PriceAmount>
