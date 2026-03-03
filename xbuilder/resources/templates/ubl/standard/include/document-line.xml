@@ -73,6 +73,28 @@
                 <cbc:ItemClassificationCode listID="UNSPSC" listAgencyName="GS1 US" listName="Item Classification">{{item.codigo_sunat}}</cbc:ItemClassificationCode>
             </cac:CommodityClassification>
             {%- endif %}
+            {%- for atributo in item.atributos %}
+            <cac:AdditionalItemProperty>
+                <cbc:Name>{{atributo.nombre}}</cbc:Name>
+                <cbc:NameCode>{{atributo.codigo}}</cbc:NameCode>
+                {%- if atributo.valor %}
+                <cbc:Value>{{atributo.valor}}</cbc:Value>
+                {%- endif %}
+                {%- if atributo.fecha_inicio or atributo.fecha_fin or atributo.duracion %}
+                <cac:UsabilityPeriod>
+                    {%- if atributo.fecha_inicio %}
+                    <cbc:StartDate>{{atributo.fecha_inicio}}</cbc:StartDate>
+                    {%- endif %}
+                    {%- if atributo.fecha_fin %}
+                    <cbc:EndDate>{{atributo.fecha_fin}}</cbc:EndDate>
+                    {%- endif %}
+                    {%- if atributo.duracion %}
+                    <cbc:DurationMeasure unitCode="DAY">{{atributo.duracion}}</cbc:DurationMeasure>
+                    {%- endif %}
+                </cac:UsabilityPeriod>
+                {%- endif %}
+            </cac:AdditionalItemProperty>
+            {%- endfor %}
         </cac:Item>
         <cac:Price>
             <cbc:PriceAmount currencyID="{{moneda}}">{{item.precio | round_decimal}}</cbc:PriceAmount>

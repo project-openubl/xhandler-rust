@@ -149,6 +149,17 @@ pub struct CodigoGS1 {
     pub tipo: &'static str,
 }
 
+/// Atributo adicional de un detalle
+#[derive(Clone, Debug, Serialize, Default)]
+pub struct Atributo {
+    pub nombre: &'static str,
+    pub codigo: &'static str,
+    pub valor: Option<&'static str>,
+    pub fecha_inicio: Option<NaiveDate>,
+    pub fecha_fin: Option<NaiveDate>,
+    pub duracion: Option<u32>,
+}
+
 /// Detalle de las ventas en Boleta/Factura/Nota Credito/Nota Debito
 #[derive(Clone, Debug, Serialize, Default)]
 pub struct Detalle {
@@ -190,6 +201,8 @@ pub struct Detalle {
     pub isc_base_imponible: Option<Decimal>,
 
     pub total_impuestos: Option<Decimal>,
+
+    pub atributos: Vec<Atributo>,
 }
 
 /// Total Importe Invoice
