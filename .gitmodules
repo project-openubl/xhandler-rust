@@ -1,0 +1,9 @@
+[submodule ".modules/greenter"]
+	path = .modules/greenter
+	url = https://github.com/thegreenter/greenter.git
+[submodule ".modules/greenter-docs"]
+	path = .modules/greenter-docs
+	url = https://github.com/thegreenter/docs.git
+[submodule ".modules/xhandler-java"]
+	path = .modules/xhandler-java
+	url = https://github.com/project-openubl/xhandler-java.git

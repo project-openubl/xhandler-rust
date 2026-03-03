@@ -1,0 +1,152 @@
+openapi: 3.1.0
+info:
+  title: Openubl
+  description: Enviar archivos XML a la SUNAT API
+  license:
+    name: Apache License, Version 2.0
+    identifier: Apache-2.0
+  version: 0.1.1
+paths:
+  /api/credentials:
+    get:
+      operationId: list_credentials
+      responses:
+        '200':
+          description: List credentials
+    post:
+      operationId: create_credentials
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCredentialsDto'
+        required: true
+      responses:
+        '200':
+          description: Create credentials
+  /api/credentials/{credentials_id}:
+    get:
+      operationId: get_credentials
+      parameters:
+      - name: credentials_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Get credential
+    put:
+      operationId: update_credentials
+      parameters:
+      - name: credentials_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCredentialsDto'
+        required: true
+      responses:
+        '204':
+          description: Update credentials
+    delete:
+      operationId: delete_credentials
+      parameters:
+      - name: credentials_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '204':
+          description: Delete credentials
+  /api/documents:
+    get:
+      operationId: list_documents
+      responses:
+        '200':
+          description: List documents
+  /api/documents/{document_id}/download:
+    get:
+      operationId: get_document_file
+      parameters:
+      - name: document_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Get document's file
+  /api/documents/{document_id}/send:
+    post:
+      operationId: send_document
+      parameters:
+      - name: document_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Get document's file
+  /q/health/live:
+    get:
+      operationId: liveness
+      responses:
+        '200':
+          description: Liveness
+  /q/health/read:
+    get:
+      operationId: readiness
+      responses:
+        '200':
+          description: Readiness
+components:
+  schemas:
+    NewCredentialsDto:
+      type: object
+      required:
+      - name
+      - username_sol
+      - password_sol
+      - client_id
+      - client_secret
+      - url_invoice
+      - url_despatch
+      - url_perception_retention
+      - supplier_ids_applied_to
+      properties:
+        client_id:
+          type: string
+        client_secret:
+          type: string
+        description:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        password_sol:
+          type: string
+        supplier_ids_applied_to:
+          type: array
+          items:
+            type: string
+        url_despatch:
+          type: string
+        url_invoice:
+          type: string
+        url_perception_retention:
+          type: string
+        username_sol:
+          type: string

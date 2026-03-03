@@ -1,66 +1,59 @@
-import React, { useEffect, useReducer, useState } from "react";
-import { useAuth } from "react-oidc-context";
-import { useNavigate } from "react-router-dom";
+import React, { useReducer, useState } from "react";
 
 import {
   Avatar,
-  Brand,
   Button,
   ButtonVariant,
+  Divider,
   Dropdown,
   DropdownItem,
   DropdownList,
   Masthead,
   MastheadBrand,
   MastheadContent,
+  MastheadLogo,
   MastheadMain,
   MastheadToggle,
   MenuToggle,
-  MenuToggleElement,
+  type MenuToggleElement,
   PageToggleButton,
+  Split,
+  SplitItem,
   Title,
+  ToggleGroup,
+  ToggleGroupItem,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
 
-import BarsIcon from "@patternfly/react-icons/dist/js/icons/bars-icon";
-import QuestionCircleIcon from "@patternfly/react-icons/dist/esm/icons/question-circle-icon";
+import { MoonIcon, SunIcon } from "@patternfly/react-icons/";
 import EllipsisVIcon from "@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon";
 import HelpIcon from "@patternfly/react-icons/dist/esm/icons/help-icon";
+import BarsIcon from "@patternfly/react-icons/dist/js/icons/bars-icon";
 
-import i18n from "@app/i18n";
-import { useLocalStorage } from "@app/hooks/useStorage";
-import { APP_BRAND, BrandType, isAuthRequired } from "@app/Constants";
-
+import imgAvatar from "../assets/avatar.svg";
 import { AboutApp } from "./about";
-import openublBrandImage from "@app/images/Openubl-white-logo.svg";
-import imgAvatar from "../images/avatar.svg";
 
 export const HeaderApp: React.FC = () => {
-  const auth = (isAuthRequired && useAuth()) || undefined;
+  const [isDarkTheme, setIsDarkTheme] = useState(
+    localStorage.getItem("isDarkTheme") === "true",
+  );
 
-  const navigate = useNavigate();
+  React.useEffect(() => {
+    if (isDarkTheme) {
+      document.documentElement.classList.add("pf-v6-theme-dark");
+      localStorage.setItem("isDarkTheme", "true");
+    } else {
+      document.documentElement.classList.remove("pf-v6-theme-dark");
+      localStorage.setItem("isDarkTheme", "false");
+    }
+  }, [isDarkTheme]);
 
   const [isAboutOpen, toggleIsAboutOpen] = useReducer((state) => !state, false);
-  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   const [isKebabDropdownOpen, setIsKebabDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-
-  const [lang, setLang] = useLocalStorage({ key: "lang", defaultValue: "es" });
-
-  useEffect(() => {
-    i18n.changeLanguage(lang);
-  }, [lang]);
-
-  const kebabDropdownItems = (
-    <>
-      <DropdownItem key="about" onClick={toggleIsAboutOpen}>
-        <HelpIcon /> About
-      </DropdownItem>
-    </>
-  );
 
   const onKebabDropdownToggle = () => {
     setIsKebabDropdownOpen(!isKebabDropdownOpen);
@@ -75,88 +68,90 @@ export const HeaderApp: React.FC = () => {
       <AboutApp isOpen={isAboutOpen} onClose={toggleIsAboutOpen} />
 
       <Masthead>
-        <MastheadToggle>
-          <PageToggleButton variant="plain" aria-label="Global navigation">
-            <BarsIcon />
-          </PageToggleButton>
-        </MastheadToggle>
         <MastheadMain>
-          <MastheadBrand>
-            {APP_BRAND === BrandType.Openubl ? (
-              <Brand
-                src={openublBrandImage}
-                alt="brand"
-                heights={{ default: "60px" }}
-              />
-            ) : (
-              <Title className="logo-pointer" headingLevel="h1" size="2xl">
-                LibreFact
-              </Title>
-            )}
+          <MastheadToggle>
+            <PageToggleButton variant="plain" aria-label="Global navigation">
+              <BarsIcon />
+            </PageToggleButton>
+          </MastheadToggle>
+          <MastheadBrand data-codemods>
+            <MastheadLogo data-codemods>
+              <Split>
+                <SplitItem>
+                  {/*<Brand*/}
+                  {/*    src={leftBrand.src}*/}
+                  {/*    alt={leftBrand.alt}*/}
+                  {/*    heights={{ default: leftBrand.height }}*/}
+                  {/*/>*/}
+                </SplitItem>
+                <SplitItem isFilled>
+                  <Title className="logo-pointer" headingLevel="h1" size="2xl">
+                    Openubl
+                  </Title>
+                </SplitItem>
+              </Split>
+            </MastheadLogo>
           </MastheadBrand>
         </MastheadMain>
         <MastheadContent>
           <Toolbar id="toolbar" isFullHeight isStatic>
             <ToolbarContent>
+              {/* toolbar items to always show */}
               <ToolbarGroup
-                variant="icon-button-group"
-                align={{ default: "alignRight" }}
-                spacer={{ default: "spacerNone", md: "spacerMd" }}
+                id="header-toolbar-tasks"
+                variant="action-group-plain"
+                align={{ default: "alignEnd" }}
               >
-                <ToolbarGroup
-                  variant="icon-button-group"
-                  visibility={{ default: "hidden", lg: "visible" }}
-                >
-                  <ToolbarItem>
-                    <Dropdown
-                      isOpen={isLangDropdownOpen}
-                      onSelect={() =>
-                        setIsLangDropdownOpen(!isLangDropdownOpen)
-                      }
-                      onOpenChange={(isOpen: boolean) =>
-                        setIsLangDropdownOpen(isOpen)
-                      }
-                      popperProps={{ position: "right" }}
-                      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                        <MenuToggle
-                          ref={toggleRef}
-                          onClick={() =>
-                            setIsLangDropdownOpen(!isLangDropdownOpen)
-                          }
-                          isExpanded={isLangDropdownOpen}
-                          variant="plainText"
-                          aria-label="About"
-                        >
-                          {lang}
-                        </MenuToggle>
-                      )}
-                    >
-                      <DropdownList>
-                        <DropdownItem key="es" onClick={() => setLang("es")}>
-                          Español
-                        </DropdownItem>
-                        <DropdownItem key="en" onClick={() => setLang("en")}>
-                          Ingles
-                        </DropdownItem>
-                      </DropdownList>
-                    </Dropdown>
-                  </ToolbarItem>
-                  <ToolbarItem>
-                    <Button
-                      aria-label="About"
-                      variant={ButtonVariant.plain}
-                      icon={<QuestionCircleIcon />}
-                      onClick={toggleIsAboutOpen}
+                <ToolbarItem>
+                  <ToggleGroup aria-label="Default with single selectable">
+                    <ToggleGroupItem
+                      aria-label="light theme"
+                      icon={<SunIcon />}
+                      isSelected={!isDarkTheme}
+                      onChange={() => setIsDarkTheme(false)}
                     />
-                  </ToolbarItem>
-                </ToolbarGroup>
-                <ToolbarItem
-                  visibility={{
-                    default: "hidden",
-                    md: "visible",
-                    lg: "hidden",
-                  }}
-                >
+                    <ToggleGroupItem
+                      aria-label="dark theme"
+                      icon={<MoonIcon />}
+                      isSelected={isDarkTheme}
+                      onChange={() => setIsDarkTheme(true)}
+                    />
+                  </ToggleGroup>
+                </ToolbarItem>
+              </ToolbarGroup>
+
+              {/* toolbar items to show at desktop sizes */}
+              <ToolbarGroup
+                id="header-toolbar-desktop"
+                variant="action-group-plain"
+                gap={{ default: "gapNone", md: "gapMd" }}
+                visibility={{
+                  default: "hidden",
+                  "2xl": "visible",
+                  xl: "visible",
+                  lg: "visible",
+                  md: "hidden",
+                }}
+              >
+                <ToolbarItem>
+                  <Button
+                    icon={<HelpIcon />}
+                    id="about-button"
+                    aria-label="about button"
+                    variant={ButtonVariant.plain}
+                    onClick={toggleIsAboutOpen}
+                  />
+                </ToolbarItem>
+              </ToolbarGroup>
+
+              {/* toolbar items to show at mobile sizes */}
+              <ToolbarGroup
+                id="header-toolbar-mobile"
+                variant="action-group-plain"
+                gap={{ default: "gapNone", md: "gapMd" }}
+                visibility={{ lg: "hidden" }}
+              >
+                <ToolbarItem>
                   <Dropdown
                     isOpen={isKebabDropdownOpen}
                     onSelect={onKebabDropdownSelect}
@@ -176,53 +171,62 @@ export const HeaderApp: React.FC = () => {
                       </MenuToggle>
                     )}
                   >
-                    <DropdownList>{kebabDropdownItems}</DropdownList>
+                    <DropdownList>
+                      <DropdownItem key="logout">Logout</DropdownItem>
+                      <Divider key="separator" component="li" />
+                      <DropdownItem key="about" onClick={toggleIsAboutOpen}>
+                        <HelpIcon /> About
+                      </DropdownItem>
+                    </DropdownList>
                   </Dropdown>
                 </ToolbarItem>
-                {auth && (
-                  <ToolbarItem
-                    visibility={{ default: "hidden", md: "visible" }}
+              </ToolbarGroup>
+
+              {/* Show the SSO menu at desktop sizes */}
+              <ToolbarGroup
+                id="header-toolbar-sso"
+                visibility={{
+                  default: "hidden",
+                  md: "visible",
+                }}
+              >
+                <ToolbarItem visibility={{ default: "hidden", md: "visible" }}>
+                  <Dropdown
+                    isOpen={isUserDropdownOpen}
+                    onSelect={() => setIsUserDropdownOpen(false)}
+                    onOpenChange={(isOpen: boolean) =>
+                      setIsUserDropdownOpen(isOpen)
+                    }
+                    popperProps={{ position: "right" }}
+                    toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                      <MenuToggle
+                        ref={toggleRef}
+                        onClick={() =>
+                          setIsUserDropdownOpen(!isUserDropdownOpen)
+                        }
+                        isFullHeight
+                        isExpanded={isUserDropdownOpen}
+                        icon={<Avatar src={imgAvatar} alt="" size="sm" />}
+                      >
+                        username
+                      </MenuToggle>
+                    )}
                   >
-                    <Dropdown
-                      isOpen={isUserDropdownOpen}
-                      onSelect={() => setIsUserDropdownOpen(false)}
-                      onOpenChange={(isOpen: boolean) =>
-                        setIsUserDropdownOpen(isOpen)
-                      }
-                      popperProps={{ position: "right" }}
-                      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                        <MenuToggle
-                          ref={toggleRef}
-                          onClick={() =>
-                            setIsUserDropdownOpen(!isUserDropdownOpen)
-                          }
-                          isFullHeight
-                          isExpanded={isUserDropdownOpen}
-                          icon={<Avatar src={imgAvatar} alt="" />}
-                        >
-                          {auth.user?.profile.preferred_username}
-                        </MenuToggle>
-                      )}
-                    >
-                      <DropdownList>
-                        <DropdownItem
-                          key="logout"
-                          onClick={() => {
-                            auth
-                              .signoutRedirect()
-                              .then(() => {})
-                              .catch((err) => {
-                                console.error("Logout failed:", err);
-                                navigate("/");
-                              });
-                          }}
-                        >
-                          Logout
-                        </DropdownItem>
-                      </DropdownList>
-                    </Dropdown>
-                  </ToolbarItem>
-                )}
+                    <DropdownList>
+                      <DropdownItem key="logout">Logout</DropdownItem>
+                    </DropdownList>
+                  </Dropdown>
+                </ToolbarItem>
+              </ToolbarGroup>
+
+              <ToolbarGroup>
+                <ToolbarItem>
+                  {/*<Brand*/}
+                  {/*    src={rightBrand.src}*/}
+                  {/*    alt={rightBrand.alt}*/}
+                  {/*    heights={{ default: rightBrand.height }}*/}
+                  {/*/>*/}
+                </ToolbarItem>
               </ToolbarGroup>
             </ToolbarContent>
           </Toolbar>

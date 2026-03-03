@@ -1,3 +1,4 @@
+pub mod despatch_advice;
 pub mod detalle;
 pub mod fecha_emision;
 pub mod firmante;
@@ -7,4 +8,8 @@ pub mod invoice;
 pub mod ivap_tasa;
 pub mod moneda;
 pub mod note;
+pub mod perception;
 pub mod proveedor;
+pub mod retention;
+pub mod summary_documents;
+pub mod voided_documents;

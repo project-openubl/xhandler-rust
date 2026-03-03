@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import {
   Drawer,
   DrawerActions,
@@ -8,7 +9,7 @@ import {
   DrawerHead,
   DrawerPanelBody,
   DrawerPanelContent,
-  DrawerPanelContentProps,
+  type DrawerPanelContentProps,
 } from "@patternfly/react-core";
 import pageStyles from "@patternfly/react-styles/css/components/Page/page";
 
@@ -36,15 +37,19 @@ const usePageDrawerState = () => {
 
 type PageDrawerState = ReturnType<typeof usePageDrawerState>;
 
+const noop = () => {
+  // Define a reusable no-op function
+};
+
 const PageDrawerContext = React.createContext<PageDrawerState>({
   isDrawerExpanded: false,
-  setIsDrawerExpanded: () => {},
+  setIsDrawerExpanded: noop,
   drawerPanelContent: null,
-  setDrawerPanelContent: () => {},
+  setDrawerPanelContent: noop,
   drawerPanelContentProps: {},
-  setDrawerPanelContentProps: () => {},
+  setDrawerPanelContentProps: noop,
   drawerPageKey: "",
-  setDrawerPageKey: () => {},
+  setDrawerPageKey: noop,
   drawerFocusRef: null,
 });
 
@@ -52,6 +57,7 @@ const PageDrawerContext = React.createContext<PageDrawerState>({
 interface IPageContentWithDrawerProviderProps {
   children: React.ReactNode; // The entire content of the page. See usage in client/src/app/layout/DefaultLayout.
 }
+
 export const PageContentWithDrawerProvider: React.FC<
   IPageContentWithDrawerProviderProps
 > = ({ children }) => {
@@ -112,7 +118,6 @@ export const PageDrawerContent: React.FC<IPageDrawerContentProps> = ({
   header = null,
   children,
   drawerPanelContentProps,
-  focusKey,
   pageKey: localPageKeyProp,
 }) => {
   const {
@@ -132,7 +137,7 @@ export const PageDrawerContent: React.FC<IPageDrawerContentProps> = ({
   }, []);
   if (numPageDrawerContentInstances > 1) {
     console.warn(
-      `${numPageDrawerContentInstances} instances of PageDrawerContent are currently rendered! Only one instance of this component should be rendered at a time.`
+      `${numPageDrawerContentInstances} instances of PageDrawerContent are currently rendered! Only one instance of this component should be rendered at a time.`,
     );
   }
 
@@ -156,7 +161,7 @@ export const PageDrawerContent: React.FC<IPageDrawerContentProps> = ({
   }, [localPageKeyProp, setDrawerPageKey]);
 
   React.useEffect(() => {
-    setDrawerPanelContentProps(drawerPanelContentProps || {});
+    setDrawerPanelContentProps(drawerPanelContentProps ?? {});
   }, [drawerPanelContentProps, setDrawerPanelContentProps]);
 
   // If the drawer is already expanded describing app A, then the user clicks app B, we want to send focus back to the drawer.
@@ -167,7 +172,7 @@ export const PageDrawerContent: React.FC<IPageDrawerContentProps> = ({
   // }, [drawerFocusRef, focusKey]);
 
   React.useEffect(() => {
-    const drawerHead = header === null ? children : header;
+    const drawerHead = header ?? children;
     const drawerPanelBody = header === null ? null : children;
 
     setDrawerPanelContent(
@@ -185,7 +190,7 @@ export const PageDrawerContent: React.FC<IPageDrawerContentProps> = ({
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>{drawerPanelBody}</DrawerPanelBody>
-      </>
+      </>,
     );
   }, [
     children,

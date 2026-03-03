@@ -110,10 +110,7 @@ impl FileSender {
                 SendFileAggregatedResponse::Cdr(cdr_base64, cdr_metadata)
             }
             SendFileResponse::Ticket(ticket) => SendFileAggregatedResponse::Ticket(ticket),
-            SendFileResponse::Error(error) => SendFileAggregatedResponse::Error(ErrorResponse {
-                code: error.code,
-                message: error.message,
-            }),
+            SendFileResponse::Error(error) => SendFileAggregatedResponse::Error(error),
         };
 
         Ok(SendFileResponseWrapper {
@@ -141,12 +138,7 @@ impl FileSender {
                 let cdr_metadata = CdrMetadata::from_str(&cdr_xml)?;
                 VerifyTicketAggregatedResponse::Cdr(status, cdr_metadata)
             }
-            VerifyTicketResponse::Error(error) => {
-                VerifyTicketAggregatedResponse::Error(ErrorResponse {
-                    code: error.code,
-                    message: error.message,
-                })
-            }
+            VerifyTicketResponse::Error(error) => VerifyTicketAggregatedResponse::Error(error),
         };
 
         Ok(VerifyTicketResponseWrapper { response })

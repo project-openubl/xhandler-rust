@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   Alert,
   AlertActionCloseButton,
@@ -25,7 +26,7 @@ export const Notifications: React.FunctionComponent = () => {
                 />
               ),
             })}
-            timeout={notification.timeout ? notification.timeout : 4000}
+            timeout={notification.timeout ?? 4000}
           >
             {notification.message}
           </Alert>

@@ -7,23 +7,20 @@ declare global {
 }
 
 /**
- * The set of environment variables used by `@konveyor-ui` packages.
+ * The set of environment variables used by `@openubl-ui` packages.
  */
 export type OpenublEnvType = {
   NODE_ENV: "development" | "production" | "test";
   VERSION: string;
 
-  /** Controls how mock data is injected on the client */
-  MOCK: string;
-
   /** Enable RBAC authentication/authorization */
   AUTH_REQUIRED: "true" | "false";
 
   /** SSO / Oidc client id */
-  OIDC_CLIENT_ID: string;
+  OIDC_CLIENT_ID?: string;
 
-  /** Branding to apply to the UI */
-  PROFILE: "openubl" | "lf";
+  /** SSO / Oidc scope */
+  OIDC_SCOPE?: string;
 
   /** UI upload file size limit in megabytes (MB), suffixed with "m" */
   UI_INGRESS_PROXY_BODY_SIZE: string;
@@ -34,45 +31,58 @@ export type OpenublEnvType = {
   /** Target URL for the UI server's `/auth` proxy */
   OIDC_SERVER_URL?: string;
 
-  /** Target URL for the UI server's `/hub` proxy */
-  OPENUBL_HUB_URL?: string;
+  /** Whether or not `/auth` proxy will be enabled */
+  OIDC_SERVER_IS_EMBEDDED?: "true" | "false";
+
+  /** The Keycloak Realm */
+  OIDC_SERVER_EMBEDDED_PATH?: string;
+
+  /** Target URL for the UI server's `/api` proxy */
+  OPENUBL_API_URL?: string;
+
+  /** Location of branding files (relative paths computed from the project source root) */
+  BRANDING?: string;
 };
 
 /**
- * Keys in `KonveyorEnvType` that are only used on the server and therefore do not
+ * Keys in `OpenublEnv` that are only used on the server and therefore do not
  * need to be sent to the client.
  */
-export const SERVER_ENV_KEYS = ["PORT", "OIDC_SERVER_URL", "OPENUBL_HUB_URL"];
+export const SERVER_ENV_KEYS = ["PORT", "OPENUBL_API_URL", "BRANDING"];
 
 /**
- * Create a `KonveyorEnv` from a partial `KonveyorEnv` with a set of default values.
+ * Create a `OpenublEnv` from a partial `OpenublEnv` with a set of default values.
  */
 export const buildOpenublEnv = ({
   NODE_ENV = "production",
   PORT,
   VERSION = "99.0.0",
-  MOCK = "off",
 
   OIDC_SERVER_URL,
-  AUTH_REQUIRED = "false",
-  OIDC_CLIENT_ID = "openubl-ui",
+  OIDC_SERVER_IS_EMBEDDED = "false",
+  OIDC_SERVER_EMBEDDED_PATH,
+  AUTH_REQUIRED = "true",
+  OIDC_CLIENT_ID,
+  OIDC_SCOPE,
 
-  PROFILE = "openubl",
   UI_INGRESS_PROXY_BODY_SIZE = "500m",
-  OPENUBL_HUB_URL,
+  OPENUBL_API_URL,
+  BRANDING,
 }: Partial<OpenublEnvType> = {}): OpenublEnvType => ({
   NODE_ENV,
   PORT,
   VERSION,
-  MOCK,
 
   OIDC_SERVER_URL,
+  OIDC_SERVER_IS_EMBEDDED,
+  OIDC_SERVER_EMBEDDED_PATH,
   AUTH_REQUIRED,
   OIDC_CLIENT_ID,
+  OIDC_SCOPE,
 
-  PROFILE,
   UI_INGRESS_PROXY_BODY_SIZE,
-  OPENUBL_HUB_URL,
+  OPENUBL_API_URL,
+  BRANDING,
 });
 
 /**

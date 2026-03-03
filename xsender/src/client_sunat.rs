@@ -69,9 +69,7 @@ impl ClientSUNAT {
         file: &File,
         credentials: &Credentials,
     ) -> Result<SendFileResponse, ClientSunatErr> {
-        let client = HTTP_CLIENT
-            .as_ref()
-            .map_err(|_error| ClientSunatErr::Any(anyhow!("Could not initialize client")))?;
+        let client = &*HTTP_CLIENT;
 
         match &target {
             SendFileTarget::Soap(url, action) => {
@@ -130,9 +128,7 @@ impl ClientSUNAT {
         ticket: &str,
         credentials: &Credentials,
     ) -> Result<VerifyTicketResponse, ClientSunatErr> {
-        let client = HTTP_CLIENT
-            .as_ref()
-            .map_err(|_error| ClientSunatErr::Any(anyhow!("Could not initialize client")))?;
+        let client = &*HTTP_CLIENT;
 
         match &target {
             VerifyTicketTarget::Soap(url) => {

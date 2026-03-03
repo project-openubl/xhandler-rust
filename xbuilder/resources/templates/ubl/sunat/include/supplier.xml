@@ -1,9 +1,10 @@
+
     <cac:AccountingSupplierParty>
-        <cbc:CustomerAssignedAccountID>{proveedor.ruc}</cbc:CustomerAssignedAccountID>
+        <cbc:CustomerAssignedAccountID>{{proveedor.ruc}}</cbc:CustomerAssignedAccountID>
         <cbc:AdditionalAccountID>6</cbc:AdditionalAccountID>
         <cac:Party>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName><![CDATA[{proveedor.razonSocial | escape}]]></cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[{{proveedor.razon_social | escape}}]]></cbc:RegistrationName>
             </cac:PartyLegalEntity>
         </cac:Party>
     </cac:AccountingSupplierParty>

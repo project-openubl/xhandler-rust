@@ -5,14 +5,6 @@ members = [
     "xsender",
     "xsigner",
     "xhandler",
-    "server/migration",
-    "server/entity",
-    "server/common",
-    "server/storage",
-    "server/api",
-    "server/server",
-    "server/cli",
-    "server/signature",
 ]
 
 [workspace.package]
@@ -39,22 +31,16 @@ thiserror = "2.0"
 anyhow = "1.0"
 sha2 = "0.10"
 rsa = "0.9"
-serial_test = "3.2"
-tokio = "1.43"
+serial_test = "3.4"
+tokio = "1.49"
 libxml = "0.3"
-quick-xml = "0.37"
+quick-xml = "0.39"
 x509-cert = "0.2"
 der = { version = "0.7" }
 openssl = "0.10"
 xml_c14n = "0.3"
 
 xhandler = { path = "./xhandler" }
-openubl-migration = { path = "./server/migration" }
-openubl-entity = { path = "./server/entity" }
-openubl-common = { path = "./server/common" }
-openubl-storage = { path = "./server/storage" }
-openubl-api = { path = "./server/api" }
-openubl-server = { path = "./server/server" }
 
 sea-orm = "1"
 sea-query = "0.32"
@@ -62,8 +48,8 @@ async-std = { version = "1" }
 clap = "4"
 minio = "0.1"
 serde_json = "1"
-uuid = "1.12"
-tempfile = "3.15"
+uuid = "1.15"
+tempfile = "3.23"
 aws-sdk-s3 = "1.72"
 aws-config = "1.5"
 aws-smithy-runtime = "1.7"
@@ -71,10 +57,12 @@ aws-smithy-runtime-api = "1.7"
 async-trait = "0.1"
 env_logger = "0.11"
 utoipa = "5.3"
+utoipa-actix-web = "0.1"
 utoipa-swagger-ui = "9.0"
-actix-web = "4.9"
+actix-web = "4.12"
 actix-web-httpauth = "0.8"
 actix-4-jwt-auth = "1.2"
 actix-multipart = "0.7"
+actix-web-static-files = "4"
 
 [patch.crates-io]

@@ -27,7 +27,7 @@ pub fn decode_base64_zip_and_extract_first_file(base64: &str) -> anyhow::Result<
     Ok(extract_first_file_from_zip(&zip_buf)?)
 }
 
-pub fn extract_first_file_from_zip(zip_buf: &Vec<u8>) -> Result<Option<String>, std::io::Error> {
+pub fn extract_first_file_from_zip(zip_buf: &[u8]) -> Result<Option<String>, std::io::Error> {
     let reader = Cursor::new(zip_buf);
     let mut archive = ZipArchive::new(reader)?;
 

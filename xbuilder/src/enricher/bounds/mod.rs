@@ -1,3 +1,4 @@
+pub mod despatch_advice;
 pub mod detalle;
 pub mod fecha_emision;
 pub mod firmante;
@@ -8,6 +9,10 @@ pub mod ivap;
 pub mod leyendas;
 pub mod moneda;
 pub mod note;
+pub mod perception;
 pub mod proveedor;
+pub mod retention;
 pub mod serie_numero;
+pub mod summary_documents;
 pub mod total_impuestos;
+pub mod voided_documents;

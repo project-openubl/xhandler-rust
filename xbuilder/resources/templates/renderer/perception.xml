@@ -2,9 +2,13 @@
 <Perception xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:Perception-1"
             xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
             xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+            xmlns:ccts="urn:un:unece:uncefact:documentation:2"
+            xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
             xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+            xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2"
             xmlns:sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
->
+            xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <ext:UBLExtensions>
         <ext:UBLExtension>
             <ext:ExtensionContent />
@@ -12,39 +16,41 @@
     </ext:UBLExtensions>
     <cbc:UBLVersionID>2.0</cbc:UBLVersionID>
     <cbc:CustomizationID>1.0</cbc:CustomizationID>
-    {% include "ubl/common/signature.xml" %}
-    <cbc:ID>{serie}-{numero}</cbc:ID>
-    <cbc:IssueDate>{fechaEmision}</cbc:IssueDate>
-    {% include "ubl/sunat/include/agent-party.xml" %}
-    {% include "ubl/sunat/include/receiver-party.xml" %}
-    <sac:SUNATPerceptionSystemCode>{tipoRegimen}</sac:SUNATPerceptionSystemCode>
-    <sac:SUNATPerceptionPercent>{tipoRegimenPorcentaje}</sac:SUNATPerceptionPercent>
+    {%- include "ubl/common/signature.xml" %}
+    <cbc:ID>{{documento_id}}</cbc:ID>
+    <cbc:IssueDate>{{fecha_emision}}</cbc:IssueDate>
+    {%- include "ubl/sunat/include/agent-party.xml" %}
+    {%- include "ubl/sunat/include/receiver-party.xml" %}
+    <sac:SUNATPerceptionSystemCode>{{tipo_regimen}}</sac:SUNATPerceptionSystemCode>
+    <sac:SUNATPerceptionPercent>{{tipo_regimen_porcentaje}}</sac:SUNATPerceptionPercent>
     {%- if observacion %}
-    <cbc:Note><![CDATA[{observacion | escape}]]></cbc:Note>
+    <cbc:Note><![CDATA[{{observacion | escape}}]]></cbc:Note>
     {%- endif %}
-    <cbc:TotalInvoiceAmount currencyID="{{moneda}}">{importeTotalPercibido}</cbc:TotalInvoiceAmount>
-    <sac:SUNATTotalCashed currencyID="{{moneda}}">{importeTotalCobrado}</sac:SUNATTotalCashed>
+    <cbc:TotalInvoiceAmount currencyID="{{moneda}}">{{importe_total_percibido}}</cbc:TotalInvoiceAmount>
+    <sac:SUNATTotalCashed currencyID="{{moneda}}">{{importe_total_cobrado}}</sac:SUNATTotalCashed>
+    {%- if operacion %}
     <sac:SUNATPerceptionDocumentReference>
-        <cbc:ID schemeID="{operacion.comprobante.tipo_comprobante}">{operacion.comprobante.serieNumero}</cbc:ID>
-        <cbc:IssueDate>{operacion.comprobante.fechaEmision}</cbc:IssueDate>
-        <cbc:TotalInvoiceAmount currencyID="{operacion.comprobante.moneda}">{operacion.comprobante.importeTotal}</cbc:TotalInvoiceAmount>
+        <cbc:ID schemeID="{{operacion.comprobante.tipo_comprobante}}">{{operacion.comprobante.serie_numero}}</cbc:ID>
+        <cbc:IssueDate>{{operacion.comprobante.fecha_emision}}</cbc:IssueDate>
+        <cbc:TotalInvoiceAmount currencyID="{{operacion.comprobante.moneda}}">{{operacion.comprobante.importe_total}}</cbc:TotalInvoiceAmount>
         <cac:Payment>
-            <cbc:ID>{operacion.numeroOperacion}</cbc:ID>
-            <cbc:PaidAmount currencyID="{operacion.comprobante.moneda}">{operacion.importeOperacion}</cbc:PaidAmount>
-            <cbc:PaidDate>{operacion.fechaOperacion}</cbc:PaidDate>
+            <cbc:ID>{{operacion.numero_operacion}}</cbc:ID>
+            <cbc:PaidAmount currencyID="{{operacion.comprobante.moneda}}">{{operacion.importe_operacion}}</cbc:PaidAmount>
+            <cbc:PaidDate>{{operacion.fecha_operacion}}</cbc:PaidDate>
         </cac:Payment>
         <sac:SUNATPerceptionInformation>
-            <sac:SUNATPerceptionAmount currencyID="{{moneda}}">{importeTotalPercibido}</sac:SUNATPerceptionAmount>
-            <sac:SUNATPerceptionDate>{fechaEmision}</sac:SUNATPerceptionDate>
-            <sac:SUNATNetTotalCashed currencyID="{{moneda}}">{importeTotalCobrado}</sac:SUNATNetTotalCashed>
-            {%- if operacion.tipoCambio %}
+            <sac:SUNATPerceptionAmount currencyID="{{moneda}}">{{importe_total_percibido}}</sac:SUNATPerceptionAmount>
+            <sac:SUNATPerceptionDate>{{fecha_emision}}</sac:SUNATPerceptionDate>
+            <sac:SUNATNetTotalCashed currencyID="{{moneda}}">{{importe_total_cobrado}}</sac:SUNATNetTotalCashed>
+            {%- if operacion.tipo_cambio %}
             <cac:ExchangeRate>
                 <cbc:SourceCurrencyCode>{{moneda}}</cbc:SourceCurrencyCode>
-                <cbc:TargetCurrencyCode>{operacion.comprobante.moneda}</cbc:TargetCurrencyCode>
-                <cbc:CalculationRate>{operacion.tipoCambio.valor}</cbc:CalculationRate>
-                <cbc:Date>{operacion.tipoCambio.fecha}</cbc:Date>
+                <cbc:TargetCurrencyCode>{{operacion.comprobante.moneda}}</cbc:TargetCurrencyCode>
+                <cbc:CalculationRate>{{operacion.tipo_cambio.valor}}</cbc:CalculationRate>
+                <cbc:Date>{{operacion.tipo_cambio.fecha}}</cbc:Date>
             </cac:ExchangeRate>
             {%- endif %}
         </sac:SUNATPerceptionInformation>
     </sac:SUNATPerceptionDocumentReference>
+    {%- endif %}
 </Perception>

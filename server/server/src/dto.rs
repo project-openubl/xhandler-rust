@@ -2,7 +2,7 @@ use openubl_entity as entity;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub struct DocumentDto {
     pub id: i32,
     pub supplier_id: String,

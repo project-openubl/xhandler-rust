@@ -6,21 +6,18 @@
   "type": "module",
   "scripts": {
     "clean": "rimraf ./dist",
-    "lint": "eslint .",
+    "clean:all": "rimraf ./dist ./node_modules",
+    "check": "biome check .",
+    "check:write": "biome check --write .",
+    "prebuild": "npm run clean",
     "build": "NODE_ENV=production rollup -c",
-    "start:dev": "NODE_ENV=development ROLLUP_RUN=true rollup -c -w",
+    "dev": "NODE_ENV=development ROLLUP_RUN=true rollup -c -w",
     "start": "npm run build && node --enable-source-maps dist/index.js"
-  },
-  "lint-staged": {
-    "*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}": "eslint --fix",
-    "*.{css,json,md,yaml,yml}": "prettier --write"
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",
-    "ejs": "^3.1.7",
-    "express": "^4.17.3",
-    "http-proxy-middleware": "^2.0.6",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
     "http-terminator": "^3.2.0"
-  },
-  "devDependencies": {}
+  }
 }

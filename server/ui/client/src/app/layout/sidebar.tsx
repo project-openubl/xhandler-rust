@@ -1,33 +1,68 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import type React from "react";
 
-import { Nav, NavList, PageSidebar } from "@patternfly/react-core";
+import { Link } from "@tanstack/react-router";
+
+import {
+  Nav,
+  NavList,
+  PageSidebar,
+  PageSidebarBody,
+} from "@patternfly/react-core";
 import { css } from "@patternfly/react-styles";
 
-import { LayoutTheme } from "./layout-constants";
-
-const LINK_CLASS = "pf-v5-c-nav__link";
+const ITEM_CLASS = "pf-v6-c-nav__item";
+const LINK_CLASS = "pf-v6-c-nav__link";
 const ACTIVE_LINK_CLASS = "pf-m-current";
 
 export const SidebarApp: React.FC = () => {
   const renderPageNav = () => {
     return (
-      <Nav id="nav-sidebar" aria-label="Nav" theme={LayoutTheme}>
+      <Nav id="nav-sidebar" aria-label="Nav">
         <NavList>
-          <li className="pf-v5-c-nav__item">
-            <NavLink
-              to="/projects"
-              className={({ isActive }) => {
-                return css(LINK_CLASS, isActive ? ACTIVE_LINK_CLASS : "");
+          <li className={ITEM_CLASS}>
+            <Link
+              to="/"
+              className={css(LINK_CLASS)}
+              activeProps={{
+                className: css(LINK_CLASS, ACTIVE_LINK_CLASS),
               }}
+              activeOptions={{ exact: true }}
             >
-              Proyectos
-            </NavLink>
+              Home
+            </Link>
+          </li>
+          <li className={ITEM_CLASS}>
+            <Link
+              to="/about"
+              className={css(LINK_CLASS)}
+              activeProps={{
+                className: css(LINK_CLASS, ACTIVE_LINK_CLASS),
+              }}
+              activeOptions={{ exact: true }}
+            >
+              About
+            </Link>
+          </li>
+          <li className={ITEM_CLASS}>
+            <Link
+              to="/credentials"
+              className={css(LINK_CLASS)}
+              activeProps={{
+                className: css(LINK_CLASS, ACTIVE_LINK_CLASS),
+              }}
+              activeOptions={{ exact: true }}
+            >
+              Credenciales
+            </Link>
           </li>
         </NavList>
       </Nav>
     );
   };
 
-  return <PageSidebar theme={LayoutTheme}>{renderPageNav()}</PageSidebar>;
+  return (
+    <PageSidebar>
+      <PageSidebarBody>{renderPageNav()}</PageSidebarBody>
+    </PageSidebar>
+  );
 };

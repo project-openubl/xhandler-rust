@@ -17,17 +17,13 @@ where
     T: InvoiceAnticiposGetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        let result = self
-            .get_anticipos()
-            .iter_mut()
-            .map(|anticipo| {
-                let results = [
-                    AnticipoTipoRule::fill(anticipo).unwrap_or_default(),
-                    AnticipoComprobanteTipoRule::fill(anticipo).unwrap_or_default(),
-                ];
-                results.contains(&true)
-            })
-            .any(|changed| changed);
+        let result = self.get_anticipos().iter_mut().any(|anticipo| {
+            let results = [
+                AnticipoTipoRule::fill(anticipo).unwrap_or_default(),
+                AnticipoComprobanteTipoRule::fill(anticipo).unwrap_or_default(),
+            ];
+            results.contains(&true)
+        });
         Ok(result)
     }
 }
