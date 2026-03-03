@@ -242,30 +242,3 @@ pub struct TotalImpuestos {
     pub isc_importe: Decimal,
     pub isc_base_imponible: Decimal,
 }
-
-/// Operacion de percepcion o retencion
-#[derive(Clone, Debug, Serialize)]
-pub struct PercepcionRetencionOperacion {
-    pub numero_operacion: u32,
-    pub fecha_operacion: NaiveDate,
-    pub importe_operacion: Decimal,
-    pub comprobante: PercepcionRetencionComprobanteAfectado,
-    pub tipo_cambio: Option<TipoCambio>,
-}
-
-/// Comprobante afectado por la percepcion o retencion
-#[derive(Clone, Debug, Serialize)]
-pub struct PercepcionRetencionComprobanteAfectado {
-    pub tipo_comprobante: &'static str,
-    pub serie_numero: &'static str,
-    pub fecha_emision: NaiveDate,
-    pub importe_total: Decimal,
-    pub moneda: Option<&'static str>,
-}
-
-/// Tipo de cambio
-#[derive(Clone, Debug, Serialize)]
-pub struct TipoCambio {
-    pub valor: Decimal,
-    pub fecha: NaiveDate,
-}

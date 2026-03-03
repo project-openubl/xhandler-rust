@@ -1,4 +1,4 @@
-use crate::models::retention::Retention;
+use crate::models::perception_retention::Retention;
 
 pub trait RetentionDocumentoIdGetter {
     fn get_documento_id(&self) -> &Option<String>;
