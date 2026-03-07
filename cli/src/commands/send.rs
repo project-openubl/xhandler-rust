@@ -1,5 +1,6 @@
 use std::process::ExitCode;
 
+use anyhow::Context;
 use clap::Args;
 
 use xhandler::prelude::*;
@@ -85,7 +86,8 @@ pub enum SendResult {
 
 impl SendArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
-        let xml_content = std::fs::read_to_string(&self.input_file)?;
+        let xml_content = std::fs::read_to_string(&self.input_file)
+            .with_context(|| format!("no se puede leer el archivo XML: {}", self.input_file))?;
         let default_cdr = self
             .output_file
             .clone()
@@ -145,7 +147,10 @@ impl SendArgs {
             file_content: xml_content.to_string(),
         };
 
-        let result = sender.send_file(&ubl_file).await?;
+        let result = sender
+            .send_file(&ubl_file)
+            .await
+            .map_err(|e| anyhow::anyhow!("error al enviar documento a SUNAT: {e}"))?;
 
         match result.response {
             SendFileAggregatedResponse::Cdr(cdr_base64, metadata) => {

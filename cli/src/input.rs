@@ -1,6 +1,7 @@
 use std::io::Read;
 use std::path::Path;
 
+use anyhow::Context;
 use serde::Deserialize;
 
 use xhandler::prelude::*;
@@ -42,8 +43,16 @@ impl InputFormat {
 
     pub fn parse(&self, content: &str) -> anyhow::Result<DocumentInput> {
         match self {
-            InputFormat::Json => Ok(serde_json::from_str(content)?),
-            InputFormat::Yaml => Ok(serde_yaml::from_str(content)?),
+            InputFormat::Json => serde_json::from_str(content).map_err(|e| {
+                anyhow::anyhow!(
+                    "Error en el archivo JSON:\n  {e}\n  Valores validos de 'kind': Invoice, CreditNote, DebitNote, DespatchAdvice, Perception, Retention, SummaryDocuments, VoidedDocuments"
+                )
+            }),
+            InputFormat::Yaml => serde_yaml::from_str(content).map_err(|e| {
+                anyhow::anyhow!(
+                    "Error en el archivo YAML:\n  {e}\n  Valores validos de 'kind': Invoice, CreditNote, DebitNote, DespatchAdvice, Perception, Retention, SummaryDocuments, VoidedDocuments"
+                )
+            }),
         }
     }
 }
@@ -61,7 +70,8 @@ pub fn read_input(file: &str, format: Option<&str>) -> anyhow::Result<DocumentIn
         (buf, fmt)
     } else {
         let path = Path::new(file);
-        let content = std::fs::read_to_string(path)?;
+        let content = std::fs::read_to_string(path)
+            .with_context(|| format!("no se puede leer el archivo: {}", path.display()))?;
         let fmt = match format {
             Some("json") => InputFormat::Json,
             Some("yaml") => InputFormat::Yaml,
