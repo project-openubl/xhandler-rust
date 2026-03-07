@@ -10,6 +10,7 @@ use crate::models::common::{Cliente, Firmante, Proveedor};
 pub struct Perception {
     pub serie: String,
     pub numero: u32,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_emision: Option<NaiveDate>,
     pub moneda: Option<String>,
     pub proveedor: Proveedor,
@@ -32,6 +33,7 @@ pub struct Perception {
 pub struct Retention {
     pub serie: String,
     pub numero: u32,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_emision: Option<NaiveDate>,
     pub moneda: Option<String>,
     pub proveedor: Proveedor,
@@ -52,6 +54,7 @@ pub struct Retention {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct PercepcionRetencionOperacion {
     pub numero_operacion: u32,
+    #[serde(deserialize_with = "crate::serde_date::deserialize")]
     pub fecha_operacion: NaiveDate,
     pub importe_operacion: Decimal,
     pub comprobante: PercepcionRetencionComprobanteAfectado,
@@ -63,6 +66,7 @@ pub struct PercepcionRetencionOperacion {
 pub struct PercepcionRetencionComprobanteAfectado {
     pub tipo_comprobante: String,
     pub serie_numero: String,
+    #[serde(deserialize_with = "crate::serde_date::deserialize")]
     pub fecha_emision: NaiveDate,
     pub importe_total: Decimal,
     pub moneda: Option<String>,
@@ -72,5 +76,6 @@ pub struct PercepcionRetencionComprobanteAfectado {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TipoCambio {
     pub valor: Decimal,
+    #[serde(deserialize_with = "crate::serde_date::deserialize")]
     pub fecha: NaiveDate,
 }

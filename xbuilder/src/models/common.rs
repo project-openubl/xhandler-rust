@@ -86,6 +86,7 @@ pub struct FormaDePago {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CuotaDePago {
     pub importe: Decimal,
+    #[serde(deserialize_with = "crate::serde_date::deserialize")]
     pub fecha_pago: NaiveDate,
 }
 
@@ -158,7 +159,9 @@ pub struct Atributo {
     pub nombre: String,
     pub codigo: String,
     pub valor: Option<String>,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_inicio: Option<NaiveDate>,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_fin: Option<NaiveDate>,
     pub duracion: Option<u32>,
 }

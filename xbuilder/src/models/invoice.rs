@@ -17,8 +17,10 @@ pub struct Invoice {
 
     pub serie_numero: String,
     pub moneda: Option<String>,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_emision: Option<NaiveDate>,
     pub hora_emision: Option<NaiveTime>,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_vencimiento: Option<NaiveDate>,
     pub proveedor: Proveedor,
     pub cliente: Cliente,

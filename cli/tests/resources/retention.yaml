@@ -2,7 +2,7 @@ kind: Retention
 spec:
   serie: "R001"
   numero: 1
-  fecha_emision: "2024-01-31"
+  fecha_emision: "31-01-2024"
   proveedor:
     ruc: "12345678912"
     razon_social: "Softgreen S.A.C."
@@ -16,11 +16,11 @@ spec:
   importe_total_pagado: 970
   operacion:
     numero_operacion: 1
-    fecha_operacion: "2024-01-31"
+    fecha_operacion: "31-01-2024"
     importe_operacion: 1000
     comprobante:
       tipo_comprobante: "01"
       serie_numero: "F001-50"
-      fecha_emision: "2024-01-10"
+      fecha_emision: "10-01-2024"
       importe_total: 1000
       moneda: "PEN"

@@ -9,7 +9,9 @@ use crate::models::common::{Firmante, Proveedor};
 #[serde(default)]
 pub struct SummaryDocuments {
     pub numero: u32,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_emision: Option<NaiveDate>,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_emision_comprobantes: Option<NaiveDate>,
     pub moneda: Option<String>,
     pub proveedor: Proveedor,

@@ -17,6 +17,7 @@ pub struct DebitNote {
 
     pub serie_numero: String,
     pub moneda: Option<String>,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_emision: Option<NaiveDate>,
     pub proveedor: Proveedor,
     pub cliente: Cliente,

@@ -9,6 +9,7 @@ use crate::models::common::{Firmante, Proveedor};
 #[serde(default)]
 pub struct DespatchAdvice {
     pub serie_numero: String,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_emision: Option<NaiveDate>,
     pub hora_emision: Option<NaiveTime>,
     /// Catalog1: auto-filled from serie prefix (T->"09", V->"31")
@@ -55,6 +56,7 @@ pub struct Envio {
     pub numero_de_bultos: Option<u32>,
     /// Catalog18: modalidad de traslado (01=publico, 02=privado)
     pub tipo_modalidad_traslado: String,
+    #[serde(deserialize_with = "crate::serde_date::deserialize")]
     pub fecha_traslado: NaiveDate,
     pub transbordo_programado: bool,
     pub transportista: Option<Transportista>,

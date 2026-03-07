@@ -8,7 +8,9 @@ use crate::models::common::{Firmante, Proveedor};
 #[serde(default)]
 pub struct VoidedDocuments {
     pub numero: u32,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_emision: Option<NaiveDate>,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_emision_comprobantes: Option<NaiveDate>,
     pub proveedor: Proveedor,
     pub firmante: Option<Firmante>,
