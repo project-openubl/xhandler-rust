@@ -16,19 +16,19 @@ pub struct VerifyTicketArgs {
     #[arg(short = 'o', long = "output")]
     pub output_file: Option<String>,
 
-    /// SUNAT SOL username
+    /// SUNAT SOL username (defaults to beta credentials when --beta is used)
     #[arg(long, env = "OPENUBL_USERNAME")]
-    pub username: String,
+    pub username: Option<String>,
 
-    /// SUNAT SOL password
+    /// SUNAT SOL password (defaults to beta credentials when --beta is used)
     #[arg(long, env = "OPENUBL_PASSWORD")]
-    pub password: String,
+    pub password: Option<String>,
 
     /// SUNAT invoice SOAP endpoint (used for ticket verification)
     #[arg(long = "url-invoice", env = "OPENUBL_URL_INVOICE")]
     pub url_invoice: Option<String>,
 
-    /// Use SUNAT beta/test URLs
+    /// Use SUNAT beta/test environment (URLs and credentials)
     #[arg(long)]
     pub beta: bool,
 }
@@ -47,10 +47,7 @@ impl VerifyTicketArgs {
         };
 
         let urls = send_args.resolve_urls();
-        let credentials = Credentials {
-            username: self.username.clone(),
-            password: self.password.clone(),
-        };
+        let credentials = send_args.resolve_credentials()?;
 
         let sender = FileSender { urls, credentials };
         let target = VerifyTicketTarget::Soap(self.url_invoice.clone().unwrap_or_else(|| {

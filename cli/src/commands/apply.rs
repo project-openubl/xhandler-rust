@@ -31,15 +31,15 @@ pub struct ApplyArgs {
     #[arg(long = "certificate", env = "OPENUBL_CERTIFICATE")]
     pub certificate: String,
 
-    /// SUNAT SOL username
+    /// SUNAT SOL username (defaults to beta credentials when --beta is used)
     #[arg(long, env = "OPENUBL_USERNAME")]
-    pub username: String,
+    pub username: Option<String>,
 
-    /// SUNAT SOL password
+    /// SUNAT SOL password (defaults to beta credentials when --beta is used)
     #[arg(long, env = "OPENUBL_PASSWORD")]
-    pub password: String,
+    pub password: Option<String>,
 
-    /// Use SUNAT beta/test URLs
+    /// Use SUNAT beta/test environment (URLs and credentials)
     #[arg(long)]
     pub beta: bool,
 
@@ -159,10 +159,7 @@ impl ApplyArgs {
         };
 
         let urls = send_args.resolve_urls();
-        let credentials = Credentials {
-            username: self.username.clone(),
-            password: self.password.clone(),
-        };
+        let credentials = send_args.resolve_credentials()?;
 
         let sender = FileSender { urls, credentials };
         let ubl_file = UblFile {
