@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"Default capability for the main window","local":true,"windows":["main"],"permissions":["core:default","dialog:default","dialog:allow-open","dialog:allow-save","store:default","fs:default","fs:allow-read-text-file","fs:allow-write-text-file"]}}

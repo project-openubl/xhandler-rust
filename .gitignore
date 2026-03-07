@@ -63,3 +63,5 @@ target
 .pnpm-store/
 /managed_context
 /test_suite_analysis
+desktop/node_modules/
+desktop/dist/
