@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::process::ExitCode;
 
 use clap::Subcommand;
@@ -24,6 +25,18 @@ pub enum Commands {
 
     /// Check status of an async submission (SummaryDocuments, VoidedDocuments)
     VerifyTicket(verify_ticket::VerifyTicketArgs),
+}
+
+/// Returns the absolute path for a given path string.
+pub fn absolute_path(path: &str) -> String {
+    let p = Path::new(path);
+    if p.is_absolute() {
+        return path.to_string();
+    }
+    match std::env::current_dir() {
+        Ok(cwd) => cwd.join(p).to_string_lossy().to_string(),
+        Err(_) => path.to_string(),
+    }
 }
 
 impl Commands {

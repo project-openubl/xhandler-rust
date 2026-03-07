@@ -12,9 +12,9 @@ pub struct VerifyTicketArgs {
     #[arg(long)]
     pub ticket: String,
 
-    /// Output file for CDR XML response
+    /// Output file for CDR zip response
     #[arg(short = 'o', long = "output")]
-    pub output_file: Option<String>,
+    pub output_file: String,
 
     /// SUNAT SOL username (defaults to beta credentials when --beta is used)
     #[arg(long, env = "OPENUBL_USERNAME")]
@@ -37,7 +37,7 @@ impl VerifyTicketArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
         let send_args = SendArgs {
             input_file: String::new(),
-            output_file: self.output_file.clone(),
+            output_file: Some(self.output_file.clone()),
             username: self.username.clone(),
             password: self.password.clone(),
             url_invoice: self.url_invoice.clone(),
@@ -62,13 +62,13 @@ impl VerifyTicketArgs {
 
         match result.response {
             VerifyTicketAggregatedResponse::Cdr(status, metadata) => {
-                if let Some(path) = &self.output_file {
-                    use base64::Engine;
-                    let cdr_bytes =
-                        base64::engine::general_purpose::STANDARD.decode(&status.cdr_base64)?;
-                    std::fs::write(path, cdr_bytes)?;
-                }
+                use base64::Engine;
+                let cdr_bytes =
+                    base64::engine::general_purpose::STANDARD.decode(&status.cdr_base64)?;
+                std::fs::write(&self.output_file, cdr_bytes)?;
+
                 let output = serde_json::json!({
+                    "cdr": super::absolute_path(&self.output_file),
                     "status_code": status.status_code,
                     "response_code": metadata.response_code,
                     "description": metadata.description,

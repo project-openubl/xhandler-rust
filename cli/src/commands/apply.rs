@@ -58,18 +58,21 @@ pub struct ApplyArgs {
 
 impl ApplyArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
-        // Resolve output paths
+        // Resolve output paths to absolute
         let unsigned_path = self.save_xml.as_ref().map(|p| {
-            if p.is_empty() {
+            let path = if p.is_empty() {
                 format!("{}.unsigned.xml", self.input_file)
             } else {
                 p.clone()
-            }
+            };
+            super::absolute_path(&path)
         });
-        let signed_path = self
-            .save_signed_xml
-            .clone()
-            .unwrap_or_else(|| format!("{}.signed.xml", self.input_file));
+        let signed_path = super::absolute_path(
+            &self
+                .save_signed_xml
+                .clone()
+                .unwrap_or_else(|| format!("{}.signed.xml", self.input_file)),
+        );
 
         // Step 1: Create XML
         let create_args = CreateArgs {
@@ -175,10 +178,12 @@ impl ApplyArgs {
 
         match result.response {
             SendFileAggregatedResponse::Cdr(cdr_base64, metadata) => {
-                let cdr_path = self
-                    .output_file
-                    .clone()
-                    .unwrap_or_else(|| format!("{}.cdr.zip", self.input_file));
+                let cdr_path = super::absolute_path(
+                    &self
+                        .output_file
+                        .clone()
+                        .unwrap_or_else(|| format!("{}.cdr.zip", self.input_file)),
+                );
 
                 use base64::Engine;
                 let cdr_bytes = base64::engine::general_purpose::STANDARD.decode(&cdr_base64)?;

@@ -81,7 +81,7 @@ impl SendArgs {
                 std::fs::write(&cdr_path, cdr_bytes)?;
 
                 let output = serde_json::json!({
-                    "cdr": cdr_path,
+                    "cdr": super::absolute_path(&cdr_path),
                     "response_code": metadata.response_code,
                     "description": metadata.description,
                     "notes": metadata.notes,
