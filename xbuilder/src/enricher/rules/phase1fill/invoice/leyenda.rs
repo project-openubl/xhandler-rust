@@ -18,7 +18,7 @@ pub trait InvoiceLeyendaPercepcionFillRule {
     fn fill(&mut self) -> Result<bool>;
 }
 
-fn insert_leyenda<T>(obj: &mut T, code: &'static str, label: &'static str) -> bool
+fn insert_leyenda<T>(obj: &mut T, code: &str, label: &str) -> bool
 where
     T: LeyendasGetter + LeyendasSetter,
 {

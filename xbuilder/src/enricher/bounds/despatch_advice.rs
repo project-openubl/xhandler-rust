@@ -3,15 +3,15 @@ use rust_decimal::Decimal;
 use crate::models::despatch_advice::{DespatchAdvice, Remitente};
 
 pub trait DespatchAdviceTipoComprobanteGetter {
-    fn get_tipo_comprobante(&self) -> &Option<&'static str>;
+    fn get_tipo_comprobante(&self) -> &Option<String>;
 }
 
 pub trait DespatchAdviceTipoComprobanteSetter {
-    fn set_tipo_comprobante(&mut self, val: &'static str);
+    fn set_tipo_comprobante(&mut self, val: &str);
 }
 
 pub trait DespatchAdviceSerieNumeroGetter {
-    fn get_serie_numero(&self) -> &'static str;
+    fn get_serie_numero(&self) -> &str;
 }
 
 pub trait DespatchAdviceRemitenteGetter {
@@ -31,20 +31,20 @@ pub trait DespatchAdvicePesoTotalFormattedSetter {
 }
 
 impl DespatchAdviceTipoComprobanteGetter for DespatchAdvice {
-    fn get_tipo_comprobante(&self) -> &Option<&'static str> {
+    fn get_tipo_comprobante(&self) -> &Option<String> {
         &self.tipo_comprobante
     }
 }
 
 impl DespatchAdviceTipoComprobanteSetter for DespatchAdvice {
-    fn set_tipo_comprobante(&mut self, val: &'static str) {
-        self.tipo_comprobante = Some(val);
+    fn set_tipo_comprobante(&mut self, val: &str) {
+        self.tipo_comprobante = Some(val.to_string());
     }
 }
 
 impl DespatchAdviceSerieNumeroGetter for DespatchAdvice {
-    fn get_serie_numero(&self) -> &'static str {
-        self.serie_numero
+    fn get_serie_numero(&self) -> &str {
+        &self.serie_numero
     }
 }
 

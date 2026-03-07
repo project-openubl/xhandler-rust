@@ -16,13 +16,13 @@ fn summary_items() -> Vec<SummaryDocumentsItem> {
             let igv = amount * dec!(0.18);
             let total = amount + igv;
             SummaryDocumentsItem {
-                tipo_operacion: "1",
+                tipo_operacion: "1".into(),
                 comprobante: SummaryDocumentsItemComprobante {
-                    tipo_comprobante: "03",
-                    serie_numero: Box::leak(format!("B001-{i}").into_boxed_str()),
+                    tipo_comprobante: "03".into(),
+                    serie_numero: format!("B001-{i}"),
                     cliente: SummaryDocumentsCliente {
-                        numero_documento_identidad: "12345678",
-                        tipo_documento_identidad: "1",
+                        numero_documento_identidad: "12345678".into(),
+                        tipo_documento_identidad: "1".into(),
                     },
                     valor_venta: SummaryDocumentsValorVenta {
                         importe_total: total,

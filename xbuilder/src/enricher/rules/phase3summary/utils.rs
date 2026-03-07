@@ -16,7 +16,7 @@ pub fn cal_impuesto_by_tipo(detalles: &[Detalle], categoria: Catalog5) -> Impues
     let stream: Vec<&Detalle> = detalles
         .iter()
         .filter(|e| {
-            if let Some(igv_tipo) = e.igv_tipo {
+            if let Some(igv_tipo) = e.igv_tipo.as_deref() {
                 if let Ok(catalog7) = Catalog7::from_code(igv_tipo) {
                     return categoria == catalog7.tax_category();
                 }
@@ -60,7 +60,7 @@ pub fn importe_sin_impuestos(detalle: &[Detalle]) -> Decimal {
     detalle
         .iter()
         .filter(|e| {
-            if let Ok(catalog7) = Catalog7::from_code(e.igv_tipo.unwrap_or("")) {
+            if let Ok(catalog7) = Catalog7::from_code(e.igv_tipo.as_deref().unwrap_or("")) {
                 catalog7.tax_category() != Catalog5::Gratuito
             } else {
                 false

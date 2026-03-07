@@ -1,0 +1,16 @@
+kind: DebitNote
+spec:
+  serie_numero: "FD01-1"
+  comprobante_afectado_serie_numero: "F001-1"
+  sustento_descripcion: "Intereses por mora"
+  proveedor:
+    ruc: "12345678912"
+    razon_social: "Softgreen S.A.C."
+  cliente:
+    tipo_documento_identidad: "6"
+    numero_documento_identidad: "12121212121"
+    nombre: "Carlos Feria"
+  detalles:
+    - descripcion: "Item1"
+      cantidad: 1
+      precio: 150

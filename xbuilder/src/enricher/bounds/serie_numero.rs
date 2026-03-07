@@ -8,18 +8,18 @@ pub trait SerieNumeroGetter {
 
 impl SerieNumeroGetter for Invoice {
     fn get_serie_numero(&self) -> &str {
-        self.serie_numero
+        &self.serie_numero
     }
 }
 
 impl SerieNumeroGetter for CreditNote {
     fn get_serie_numero(&self) -> &str {
-        self.serie_numero
+        &self.serie_numero
     }
 }
 
 impl SerieNumeroGetter for DebitNote {
     fn get_serie_numero(&self) -> &str {
-        self.serie_numero
+        &self.serie_numero
     }
 }

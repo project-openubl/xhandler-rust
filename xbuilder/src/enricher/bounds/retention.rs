@@ -9,7 +9,7 @@ pub trait RetentionDocumentoIdSetter {
 }
 
 pub trait RetentionSerieGetter {
-    fn get_serie(&self) -> &'static str;
+    fn get_serie(&self) -> &str;
 }
 
 pub trait RetentionNumeroGetter {
@@ -17,11 +17,11 @@ pub trait RetentionNumeroGetter {
 }
 
 pub trait RetentionMonedaGetter {
-    fn get_moneda(&self) -> &Option<&'static str>;
+    fn get_moneda(&self) -> &Option<String>;
 }
 
 pub trait RetentionMonedaSetter {
-    fn set_moneda(&mut self, val: &'static str);
+    fn set_moneda(&mut self, val: &str);
 }
 
 impl RetentionDocumentoIdGetter for Retention {
@@ -37,8 +37,8 @@ impl RetentionDocumentoIdSetter for Retention {
 }
 
 impl RetentionSerieGetter for Retention {
-    fn get_serie(&self) -> &'static str {
-        self.serie
+    fn get_serie(&self) -> &str {
+        &self.serie
     }
 }
 
@@ -49,13 +49,13 @@ impl RetentionNumeroGetter for Retention {
 }
 
 impl RetentionMonedaGetter for Retention {
-    fn get_moneda(&self) -> &Option<&'static str> {
+    fn get_moneda(&self) -> &Option<String> {
         &self.moneda
     }
 }
 
 impl RetentionMonedaSetter for Retention {
-    fn set_moneda(&mut self, val: &'static str) {
-        self.moneda = Some(val);
+    fn set_moneda(&mut self, val: &str) {
+        self.moneda = Some(val.to_string());
     }
 }

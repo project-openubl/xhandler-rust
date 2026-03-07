@@ -18,13 +18,13 @@ async fn summary_documents() {
         proveedor: proveedor_base(),
         comprobantes: vec![
             SummaryDocumentsItem {
-                tipo_operacion: "1",
+                tipo_operacion: "1".into(),
                 comprobante: SummaryDocumentsItemComprobante {
-                    tipo_comprobante: "03",
-                    serie_numero: "B001-1",
+                    tipo_comprobante: "03".into(),
+                    serie_numero: "B001-1".into(),
                     cliente: SummaryDocumentsCliente {
-                        numero_documento_identidad: "12345678",
-                        tipo_documento_identidad: "1",
+                        numero_documento_identidad: "12345678".into(),
+                        tipo_documento_identidad: "1".into(),
                     },
                     valor_venta: SummaryDocumentsValorVenta {
                         importe_total: dec!(120),
@@ -40,17 +40,17 @@ async fn summary_documents() {
                 },
             },
             SummaryDocumentsItem {
-                tipo_operacion: "1",
+                tipo_operacion: "1".into(),
                 comprobante: SummaryDocumentsItemComprobante {
-                    tipo_comprobante: "07",
-                    serie_numero: "BC02-2",
+                    tipo_comprobante: "07".into(),
+                    serie_numero: "BC02-2".into(),
                     cliente: SummaryDocumentsCliente {
-                        numero_documento_identidad: "12345678",
-                        tipo_documento_identidad: "1",
+                        numero_documento_identidad: "12345678".into(),
+                        tipo_documento_identidad: "1".into(),
                     },
                     comprobante_afectado: Some(SummaryDocumentsComprobanteAfectado {
-                        tipo_comprobante: "03",
-                        serie_numero: "B002-2",
+                        tipo_comprobante: "03".into(),
+                        serie_numero: "B002-2".into(),
                     }),
                     valor_venta: SummaryDocumentsValorVenta {
                         importe_total: dec!(118),

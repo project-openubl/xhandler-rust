@@ -14,15 +14,15 @@ const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDetraccionTest";
 async fn invoice_detraccion() {
     let mut invoice = Invoice {
         detalles: vec![Detalle {
-            descripcion: "Item1",
+            descripcion: "Item1".into(),
             cantidad: dec!(4),
             precio: Some(dec!(200)),
             ..Default::default()
         }],
         detraccion: Some(Detraccion {
-            medio_de_pago: Catalog59::DepositoEnCuenta.code(),
-            cuenta_bancaria: "0004-3342343243",
-            tipo_bien_detraido: "014",
+            medio_de_pago: Catalog59::DepositoEnCuenta.code().into(),
+            cuenta_bancaria: "0004-3342343243".into(),
+            tipo_bien_detraido: "014".into(),
             porcentaje: dec!(0.04),
             monto: None,
         }),

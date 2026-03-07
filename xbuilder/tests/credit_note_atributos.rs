@@ -13,22 +13,22 @@ const BASE: &str = "tests/resources/e2e/renderer/creditnote/CreditNoteAtributosT
 async fn credit_note_with_atributos() {
     let mut credit_note = CreditNote {
         detalles: vec![Detalle {
-            descripcion: "Item1",
+            descripcion: "Item1".into(),
             cantidad: dec!(10),
             precio: Some(dec!(100)),
             atributos: vec![
                 Atributo {
-                    nombre: "Marca",
-                    codigo: "BRA",
-                    valor: Some("Samsung"),
+                    nombre: "Marca".into(),
+                    codigo: "BRA".into(),
+                    valor: Some("Samsung".into()),
                     fecha_inicio: None,
                     fecha_fin: None,
                     duracion: None,
                 },
                 Atributo {
-                    nombre: "Color",
-                    codigo: "COL",
-                    valor: Some("Negro"),
+                    nombre: "Color".into(),
+                    codigo: "COL".into(),
+                    valor: Some("Negro".into()),
                     fecha_inicio: None,
                     fecha_fin: None,
                     duracion: None,

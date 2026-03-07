@@ -2,78 +2,80 @@ use std::fmt::Debug;
 
 use chrono::NaiveDate;
 use rust_decimal::Decimal;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// Quien provee el documento electronico. Quien genera o crea el documento.
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct Proveedor {
-    pub ruc: &'static str,
-    pub razon_social: &'static str,
-    pub nombre_comercial: Option<&'static str>,
+    pub ruc: String,
+    pub razon_social: String,
+    pub nombre_comercial: Option<String>,
     pub direccion: Option<Direccion>,
     pub contacto: Option<Contacto>,
 }
 
 /// Quien firma electronicamente el XML
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Firmante {
-    pub ruc: &'static str,
-    pub razon_social: &'static str,
+    pub ruc: String,
+    pub razon_social: String,
 }
 
 /// Quien es el cliente de la transaccion
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct Cliente {
     /// Catalog6
-    pub tipo_documento_identidad: &'static str,
-    pub numero_documento_identidad: &'static str,
-    pub nombre: &'static str,
+    pub tipo_documento_identidad: String,
+    pub numero_documento_identidad: String,
+    pub nombre: String,
     pub direccion: Option<Direccion>,
     pub contacto: Option<Contacto>,
 }
 
 /// Direccion
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Direccion {
-    pub ubigeo: Option<&'static str>,
-    pub codigo_local: Option<&'static str>,
-    pub urbanizacion: Option<&'static str>,
-    pub departamento: Option<&'static str>,
-    pub provincia: Option<&'static str>,
-    pub distrito: Option<&'static str>,
-    pub direccion: Option<&'static str>,
-    pub codigo_pais: Option<&'static str>,
+    pub ubigeo: Option<String>,
+    pub codigo_local: Option<String>,
+    pub urbanizacion: Option<String>,
+    pub departamento: Option<String>,
+    pub provincia: Option<String>,
+    pub distrito: Option<String>,
+    pub direccion: Option<String>,
+    pub codigo_pais: Option<String>,
 }
 
 /// Contacto
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Contacto {
-    pub telefono: &'static str,
-    pub email: &'static str,
+    pub telefono: String,
+    pub email: String,
 }
 
 /// Detraccion
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Detraccion {
     /// Catalog59
-    pub medio_de_pago: &'static str,
-    pub cuenta_bancaria: &'static str,
+    pub medio_de_pago: String,
+    pub cuenta_bancaria: String,
 
     /// Catalog54
-    pub tipo_bien_detraido: &'static str,
+    pub tipo_bien_detraido: String,
     pub porcentaje: Decimal,
     pub monto: Option<Decimal>,
 }
 
 /// Tipo de forma de pago
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum TipoFormaDePago {
     Credito,
     Contado,
 }
 
 /// Forma de pago
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct FormaDePago {
     pub tipo: Option<TipoFormaDePago>,
     pub cuotas: Vec<CuotaDePago>,
@@ -81,17 +83,18 @@ pub struct FormaDePago {
 }
 
 /// Cuota de pago
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CuotaDePago {
     pub importe: Decimal,
+    #[serde(deserialize_with = "crate::serde_date::deserialize")]
     pub fecha_pago: NaiveDate,
 }
 
 /// Percepcion asociada a un documento
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Percepcion {
     /// Catalog53
-    pub tipo: &'static str,
+    pub tipo: String,
 
     pub porcentaje: Option<Decimal>,
     pub monto: Option<Decimal>,
@@ -100,77 +103,81 @@ pub struct Percepcion {
 }
 
 /// Anticipo asociado a un documento
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Anticipo {
     /// Catalog53. Valores válidos: "04", "05", "06"
-    pub tipo: Option<&'static str>,
+    pub tipo: Option<String>,
 
     /// Serie y número de comprobante del detalle, por ejemplo "F123-4"
-    pub comprobante_serie_numero: &'static str,
+    pub comprobante_serie_numero: String,
 
     /// Catalog12.
-    pub comprobante_tipo: Option<&'static str>,
+    pub comprobante_tipo: Option<String>,
 
     pub monto: Decimal,
 }
 
 /// Descuento asociado a un documento o item
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Descuento {
     /// Catalog53.
-    pub tipo: Option<&'static str>,
+    pub tipo: Option<String>,
     pub monto: Decimal,
     pub monto_base: Option<Decimal>,
     pub factor: Option<Decimal>,
 }
 
 /// Guia asociada a un documento
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Guia {
     /// Catalog1. Valores válidos: "09", "31"
-    pub tipo_documento: &'static str,
-    pub serie_numero: &'static str,
+    pub tipo_documento: String,
+    pub serie_numero: String,
 }
 
 /// Documento relacionado
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct DocumentoRelacionado {
     /// Catalog12.
-    pub tipo_documento: &'static str,
-    pub serie_numero: &'static str,
+    pub tipo_documento: String,
+    pub serie_numero: String,
 }
 
 /// Código estándar GS1/GTIN para identificación de producto
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CodigoGS1 {
     /// Código GS1/GTIN del producto
-    pub codigo: &'static str,
+    pub codigo: String,
     /// Tipo de estructura GTIN: e.g. "GTIN-8", "GTIN-13", "GTIN-14"
-    pub tipo: &'static str,
+    pub tipo: String,
 }
 
 /// Atributo adicional de un detalle
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct Atributo {
-    pub nombre: &'static str,
-    pub codigo: &'static str,
-    pub valor: Option<&'static str>,
+    pub nombre: String,
+    pub codigo: String,
+    pub valor: Option<String>,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_inicio: Option<NaiveDate>,
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_fin: Option<NaiveDate>,
     pub duracion: Option<u32>,
 }
 
 /// Detalle de las ventas en Boleta/Factura/Nota Credito/Nota Debito
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct Detalle {
-    pub descripcion: &'static str,
+    pub descripcion: String,
     pub cantidad: Decimal,
-    pub unidad_medida: Option<&'static str>,
+    pub unidad_medida: Option<String>,
 
     /// Código del producto del vendedor (SellersItemIdentification)
-    pub codigo: Option<&'static str>,
+    pub codigo: Option<String>,
     /// Código de producto SUNAT - Catalog25 (CommodityClassification)
-    pub codigo_sunat: Option<&'static str>,
+    pub codigo_sunat: Option<String>,
     /// Código estándar GS1/GTIN (StandardItemIdentification).
     /// Incluye el código y el tipo de estructura GTIN (e.g. "GTIN-8", "GTIN-13", "GTIN-14").
     pub codigo_gs1: Option<CodigoGS1>,
@@ -180,16 +187,16 @@ pub struct Detalle {
     pub precio_con_impuestos: Option<Decimal>,
     pub precio_referencia: Option<Decimal>,
     /// Catalog16
-    pub precio_referencia_tipo: Option<&'static str>,
+    pub precio_referencia_tipo: Option<String>,
 
     pub igv_tasa: Option<Decimal>,
     pub icb_tasa: Option<Decimal>,
     pub isc_tasa: Option<Decimal>,
 
     /// Catalog7
-    pub igv_tipo: Option<&'static str>,
+    pub igv_tipo: Option<String>,
     /// Catalog8
-    pub isc_tipo: Option<&'static str>,
+    pub isc_tipo: Option<String>,
 
     pub icb_aplica: bool,
     pub icb: Option<Decimal>,
@@ -206,7 +213,7 @@ pub struct Detalle {
 }
 
 /// Total Importe Invoice
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TotalImporteInvoice {
     pub anticipos: Decimal,
     pub descuentos: Decimal,
@@ -216,14 +223,14 @@ pub struct TotalImporteInvoice {
 }
 
 // Total importe Note
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TotalImporteNote {
     pub importe: Decimal,
     pub importe_sin_impuestos: Decimal,
 }
 
 /// Total impuestos
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TotalImpuestos {
     pub total: Decimal,
     pub ivap_importe: Decimal,

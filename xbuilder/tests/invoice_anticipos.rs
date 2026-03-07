@@ -15,20 +15,20 @@ async fn invoice_anticipos() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
         ],
         anticipos: vec![Anticipo {
-            comprobante_serie_numero: "F001-2",
+            comprobante_serie_numero: "F001-2".into(),
             monto: dec!(100),
             tipo: None,
             comprobante_tipo: None,

@@ -1,0 +1,26 @@
+kind: Perception
+spec:
+  serie: "P001"
+  numero: 1
+  fecha_emision: "31-01-2024"
+  proveedor:
+    ruc: "12345678912"
+    razon_social: "Softgreen S.A.C."
+  cliente:
+    tipo_documento_identidad: "6"
+    numero_documento_identidad: "12121212121"
+    nombre: "Carlos Feria"
+  tipo_regimen: "01"
+  tipo_regimen_porcentaje: 2
+  importe_total_percibido: 10
+  importe_total_cobrado: 210
+  operacion:
+    numero_operacion: 1
+    fecha_operacion: "31-01-2024"
+    importe_operacion: 100
+    comprobante:
+      tipo_comprobante: "01"
+      serie_numero: "F001-1"
+      fecha_emision: "15-01-2024"
+      importe_total: 200
+      moneda: "PEN"

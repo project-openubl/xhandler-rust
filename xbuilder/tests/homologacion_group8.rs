@@ -15,7 +15,7 @@ const BASE: &str = "tests/resources/e2e/homologacion/Group8Test";
 fn items(n: usize) -> Vec<Detalle> {
     (1..=n)
         .map(|i| Detalle {
-            descripcion: Box::leak(format!("Item{i}").into_boxed_str()),
+            descripcion: format!("Item{i}"),
             cantidad: dec!(1) * rust_decimal::Decimal::from(i),
             precio: Some(dec!(100) * rust_decimal::Decimal::from(i)),
             ..Default::default()
@@ -29,7 +29,7 @@ fn items(n: usize) -> Vec<Detalle> {
 #[tokio::test]
 async fn caso52_boleta1_con_4_items() {
     let mut invoice = Invoice {
-        serie_numero: "BB11-1",
+        serie_numero: "BB11-1".into(),
         detalles: items(4),
         ..invoice_base()
     };
@@ -40,7 +40,7 @@ async fn caso52_boleta1_con_4_items() {
 #[tokio::test]
 async fn caso53_boleta2_con_7_items() {
     let mut invoice = Invoice {
-        serie_numero: "BB11-2",
+        serie_numero: "BB11-2".into(),
         detalles: items(7),
         ..invoice_base()
     };
@@ -51,7 +51,7 @@ async fn caso53_boleta2_con_7_items() {
 #[tokio::test]
 async fn caso54_boleta3_con_5_items() {
     let mut invoice = Invoice {
-        serie_numero: "BB11-3",
+        serie_numero: "BB11-3".into(),
         detalles: items(5),
         ..invoice_base()
     };
@@ -62,7 +62,7 @@ async fn caso54_boleta3_con_5_items() {
 #[tokio::test]
 async fn caso55_boleta4_con_3_items() {
     let mut invoice = Invoice {
-        serie_numero: "BB11-4",
+        serie_numero: "BB11-4".into(),
         detalles: items(3),
         ..invoice_base()
     };
@@ -73,7 +73,7 @@ async fn caso55_boleta4_con_3_items() {
 #[tokio::test]
 async fn caso56_boleta5_con_2_items() {
     let mut invoice = Invoice {
-        serie_numero: "BB11-5",
+        serie_numero: "BB11-5".into(),
         detalles: items(2),
         ..invoice_base()
     };
@@ -86,9 +86,9 @@ async fn caso56_boleta5_con_2_items() {
 #[tokio::test]
 async fn caso57_nota_credito_boleta2() {
     let mut credit_note = CreditNote {
-        serie_numero: "BB11-1",
-        comprobante_afectado_serie_numero: "BB11-2",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "BB11-1".into(),
+        comprobante_afectado_serie_numero: "BB11-2".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(7),
         ..credit_note_base()
     };
@@ -103,9 +103,9 @@ async fn caso57_nota_credito_boleta2() {
 #[tokio::test]
 async fn caso58_nota_credito_boleta3() {
     let mut credit_note = CreditNote {
-        serie_numero: "BB11-2",
-        comprobante_afectado_serie_numero: "BB11-3",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "BB11-2".into(),
+        comprobante_afectado_serie_numero: "BB11-3".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(5),
         ..credit_note_base()
     };
@@ -120,9 +120,9 @@ async fn caso58_nota_credito_boleta3() {
 #[tokio::test]
 async fn caso59_nota_credito_boleta4() {
     let mut credit_note = CreditNote {
-        serie_numero: "BB11-3",
-        comprobante_afectado_serie_numero: "BB11-4",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "BB11-3".into(),
+        comprobante_afectado_serie_numero: "BB11-4".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(3),
         ..credit_note_base()
     };
@@ -139,9 +139,9 @@ async fn caso59_nota_credito_boleta4() {
 #[tokio::test]
 async fn caso60_nota_debito_boleta2() {
     let mut debit_note = DebitNote {
-        serie_numero: "BB11-1",
-        comprobante_afectado_serie_numero: "BB11-2",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "BB11-1".into(),
+        comprobante_afectado_serie_numero: "BB11-2".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(7),
         ..debit_note_base()
     };
@@ -156,9 +156,9 @@ async fn caso60_nota_debito_boleta2() {
 #[tokio::test]
 async fn caso61_nota_debito_boleta3() {
     let mut debit_note = DebitNote {
-        serie_numero: "BB11-2",
-        comprobante_afectado_serie_numero: "BB11-3",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "BB11-2".into(),
+        comprobante_afectado_serie_numero: "BB11-3".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(5),
         ..debit_note_base()
     };
@@ -173,9 +173,9 @@ async fn caso61_nota_debito_boleta3() {
 #[tokio::test]
 async fn caso62_nota_debito_boleta4() {
     let mut debit_note = DebitNote {
-        serie_numero: "BB11-3",
-        comprobante_afectado_serie_numero: "BB11-4",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "BB11-3".into(),
+        comprobante_afectado_serie_numero: "BB11-4".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(3),
         ..debit_note_base()
     };

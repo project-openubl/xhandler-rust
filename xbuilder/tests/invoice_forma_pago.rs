@@ -16,13 +16,13 @@ async fn invoice_forma_pago_contado_defecto() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()
@@ -40,13 +40,13 @@ async fn invoice_forma_pago_credito() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()

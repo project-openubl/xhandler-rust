@@ -5,11 +5,11 @@ pub trait SummaryDocumentsComprobantesGetter {
 }
 
 pub trait SummaryDocumentsMonedaGetter {
-    fn get_moneda(&self) -> &Option<&'static str>;
+    fn get_moneda(&self) -> &Option<String>;
 }
 
 pub trait SummaryDocumentsMonedaSetter {
-    fn set_moneda(&mut self, val: &'static str);
+    fn set_moneda(&mut self, val: &str);
 }
 
 pub trait SummaryDocumentsDocumentoIdGetter {
@@ -31,14 +31,14 @@ impl SummaryDocumentsComprobantesGetter for SummaryDocuments {
 }
 
 impl SummaryDocumentsMonedaGetter for SummaryDocuments {
-    fn get_moneda(&self) -> &Option<&'static str> {
+    fn get_moneda(&self) -> &Option<String> {
         &self.moneda
     }
 }
 
 impl SummaryDocumentsMonedaSetter for SummaryDocuments {
-    fn set_moneda(&mut self, val: &'static str) {
-        self.moneda = Some(val);
+    fn set_moneda(&mut self, val: &str) {
+        self.moneda = Some(val.to_string());
     }
 }
 

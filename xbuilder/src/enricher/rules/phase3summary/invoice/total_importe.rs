@@ -40,7 +40,9 @@ where
                     .get_detalles()
                     .iter()
                     .filter(|e| {
-                        if let Ok(catalog7) = Catalog7::from_code(e.igv_tipo.unwrap_or("")) {
+                        if let Ok(catalog7) =
+                            Catalog7::from_code(e.igv_tipo.as_deref().unwrap_or(""))
+                        {
                             catalog7.tax_category() != Catalog5::Gratuito
                         } else {
                             false
@@ -74,7 +76,7 @@ where
                     self.get_descuentos()
                         .iter()
                         .fold(HashMap::new(), |mut acc, current| {
-                            if let Some(tipo) = current.tipo {
+                            if let Some(tipo) = current.tipo.as_deref() {
                                 if let Ok(catalog53) = Catalog53::from_code(tipo) {
                                     let monto = acc.get(&catalog53).unwrap_or(&Decimal::ZERO)
                                         + current.monto;

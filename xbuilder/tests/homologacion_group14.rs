@@ -11,9 +11,9 @@ const BASE: &str = "tests/resources/e2e/homologacion/Group14Test";
 fn voided_items() -> Vec<VoidedDocumentsItem> {
     (1..=5)
         .map(|i| VoidedDocumentsItem {
-            serie: "F001",
+            serie: "F001".into(),
             numero: i,
-            descripcion_sustento: Box::leak(format!("Motivo de baja {i}").into_boxed_str()),
+            descripcion_sustento: format!("Motivo de baja {i}"),
             ..Default::default()
         })
         .collect()

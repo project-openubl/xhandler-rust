@@ -1,0 +1,26 @@
+kind: DespatchAdvice
+spec:
+  serie_numero: "T001-1"
+  remitente:
+    ruc: "12345678912"
+    razon_social: "Softgreen S.A.C."
+  destinatario:
+    tipo_documento_identidad: "1"
+    numero_documento_identidad: "12345678"
+    nombre: "Juan Perez"
+  envio:
+    tipo_traslado: "01"
+    peso_total: 25.5
+    peso_total_unidad_medida: "KGM"
+    tipo_modalidad_traslado: "02"
+    fecha_traslado: "16-01-2024"
+    partida:
+      ubigeo: "150101"
+      direccion: "Av. Los Olivos 123"
+    destino:
+      ubigeo: "040101"
+      direccion: "Jr. Arequipa 456"
+  detalles:
+    - unidad_medida: "NIU"
+      cantidad: 10
+      codigo: "PROD001"

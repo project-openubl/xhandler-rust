@@ -10,37 +10,37 @@ const BASE: &str = "tests/resources/e2e/renderer/despatchadvice/DespatchAdviceTe
 
 fn min_despatch_advice() -> DespatchAdvice {
     DespatchAdvice {
-        serie_numero: "T001-1",
+        serie_numero: "T001-1".into(),
         fecha_emision: NaiveDate::from_ymd_opt(2019, 12, 24),
         remitente: Remitente {
-            ruc: "12345678912",
-            razon_social: "Softgreen S.A.C.",
+            ruc: "12345678912".into(),
+            razon_social: "Softgreen S.A.C.".into(),
         },
         destinatario: Destinatario {
-            tipo_documento_identidad: "1",
-            numero_documento_identidad: "12345678",
-            nombre: "mi cliente",
+            tipo_documento_identidad: "1".into(),
+            numero_documento_identidad: "12345678".into(),
+            nombre: "mi cliente".into(),
         },
         envio: Envio {
-            tipo_traslado: "18",
+            tipo_traslado: "18".into(),
             peso_total: dec!(1),
-            peso_total_unidad_medida: "KG",
-            tipo_modalidad_traslado: "02",
+            peso_total_unidad_medida: "KG".into(),
+            tipo_modalidad_traslado: "02".into(),
             fecha_traslado: NaiveDate::from_ymd_opt(2019, 12, 24).unwrap(),
             partida: Partida {
-                ubigeo: "010101",
-                direccion: "DireccionOrigen",
+                ubigeo: "010101".into(),
+                direccion: "DireccionOrigen".into(),
             },
             destino: Destino {
-                ubigeo: "020202",
-                direccion: "DireccionDestino",
+                ubigeo: "020202".into(),
+                direccion: "DireccionDestino".into(),
             },
             ..Default::default()
         },
         detalles: vec![DespatchAdviceItem {
-            unidad_medida: "KG",
+            unidad_medida: "KG".into(),
             cantidad: dec!(0.5),
-            codigo: "123456",
+            codigo: "123456".into(),
             ..Default::default()
         }],
         ..Default::default()
