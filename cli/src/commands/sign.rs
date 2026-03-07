@@ -5,6 +5,9 @@ use clap::Args;
 
 use xhandler::prelude::*;
 
+pub const BETA_PRIVATE_KEY: &str = include_str!("../../../xsigner/resources/test/private.key");
+pub const BETA_CERTIFICATE: &str = include_str!("../../../xsigner/resources/test/public.cer");
+
 #[derive(Args)]
 pub struct SignArgs {
     /// Input unsigned XML file. Use "-" for stdin.
@@ -15,13 +18,17 @@ pub struct SignArgs {
     #[arg(short = 'o', long = "output")]
     pub output_file: Option<String>,
 
-    /// Path to PKCS#1 PEM private key file
+    /// Path to PKCS#1 PEM private key file (defaults to test key when --beta is used)
     #[arg(long = "private-key", env = "OPENUBL_PRIVATE_KEY")]
-    pub private_key: String,
+    pub private_key: Option<String>,
 
-    /// Path to X.509 PEM certificate file
+    /// Path to X.509 PEM certificate file (defaults to test cert when --beta is used)
     #[arg(long = "certificate", env = "OPENUBL_CERTIFICATE")]
-    pub certificate: String,
+    pub certificate: Option<String>,
+
+    /// Use SUNAT beta test certificates and URLs
+    #[arg(long)]
+    pub beta: bool,
 }
 
 impl SignArgs {
@@ -34,12 +41,7 @@ impl SignArgs {
             std::fs::read_to_string(&self.input_file)?
         };
 
-        let private_key_pem = std::fs::read_to_string(&self.private_key)?;
-        let certificate_pem = std::fs::read_to_string(&self.certificate)?;
-
-        let key_pair =
-            RsaKeyPair::from_pkcs1_pem_and_certificate(&private_key_pem, &certificate_pem)?;
-
+        let key_pair = self.resolve_key_pair()?;
         let signed_xml = self.sign_xml(&xml_content, &key_pair)?;
 
         match &self.output_file {
@@ -51,6 +53,27 @@ impl SignArgs {
         }
 
         Ok(ExitCode::SUCCESS)
+    }
+
+    pub fn resolve_key_pair(&self) -> anyhow::Result<RsaKeyPair> {
+        let private_key_pem = match &self.private_key {
+            Some(path) => std::fs::read_to_string(path)?,
+            None if self.beta => BETA_PRIVATE_KEY.to_string(),
+            None => {
+                anyhow::bail!("--private-key is required (or use --beta for test certificates)")
+            }
+        };
+        let certificate_pem = match &self.certificate {
+            Some(path) => std::fs::read_to_string(path)?,
+            None if self.beta => BETA_CERTIFICATE.to_string(),
+            None => {
+                anyhow::bail!("--certificate is required (or use --beta for test certificates)")
+            }
+        };
+        Ok(RsaKeyPair::from_pkcs1_pem_and_certificate(
+            &private_key_pem,
+            &certificate_pem,
+        )?)
     }
 
     pub fn sign_xml(&self, xml_content: &str, key_pair: &RsaKeyPair) -> anyhow::Result<Vec<u8>> {

@@ -23,13 +23,13 @@ pub struct ApplyArgs {
     #[arg(long = "format")]
     pub format: Option<String>,
 
-    /// Path to PKCS#1 PEM private key file
+    /// Path to PKCS#1 PEM private key file (defaults to test key when --beta is used)
     #[arg(long = "private-key", env = "OPENUBL_PRIVATE_KEY")]
-    pub private_key: String,
+    pub private_key: Option<String>,
 
-    /// Path to X.509 PEM certificate file
+    /// Path to X.509 PEM certificate file (defaults to test cert when --beta is used)
     #[arg(long = "certificate", env = "OPENUBL_CERTIFICATE")]
-    pub certificate: String,
+    pub certificate: Option<String>,
 
     /// SUNAT SOL username (defaults to beta credentials when --beta is used)
     #[arg(long, env = "OPENUBL_USERNAME")]
@@ -39,7 +39,7 @@ pub struct ApplyArgs {
     #[arg(long, env = "OPENUBL_PASSWORD")]
     pub password: Option<String>,
 
-    /// Use SUNAT beta/test environment (URLs and credentials)
+    /// Use SUNAT beta URLs, test credentials, and test certificates
     #[arg(long)]
     pub beta: bool,
 
@@ -133,15 +133,11 @@ impl ApplyArgs {
             output_file: None,
             private_key: self.private_key.clone(),
             certificate: self.certificate.clone(),
+            beta: self.beta,
         };
 
-        let signed_xml = sign_args.sign_xml(
-            &xml,
-            &RsaKeyPair::from_pkcs1_pem_and_certificate(
-                &std::fs::read_to_string(&self.private_key)?,
-                &std::fs::read_to_string(&self.certificate)?,
-            )?,
-        )?;
+        let key_pair = sign_args.resolve_key_pair()?;
+        let signed_xml = sign_args.sign_xml(&xml, &key_pair)?;
 
         std::fs::write(&signed_path, &signed_xml)?;
 

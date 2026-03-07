@@ -37,7 +37,7 @@ pub struct SendArgs {
     #[arg(long = "url-despatch", env = "OPENUBL_URL_DESPATCH")]
     pub url_despatch: Option<String>,
 
-    /// Use SUNAT beta/test environment (URLs and credentials)
+    /// Use SUNAT beta URLs and test credentials
     #[arg(long)]
     pub beta: bool,
 }

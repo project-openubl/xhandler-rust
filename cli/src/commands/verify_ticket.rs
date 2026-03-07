@@ -28,7 +28,7 @@ pub struct VerifyTicketArgs {
     #[arg(long = "url-invoice", env = "OPENUBL_URL_INVOICE")]
     pub url_invoice: Option<String>,
 
-    /// Use SUNAT beta/test environment (URLs and credentials)
+    /// Use SUNAT beta URLs and test credentials
     #[arg(long)]
     pub beta: bool,
 }

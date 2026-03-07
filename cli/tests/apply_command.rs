@@ -2,7 +2,6 @@ use std::process::Command;
 
 const BINARY: &str = env!("CARGO_BIN_EXE_openubl");
 const RESOURCES: &str = "tests/resources";
-const SIGNER_RESOURCES: &str = "../xsigner/resources/test";
 
 fn assert_valid_xml(path: &std::path::Path) {
     let content = std::fs::read_to_string(path).unwrap();
@@ -49,18 +48,11 @@ fn apply_without_save_xml_does_not_create_unsigned() {
     let _ = std::fs::remove_file(&cdr_path);
 
     let output = Command::new(BINARY)
-        .args([
-            "apply",
-            "-f",
-            input_path.to_str().unwrap(),
-            "--private-key",
-            &format!("{SIGNER_RESOURCES}/private.key"),
-            "--certificate",
-            &format!("{SIGNER_RESOURCES}/public.cer"),
-            "--beta",
-        ])
+        .args(["apply", "-f", input_path.to_str().unwrap(), "--beta"])
         .env_remove("OPENUBL_USERNAME")
         .env_remove("OPENUBL_PASSWORD")
+        .env_remove("OPENUBL_PRIVATE_KEY")
+        .env_remove("OPENUBL_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("failed to execute openubl apply");
@@ -119,15 +111,13 @@ fn apply_with_save_xml_creates_unsigned() {
             "apply",
             "-f",
             input_path.to_str().unwrap(),
-            "--private-key",
-            &format!("{SIGNER_RESOURCES}/private.key"),
-            "--certificate",
-            &format!("{SIGNER_RESOURCES}/public.cer"),
             "--beta",
             "--save-xml",
         ])
         .env_remove("OPENUBL_USERNAME")
         .env_remove("OPENUBL_PASSWORD")
+        .env_remove("OPENUBL_PRIVATE_KEY")
+        .env_remove("OPENUBL_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("failed to execute openubl apply");
@@ -198,10 +188,6 @@ fn apply_with_custom_output_paths() {
             "apply",
             "-f",
             input_path.to_str().unwrap(),
-            "--private-key",
-            &format!("{SIGNER_RESOURCES}/private.key"),
-            "--certificate",
-            &format!("{SIGNER_RESOURCES}/public.cer"),
             "--beta",
             "--save-xml",
             custom_unsigned.to_str().unwrap(),
@@ -212,6 +198,8 @@ fn apply_with_custom_output_paths() {
         ])
         .env_remove("OPENUBL_USERNAME")
         .env_remove("OPENUBL_PASSWORD")
+        .env_remove("OPENUBL_PRIVATE_KEY")
+        .env_remove("OPENUBL_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("failed to execute openubl apply");
@@ -253,15 +241,13 @@ fn apply_dry_run_without_save_xml() {
             "apply",
             "-f",
             input_path.to_str().unwrap(),
-            "--private-key",
-            &format!("{SIGNER_RESOURCES}/private.key"),
-            "--certificate",
-            &format!("{SIGNER_RESOURCES}/public.cer"),
             "--beta",
             "--dry-run",
         ])
         .env_remove("OPENUBL_USERNAME")
         .env_remove("OPENUBL_PASSWORD")
+        .env_remove("OPENUBL_PRIVATE_KEY")
+        .env_remove("OPENUBL_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("failed to execute openubl apply");
@@ -308,16 +294,14 @@ fn apply_dry_run_with_save_xml() {
             "apply",
             "-f",
             input_path.to_str().unwrap(),
-            "--private-key",
-            &format!("{SIGNER_RESOURCES}/private.key"),
-            "--certificate",
-            &format!("{SIGNER_RESOURCES}/public.cer"),
             "--beta",
             "--dry-run",
             "--save-xml",
         ])
         .env_remove("OPENUBL_USERNAME")
         .env_remove("OPENUBL_PASSWORD")
+        .env_remove("OPENUBL_PRIVATE_KEY")
+        .env_remove("OPENUBL_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("failed to execute openubl apply");
