@@ -204,9 +204,20 @@ impl ApplyArgs {
                 let output = serde_json::json!({
                     "unsigned_xml": unsigned_path,
                     "signed_xml": signed_path,
-                    "ticket": ticket,
+                    "ticket": &ticket,
                 });
                 println!("{}", serde_json::to_string_pretty(&output)?);
+
+                let default_cdr = self
+                    .output_file
+                    .clone()
+                    .unwrap_or_else(|| format!("{}.cdr.zip", self.input_file));
+                if let Some(verify_output) =
+                    super::prompt_verify_ticket(&ticket, &sender, self.beta, &default_cdr).await?
+                {
+                    println!("{}", serde_json::to_string_pretty(&verify_output)?);
+                }
+
                 Ok(ExitCode::SUCCESS)
             }
             SendFileAggregatedResponse::Error(error) => {
