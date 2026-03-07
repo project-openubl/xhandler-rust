@@ -8,7 +8,11 @@ pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<NaiveDate, D::Erro
     let s = String::deserialize(d)?;
     NaiveDate::parse_from_str(&s, DD_MM_YYYY)
         .or_else(|_| NaiveDate::parse_from_str(&s, ISO_8601))
-        .map_err(serde::de::Error::custom)
+        .map_err(|_| {
+            serde::de::Error::custom(format!(
+                "fecha invalida: '{s}' (usar formato DD-MM-YYYY o YYYY-MM-DD)"
+            ))
+        })
 }
 
 pub mod option {
@@ -24,7 +28,11 @@ pub mod option {
             Some(s) => NaiveDate::parse_from_str(&s, DD_MM_YYYY)
                 .or_else(|_| NaiveDate::parse_from_str(&s, ISO_8601))
                 .map(Some)
-                .map_err(serde::de::Error::custom),
+                .map_err(|_| {
+                    serde::de::Error::custom(format!(
+                        "fecha invalida: '{s}' (usar formato DD-MM-YYYY o YYYY-MM-DD)"
+                    ))
+                }),
         }
     }
 }

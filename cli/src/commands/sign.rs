@@ -1,6 +1,7 @@
 use std::io::Read;
 use std::process::ExitCode;
 
+use anyhow::Context;
 use clap::Args;
 
 use xhandler::prelude::*;
@@ -41,7 +42,8 @@ impl SignArgs {
             std::io::stdin().read_to_string(&mut buf)?;
             buf
         } else {
-            std::fs::read_to_string(&self.input_file)?
+            std::fs::read_to_string(&self.input_file)
+                .with_context(|| format!("no se puede leer el archivo XML: {}", self.input_file))?
         };
 
         let key_pair = self.resolve_key_pair()?;
@@ -60,7 +62,8 @@ impl SignArgs {
 
     pub fn resolve_key_pair(&self) -> anyhow::Result<RsaKeyPair> {
         let private_key_pem = match &self.private_key {
-            Some(path) => std::fs::read_to_string(path)?,
+            Some(path) => std::fs::read_to_string(path)
+                .with_context(|| format!("no se puede leer la llave privada: {path}"))?,
             None if self.beta => BETA_PRIVATE_KEY.to_string(),
             None => {
                 anyhow::bail!(
@@ -69,7 +72,8 @@ impl SignArgs {
             }
         };
         let certificate_pem = match &self.certificate {
-            Some(path) => std::fs::read_to_string(path)?,
+            Some(path) => std::fs::read_to_string(path)
+                .with_context(|| format!("no se puede leer el certificado: {path}"))?,
             None if self.beta => BETA_CERTIFICATE.to_string(),
             None => {
                 anyhow::bail!(
@@ -77,10 +81,13 @@ impl SignArgs {
                 )
             }
         };
-        Ok(RsaKeyPair::from_pkcs1_pem_and_certificate(
-            &private_key_pem,
-            &certificate_pem,
-        )?)
+        RsaKeyPair::from_pkcs1_pem_and_certificate(&private_key_pem, &certificate_pem).map_err(
+            |e| {
+                anyhow::anyhow!(
+                    "error al leer certificados: {e}\n  Verificar que --private-key sea PKCS#1 PEM y --certificate sea X.509 PEM"
+                )
+            },
+        )
     }
 
     pub fn sign_xml(&self, xml_content: &str, key_pair: &RsaKeyPair) -> anyhow::Result<Vec<u8>> {

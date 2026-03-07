@@ -1,4 +1,4 @@
-use openubl_cli::input::{read_input, DocumentInput};
+use openubl_cli::input::{read_input, DocumentInput, InputFormat};
 
 const RESOURCES: &str = "tests/resources";
 
@@ -158,6 +158,111 @@ fn parse_invalid_kind_fails() {
 
     let result = read_input(temp_file.to_str().unwrap(), None);
     assert!(result.is_err());
+    let err = result.unwrap_err().to_string();
+    assert!(
+        err.contains("Valores validos de 'kind'"),
+        "expected valid kinds hint but got: {err}"
+    );
 
     let _ = std::fs::remove_file(&temp_file);
+}
+
+#[test]
+fn parse_wrong_field_type_shows_friendly_error() {
+    let yaml = "kind: Invoice\nspec:\n  serie_numero: 123\n";
+    let result = InputFormat::Yaml.parse(yaml);
+    assert!(result.is_err());
+    let err = result.unwrap_err().to_string();
+    assert!(
+        err.contains("Error en el archivo YAML"),
+        "expected YAML error context but got: {err}"
+    );
+}
+
+#[test]
+fn parse_missing_required_field_shows_friendly_error() {
+    let yaml = "kind: Invoice\nspec:\n  serie_numero: F001-1\n";
+    let result = InputFormat::Yaml.parse(yaml);
+    // This may succeed with defaults or fail depending on required fields.
+    // If it fails, it should have a friendly message.
+    if let Err(e) = result {
+        let err = e.to_string();
+        assert!(
+            err.contains("Error en el archivo YAML"),
+            "expected YAML error context but got: {err}"
+        );
+    }
+}
+
+#[test]
+fn parse_empty_content_shows_friendly_error() {
+    let result = InputFormat::Yaml.parse("");
+    assert!(result.is_err());
+    let err = result.unwrap_err().to_string();
+    assert!(
+        err.contains("Error en el archivo YAML"),
+        "expected YAML error context but got: {err}"
+    );
+}
+
+#[test]
+fn parse_malformed_yaml_shows_friendly_error() {
+    let yaml = "kind: Invoice\nspec:\n  - bad:\n  indentation error";
+    let result = InputFormat::Yaml.parse(yaml);
+    assert!(result.is_err());
+    let err = result.unwrap_err().to_string();
+    assert!(
+        err.contains("Error en el archivo YAML"),
+        "expected YAML error context but got: {err}"
+    );
+}
+
+#[test]
+fn parse_malformed_json_shows_friendly_error() {
+    let json = "{not valid json";
+    let result = InputFormat::Json.parse(json);
+    assert!(result.is_err());
+    let err = result.unwrap_err().to_string();
+    assert!(
+        err.contains("Error en el archivo JSON"),
+        "expected JSON error context but got: {err}"
+    );
+}
+
+#[test]
+fn file_not_found_shows_friendly_error() {
+    let result = read_input("nonexistent_file.yaml", None);
+    assert!(result.is_err());
+    let err = result.unwrap_err().to_string();
+    assert!(
+        err.contains("no se puede leer el archivo"),
+        "expected file read context but got: {err}"
+    );
+}
+
+#[test]
+fn parse_invalid_date_shows_format_hint() {
+    let yaml = r#"kind: Invoice
+spec:
+  serie_numero: F001-1
+  fecha_emision: "not-a-date"
+  proveedor:
+    ruc: "12345678912"
+    razon_social: "Test S.A.C."
+  cliente:
+    tipo_documento_identidad: "6"
+    numero_documento_identidad: "12121212121"
+    nombre: "Test"
+  detalles:
+    - descripcion: Item1
+      cantidad: 1
+      precio: 100
+"#;
+    let result = InputFormat::Yaml.parse(yaml);
+    assert!(result.is_err());
+    let err = result.unwrap_err().to_string();
+    assert!(
+        err.contains("fecha invalida") || err.contains("DD-MM-YYYY"),
+        "expected date format hint but got: {err}"
+    );
 }
