@@ -2,56 +2,53 @@ use std::process::ExitCode;
 
 use clap::Args;
 
-use crate::commands::create::CreateArgs;
-use crate::commands::send::SendArgs;
+use crate::commands::create::create_xml;
+use crate::commands::send::{SendArgs, SendResult};
 use crate::commands::sign::SignArgs;
-use crate::input::{self, DocumentInput};
-
-use xhandler::prelude::*;
 
 #[derive(Args)]
 pub struct ApplyArgs {
-    /// Input JSON/YAML document definition
+    /// Archivo de entrada JSON/YAML con la definicion del documento
     #[arg(short = 'f', long = "file")]
     pub input_file: String,
 
-    /// Output file for CDR zip response. Defaults to <input_file>.cdr.zip
+    /// Ruta del archivo CDR zip de respuesta. Por defecto: <archivo_entrada>.cdr.zip
     #[arg(short = 'o', long = "output")]
     pub output_file: Option<String>,
 
-    /// Input format when reading from stdin: json, yaml
+    /// Formato de entrada cuando se lee desde stdin: json, yaml
     #[arg(long = "format")]
     pub format: Option<String>,
 
-    /// Path to PKCS#1 PEM private key file (defaults to test key when --beta is used)
+    /// Ruta al archivo de llave privada PKCS#1 PEM (con --beta se usan certificados de prueba)
     #[arg(long = "private-key", env = "OPENUBL_PRIVATE_KEY")]
     pub private_key: Option<String>,
 
-    /// Path to X.509 PEM certificate file (defaults to test cert when --beta is used)
+    /// Ruta al archivo de certificado X.509 PEM (con --beta se usan certificados de prueba)
     #[arg(long = "certificate", env = "OPENUBL_CERTIFICATE")]
     pub certificate: Option<String>,
 
-    /// SUNAT SOL username (defaults to beta credentials when --beta is used)
+    /// Usuario SOL de SUNAT (con --beta se usan credenciales de prueba)
     #[arg(long, env = "OPENUBL_USERNAME")]
     pub username: Option<String>,
 
-    /// SUNAT SOL password (defaults to beta credentials when --beta is used)
+    /// Clave SOL de SUNAT (con --beta se usan credenciales de prueba)
     #[arg(long, env = "OPENUBL_PASSWORD")]
     pub password: Option<String>,
 
-    /// Use SUNAT beta URLs, test credentials, and test certificates
+    /// Usar URLs de prueba, credenciales y certificados de prueba de SUNAT beta
     #[arg(long)]
     pub beta: bool,
 
-    /// Save unsigned XML. Defaults to <input_file>.unsigned.xml
+    /// Guardar XML sin firmar. Por defecto: <archivo_entrada>.unsigned.xml
     #[arg(long = "save-xml", num_args = 0..=1, default_missing_value = "")]
     pub save_xml: Option<String>,
 
-    /// Signed XML output path. Defaults to <input_file>.signed.xml
+    /// Ruta del XML firmado. Por defecto: <archivo_entrada>.signed.xml
     #[arg(long = "save-signed-xml")]
     pub save_signed_xml: Option<String>,
 
-    /// Run create + sign but do not send
+    /// Ejecutar crear + firmar sin enviar a SUNAT
     #[arg(long)]
     pub dry_run: bool,
 }
@@ -75,56 +72,7 @@ impl ApplyArgs {
         );
 
         // Step 1: Create XML
-        let create_args = CreateArgs {
-            input_file: self.input_file.clone(),
-            output_file: None,
-            format: self.format.clone(),
-            dry_run: false,
-        };
-
-        let doc = input::read_input(&create_args.input_file, create_args.format.as_deref())?;
-
-        let defaults = Defaults {
-            icb_tasa: rust_decimal_macros::dec!(0.2),
-            igv_tasa: rust_decimal_macros::dec!(0.18),
-            ivap_tasa: rust_decimal_macros::dec!(0.04),
-            date: chrono::Local::now().date_naive(),
-        };
-
-        let xml = match doc {
-            DocumentInput::Invoice { mut spec } => {
-                spec.enrich(&defaults);
-                spec.render()?
-            }
-            DocumentInput::CreditNote { mut spec } => {
-                spec.enrich(&defaults);
-                spec.render()?
-            }
-            DocumentInput::DebitNote { mut spec } => {
-                spec.enrich(&defaults);
-                spec.render()?
-            }
-            DocumentInput::DespatchAdvice { mut spec } => {
-                spec.enrich(&defaults);
-                spec.render()?
-            }
-            DocumentInput::Perception { mut spec } => {
-                spec.enrich(&defaults);
-                spec.render()?
-            }
-            DocumentInput::Retention { mut spec } => {
-                spec.enrich(&defaults);
-                spec.render()?
-            }
-            DocumentInput::SummaryDocuments { mut spec } => {
-                spec.enrich(&defaults);
-                spec.render()?
-            }
-            DocumentInput::VoidedDocuments { mut spec } => {
-                spec.enrich(&defaults);
-                spec.render()?
-            }
-        };
+        let xml = create_xml(&self.input_file, self.format.as_deref())?;
 
         if let Some(path) = &unsigned_path {
             std::fs::write(path, &xml)?;
@@ -155,6 +103,11 @@ impl ApplyArgs {
 
         // Step 3: Send
         let signed_xml_str = String::from_utf8(signed_xml)?;
+        let default_cdr = self
+            .output_file
+            .clone()
+            .unwrap_or_else(|| format!("{}.cdr.zip", self.input_file));
+
         let send_args = SendArgs {
             input_file: String::new(),
             output_file: self.output_file.clone(),
@@ -166,66 +119,49 @@ impl ApplyArgs {
             beta: self.beta,
         };
 
-        let urls = send_args.resolve_urls();
-        let credentials = send_args.resolve_credentials()?;
+        let result = send_args
+            .send_xml_content(&signed_xml_str, &default_cdr)
+            .await?;
 
-        let sender = FileSender { urls, credentials };
-        let ubl_file = UblFile {
-            file_content: signed_xml_str,
-        };
-
-        let result = sender.send_file(&ubl_file).await?;
-
-        match result.response {
-            SendFileAggregatedResponse::Cdr(cdr_base64, metadata) => {
-                let cdr_path = super::absolute_path(
-                    &self
-                        .output_file
-                        .clone()
-                        .unwrap_or_else(|| format!("{}.cdr.zip", self.input_file)),
-                );
-
-                use base64::Engine;
-                let cdr_bytes = base64::engine::general_purpose::STANDARD.decode(&cdr_base64)?;
-                std::fs::write(&cdr_path, cdr_bytes)?;
-
+        match result {
+            SendResult::Cdr {
+                cdr_path,
+                response_code,
+                description,
+                notes,
+            } => {
                 let output = serde_json::json!({
                     "unsigned_xml": unsigned_path,
                     "signed_xml": signed_path,
                     "cdr": cdr_path,
-                    "response_code": metadata.response_code,
-                    "description": metadata.description,
-                    "notes": metadata.notes,
+                    "response_code": response_code,
+                    "description": description,
+                    "notes": notes,
                 });
                 println!("{}", serde_json::to_string_pretty(&output)?);
                 Ok(ExitCode::SUCCESS)
             }
-            SendFileAggregatedResponse::Ticket(ticket) => {
+            SendResult::Ticket {
+                ticket,
+                verify_result,
+            } => {
                 let output = serde_json::json!({
                     "unsigned_xml": unsigned_path,
                     "signed_xml": signed_path,
-                    "ticket": &ticket,
+                    "ticket": ticket,
                 });
                 println!("{}", serde_json::to_string_pretty(&output)?);
-
-                let default_cdr = self
-                    .output_file
-                    .clone()
-                    .unwrap_or_else(|| format!("{}.cdr.zip", self.input_file));
-                if let Some(verify_output) =
-                    super::prompt_verify_ticket(&ticket, &sender, self.beta, &default_cdr).await?
-                {
+                if let Some(verify_output) = verify_result {
                     println!("{}", serde_json::to_string_pretty(&verify_output)?);
                 }
-
                 Ok(ExitCode::SUCCESS)
             }
-            SendFileAggregatedResponse::Error(error) => {
+            SendResult::Error { code, message } => {
                 let output = serde_json::json!({
                     "unsigned_xml": unsigned_path,
                     "signed_xml": signed_path,
-                    "code": error.code,
-                    "message": error.message,
+                    "code": code,
+                    "message": message,
                 });
                 eprintln!("{}", serde_json::to_string_pretty(&output)?);
                 Ok(ExitCode::from(2))

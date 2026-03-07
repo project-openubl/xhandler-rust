@@ -8,27 +8,27 @@ use crate::commands::send::SendArgs;
 
 #[derive(Args)]
 pub struct VerifyTicketArgs {
-    /// Ticket number from a previous send response
+    /// Numero de ticket obtenido de un envio anterior
     #[arg(long)]
     pub ticket: String,
 
-    /// Output file for CDR zip response
+    /// Ruta del archivo CDR zip de respuesta
     #[arg(short = 'o', long = "output")]
     pub output_file: String,
 
-    /// SUNAT SOL username (defaults to beta credentials when --beta is used)
+    /// Usuario SOL de SUNAT (con --beta se usan credenciales de prueba)
     #[arg(long, env = "OPENUBL_USERNAME")]
     pub username: Option<String>,
 
-    /// SUNAT SOL password (defaults to beta credentials when --beta is used)
+    /// Clave SOL de SUNAT (con --beta se usan credenciales de prueba)
     #[arg(long, env = "OPENUBL_PASSWORD")]
     pub password: Option<String>,
 
-    /// SUNAT invoice SOAP endpoint (used for ticket verification)
+    /// Endpoint SOAP de facturas SUNAT (usado para verificar tickets)
     #[arg(long = "url-invoice", env = "OPENUBL_URL_INVOICE")]
     pub url_invoice: Option<String>,
 
-    /// Use SUNAT beta URLs and test credentials
+    /// Usar URLs de prueba y credenciales de prueba de SUNAT beta
     #[arg(long)]
     pub beta: bool,
 }

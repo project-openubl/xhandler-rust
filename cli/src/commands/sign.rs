@@ -10,23 +10,23 @@ pub const BETA_CERTIFICATE: &str = include_str!("../../../xsigner/resources/test
 
 #[derive(Args)]
 pub struct SignArgs {
-    /// Input unsigned XML file. Use "-" for stdin.
+    /// Archivo XML sin firmar. Usar "-" para leer desde stdin
     #[arg(short = 'f', long = "file")]
     pub input_file: String,
 
-    /// Output signed XML file path. Writes to stdout if omitted.
+    /// Ruta del archivo XML firmado. Si se omite, se imprime en stdout
     #[arg(short = 'o', long = "output")]
     pub output_file: Option<String>,
 
-    /// Path to PKCS#1 PEM private key file (defaults to test key when --beta is used)
+    /// Ruta al archivo de llave privada PKCS#1 PEM (con --beta se usan certificados de prueba)
     #[arg(long = "private-key", env = "OPENUBL_PRIVATE_KEY")]
     pub private_key: Option<String>,
 
-    /// Path to X.509 PEM certificate file (defaults to test cert when --beta is used)
+    /// Ruta al archivo de certificado X.509 PEM (con --beta se usan certificados de prueba)
     #[arg(long = "certificate", env = "OPENUBL_CERTIFICATE")]
     pub certificate: Option<String>,
 
-    /// Use SUNAT beta test certificates and URLs
+    /// Usar certificados de prueba de SUNAT beta
     #[arg(long)]
     pub beta: bool,
 }

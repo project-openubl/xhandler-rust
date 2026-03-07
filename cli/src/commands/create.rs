@@ -8,93 +8,121 @@ use crate::input::{self, DocumentInput};
 
 #[derive(Args)]
 pub struct CreateArgs {
-    /// Input JSON/YAML file. Use "-" for stdin.
+    /// Archivo de entrada JSON/YAML. Usar "-" para leer desde stdin
     #[arg(short = 'f', long = "file")]
     pub input_file: String,
 
-    /// Output XML file path. Writes to stdout if omitted.
+    /// Ruta del archivo XML de salida. Si se omite, se imprime en stdout
     #[arg(short = 'o', long = "output")]
     pub output_file: Option<String>,
 
-    /// Input format when reading from stdin: json, yaml
+    /// Formato de entrada cuando se lee desde stdin: json, yaml
     #[arg(long = "format")]
     pub format: Option<String>,
 
-    /// Validate and enrich without rendering XML
+    /// Validar y enriquecer sin generar el XML
     #[arg(long)]
     pub dry_run: bool,
 }
 
+/// Creates UBL XML from an input file. Reads, enriches, and renders the document.
+pub fn create_xml(input_file: &str, format: Option<&str>) -> anyhow::Result<String> {
+    let doc = input::read_input(input_file, format)?;
+
+    let defaults = Defaults {
+        icb_tasa: rust_decimal_macros::dec!(0.2),
+        igv_tasa: rust_decimal_macros::dec!(0.18),
+        ivap_tasa: rust_decimal_macros::dec!(0.04),
+        date: chrono::Local::now().date_naive(),
+    };
+
+    let xml = match doc {
+        DocumentInput::Invoice { mut spec } => {
+            spec.enrich(&defaults);
+            spec.render()?
+        }
+        DocumentInput::CreditNote { mut spec } => {
+            spec.enrich(&defaults);
+            spec.render()?
+        }
+        DocumentInput::DebitNote { mut spec } => {
+            spec.enrich(&defaults);
+            spec.render()?
+        }
+        DocumentInput::DespatchAdvice { mut spec } => {
+            spec.enrich(&defaults);
+            spec.render()?
+        }
+        DocumentInput::Perception { mut spec } => {
+            spec.enrich(&defaults);
+            spec.render()?
+        }
+        DocumentInput::Retention { mut spec } => {
+            spec.enrich(&defaults);
+            spec.render()?
+        }
+        DocumentInput::SummaryDocuments { mut spec } => {
+            spec.enrich(&defaults);
+            spec.render()?
+        }
+        DocumentInput::VoidedDocuments { mut spec } => {
+            spec.enrich(&defaults);
+            spec.render()?
+        }
+    };
+
+    Ok(xml)
+}
+
 impl CreateArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
-        let doc = input::read_input(&self.input_file, self.format.as_deref())?;
+        if self.dry_run {
+            let doc = input::read_input(&self.input_file, self.format.as_deref())?;
 
-        let defaults = Defaults {
-            icb_tasa: rust_decimal_macros::dec!(0.2),
-            igv_tasa: rust_decimal_macros::dec!(0.18),
-            ivap_tasa: rust_decimal_macros::dec!(0.04),
-            date: chrono::Local::now().date_naive(),
-        };
+            let defaults = Defaults {
+                icb_tasa: rust_decimal_macros::dec!(0.2),
+                igv_tasa: rust_decimal_macros::dec!(0.18),
+                ivap_tasa: rust_decimal_macros::dec!(0.04),
+                date: chrono::Local::now().date_naive(),
+            };
 
-        let xml = match doc {
-            DocumentInput::Invoice { mut spec } => {
-                spec.enrich(&defaults);
-                if self.dry_run {
-                    return self.print_dry_run(&spec);
+            return match doc {
+                DocumentInput::Invoice { mut spec } => {
+                    spec.enrich(&defaults);
+                    self.print_dry_run(&spec)
                 }
-                spec.render()?
-            }
-            DocumentInput::CreditNote { mut spec } => {
-                spec.enrich(&defaults);
-                if self.dry_run {
-                    return self.print_dry_run(&spec);
+                DocumentInput::CreditNote { mut spec } => {
+                    spec.enrich(&defaults);
+                    self.print_dry_run(&spec)
                 }
-                spec.render()?
-            }
-            DocumentInput::DebitNote { mut spec } => {
-                spec.enrich(&defaults);
-                if self.dry_run {
-                    return self.print_dry_run(&spec);
+                DocumentInput::DebitNote { mut spec } => {
+                    spec.enrich(&defaults);
+                    self.print_dry_run(&spec)
                 }
-                spec.render()?
-            }
-            DocumentInput::DespatchAdvice { mut spec } => {
-                spec.enrich(&defaults);
-                if self.dry_run {
-                    return self.print_dry_run(&spec);
+                DocumentInput::DespatchAdvice { mut spec } => {
+                    spec.enrich(&defaults);
+                    self.print_dry_run(&spec)
                 }
-                spec.render()?
-            }
-            DocumentInput::Perception { mut spec } => {
-                spec.enrich(&defaults);
-                if self.dry_run {
-                    return self.print_dry_run(&spec);
+                DocumentInput::Perception { mut spec } => {
+                    spec.enrich(&defaults);
+                    self.print_dry_run(&spec)
                 }
-                spec.render()?
-            }
-            DocumentInput::Retention { mut spec } => {
-                spec.enrich(&defaults);
-                if self.dry_run {
-                    return self.print_dry_run(&spec);
+                DocumentInput::Retention { mut spec } => {
+                    spec.enrich(&defaults);
+                    self.print_dry_run(&spec)
                 }
-                spec.render()?
-            }
-            DocumentInput::SummaryDocuments { mut spec } => {
-                spec.enrich(&defaults);
-                if self.dry_run {
-                    return self.print_dry_run(&spec);
+                DocumentInput::SummaryDocuments { mut spec } => {
+                    spec.enrich(&defaults);
+                    self.print_dry_run(&spec)
                 }
-                spec.render()?
-            }
-            DocumentInput::VoidedDocuments { mut spec } => {
-                spec.enrich(&defaults);
-                if self.dry_run {
-                    return self.print_dry_run(&spec);
+                DocumentInput::VoidedDocuments { mut spec } => {
+                    spec.enrich(&defaults);
+                    self.print_dry_run(&spec)
                 }
-                spec.render()?
-            }
-        };
+            };
+        }
 
+        let xml = create_xml(&self.input_file, self.format.as_deref())?;
         self.write_output(&xml)?;
         Ok(ExitCode::SUCCESS)
     }

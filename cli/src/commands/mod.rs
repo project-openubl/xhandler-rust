@@ -11,19 +11,19 @@ pub mod verify_ticket;
 
 #[derive(Subcommand)]
 pub enum Commands {
-    /// Generate UBL XML from a JSON/YAML document definition
+    /// Genera XML UBL a partir de un archivo JSON/YAML
     Create(create::CreateArgs),
 
-    /// Sign a UBL XML document with RSA-SHA256
+    /// Firma un documento XML UBL con RSA-SHA256
     Sign(sign::SignArgs),
 
-    /// Send a signed XML to SUNAT
+    /// Envia un XML firmado a SUNAT
     Send(send::SendArgs),
 
-    /// Full pipeline: create + sign + send
+    /// Pipeline completo: crear XML + firmar + enviar a SUNAT
     Apply(apply::ApplyArgs),
 
-    /// Check status of an async submission (SummaryDocuments, VoidedDocuments)
+    /// Consulta el estado de un envio asincrono (Resumenes y Comunicaciones de baja)
     VerifyTicket(verify_ticket::VerifyTicketArgs),
 }
 
@@ -49,7 +49,7 @@ pub async fn prompt_verify_ticket(
 ) -> anyhow::Result<Option<serde_json::Value>> {
     use std::io::Write;
 
-    eprint!("Ticket received: {ticket}\nVerify ticket now? [y/N]: ");
+    eprint!("Ticket recibido: {ticket}\nDesea verificar el ticket ahora? [y/N]: ");
     std::io::stderr().flush()?;
 
     let mut answer = String::new();
@@ -60,7 +60,7 @@ pub async fn prompt_verify_ticket(
     }
 
     let default_abs = absolute_path(default_cdr_path);
-    eprint!("CDR output path [{default_abs}]: ");
+    eprint!("Ruta del archivo CDR [{default_abs}]: ");
     std::io::stderr().flush()?;
 
     let mut cdr_input = String::new();

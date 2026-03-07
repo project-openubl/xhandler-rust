@@ -6,38 +6,38 @@ use xhandler::prelude::*;
 
 #[derive(Args)]
 pub struct SendArgs {
-    /// Signed XML file to send
+    /// Archivo XML firmado a enviar
     #[arg(short = 'f', long = "file")]
     pub input_file: String,
 
-    /// Output file for CDR zip response. Defaults to <input_file>.zip
+    /// Ruta del archivo CDR zip de respuesta. Por defecto: <archivo_entrada>.zip
     #[arg(short = 'o', long = "output")]
     pub output_file: Option<String>,
 
-    /// SUNAT SOL username (defaults to beta credentials when --beta is used)
+    /// Usuario SOL de SUNAT (con --beta se usan credenciales de prueba)
     #[arg(long, env = "OPENUBL_USERNAME")]
     pub username: Option<String>,
 
-    /// SUNAT SOL password (defaults to beta credentials when --beta is used)
+    /// Clave SOL de SUNAT (con --beta se usan credenciales de prueba)
     #[arg(long, env = "OPENUBL_PASSWORD")]
     pub password: Option<String>,
 
-    /// SUNAT invoice SOAP endpoint (defaults to beta urls when not defined)
+    /// Endpoint SOAP de facturas SUNAT (con --beta se usan URLs de prueba)
     #[arg(long = "url-invoice", env = "OPENUBL_URL_INVOICE")]
     pub url_invoice: Option<String>,
 
-    /// SUNAT perception/retention SOAP endpoint (defaults to beta urls when not defined)
+    /// Endpoint SOAP de percepciones/retenciones SUNAT (con --beta se usan URLs de prueba)
     #[arg(
         long = "url-perception-retention",
         env = "OPENUBL_URL_PERCEPTION_RETENTION"
     )]
     pub url_perception_retention: Option<String>,
 
-    /// SUNAT despatch REST endpoint (defaults to beta urls when not defined)
+    /// Endpoint REST de guias de remision SUNAT (con --beta se usan URLs de prueba)
     #[arg(long = "url-despatch", env = "OPENUBL_URL_DESPATCH")]
     pub url_despatch: Option<String>,
 
-    /// Use SUNAT beta URLs and test credentials
+    /// Usar URLs de prueba, credenciales de prueba de SUNAT beta
     #[arg(long)]
     pub beta: bool,
 }
@@ -55,64 +55,117 @@ const PROD_URL_DESPATCH: &str = "https://api-cpe.sunat.gob.pe/v1/contribuyente/g
 const BETA_USERNAME: &str = "12345678959MODDATOS";
 const BETA_PASSWORD: &str = "MODDATOS";
 
+/// Result of sending an XML file to SUNAT.
+pub enum SendResult {
+    /// CDR was received and saved to the given path.
+    Cdr {
+        cdr_path: String,
+        response_code: String,
+        description: String,
+        notes: Vec<String>,
+    },
+    /// A ticket was received (async processing). The ticket may have been verified
+    /// interactively if the user accepted.
+    Ticket {
+        ticket: String,
+        verify_result: Option<serde_json::Value>,
+    },
+    /// SUNAT returned an error.
+    Error { code: String, message: String },
+}
+
 impl SendArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
         let xml_content = std::fs::read_to_string(&self.input_file)?;
+        let default_cdr = self
+            .output_file
+            .clone()
+            .unwrap_or_else(|| format!("{}.zip", self.input_file));
 
+        let result = self.send_xml_content(&xml_content, &default_cdr).await?;
+
+        match result {
+            SendResult::Cdr {
+                cdr_path,
+                response_code,
+                description,
+                notes,
+            } => {
+                let output = serde_json::json!({
+                    "cdr": cdr_path,
+                    "response_code": response_code,
+                    "description": description,
+                    "notes": notes,
+                });
+                println!("{}", serde_json::to_string_pretty(&output)?);
+                Ok(ExitCode::SUCCESS)
+            }
+            SendResult::Ticket {
+                ticket,
+                verify_result,
+            } => {
+                let output = serde_json::json!({ "ticket": ticket });
+                println!("{}", serde_json::to_string_pretty(&output)?);
+                if let Some(verify_output) = verify_result {
+                    println!("{}", serde_json::to_string_pretty(&verify_output)?);
+                }
+                Ok(ExitCode::SUCCESS)
+            }
+            SendResult::Error { code, message } => {
+                let output = serde_json::json!({
+                    "code": code,
+                    "message": message,
+                });
+                eprintln!("{}", serde_json::to_string_pretty(&output)?);
+                Ok(ExitCode::from(2))
+            }
+        }
+    }
+
+    /// Sends XML content to SUNAT, handles CDR/ticket/error, and returns a structured result.
+    pub async fn send_xml_content(
+        &self,
+        xml_content: &str,
+        default_cdr_path: &str,
+    ) -> anyhow::Result<SendResult> {
         let urls = self.resolve_urls();
         let credentials = self.resolve_credentials()?;
 
         let sender = FileSender { urls, credentials };
         let ubl_file = UblFile {
-            file_content: xml_content,
+            file_content: xml_content.to_string(),
         };
 
         let result = sender.send_file(&ubl_file).await?;
 
         match result.response {
             SendFileAggregatedResponse::Cdr(cdr_base64, metadata) => {
-                let cdr_path = self
-                    .output_file
-                    .clone()
-                    .unwrap_or_else(|| format!("{}.zip", self.input_file));
-
                 use base64::Engine;
                 let cdr_bytes = base64::engine::general_purpose::STANDARD.decode(&cdr_base64)?;
+                let cdr_path = super::absolute_path(default_cdr_path);
                 std::fs::write(&cdr_path, cdr_bytes)?;
 
-                let output = serde_json::json!({
-                    "cdr": super::absolute_path(&cdr_path),
-                    "response_code": metadata.response_code,
-                    "description": metadata.description,
-                    "notes": metadata.notes,
-                });
-                println!("{}", serde_json::to_string_pretty(&output)?);
-                Ok(ExitCode::SUCCESS)
+                Ok(SendResult::Cdr {
+                    cdr_path,
+                    response_code: metadata.response_code,
+                    description: metadata.description,
+                    notes: metadata.notes,
+                })
             }
             SendFileAggregatedResponse::Ticket(ticket) => {
-                let output = serde_json::json!({ "ticket": &ticket });
-                println!("{}", serde_json::to_string_pretty(&output)?);
+                let verify_result =
+                    super::prompt_verify_ticket(&ticket, &sender, self.beta, default_cdr_path)
+                        .await?;
 
-                let default_cdr = self
-                    .output_file
-                    .clone()
-                    .unwrap_or_else(|| format!("{}.zip", self.input_file));
-                if let Some(verify_output) =
-                    super::prompt_verify_ticket(&ticket, &sender, self.beta, &default_cdr).await?
-                {
-                    println!("{}", serde_json::to_string_pretty(&verify_output)?);
-                }
-
-                Ok(ExitCode::SUCCESS)
+                Ok(SendResult::Ticket {
+                    ticket,
+                    verify_result,
+                })
             }
-            SendFileAggregatedResponse::Error(error) => {
-                let output = serde_json::json!({
-                    "code": error.code,
-                    "message": error.message,
-                });
-                eprintln!("{}", serde_json::to_string_pretty(&output)?);
-                Ok(ExitCode::from(2))
-            }
+            SendFileAggregatedResponse::Error(error) => Ok(SendResult::Error {
+                code: error.code,
+                message: error.message,
+            }),
         }
     }
 
