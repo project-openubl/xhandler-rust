@@ -1,6 +1,8 @@
-kind: Invoice
+kind: DebitNote
 spec:
-  serie_numero: "F001-1"
+  serie_numero: "FD01-1"
+  comprobante_afectado_serie_numero: "F001-1"
+  sustento_descripcion: "Intereses por mora"
   proveedor:
     ruc: "12345678912"
     razon_social: "Softgreen S.A.C."
@@ -10,5 +12,5 @@ spec:
     nombre: "Carlos Feria"
   detalles:
     - descripcion: "Item1"
-      cantidad: 10
-      precio: 100
+      cantidad: 1
+      precio: 150

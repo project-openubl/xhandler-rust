@@ -1,6 +1,8 @@
-kind: Invoice
+kind: CreditNote
 spec:
-  serie_numero: "F001-1"
+  serie_numero: "FC01-1"
+  comprobante_afectado_serie_numero: "F001-1"
+  sustento_descripcion: "Anulación de operación"
   proveedor:
     ruc: "12345678912"
     razon_social: "Softgreen S.A.C."

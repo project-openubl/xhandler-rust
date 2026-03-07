@@ -9,6 +9,9 @@ pub const BETA_PRIVATE_KEY: &str = include_str!("../../../xsigner/resources/test
 pub const BETA_CERTIFICATE: &str = include_str!("../../../xsigner/resources/test/public.cer");
 
 #[derive(Args)]
+#[command(after_help = "\x1b[1mEjemplos:\x1b[0m
+  openubl sign -f factura.xml --beta
+  openubl sign -f factura.xml --private-key llave.pem --certificate cert.pem -o firmado.xml")]
 pub struct SignArgs {
     /// Archivo XML sin firmar. Usar "-" para leer desde stdin
     #[arg(short = 'f', long = "file")]
@@ -60,14 +63,18 @@ impl SignArgs {
             Some(path) => std::fs::read_to_string(path)?,
             None if self.beta => BETA_PRIVATE_KEY.to_string(),
             None => {
-                anyhow::bail!("--private-key is required (or use --beta for test certificates)")
+                anyhow::bail!(
+                    "se requiere --private-key (o usar --beta para certificados de prueba)"
+                )
             }
         };
         let certificate_pem = match &self.certificate {
             Some(path) => std::fs::read_to_string(path)?,
             None if self.beta => BETA_CERTIFICATE.to_string(),
             None => {
-                anyhow::bail!("--certificate is required (or use --beta for test certificates)")
+                anyhow::bail!(
+                    "se requiere --certificate (o usar --beta para certificados de prueba)"
+                )
             }
         };
         Ok(RsaKeyPair::from_pkcs1_pem_and_certificate(

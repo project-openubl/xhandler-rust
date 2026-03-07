@@ -189,6 +189,7 @@ fn make_send_args(beta: bool) -> SendArgs {
         url_perception_retention: None,
         url_despatch: None,
         beta,
+        no_interactive: false,
     }
 }
 

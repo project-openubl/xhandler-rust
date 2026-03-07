@@ -5,6 +5,11 @@ use clap::Args;
 use xhandler::prelude::*;
 
 #[derive(Args)]
+#[command(after_help = "\x1b[1mEjemplos:\x1b[0m
+  openubl send -f firmado.xml --beta
+  openubl send -f firmado.xml --username 20123456789MODDATOS --password clave
+
+La salida es JSON en stdout. Codigo de salida: 0=exito, 2=error SUNAT.")]
 pub struct SendArgs {
     /// Archivo XML firmado a enviar
     #[arg(short = 'f', long = "file")]
@@ -40,6 +45,10 @@ pub struct SendArgs {
     /// Usar URLs de prueba, credenciales de prueba de SUNAT beta
     #[arg(long)]
     pub beta: bool,
+
+    /// Desactivar prompts interactivos (util para scripts)
+    #[arg(long)]
+    pub no_interactive: bool,
 }
 
 const BETA_URL_INVOICE: &str = "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService";
@@ -153,9 +162,12 @@ impl SendArgs {
                 })
             }
             SendFileAggregatedResponse::Ticket(ticket) => {
-                let verify_result =
+                let verify_result = if self.no_interactive {
+                    None
+                } else {
                     super::prompt_verify_ticket(&ticket, &sender, self.beta, default_cdr_path)
-                        .await?;
+                        .await?
+                };
 
                 Ok(SendResult::Ticket {
                     ticket,
@@ -175,14 +187,18 @@ impl SendArgs {
             .clone()
             .or_else(|| self.beta.then(|| BETA_USERNAME.to_string()))
             .ok_or_else(|| {
-                anyhow::anyhow!("--username is required (or use --beta for test credentials)")
+                anyhow::anyhow!(
+                    "se requiere --username (o usar --beta para credenciales de prueba)"
+                )
             })?;
         let password = self
             .password
             .clone()
             .or_else(|| self.beta.then(|| BETA_PASSWORD.to_string()))
             .ok_or_else(|| {
-                anyhow::anyhow!("--password is required (or use --beta for test credentials)")
+                anyhow::anyhow!(
+                    "se requiere --password (o usar --beta para credenciales de prueba)"
+                )
             })?;
         Ok(Credentials { username, password })
     }

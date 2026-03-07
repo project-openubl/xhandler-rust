@@ -134,8 +134,8 @@ fn parse_unsupported_extension_fails() {
     assert!(result.is_err());
     let err = result.unwrap_err().to_string();
     assert!(
-        err.contains("unsupported file extension"),
-        "expected 'unsupported file extension' but got: {err}"
+        err.contains("extension de archivo no soportada"),
+        "expected 'extension de archivo no soportada' but got: {err}"
     );
 
     let _ = std::fs::remove_file(&temp_file);

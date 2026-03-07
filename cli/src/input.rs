@@ -30,9 +30,13 @@ impl InputFormat {
             Some("json") => Ok(InputFormat::Json),
             Some("yaml" | "yml") => Ok(InputFormat::Yaml),
             Some(ext) => {
-                anyhow::bail!("unsupported file extension: .{ext} (use .json, .yaml, or .yml)")
+                anyhow::bail!(
+                    "extension de archivo no soportada: .{ext} (usar .json, .yaml o .yml)"
+                )
             }
-            None => anyhow::bail!("cannot detect format: file has no extension (use --format)"),
+            None => anyhow::bail!(
+                "no se puede detectar el formato: el archivo no tiene extension (usar --format)"
+            ),
         }
     }
 
@@ -51,8 +55,8 @@ pub fn read_input(file: &str, format: Option<&str>) -> anyhow::Result<DocumentIn
         let fmt = match format {
             Some("json") => InputFormat::Json,
             Some("yaml") => InputFormat::Yaml,
-            Some(f) => anyhow::bail!("unsupported format: {f} (use json or yaml)"),
-            None => anyhow::bail!("--format is required when reading from stdin"),
+            Some(f) => anyhow::bail!("formato no soportado: {f} (usar json o yaml)"),
+            None => anyhow::bail!("se requiere --format cuando se lee desde stdin"),
         };
         (buf, fmt)
     } else {
@@ -61,7 +65,7 @@ pub fn read_input(file: &str, format: Option<&str>) -> anyhow::Result<DocumentIn
         let fmt = match format {
             Some("json") => InputFormat::Json,
             Some("yaml") => InputFormat::Yaml,
-            Some(f) => anyhow::bail!("unsupported format: {f}"),
+            Some(f) => anyhow::bail!("formato no soportado: {f}"),
             None => InputFormat::from_path(path)?,
         };
         (content, fmt)

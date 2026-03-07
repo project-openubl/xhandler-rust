@@ -7,6 +7,10 @@ use xhandler::prelude::*;
 use crate::commands::send::SendArgs;
 
 #[derive(Args)]
+#[command(after_help = "\x1b[1mEjemplos:\x1b[0m
+  openubl verify-ticket --ticket 1703154974517 -o respuesta.zip --beta
+
+La salida es JSON en stdout. Codigo de salida: 0=exito, 2=error SUNAT.")]
 pub struct VerifyTicketArgs {
     /// Numero de ticket obtenido de un envio anterior
     #[arg(long)]
@@ -44,6 +48,7 @@ impl VerifyTicketArgs {
             url_perception_retention: None,
             url_despatch: None,
             beta: self.beta,
+            no_interactive: false,
         };
 
         let urls = send_args.resolve_urls();

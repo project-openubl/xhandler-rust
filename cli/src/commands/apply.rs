@@ -7,6 +7,12 @@ use crate::commands::send::{SendArgs, SendResult};
 use crate::commands::sign::SignArgs;
 
 #[derive(Args)]
+#[command(after_help = "\x1b[1mEjemplos:\x1b[0m
+  openubl apply -f factura.yaml --beta
+  openubl apply -f factura.yaml --beta --save-xml --dry-run
+  openubl apply -f factura.yaml --private-key llave.pem --certificate cert.pem --username user --password clave
+
+La salida es JSON en stdout. Codigo de salida: 0=exito, 2=error SUNAT.")]
 pub struct ApplyArgs {
     /// Archivo de entrada JSON/YAML con la definicion del documento
     #[arg(short = 'f', long = "file")]
@@ -51,6 +57,10 @@ pub struct ApplyArgs {
     /// Ejecutar crear + firmar sin enviar a SUNAT
     #[arg(long)]
     pub dry_run: bool,
+
+    /// Desactivar prompts interactivos (util para scripts)
+    #[arg(long)]
+    pub no_interactive: bool,
 }
 
 impl ApplyArgs {
@@ -117,6 +127,7 @@ impl ApplyArgs {
             url_perception_retention: None,
             url_despatch: None,
             beta: self.beta,
+            no_interactive: self.no_interactive,
         };
 
         let result = send_args
