@@ -10,3 +10,6 @@
 [submodule ".modules/trustify"]
 	path = .modules/trustify
 	url = https://github.com/guacsec/trustify.git
+[submodule ".modules/trustify-mcp"]
+	path = .modules/trustify-mcp
+	url = https://github.com/guacsec/trustify-mcp.git
