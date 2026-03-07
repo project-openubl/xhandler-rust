@@ -15,21 +15,21 @@ async fn invoice_guia_serie_t() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
         ],
         guias: vec![Guia {
-            tipo_documento: Catalog1::GuiaRemisionRemitente.code(),
-            serie_numero: "T001-1",
+            tipo_documento: Catalog1::GuiaRemisionRemitente.code().into(),
+            serie_numero: "T001-1".into(),
         }],
         ..invoice_base()
     };

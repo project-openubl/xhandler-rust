@@ -16,8 +16,8 @@ where
             Some(direccion) => match direccion.codigo_local {
                 None => {
                     self.set_proveedor_direccion(Direccion {
-                        codigo_local: Some("0000"),
-                        ..*direccion
+                        codigo_local: Some("0000".to_string()),
+                        ..direccion.clone()
                     });
                     Ok(true)
                 }
@@ -32,7 +32,7 @@ where
                     direccion: None,
                     urbanizacion: None,
                     ubigeo: None,
-                    codigo_local: Some("0000"),
+                    codigo_local: Some("0000".to_string()),
                 });
                 Ok(true)
             }

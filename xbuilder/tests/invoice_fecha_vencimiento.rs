@@ -17,13 +17,13 @@ async fn invoice_custom_moneda() {
         fecha_vencimiento: NaiveDate::from_ymd_opt(2022, 1, 1),
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()

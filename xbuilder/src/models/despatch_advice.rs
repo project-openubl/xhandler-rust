@@ -1,18 +1,19 @@
 use chrono::{NaiveDate, NaiveTime};
 use rust_decimal::Decimal;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::models::common::{Firmante, Proveedor};
 
 /// Guia de Remision
-#[derive(Debug, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct DespatchAdvice {
-    pub serie_numero: &'static str,
+    pub serie_numero: String,
     pub fecha_emision: Option<NaiveDate>,
     pub hora_emision: Option<NaiveTime>,
     /// Catalog1: auto-filled from serie prefix (T->"09", V->"31")
-    pub tipo_comprobante: Option<&'static str>,
-    pub observaciones: Option<&'static str>,
+    pub tipo_comprobante: Option<String>,
+    pub observaciones: Option<String>,
     pub documento_baja: Option<DespatchAdviceDocumentoBaja>,
     pub documento_relacionado: Option<DespatchAdviceDocumentoRelacionado>,
     pub firmante: Option<Firmante>,
@@ -24,87 +25,94 @@ pub struct DespatchAdvice {
 }
 
 /// Remitente (emisor de la guia)
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct Remitente {
-    pub ruc: &'static str,
-    pub razon_social: &'static str,
+    pub ruc: String,
+    pub razon_social: String,
 }
 
 /// Destinatario (receptor de la mercancia)
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct Destinatario {
-    pub tipo_documento_identidad: &'static str,
-    pub numero_documento_identidad: &'static str,
-    pub nombre: &'static str,
+    pub tipo_documento_identidad: String,
+    pub numero_documento_identidad: String,
+    pub nombre: String,
 }
 
 /// Informacion del envio
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct Envio {
     /// Catalog20: motivo de traslado
-    pub tipo_traslado: &'static str,
-    pub motivo_traslado: Option<&'static str>,
+    pub tipo_traslado: String,
+    pub motivo_traslado: Option<String>,
     pub peso_total: Decimal,
     /// Computed: peso_total formatted to 3 decimal places
     pub peso_total_formatted: Option<String>,
-    pub peso_total_unidad_medida: &'static str,
+    pub peso_total_unidad_medida: String,
     pub numero_de_bultos: Option<u32>,
     /// Catalog18: modalidad de traslado (01=publico, 02=privado)
-    pub tipo_modalidad_traslado: &'static str,
+    pub tipo_modalidad_traslado: String,
     pub fecha_traslado: NaiveDate,
     pub transbordo_programado: bool,
     pub transportista: Option<Transportista>,
-    pub numero_de_contenedor: Option<&'static str>,
-    pub codigo_de_puerto: Option<&'static str>,
+    pub numero_de_contenedor: Option<String>,
+    pub codigo_de_puerto: Option<String>,
     pub partida: Partida,
     pub destino: Destino,
 }
 
 /// Transportista
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct Transportista {
-    pub tipo_documento_identidad: &'static str,
-    pub numero_documento_identidad: &'static str,
-    pub nombre: &'static str,
-    pub placa_del_vehiculo: &'static str,
-    pub chofer_tipo_documento_identidad: &'static str,
-    pub chofer_numero_documento_identidad: &'static str,
+    pub tipo_documento_identidad: String,
+    pub numero_documento_identidad: String,
+    pub nombre: String,
+    pub placa_del_vehiculo: String,
+    pub chofer_tipo_documento_identidad: String,
+    pub chofer_numero_documento_identidad: String,
 }
 
 /// Punto de partida
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct Partida {
-    pub ubigeo: &'static str,
-    pub direccion: &'static str,
+    pub ubigeo: String,
+    pub direccion: String,
 }
 
 /// Punto de destino
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct Destino {
-    pub ubigeo: &'static str,
-    pub direccion: &'static str,
+    pub ubigeo: String,
+    pub direccion: String,
 }
 
 /// Item de la guia de remision
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct DespatchAdviceItem {
-    pub unidad_medida: &'static str,
+    pub unidad_medida: String,
     pub cantidad: Decimal,
-    pub descripcion: Option<&'static str>,
-    pub codigo: &'static str,
-    pub codigo_sunat: Option<&'static str>,
+    pub descripcion: Option<String>,
+    pub codigo: String,
+    pub codigo_sunat: Option<String>,
 }
 
 /// Documento de baja asociado
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct DespatchAdviceDocumentoBaja {
-    pub tipo_documento: &'static str,
-    pub serie_numero: &'static str,
+    pub tipo_documento: String,
+    pub serie_numero: String,
 }
 
 /// Documento relacionado
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct DespatchAdviceDocumentoRelacionado {
-    pub tipo_documento: &'static str,
-    pub serie_numero: &'static str,
+    pub tipo_documento: String,
+    pub serie_numero: String,
 }

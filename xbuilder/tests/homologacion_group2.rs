@@ -21,10 +21,10 @@ fn items_group2(
                 gratuita_codes[(i - 2) % gratuita_codes.len()]
             };
             Detalle {
-                descripcion: Box::leak(format!("Item{i}").into_boxed_str()),
+                descripcion: format!("Item{i}"),
                 cantidad: dec!(1) * rust_decimal::Decimal::from(i),
                 precio: Some(dec!(100) * rust_decimal::Decimal::from(i)),
-                igv_tipo: Some(code),
+                igv_tipo: Some(code.into()),
                 ..Default::default()
             }
         })
@@ -75,7 +75,7 @@ mod inafecto {
     #[tokio::test]
     async fn caso12_factura1_con_1_items() {
         let mut invoice = Invoice {
-            serie_numero: "FF12-1",
+            serie_numero: "FF12-1".into(),
             detalles: items_inafecto(1),
             ..invoice_base()
         };
@@ -90,7 +90,7 @@ mod inafecto {
     #[tokio::test]
     async fn caso13_factura2_con_4_items() {
         let mut invoice = Invoice {
-            serie_numero: "FF12-2",
+            serie_numero: "FF12-2".into(),
             detalles: items_inafecto(4),
             ..invoice_base()
         };
@@ -105,7 +105,7 @@ mod inafecto {
     #[tokio::test]
     async fn caso14_factura3_con_7_items() {
         let mut invoice = Invoice {
-            serie_numero: "FF12-3",
+            serie_numero: "FF12-3".into(),
             detalles: items_inafecto(7),
             ..invoice_base()
         };
@@ -120,7 +120,7 @@ mod inafecto {
     #[tokio::test]
     async fn caso15_factura4_con_5_items() {
         let mut invoice = Invoice {
-            serie_numero: "FF12-4",
+            serie_numero: "FF12-4".into(),
             detalles: items_inafecto(5),
             ..invoice_base()
         };
@@ -135,7 +135,7 @@ mod inafecto {
     #[tokio::test]
     async fn caso16_factura5_con_6_items() {
         let mut invoice = Invoice {
-            serie_numero: "FF12-5",
+            serie_numero: "FF12-5".into(),
             detalles: items_inafecto(6),
             ..invoice_base()
         };
@@ -152,9 +152,9 @@ mod inafecto {
     #[tokio::test]
     async fn caso17_nota_credito_factura1() {
         let mut credit_note = CreditNote {
-            serie_numero: "FF12-1",
-            comprobante_afectado_serie_numero: "FF12-1",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-1".into(),
+            comprobante_afectado_serie_numero: "FF12-1".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_inafecto(1),
             ..credit_note_base()
         };
@@ -169,9 +169,9 @@ mod inafecto {
     #[tokio::test]
     async fn caso18_nota_credito_factura3() {
         let mut credit_note = CreditNote {
-            serie_numero: "FF12-2",
-            comprobante_afectado_serie_numero: "FF12-3",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-2".into(),
+            comprobante_afectado_serie_numero: "FF12-3".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_inafecto(7),
             ..credit_note_base()
         };
@@ -186,9 +186,9 @@ mod inafecto {
     #[tokio::test]
     async fn caso19_nota_credito_factura5() {
         let mut credit_note = CreditNote {
-            serie_numero: "FF12-3",
-            comprobante_afectado_serie_numero: "FF12-5",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-3".into(),
+            comprobante_afectado_serie_numero: "FF12-5".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_inafecto(5),
             ..credit_note_base()
         };
@@ -205,9 +205,9 @@ mod inafecto {
     #[tokio::test]
     async fn caso20_nota_debito_factura1() {
         let mut debit_note = DebitNote {
-            serie_numero: "FF12-1",
-            comprobante_afectado_serie_numero: "FF12-1",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-1".into(),
+            comprobante_afectado_serie_numero: "FF12-1".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_inafecto(1),
             ..debit_note_base()
         };
@@ -222,9 +222,9 @@ mod inafecto {
     #[tokio::test]
     async fn caso21_nota_debito_factura3() {
         let mut debit_note = DebitNote {
-            serie_numero: "FF12-2",
-            comprobante_afectado_serie_numero: "FF12-3",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-2".into(),
+            comprobante_afectado_serie_numero: "FF12-3".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_inafecto(7),
             ..debit_note_base()
         };
@@ -239,9 +239,9 @@ mod inafecto {
     #[tokio::test]
     async fn caso22_nota_debito_factura5() {
         let mut debit_note = DebitNote {
-            serie_numero: "FF12-3",
-            comprobante_afectado_serie_numero: "FF12-5",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-3".into(),
+            comprobante_afectado_serie_numero: "FF12-5".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_inafecto(6),
             ..debit_note_base()
         };
@@ -267,7 +267,7 @@ mod exonerado {
     #[tokio::test]
     async fn caso12_factura1_con_1_items() {
         let mut invoice = Invoice {
-            serie_numero: "FF12-1",
+            serie_numero: "FF12-1".into(),
             detalles: items_exonerado(1),
             ..invoice_base()
         };
@@ -282,7 +282,7 @@ mod exonerado {
     #[tokio::test]
     async fn caso13_factura2_con_4_items() {
         let mut invoice = Invoice {
-            serie_numero: "FF12-2",
+            serie_numero: "FF12-2".into(),
             detalles: items_exonerado(4),
             ..invoice_base()
         };
@@ -297,7 +297,7 @@ mod exonerado {
     #[tokio::test]
     async fn caso14_factura3_con_7_items() {
         let mut invoice = Invoice {
-            serie_numero: "FF12-3",
+            serie_numero: "FF12-3".into(),
             detalles: items_exonerado(7),
             ..invoice_base()
         };
@@ -312,7 +312,7 @@ mod exonerado {
     #[tokio::test]
     async fn caso15_factura4_con_5_items() {
         let mut invoice = Invoice {
-            serie_numero: "FF12-4",
+            serie_numero: "FF12-4".into(),
             detalles: items_exonerado(5),
             ..invoice_base()
         };
@@ -327,7 +327,7 @@ mod exonerado {
     #[tokio::test]
     async fn caso16_factura5_con_6_items() {
         let mut invoice = Invoice {
-            serie_numero: "FF12-5",
+            serie_numero: "FF12-5".into(),
             detalles: items_exonerado(6),
             ..invoice_base()
         };
@@ -344,9 +344,9 @@ mod exonerado {
     #[tokio::test]
     async fn caso17_nota_credito_factura1() {
         let mut credit_note = CreditNote {
-            serie_numero: "FF12-1",
-            comprobante_afectado_serie_numero: "FF12-1",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-1".into(),
+            comprobante_afectado_serie_numero: "FF12-1".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_exonerado(1),
             ..credit_note_base()
         };
@@ -361,9 +361,9 @@ mod exonerado {
     #[tokio::test]
     async fn caso18_nota_credito_factura3() {
         let mut credit_note = CreditNote {
-            serie_numero: "FF12-2",
-            comprobante_afectado_serie_numero: "FF12-3",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-2".into(),
+            comprobante_afectado_serie_numero: "FF12-3".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_exonerado(7),
             ..credit_note_base()
         };
@@ -378,9 +378,9 @@ mod exonerado {
     #[tokio::test]
     async fn caso19_nota_credito_factura5() {
         let mut credit_note = CreditNote {
-            serie_numero: "FF12-3",
-            comprobante_afectado_serie_numero: "FF12-5",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-3".into(),
+            comprobante_afectado_serie_numero: "FF12-5".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_exonerado(5),
             ..credit_note_base()
         };
@@ -397,9 +397,9 @@ mod exonerado {
     #[tokio::test]
     async fn caso20_nota_debito_factura1() {
         let mut debit_note = DebitNote {
-            serie_numero: "FF12-1",
-            comprobante_afectado_serie_numero: "FF12-1",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-1".into(),
+            comprobante_afectado_serie_numero: "FF12-1".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_exonerado(1),
             ..debit_note_base()
         };
@@ -414,9 +414,9 @@ mod exonerado {
     #[tokio::test]
     async fn caso21_nota_debito_factura3() {
         let mut debit_note = DebitNote {
-            serie_numero: "FF12-2",
-            comprobante_afectado_serie_numero: "FF12-3",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-2".into(),
+            comprobante_afectado_serie_numero: "FF12-3".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_exonerado(7),
             ..debit_note_base()
         };
@@ -431,9 +431,9 @@ mod exonerado {
     #[tokio::test]
     async fn caso22_nota_debito_factura5() {
         let mut debit_note = DebitNote {
-            serie_numero: "FF12-3",
-            comprobante_afectado_serie_numero: "FF12-5",
-            sustento_descripcion: "Homologacion",
+            serie_numero: "FF12-3".into(),
+            comprobante_afectado_serie_numero: "FF12-5".into(),
+            sustento_descripcion: "Homologacion".into(),
             detalles: items_exonerado(6),
             ..debit_note_base()
         };

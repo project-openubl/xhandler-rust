@@ -14,36 +14,36 @@ impl InvoiceAnticiposGetter for Invoice {
 //
 
 pub trait AnticipoGetter {
-    fn get_tipo(&self) -> &Option<&'static str>;
-    fn get_comprobante_tipo(&self) -> &Option<&'static str>;
-    fn get_comprobante_serie_numero(&self) -> &'static str;
+    fn get_tipo(&self) -> &Option<String>;
+    fn get_comprobante_tipo(&self) -> &Option<String>;
+    fn get_comprobante_serie_numero(&self) -> &str;
 }
 
 pub trait AnticipoSetter {
-    fn set_tipo(&mut self, val: &'static str);
-    fn set_comprobante_tipo(&mut self, val: &'static str);
+    fn set_tipo(&mut self, val: &str);
+    fn set_comprobante_tipo(&mut self, val: &str);
 }
 
 impl AnticipoGetter for Anticipo {
-    fn get_tipo(&self) -> &Option<&'static str> {
+    fn get_tipo(&self) -> &Option<String> {
         &self.tipo
     }
 
-    fn get_comprobante_tipo(&self) -> &Option<&'static str> {
+    fn get_comprobante_tipo(&self) -> &Option<String> {
         &self.comprobante_tipo
     }
 
-    fn get_comprobante_serie_numero(&self) -> &'static str {
-        self.comprobante_serie_numero
+    fn get_comprobante_serie_numero(&self) -> &str {
+        &self.comprobante_serie_numero
     }
 }
 
 impl AnticipoSetter for Anticipo {
-    fn set_tipo(&mut self, val: &'static str) {
-        self.tipo = Some(val);
+    fn set_tipo(&mut self, val: &str) {
+        self.tipo = Some(val.to_string());
     }
 
-    fn set_comprobante_tipo(&mut self, val: &'static str) {
-        self.comprobante_tipo = Some(val);
+    fn set_comprobante_tipo(&mut self, val: &str) {
+        self.comprobante_tipo = Some(val.to_string());
     }
 }

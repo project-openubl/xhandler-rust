@@ -14,9 +14,9 @@ const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceMonedaTest";
 #[tokio::test]
 async fn invoice_custom_moneda() {
     let mut invoice = Invoice {
-        moneda: Some("USD"),
+        moneda: Some("USD".into()),
         detalles: vec![Detalle {
-            descripcion: "Item1",
+            descripcion: "Item1".into(),
             cantidad: Decimal::ONE,
             precio: Some(dec!(100)),
             ..Default::default()

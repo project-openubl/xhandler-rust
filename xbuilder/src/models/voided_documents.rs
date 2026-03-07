@@ -1,10 +1,11 @@
 use chrono::NaiveDate;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::models::common::{Firmante, Proveedor};
 
 /// Comunicacion de Baja
-#[derive(Debug, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct VoidedDocuments {
     pub numero: u32,
     pub fecha_emision: Option<NaiveDate>,
@@ -17,11 +18,12 @@ pub struct VoidedDocuments {
 }
 
 /// Detalle de un comprobante dado de baja
-#[derive(Clone, Debug, Serialize, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct VoidedDocumentsItem {
     /// Catalog1: auto-filled from serie prefix (F->"01", B->"03")
-    pub tipo_comprobante: Option<&'static str>,
-    pub serie: &'static str,
+    pub tipo_comprobante: Option<String>,
+    pub serie: String,
     pub numero: u32,
-    pub descripcion_sustento: &'static str,
+    pub descripcion_sustento: String,
 }

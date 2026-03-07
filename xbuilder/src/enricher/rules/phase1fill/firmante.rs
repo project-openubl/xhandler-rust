@@ -17,8 +17,8 @@ where
             Some(..) => Ok(false),
             None => {
                 let firmante = Firmante {
-                    ruc: self.get_proveedor().ruc,
-                    razon_social: self.get_proveedor().razon_social,
+                    ruc: self.get_proveedor().ruc.clone(),
+                    razon_social: self.get_proveedor().razon_social.clone(),
                 };
                 self.set_firmante(firmante);
                 Ok(true)

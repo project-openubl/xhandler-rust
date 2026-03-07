@@ -9,7 +9,7 @@ pub trait PerceptionDocumentoIdSetter {
 }
 
 pub trait PerceptionSerieGetter {
-    fn get_serie(&self) -> &'static str;
+    fn get_serie(&self) -> &str;
 }
 
 pub trait PerceptionNumeroGetter {
@@ -17,11 +17,11 @@ pub trait PerceptionNumeroGetter {
 }
 
 pub trait PerceptionMonedaGetter {
-    fn get_moneda(&self) -> &Option<&'static str>;
+    fn get_moneda(&self) -> &Option<String>;
 }
 
 pub trait PerceptionMonedaSetter {
-    fn set_moneda(&mut self, val: &'static str);
+    fn set_moneda(&mut self, val: &str);
 }
 
 impl PerceptionDocumentoIdGetter for Perception {
@@ -37,8 +37,8 @@ impl PerceptionDocumentoIdSetter for Perception {
 }
 
 impl PerceptionSerieGetter for Perception {
-    fn get_serie(&self) -> &'static str {
-        self.serie
+    fn get_serie(&self) -> &str {
+        &self.serie
     }
 }
 
@@ -49,13 +49,13 @@ impl PerceptionNumeroGetter for Perception {
 }
 
 impl PerceptionMonedaGetter for Perception {
-    fn get_moneda(&self) -> &Option<&'static str> {
+    fn get_moneda(&self) -> &Option<String> {
         &self.moneda
     }
 }
 
 impl PerceptionMonedaSetter for Perception {
-    fn set_moneda(&mut self, val: &'static str) {
-        self.moneda = Some(val);
+    fn set_moneda(&mut self, val: &str) {
+        self.moneda = Some(val.to_string());
     }
 }

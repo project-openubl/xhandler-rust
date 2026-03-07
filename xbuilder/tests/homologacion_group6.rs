@@ -15,7 +15,7 @@ const BASE: &str = "tests/resources/e2e/homologacion/Group6Test";
 fn items(n: usize) -> Vec<Detalle> {
     (1..=n)
         .map(|i| Detalle {
-            descripcion: Box::leak(format!("Item{i}").into_boxed_str()),
+            descripcion: format!("Item{i}"),
             cantidad: dec!(1) * rust_decimal::Decimal::from(i),
             precio: Some(dec!(100) * rust_decimal::Decimal::from(i)),
             ..Default::default()
@@ -29,9 +29,9 @@ fn items(n: usize) -> Vec<Detalle> {
 #[tokio::test]
 async fn caso46_factura1_con_5_items() {
     let mut invoice = Invoice {
-        serie_numero: "FF40-1",
+        serie_numero: "FF40-1".into(),
         percepcion: Some(Percepcion {
-            tipo: "51",
+            tipo: "51".into(),
             porcentaje: Some(dec!(0.02)),
             monto: None,
             monto_base: None,
@@ -49,9 +49,9 @@ async fn caso46_factura1_con_5_items() {
 #[tokio::test]
 async fn caso47_nota_credito_factura1() {
     let mut credit_note = CreditNote {
-        serie_numero: "FF40-1",
-        comprobante_afectado_serie_numero: "FF40-1",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "FF40-1".into(),
+        comprobante_afectado_serie_numero: "FF40-1".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(5),
         ..credit_note_base()
     };
@@ -66,9 +66,9 @@ async fn caso47_nota_credito_factura1() {
 #[tokio::test]
 async fn caso48_nota_debito_factura1() {
     let mut debit_note = DebitNote {
-        serie_numero: "FF40-1",
-        comprobante_afectado_serie_numero: "FF40-1",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "FF40-1".into(),
+        comprobante_afectado_serie_numero: "FF40-1".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(5),
         ..debit_note_base()
     };

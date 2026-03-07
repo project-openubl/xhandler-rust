@@ -73,7 +73,7 @@ where
                 // Anticipos
                 let total_anticipos_gravados = &self.get_anticipos().iter()
                     .filter(|e| {
-                        if let Some(tipo) = e.tipo {
+                        if let Some(tipo) = e.tipo.as_deref() {
                             if let Ok(catalog53) = Catalog53::from_code(tipo) {
                                 catalog53 == Catalog53::DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap
                             } else {
@@ -92,7 +92,7 @@ where
                         .get_descuentos()
                         .iter()
                         .fold(HashMap::new(), |mut acc, current| {
-                            if let Some(tipo) = current.tipo {
+                            if let Some(tipo) = current.tipo.as_deref() {
                                 if let Ok(catalog53) = Catalog53::from_code(tipo) {
                                     let monto = acc.get(&catalog53).unwrap_or(&Decimal::ZERO)
                                         + current.monto;

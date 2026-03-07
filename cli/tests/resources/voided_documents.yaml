@@ -1,0 +1,12 @@
+kind: VoidedDocuments
+spec:
+  numero: 1
+  fecha_emision: "2024-01-15"
+  fecha_emision_comprobantes: "2024-01-14"
+  proveedor:
+    ruc: "12345678912"
+    razon_social: "Softgreen S.A.C."
+  comprobantes:
+    - serie: "F001"
+      numero: 1
+      descripcion_sustento: "Error en el documento"

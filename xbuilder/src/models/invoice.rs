@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use chrono::{NaiveDate, NaiveTime};
 use rust_decimal::Decimal;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::models::common::{
     Anticipo, Cliente, Descuento, Detalle, Detraccion, Direccion, DocumentoRelacionado, Firmante,
@@ -10,12 +10,13 @@ use crate::models::common::{
 };
 
 /// Boleta o Factura
-#[derive(Debug, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct Invoice {
-    pub leyendas: HashMap<&'static str, &'static str>,
+    pub leyendas: HashMap<String, String>,
 
-    pub serie_numero: &'static str,
-    pub moneda: Option<&'static str>,
+    pub serie_numero: String,
+    pub moneda: Option<String>,
     pub fecha_emision: Option<NaiveDate>,
     pub hora_emision: Option<NaiveTime>,
     pub fecha_vencimiento: Option<NaiveDate>,
@@ -27,10 +28,10 @@ pub struct Invoice {
     pub ivap_tasa: Option<Decimal>,
 
     /// Catalog1
-    pub tipo_comprobante: Option<&'static str>,
+    pub tipo_comprobante: Option<String>,
 
     /// Catalog51
-    pub tipo_operacion: Option<&'static str>,
+    pub tipo_operacion: Option<String>,
 
     pub detraccion: Option<Detraccion>,
     pub percepcion: Option<Percepcion>,
@@ -49,6 +50,6 @@ pub struct Invoice {
     pub guias: Vec<Guia>,
     pub documentos_relacionados: Vec<DocumentoRelacionado>,
 
-    pub observaciones: Option<&'static str>,
-    pub orden_de_compra: Option<&'static str>,
+    pub observaciones: Option<String>,
+    pub orden_de_compra: Option<String>,
 }

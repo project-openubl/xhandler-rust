@@ -15,10 +15,10 @@ const BASE: &str = "tests/resources/e2e/homologacion/Group12Test";
 fn items(n: usize) -> Vec<Detalle> {
     (1..=n)
         .map(|i| Detalle {
-            descripcion: Box::leak(format!("Item{i}").into_boxed_str()),
+            descripcion: format!("Item{i}"),
             cantidad: dec!(1) * rust_decimal::Decimal::from(i),
             precio: Some(dec!(100) * rust_decimal::Decimal::from(i)),
-            isc_tipo: Some(Catalog8::SistemaAlValor.code()),
+            isc_tipo: Some(Catalog8::SistemaAlValor.code().into()),
             isc_tasa: Some(dec!(0.10)),
             ..Default::default()
         })
@@ -31,8 +31,8 @@ fn items(n: usize) -> Vec<Detalle> {
 #[tokio::test]
 async fn caso96_boleta1_con_3_items() {
     let mut invoice = Invoice {
-        serie_numero: "BB50-1",
-        moneda: Some("USD"),
+        serie_numero: "BB50-1".into(),
+        moneda: Some("USD".into()),
         detalles: items(3),
         ..invoice_base()
     };
@@ -45,10 +45,10 @@ async fn caso96_boleta1_con_3_items() {
 #[tokio::test]
 async fn caso97_nota_credito_boleta1() {
     let mut credit_note = CreditNote {
-        serie_numero: "BB50-1",
-        comprobante_afectado_serie_numero: "BB50-1",
-        sustento_descripcion: "Homologacion",
-        moneda: Some("USD"),
+        serie_numero: "BB50-1".into(),
+        comprobante_afectado_serie_numero: "BB50-1".into(),
+        sustento_descripcion: "Homologacion".into(),
+        moneda: Some("USD".into()),
         detalles: items(3),
         ..credit_note_base()
     };
@@ -65,10 +65,10 @@ async fn caso97_nota_credito_boleta1() {
 #[tokio::test]
 async fn caso98_nota_debito_boleta1() {
     let mut debit_note = DebitNote {
-        serie_numero: "BB50-1",
-        comprobante_afectado_serie_numero: "BB50-1",
-        sustento_descripcion: "Homologacion",
-        moneda: Some("USD"),
+        serie_numero: "BB50-1".into(),
+        comprobante_afectado_serie_numero: "BB50-1".into(),
+        sustento_descripcion: "Homologacion".into(),
+        moneda: Some("USD".into()),
         detalles: items(3),
         ..debit_note_base()
     };

@@ -18,8 +18,8 @@ where
             Some(_) => Ok(false),
             None => {
                 let firmante = Firmante {
-                    ruc: self.get_remitente().ruc,
-                    razon_social: self.get_remitente().razon_social,
+                    ruc: self.get_remitente().ruc.clone(),
+                    razon_social: self.get_remitente().razon_social.clone(),
                 };
                 self.set_firmante(firmante);
                 Ok(true)

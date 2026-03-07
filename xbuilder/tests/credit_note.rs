@@ -15,13 +15,13 @@ async fn credit_note() {
     let mut credit_note = CreditNote {
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()

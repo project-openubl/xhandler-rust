@@ -15,7 +15,7 @@ const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDescuentosTest";
 async fn invoice_anticipos() {
     let mut invoice = Invoice {
         detalles: vec![Detalle {
-            descripcion: "Item1",
+            descripcion: "Item1".into(),
             cantidad: Decimal::ONE,
             precio: Some(dec!(100)),
             ..Default::default()

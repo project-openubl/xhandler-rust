@@ -14,14 +14,14 @@ const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoicePercepcionTest";
 async fn invoice_percepcion() {
     let mut invoice = Invoice {
         percepcion: Some(Percepcion {
-            tipo: "51",
+            tipo: "51".into(),
             porcentaje: Some(dec!(0.02)),
             monto: None,
             monto_base: None,
             monto_total: None,
         }),
         detalles: vec![Detalle {
-            descripcion: "Item1",
+            descripcion: "Item1".into(),
             cantidad: dec!(4),
             precio: Some(dec!(200)),
             ..Default::default()

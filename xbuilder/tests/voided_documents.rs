@@ -17,16 +17,16 @@ async fn voided_document() {
         proveedor: proveedor_base(),
         comprobantes: vec![
             VoidedDocumentsItem {
-                tipo_comprobante: Some("01"),
-                serie: "F001",
+                tipo_comprobante: Some("01".into()),
+                serie: "F001".into(),
                 numero: 1,
-                descripcion_sustento: "Mi sustento1",
+                descripcion_sustento: "Mi sustento1".into(),
             },
             VoidedDocumentsItem {
-                tipo_comprobante: Some("01"),
-                serie: "F001",
+                tipo_comprobante: Some("01".into()),
+                serie: "F001".into(),
                 numero: 2,
-                descripcion_sustento: "Mi sustento2",
+                descripcion_sustento: "Mi sustento2".into(),
             },
         ],
         ..Default::default()
@@ -45,15 +45,15 @@ async fn voided_document_auto_generated_tipo_comprobante() {
         proveedor: proveedor_base(),
         comprobantes: vec![
             VoidedDocumentsItem {
-                serie: "F001",
+                serie: "F001".into(),
                 numero: 1,
-                descripcion_sustento: "Mi sustento1",
+                descripcion_sustento: "Mi sustento1".into(),
                 ..Default::default()
             },
             VoidedDocumentsItem {
-                serie: "F001",
+                serie: "F001".into(),
                 numero: 2,
-                descripcion_sustento: "Mi sustento2",
+                descripcion_sustento: "Mi sustento2".into(),
                 ..Default::default()
             },
         ],
@@ -76,15 +76,15 @@ async fn voided_document_auto_generated_fecha_emision() {
         proveedor: proveedor_base(),
         comprobantes: vec![
             VoidedDocumentsItem {
-                serie: "F001",
+                serie: "F001".into(),
                 numero: 1,
-                descripcion_sustento: "Mi sustento1",
+                descripcion_sustento: "Mi sustento1".into(),
                 ..Default::default()
             },
             VoidedDocumentsItem {
-                serie: "F001",
+                serie: "F001".into(),
                 numero: 2,
-                descripcion_sustento: "Mi sustento2",
+                descripcion_sustento: "Mi sustento2".into(),
                 ..Default::default()
             },
         ],

@@ -13,16 +13,16 @@ const BASE: &str = "tests/resources/e2e/renderer/creditnote/CreditNoteOrdenDeCom
 #[tokio::test]
 async fn credit_note() {
     let mut credit_note = CreditNote {
-        orden_de_compra: Some("123456"),
+        orden_de_compra: Some("123456".into()),
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()

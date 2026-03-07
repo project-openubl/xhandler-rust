@@ -22,10 +22,10 @@ where
             changed = true;
         }
 
-        let doc_moneda = *self.get_moneda();
+        let doc_moneda = self.get_moneda().clone();
         for item in self.get_comprobantes() {
             if item.comprobante.moneda.is_none() {
-                item.comprobante.moneda = doc_moneda;
+                item.comprobante.moneda = doc_moneda.clone();
                 changed = true;
             }
         }

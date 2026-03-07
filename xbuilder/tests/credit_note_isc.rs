@@ -15,15 +15,15 @@ async fn credit_note_sistema_al_valor() {
     let mut credit_note = CreditNote {
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 isc_tasa: Some(dec!(0.17)),
-                isc_tipo: Some(Catalog8::SistemaAlValor.code()),
+                isc_tipo: Some(Catalog8::SistemaAlValor.code().into()),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 ..Default::default()
@@ -41,15 +41,15 @@ async fn credit_note_aplication_al_monto_fijo() {
     let mut credit_note = CreditNote {
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 isc_tasa: Some(dec!(0.20)),
-                isc_tipo: Some(Catalog8::AplicacionAlMontoFijo.code()),
+                isc_tipo: Some(Catalog8::AplicacionAlMontoFijo.code().into()),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 ..Default::default()
@@ -71,15 +71,15 @@ async fn credit_note_sistema_de_precios_de_venta_al_publico() {
     let mut credit_note = CreditNote {
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 isc_tasa: Some(dec!(0.10)),
-                isc_tipo: Some(Catalog8::SistemaDePreciosDeVentaAlPublico.code()),
+                isc_tipo: Some(Catalog8::SistemaDePreciosDeVentaAlPublico.code().into()),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 ..Default::default()

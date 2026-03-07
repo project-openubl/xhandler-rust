@@ -15,23 +15,25 @@ async fn invoice_documento_relacionado_y_orden_de_compra() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
         ],
         documentos_relacionados: vec![DocumentoRelacionado {
-            serie_numero: "B111-1",
-            tipo_documento: Catalog12::DeclaracionSimplificadaDeImportacion.code(),
+            serie_numero: "B111-1".into(),
+            tipo_documento: Catalog12::DeclaracionSimplificadaDeImportacion
+                .code()
+                .into(),
         }],
-        orden_de_compra: Some("123456"),
+        orden_de_compra: Some("123456".into()),
         ..invoice_base()
     };
 

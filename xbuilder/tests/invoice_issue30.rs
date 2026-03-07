@@ -14,12 +14,12 @@ const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceIssue30Test";
 async fn invoice_issue30() {
     let mut invoice = Invoice {
         proveedor: Proveedor {
-            ruc: "12345678912",
-            razon_social: "Project OpenUBL S.A.C.",
+            ruc: "12345678912".into(),
+            razon_social: "Project OpenUBL S.A.C.".into(),
             ..proveedor_base()
         },
         detalles: vec![Detalle {
-            descripcion: "Item1",
+            descripcion: "Item1".into(),
             cantidad: dec!(10),
             precio: Some(dec!(6.68)),
             ..Default::default()

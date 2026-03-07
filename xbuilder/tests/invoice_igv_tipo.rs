@@ -38,10 +38,10 @@ async fn invoice_precio_unitario() {
     for catalog7 in CATALOG7_VARIANTS {
         let mut invoice = Invoice {
             detalles: vec![Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: Decimal::ONE,
                 precio: Some(dec!(100)),
-                igv_tipo: Some(catalog7.code()),
+                igv_tipo: Some(catalog7.code().into()),
                 ..Default::default()
             }],
             ..invoice_base()

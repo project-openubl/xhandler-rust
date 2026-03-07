@@ -13,16 +13,16 @@ const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceOrdeDeCompraTest
 #[tokio::test]
 async fn invoice_custom_moneda() {
     let mut invoice = Invoice {
-        orden_de_compra: Some("123456"),
+        orden_de_compra: Some("123456".into()),
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(2),
                 precio: Some(dec!(100)),
                 ..Default::default()

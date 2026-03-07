@@ -7,3 +7,6 @@
 [submodule ".modules/xhandler-java"]
 	path = .modules/xhandler-java
 	url = https://github.com/project-openubl/xhandler-java.git
+[submodule ".modules/trustify"]
+	path = .modules/trustify
+	url = https://github.com/guacsec/trustify.git

@@ -15,8 +15,8 @@ where
         for item in self.get_comprobantes() {
             if item.tipo_comprobante.is_none() {
                 item.tipo_comprobante = match item.serie.chars().next() {
-                    Some('F') | Some('f') => Some("01"),
-                    Some('B') | Some('b') => Some("03"),
+                    Some('F') | Some('f') => Some("01".to_string()),
+                    Some('B') | Some('b') => Some("03".to_string()),
                     _ => None,
                 };
                 if item.tipo_comprobante.is_some() {

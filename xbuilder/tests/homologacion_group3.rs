@@ -29,10 +29,10 @@ const GRATUITA_CODES: &[&str] = &[
 fn items(n: usize) -> Vec<Detalle> {
     (1..=n)
         .map(|i| Detalle {
-            descripcion: Box::leak(format!("Item{i}").into_boxed_str()),
+            descripcion: format!("Item{i}"),
             cantidad: dec!(1) * rust_decimal::Decimal::from(i),
             precio: Some(dec!(100) * rust_decimal::Decimal::from(i)),
-            igv_tipo: Some(GRATUITA_CODES[(i - 1) % GRATUITA_CODES.len()]),
+            igv_tipo: Some(GRATUITA_CODES[(i - 1) % GRATUITA_CODES.len()].into()),
             ..Default::default()
         })
         .collect()
@@ -44,7 +44,7 @@ fn items(n: usize) -> Vec<Detalle> {
 #[tokio::test]
 async fn caso23_factura1_con_7_items() {
     let mut invoice = Invoice {
-        serie_numero: "FF13-1",
+        serie_numero: "FF13-1".into(),
         detalles: items(7),
         ..invoice_base()
     };
@@ -55,7 +55,7 @@ async fn caso23_factura1_con_7_items() {
 #[tokio::test]
 async fn caso24_factura2_con_2_items() {
     let mut invoice = Invoice {
-        serie_numero: "FF13-2",
+        serie_numero: "FF13-2".into(),
         detalles: items(2),
         ..invoice_base()
     };
@@ -66,7 +66,7 @@ async fn caso24_factura2_con_2_items() {
 #[tokio::test]
 async fn caso25_factura3_con_5_items() {
     let mut invoice = Invoice {
-        serie_numero: "FF13-3",
+        serie_numero: "FF13-3".into(),
         detalles: items(5),
         ..invoice_base()
     };
@@ -77,7 +77,7 @@ async fn caso25_factura3_con_5_items() {
 #[tokio::test]
 async fn caso26_factura4_con_4_items() {
     let mut invoice = Invoice {
-        serie_numero: "FF13-4",
+        serie_numero: "FF13-4".into(),
         detalles: items(4),
         ..invoice_base()
     };
@@ -88,7 +88,7 @@ async fn caso26_factura4_con_4_items() {
 #[tokio::test]
 async fn caso27_factura5_con_3_items() {
     let mut invoice = Invoice {
-        serie_numero: "FF13-5",
+        serie_numero: "FF13-5".into(),
         detalles: items(3),
         ..invoice_base()
     };
@@ -101,9 +101,9 @@ async fn caso27_factura5_con_3_items() {
 #[tokio::test]
 async fn caso28_nota_credito_factura2() {
     let mut credit_note = CreditNote {
-        serie_numero: "FF13-1",
-        comprobante_afectado_serie_numero: "FF13-2",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "FF13-1".into(),
+        comprobante_afectado_serie_numero: "FF13-2".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(2),
         ..credit_note_base()
     };
@@ -118,9 +118,9 @@ async fn caso28_nota_credito_factura2() {
 #[tokio::test]
 async fn caso29_nota_credito_factura3() {
     let mut credit_note = CreditNote {
-        serie_numero: "FF13-2",
-        comprobante_afectado_serie_numero: "FF13-3",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "FF13-2".into(),
+        comprobante_afectado_serie_numero: "FF13-3".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(5),
         ..credit_note_base()
     };
@@ -137,9 +137,9 @@ async fn caso29_nota_credito_factura3() {
 #[tokio::test]
 async fn caso30_nota_debito_factura2() {
     let mut debit_note = DebitNote {
-        serie_numero: "FF13-1",
-        comprobante_afectado_serie_numero: "FF13-2",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "FF13-1".into(),
+        comprobante_afectado_serie_numero: "FF13-2".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(2),
         ..debit_note_base()
     };
@@ -154,9 +154,9 @@ async fn caso30_nota_debito_factura2() {
 #[tokio::test]
 async fn caso31_nota_debito_factura3() {
     let mut debit_note = DebitNote {
-        serie_numero: "FF13-2",
-        comprobante_afectado_serie_numero: "FF13-3",
-        sustento_descripcion: "Homologacion",
+        serie_numero: "FF13-2".into(),
+        comprobante_afectado_serie_numero: "FF13-3".into(),
+        sustento_descripcion: "Homologacion".into(),
         detalles: items(5),
         ..debit_note_base()
     };

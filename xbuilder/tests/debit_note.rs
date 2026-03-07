@@ -15,13 +15,13 @@ async fn debit_note() {
     let mut debit_note = DebitNote {
         detalles: vec![
             Detalle {
-                descripcion: "Item1",
+                descripcion: "Item1".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()
             },
             Detalle {
-                descripcion: "Item2",
+                descripcion: "Item2".into(),
                 cantidad: dec!(10),
                 precio: Some(dec!(100)),
                 ..Default::default()

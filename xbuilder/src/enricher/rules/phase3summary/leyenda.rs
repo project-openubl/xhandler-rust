@@ -8,7 +8,7 @@ pub trait LeyendaIVAPSummaryRule {
     fn summary(&mut self) -> Result<bool>;
 }
 
-fn insert_leyenda<T>(obj: &mut T, code: &'static str, label: &'static str) -> bool
+fn insert_leyenda<T>(obj: &mut T, code: &str, label: &str) -> bool
 where
     T: LeyendasGetter + LeyendasSetter,
 {
@@ -28,7 +28,7 @@ where
         if self
             .get_detalles()
             .iter()
-            .any(|e| e.igv_tipo.unwrap_or("") == Catalog7::GravadoIvap.code())
+            .any(|e| e.igv_tipo.as_deref().unwrap_or("") == Catalog7::GravadoIvap.code())
         {
             Ok(insert_leyenda(
                 self,

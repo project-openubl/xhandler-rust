@@ -53,7 +53,7 @@ pub fn defaults_base() -> Defaults {
 #[allow(dead_code)]
 pub fn invoice_base() -> Invoice {
     Invoice {
-        serie_numero: "F001-1",
+        serie_numero: "F001-1".into(),
         proveedor: proveedor_base(),
         cliente: cliente_base(),
         ..Default::default()
@@ -63,9 +63,9 @@ pub fn invoice_base() -> Invoice {
 #[allow(dead_code)]
 pub fn credit_note_base() -> CreditNote {
     CreditNote {
-        serie_numero: "FC01-1",
-        comprobante_afectado_serie_numero: "F001-1",
-        sustento_descripcion: "mi sustento",
+        serie_numero: "FC01-1".into(),
+        comprobante_afectado_serie_numero: "F001-1".into(),
+        sustento_descripcion: "mi sustento".into(),
         proveedor: proveedor_base(),
         cliente: cliente_base(),
         ..Default::default()
@@ -75,9 +75,9 @@ pub fn credit_note_base() -> CreditNote {
 #[allow(dead_code)]
 pub fn debit_note_base() -> DebitNote {
     DebitNote {
-        serie_numero: "FD01-1",
-        comprobante_afectado_serie_numero: "F001-1",
-        sustento_descripcion: "mi sustento",
+        serie_numero: "FD01-1".into(),
+        comprobante_afectado_serie_numero: "F001-1".into(),
+        sustento_descripcion: "mi sustento".into(),
         proveedor: proveedor_base(),
         cliente: cliente_base(),
         ..Default::default()
@@ -86,17 +86,17 @@ pub fn debit_note_base() -> DebitNote {
 
 pub fn proveedor_base() -> Proveedor {
     Proveedor {
-        ruc: "12345678912",
-        razon_social: "Softgreen S.A.C.",
+        ruc: "12345678912".into(),
+        razon_social: "Softgreen S.A.C.".into(),
         ..Default::default()
     }
 }
 
 pub fn cliente_base() -> Cliente {
     Cliente {
-        tipo_documento_identidad: Catalog6::RUC.code(),
-        numero_documento_identidad: "12121212121",
-        nombre: "Carlos Feria",
+        tipo_documento_identidad: Catalog6::RUC.code().into(),
+        numero_documento_identidad: "12121212121".into(),
+        nombre: "Carlos Feria".into(),
         ..Default::default()
     }
 }

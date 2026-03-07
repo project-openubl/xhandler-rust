@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use chrono::NaiveDate;
 use rust_decimal::Decimal;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::models::common::{
     Cliente, Detalle, DocumentoRelacionado, Firmante, Guia, Proveedor, TotalImporteNote,
@@ -10,12 +10,13 @@ use crate::models::common::{
 };
 
 /// Nota de credito
-#[derive(Debug, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
 pub struct CreditNote {
-    pub leyendas: HashMap<&'static str, &'static str>,
+    pub leyendas: HashMap<String, String>,
 
-    pub serie_numero: &'static str,
-    pub moneda: Option<&'static str>,
+    pub serie_numero: String,
+    pub moneda: Option<String>,
     pub fecha_emision: Option<NaiveDate>,
     pub proveedor: Proveedor,
     pub cliente: Cliente,
@@ -25,11 +26,11 @@ pub struct CreditNote {
     pub ivap_tasa: Option<Decimal>,
 
     /// Catalog9
-    pub tipo_nota: Option<&'static str>,
-    pub comprobante_afectado_serie_numero: &'static str,
+    pub tipo_nota: Option<String>,
+    pub comprobante_afectado_serie_numero: String,
     /// Catalog1
-    pub comprobante_afectado_tipo: Option<&'static str>,
-    pub sustento_descripcion: &'static str,
+    pub comprobante_afectado_tipo: Option<String>,
+    pub sustento_descripcion: String,
 
     pub detalles: Vec<Detalle>,
 
@@ -39,5 +40,5 @@ pub struct CreditNote {
     pub guias: Vec<Guia>,
     pub documentos_relacionados: Vec<DocumentoRelacionado>,
 
-    pub orden_de_compra: Option<&'static str>,
+    pub orden_de_compra: Option<String>,
 }

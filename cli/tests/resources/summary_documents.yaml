@@ -1,0 +1,22 @@
+kind: SummaryDocuments
+spec:
+  numero: 1
+  fecha_emision: "2024-01-15"
+  fecha_emision_comprobantes: "2024-01-14"
+  proveedor:
+    ruc: "12345678912"
+    razon_social: "Softgreen S.A.C."
+  comprobantes:
+    - tipo_operacion: "1"
+      comprobante:
+        tipo_comprobante: "03"
+        serie_numero: "B001-1"
+        cliente:
+          tipo_documento_identidad: "1"
+          numero_documento_identidad: "12345678"
+        valor_venta:
+          importe_total: 118
+          gravado: 100
+        impuestos:
+          igv: 18
+          igv_tasa: 18
