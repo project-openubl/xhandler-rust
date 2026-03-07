@@ -15,7 +15,7 @@ pub struct ApplyArgs {
     #[arg(short = 'f', long = "file")]
     pub input_file: String,
 
-    /// Output file for CDR XML response
+    /// Output file for CDR zip response. Defaults to <input_file>.cdr.zip
     #[arg(short = 'o', long = "output")]
     pub output_file: Option<String>,
 
@@ -43,11 +43,11 @@ pub struct ApplyArgs {
     #[arg(long)]
     pub beta: bool,
 
-    /// Save intermediate unsigned XML to file
-    #[arg(long = "save-xml")]
+    /// Save unsigned XML. Defaults to <input_file>.unsigned.xml
+    #[arg(long = "save-xml", num_args = 0..=1, default_missing_value = "")]
     pub save_xml: Option<String>,
 
-    /// Save intermediate signed XML to file
+    /// Signed XML output path. Defaults to <input_file>.signed.xml
     #[arg(long = "save-signed-xml")]
     pub save_signed_xml: Option<String>,
 
@@ -58,6 +58,19 @@ pub struct ApplyArgs {
 
 impl ApplyArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
+        // Resolve output paths
+        let unsigned_path = self.save_xml.as_ref().map(|p| {
+            if p.is_empty() {
+                format!("{}.unsigned.xml", self.input_file)
+            } else {
+                p.clone()
+            }
+        });
+        let signed_path = self
+            .save_signed_xml
+            .clone()
+            .unwrap_or_else(|| format!("{}.signed.xml", self.input_file));
+
         // Step 1: Create XML
         let create_args = CreateArgs {
             input_file: self.input_file.clone(),
@@ -110,7 +123,7 @@ impl ApplyArgs {
             }
         };
 
-        if let Some(path) = &self.save_xml {
+        if let Some(path) = &unsigned_path {
             std::fs::write(path, &xml)?;
         }
 
@@ -130,18 +143,14 @@ impl ApplyArgs {
             )?,
         )?;
 
-        if let Some(path) = &self.save_signed_xml {
-            std::fs::write(path, &signed_xml)?;
-        }
+        std::fs::write(&signed_path, &signed_xml)?;
 
         if self.dry_run {
-            match &self.save_signed_xml {
-                Some(_) => {} // already saved
-                None => {
-                    let output = String::from_utf8(signed_xml)?;
-                    print!("{output}");
-                }
-            }
+            let output = serde_json::json!({
+                "unsigned_xml": unsigned_path,
+                "signed_xml": signed_path,
+            });
+            println!("{}", serde_json::to_string_pretty(&output)?);
             return Ok(ExitCode::SUCCESS);
         }
 
@@ -170,13 +179,19 @@ impl ApplyArgs {
 
         match result.response {
             SendFileAggregatedResponse::Cdr(cdr_base64, metadata) => {
-                if let Some(path) = &self.output_file {
-                    use base64::Engine;
-                    let cdr_bytes =
-                        base64::engine::general_purpose::STANDARD.decode(&cdr_base64)?;
-                    std::fs::write(path, cdr_bytes)?;
-                }
+                let cdr_path = self
+                    .output_file
+                    .clone()
+                    .unwrap_or_else(|| format!("{}.cdr.zip", self.input_file));
+
+                use base64::Engine;
+                let cdr_bytes = base64::engine::general_purpose::STANDARD.decode(&cdr_base64)?;
+                std::fs::write(&cdr_path, cdr_bytes)?;
+
                 let output = serde_json::json!({
+                    "unsigned_xml": unsigned_path,
+                    "signed_xml": signed_path,
+                    "cdr": cdr_path,
                     "response_code": metadata.response_code,
                     "description": metadata.description,
                     "notes": metadata.notes,
@@ -185,12 +200,18 @@ impl ApplyArgs {
                 Ok(ExitCode::SUCCESS)
             }
             SendFileAggregatedResponse::Ticket(ticket) => {
-                let output = serde_json::json!({ "ticket": ticket });
+                let output = serde_json::json!({
+                    "unsigned_xml": unsigned_path,
+                    "signed_xml": signed_path,
+                    "ticket": ticket,
+                });
                 println!("{}", serde_json::to_string_pretty(&output)?);
                 Ok(ExitCode::SUCCESS)
             }
             SendFileAggregatedResponse::Error(error) => {
                 let output = serde_json::json!({
+                    "unsigned_xml": unsigned_path,
+                    "signed_xml": signed_path,
                     "code": error.code,
                     "message": error.message,
                 });
