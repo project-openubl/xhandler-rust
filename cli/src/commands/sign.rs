@@ -54,17 +54,10 @@ impl SignArgs {
     }
 
     pub fn sign_xml(&self, xml_content: &str, key_pair: &RsaKeyPair) -> anyhow::Result<Vec<u8>> {
-        // Write XML to a temp file for XSigner (it reads from file)
-        let temp_dir = std::env::temp_dir();
-        let temp_path = temp_dir.join("openubl_sign_input.xml");
-        std::fs::write(&temp_path, xml_content)?;
-
-        let signer = XSigner::from_file(temp_path.to_str().unwrap())?;
+        let signer = XSigner {
+            xml_document: xml_content.to_string(),
+        };
         let signed = signer.sign(key_pair)?;
-
-        // Clean up temp file
-        let _ = std::fs::remove_file(&temp_path);
-
         Ok(signed)
     }
 }
