@@ -6,6 +6,7 @@ members = [
     "xsigner",
     "xhandler",
     "cli",
+    "desktop/src-tauri",
 ]
 
 [workspace.package]

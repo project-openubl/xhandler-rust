@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/niclaslindstedt/tauri-config-schema/main/schema/v2.json",
+  "productName": "OpenUBL",
+  "version": "0.1.0",
+  "identifier": "io.openubl.desktop",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "OpenUBL - Facturacion Electronica",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "plugins": {}
+}
