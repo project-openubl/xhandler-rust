@@ -1,3 +1,8 @@
+export interface Ref {
+  id: number;
+  name: string;
+}
+
 export interface Credentials {
   id: number;
   name: string;
