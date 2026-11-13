@@ -7,6 +7,7 @@ use crate::catalogs::{Catalog5, Catalog53, Catalog7, FromCode};
 use crate::enricher::bounds::detalle::DetallesGetter;
 use crate::enricher::bounds::igv::IgvTasaGetter;
 use crate::enricher::bounds::invoice::anticipos::InvoiceAnticiposGetter;
+use crate::enricher::bounds::invoice::cargos::InvoiceCargosGetter;
 use crate::enricher::bounds::invoice::descuentos::InvoiceDescuentosGetter;
 use crate::enricher::bounds::invoice::total_importe::{
     InvoiceTotalImporteGetter, InvoiceTotalImporteSetter,
@@ -23,6 +24,7 @@ where
         + InvoiceTotalImporteSetter
         + DetallesGetter
         + InvoiceDescuentosGetter
+        + InvoiceCargosGetter
         + InvoiceAnticiposGetter
         + IgvTasaGetter,
 {
@@ -104,20 +106,41 @@ where
                     Decimal::ZERO
                 };
 
+                // Cargos
+                let igv_factor = self.get_igv_tasa().unwrap_or(Decimal::ZERO) + Decimal::ONE;
+                let cargos = self.get_cargos();
+                let cargos_que_afectan_base_imponible_sin_impuestos: Decimal = cargos
+                    .iter()
+                    .filter(|cargo| cargo.afecta_base_imponible())
+                    .map(|cargo| cargo.monto)
+                    .sum();
+                let cargos_que_no_afectan_base_imponible: Decimal = cargos
+                    .iter()
+                    .filter(|cargo| !cargo.afecta_base_imponible())
+                    .map(|cargo| cargo.monto)
+                    .sum();
+                let cargos_que_afectan_base_imponible_con_impuestos =
+                    cargos_que_afectan_base_imponible_sin_impuestos * igv_factor;
+
                 //
-                let importe_sin_impuestos =
-                    importe_sin_impuestos - descuentos_que_afectan_base_imponible_sin_impuestos;
-                let importe_con_impuestos =
-                    importe_con_impuestos - descuentos_que_afectan_base_imponible_con_impuestos;
+                let importe_sin_impuestos = importe_sin_impuestos
+                    - descuentos_que_afectan_base_imponible_sin_impuestos
+                    + cargos_que_afectan_base_imponible_sin_impuestos;
+                let importe_con_impuestos = importe_con_impuestos
+                    - descuentos_que_afectan_base_imponible_con_impuestos
+                    + cargos_que_afectan_base_imponible_con_impuestos;
                 let importe_total = importe_total
                     - descuentos_que_afectan_base_imponible_con_impuestos
-                    - descuentos_que_no_afectan_base_imponible_sin_impuestos;
+                    - descuentos_que_no_afectan_base_imponible_sin_impuestos
+                    + cargos_que_afectan_base_imponible_con_impuestos
+                    + cargos_que_no_afectan_base_imponible;
 
                 //
                 self.set_total_importe(TotalImporteInvoice {
                     importe_sin_impuestos,
                     importe_con_impuestos,
                     descuentos: descuentos_que_no_afectan_base_imponible_sin_impuestos,
+                    cargos: cargos_que_no_afectan_base_imponible,
                     anticipos,
                     importe: importe_total,
                 });

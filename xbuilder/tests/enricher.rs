@@ -11,7 +11,7 @@ use crate::common::defaults_base;
 mod common;
 
 fn enrich(mut invoice: Invoice) -> Invoice {
-    invoice.enrich(&defaults_base());
+    invoice.enrich(&defaults_base()).expect("Could not enrich");
     invoice
 }
 
@@ -366,4 +366,57 @@ fn dont_enrich_total_impuestos() {
         ..Default::default()
     });
     assert_eq!(detalle.total_impuestos, Some(dec!(999)));
+}
+
+// Invalid catalog codes (xhandler-java throws on them)
+
+#[test]
+fn invalid_igv_tipo_is_an_error() {
+    let mut invoice = Invoice {
+        detalles: vec![Detalle {
+            igv_tipo: Some("99".into()),
+            ..Default::default()
+        }],
+        ..Default::default()
+    };
+    let error = invoice.enrich(&defaults_base()).unwrap_err();
+    assert_eq!(
+        error.to_string(),
+        "detalles[0].igv_tipo: 99 is not a valid Catalog7"
+    );
+}
+
+#[test]
+fn invalid_cliente_tipo_documento_identidad_is_an_error() {
+    let mut invoice = Invoice::default();
+    invoice.cliente.tipo_documento_identidad = "PASAPORTE_X".into();
+    let error = invoice.enrich(&defaults_base()).unwrap_err();
+    assert_eq!(
+        error.to_string(),
+        "cliente.tipo_documento_identidad: PASAPORTE_X is not a valid Catalog6"
+    );
+}
+
+#[test]
+fn invalid_tipo_nota_is_an_error() {
+    let mut credit_note = CreditNote {
+        tipo_nota: Some("99".into()),
+        ..Default::default()
+    };
+    let error = credit_note.enrich(&defaults_base()).unwrap_err();
+    assert_eq!(error.to_string(), "tipo_nota: 99 is not a valid Catalog9");
+}
+
+#[test]
+fn cargo_tipo_by_name() {
+    let invoice = enrich(Invoice {
+        cargos: vec![Cargo {
+            tipo: "CARGOS_GLOBALES_QUE_AFECTAN_BASE_IMPONIBLE_IGV_IVAP".into(),
+            monto: Decimal::TEN,
+            monto_base: None,
+            factor: None,
+        }],
+        ..Default::default()
+    });
+    assert_eq!(invoice.cargos[0].tipo, "49");
 }

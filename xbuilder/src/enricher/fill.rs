@@ -7,6 +7,7 @@ use crate::enricher::rules::phase1fill::firmante::FirmanteFillRule;
 use crate::enricher::rules::phase1fill::icb_tasa::IcbTasaFillRule;
 use crate::enricher::rules::phase1fill::igv_tasa::IgvTasaFillRule;
 use crate::enricher::rules::phase1fill::invoice::anticipos::InvoiceAnticiposFillRule;
+use crate::enricher::rules::phase1fill::invoice::cargos::InvoiceCargosFillRule;
 use crate::enricher::rules::phase1fill::invoice::descuentos::InvoiceDescuentosFillRule;
 use crate::enricher::rules::phase1fill::invoice::forma_de_pago::{
     InvoiceFormaDePagoFillRule, InvoiceFormaDePagoTipoRule, InvoiceFormaDePagoTotalRule,
@@ -169,6 +170,7 @@ where
 impl<T> FillInvoice for T
 where
     T: InvoiceAnticiposFillRule
+        + InvoiceCargosFillRule
         + InvoiceDescuentosFillRule
         + InvoiceFormaDePagoFillRule
         + InvoiceFormaDePagoTotalRule
@@ -185,6 +187,7 @@ where
         while changed {
             let results = [
                 InvoiceAnticiposFillRule::fill(self).unwrap_or_default(),
+                InvoiceCargosFillRule::fill(self).unwrap_or_default(),
                 InvoiceDescuentosFillRule::fill(self).unwrap_or_default(),
                 InvoiceFormaDePagoFillRule::fill(self).unwrap_or_default(),
                 InvoiceFormaDePagoTotalRule::fill(self).unwrap_or_default(),

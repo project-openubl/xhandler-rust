@@ -49,6 +49,77 @@
         </cac:DeliveryLocation>
     </cac:Delivery>
     {%- endif %}
+    {%- if guia_embebida %}
+    {#- Explicit StreetName addresses: with AddressLine, SUNAT reads this
+        Delivery as an itinerant sale and asks for legend 2005 (4266) #}
+    <cac:Delivery>
+        <cac:DeliveryLocation>
+            <cac:Address>
+                <cbc:ID>{{guia_embebida.destino.ubigeo}}</cbc:ID>
+                <cbc:StreetName>{{guia_embebida.destino.direccion}}</cbc:StreetName>
+                {%- if guia_embebida.destino.urbanizacion %}
+                <cbc:CitySubdivisionName>{{guia_embebida.destino.urbanizacion}}</cbc:CitySubdivisionName>
+                {%- endif %}
+                <cbc:CityName>{{guia_embebida.destino.provincia}}</cbc:CityName>
+                <cbc:CountrySubentity>{{guia_embebida.destino.departamento}}</cbc:CountrySubentity>
+                <cbc:District>{{guia_embebida.destino.distrito}}</cbc:District>
+                <cac:Country>
+                    <cbc:IdentificationCode>{{guia_embebida.destino.codigo_pais}}</cbc:IdentificationCode>
+                </cac:Country>
+            </cac:Address>
+        </cac:DeliveryLocation>
+        <cac:Despatch>
+            <cac:DespatchAddress>
+                <cbc:ID>{{guia_embebida.partida.ubigeo}}</cbc:ID>
+                <cbc:StreetName>{{guia_embebida.partida.direccion}}</cbc:StreetName>
+                {%- if guia_embebida.partida.urbanizacion %}
+                <cbc:CitySubdivisionName>{{guia_embebida.partida.urbanizacion}}</cbc:CitySubdivisionName>
+                {%- endif %}
+                <cbc:CityName>{{guia_embebida.partida.provincia}}</cbc:CityName>
+                <cbc:CountrySubentity>{{guia_embebida.partida.departamento}}</cbc:CountrySubentity>
+                <cbc:District>{{guia_embebida.partida.distrito}}</cbc:District>
+                <cac:Country>
+                    <cbc:IdentificationCode>{{guia_embebida.partida.codigo_pais}}</cbc:IdentificationCode>
+                </cac:Country>
+            </cac:DespatchAddress>
+        </cac:Despatch>
+        <cac:Shipment>
+            <cbc:ID>1</cbc:ID>
+            <cbc:GrossWeightMeasure unitCode="{{guia_embebida.peso_bruto_unidad_medida}}">{{guia_embebida.peso_bruto}}</cbc:GrossWeightMeasure>
+            <cac:ShipmentStage>
+                <cbc:TransportModeCode>{{guia_embebida.tipo_modalidad_traslado}}</cbc:TransportModeCode>
+                <cac:TransitPeriod>
+                    <cbc:StartDate>{{fecha_emision}}</cbc:StartDate>
+                </cac:TransitPeriod>
+                <cac:CarrierParty>
+                    <cac:PartyIdentification>
+                        <cbc:ID schemeID="{{guia_embebida.transportista.tipo_documento_identidad}}">{{guia_embebida.transportista.numero_documento_identidad}}</cbc:ID>
+                    </cac:PartyIdentification>
+                    <cac:PartyName>
+                        <cbc:Name><![CDATA[{{guia_embebida.transportista.nombre | cdata | safe}}]]></cbc:Name>
+                    </cac:PartyName>
+                </cac:CarrierParty>
+                <cac:DriverPerson>
+                    <cbc:ID schemeID="1">{{guia_embebida.licencia}}</cbc:ID>
+                </cac:DriverPerson>
+            </cac:ShipmentStage>
+            <cac:Delivery>
+                <cac:DeliveryAddress>
+                    <cbc:ID>{{guia_embebida.destino.ubigeo}}</cbc:ID>
+                    <cbc:StreetName>{{guia_embebida.destino.direccion}}</cbc:StreetName>
+                    <cac:Country>
+                        <cbc:IdentificationCode>{{guia_embebida.destino.codigo_pais}}</cbc:IdentificationCode>
+                    </cac:Country>
+                </cac:DeliveryAddress>
+            </cac:Delivery>
+            <cac:TransportHandlingUnit>
+                <cac:TransportEquipment>
+                    <cbc:ID>{{guia_embebida.placa}}</cbc:ID>
+                </cac:TransportEquipment>
+            </cac:TransportHandlingUnit>
+        </cac:Shipment>
+    </cac:Delivery>
+    {%- endif %}
     {%- if detraccion %}
     <cac:PaymentMeans>
         <cbc:ID>Detraccion</cbc:ID>
@@ -86,6 +157,17 @@
         <cbc:BaseAmount currencyID="{{moneda}}">{{it.monto}}</cbc:BaseAmount>
     </cac:AllowanceCharge>
     {%- endfor %}
+    {%- for it in cargos %}
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>{{it.tipo}}</cbc:AllowanceChargeReasonCode>
+        {%- if it.factor %}
+        <cbc:MultiplierFactorNumeric>{{it.factor | round_decimal}}</cbc:MultiplierFactorNumeric>
+        {%- endif %}
+        <cbc:Amount currencyID="{{moneda}}">{{it.monto | round_decimal}}</cbc:Amount>
+        <cbc:BaseAmount currencyID="{{moneda}}">{{it.monto_base | default(value=it.monto) | round_decimal}}</cbc:BaseAmount>
+    </cac:AllowanceCharge>
+    {%- endfor %}
     {%- for it in descuentos %}
     <cac:AllowanceCharge>
         <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
@@ -111,6 +193,9 @@
         <cbc:LineExtensionAmount currencyID="{{moneda}}">{{total_importe.importe_sin_impuestos | round_decimal}}</cbc:LineExtensionAmount>
         <cbc:TaxInclusiveAmount currencyID="{{moneda}}">{{total_importe.importe_con_impuestos | round_decimal}}</cbc:TaxInclusiveAmount>
         <cbc:AllowanceTotalAmount currencyID="{{moneda}}">{{total_importe.descuentos}}</cbc:AllowanceTotalAmount>
+        {%- if total_importe.cargos is gt0 %}
+        <cbc:ChargeTotalAmount currencyID="{{moneda}}">{{total_importe.cargos | round_decimal}}</cbc:ChargeTotalAmount>
+        {%- endif %}
         <cbc:PrepaidAmount currencyID="{{moneda}}">{{total_importe.anticipos}}</cbc:PrepaidAmount>
         <cbc:PayableAmount currencyID="{{moneda}}">{{total_importe.importe | round_decimal}}</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>

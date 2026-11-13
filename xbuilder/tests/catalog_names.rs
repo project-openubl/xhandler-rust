@@ -34,7 +34,7 @@ fn render_invoice(
         ..invoice_base()
     };
     invoice.cliente.tipo_documento_identidad = cliente_tipo.into();
-    invoice.enrich(&defaults_base());
+    invoice.enrich(&defaults_base()).expect("Could not enrich");
     invoice.render().expect("Could not render invoice")
 }
 
@@ -66,7 +66,9 @@ fn credit_note_accepts_catalog_names() {
             }],
             ..credit_note_base()
         };
-        credit_note.enrich(&defaults_base());
+        credit_note
+            .enrich(&defaults_base())
+            .expect("Could not enrich");
         credit_note.render().expect("Could not render credit note")
     };
 
@@ -86,7 +88,7 @@ fn voided_documents_fill_tipo_comprobante_from_serie() {
             .collect(),
         ..Default::default()
     };
-    doc.enrich(&defaults_base());
+    doc.enrich(&defaults_base()).expect("Could not enrich");
 
     let tipos: Vec<_> = doc
         .comprobantes
@@ -105,7 +107,7 @@ fn summary_documents_accept_tipo_operacion_name() {
         }],
         ..Default::default()
     };
-    doc.enrich(&defaults_base());
+    doc.enrich(&defaults_base()).expect("Could not enrich");
 
     assert_eq!(doc.comprobantes[0].tipo_operacion, "1");
 }

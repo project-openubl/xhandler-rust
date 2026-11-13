@@ -42,39 +42,39 @@ pub fn create_xml(input_file: &str, format: Option<&str>) -> anyhow::Result<Stri
 
     let xml = match doc {
         DocumentInput::Invoice { mut spec } => {
-            spec.enrich(&defaults);
+            spec.enrich(&defaults)?;
             spec.render()?
         }
         DocumentInput::CreditNote { mut spec } => {
-            spec.enrich(&defaults);
+            spec.enrich(&defaults)?;
             spec.render()?
         }
         DocumentInput::DebitNote { mut spec } => {
-            spec.enrich(&defaults);
+            spec.enrich(&defaults)?;
             spec.render()?
         }
         DocumentInput::DespatchAdvice { mut spec } => {
-            spec.enrich(&defaults);
+            spec.enrich(&defaults)?;
             spec.render()?
         }
         DocumentInput::Perception { mut spec } => {
-            spec.enrich(&defaults);
+            spec.enrich(&defaults)?;
             spec.render()?
         }
         DocumentInput::Retention { mut spec } => {
-            spec.enrich(&defaults);
+            spec.enrich(&defaults)?;
             spec.render()?
         }
         DocumentInput::SummaryDocuments { mut spec } => {
-            spec.enrich(&defaults);
+            spec.enrich(&defaults)?;
             spec.render()?
         }
         DocumentInput::VoidedDocuments { mut spec } => {
-            spec.enrich(&defaults);
+            spec.enrich(&defaults)?;
             spec.render()?
         }
         DocumentInput::Reversion { mut spec } => {
-            spec.enrich(&defaults);
+            spec.enrich(&defaults)?;
             spec.render()?
         }
     };
@@ -96,39 +96,39 @@ impl CreateArgs {
 
             return match doc {
                 DocumentInput::Invoice { mut spec } => {
-                    spec.enrich(&defaults);
+                    spec.enrich(&defaults)?;
                     self.print_dry_run(&spec)
                 }
                 DocumentInput::CreditNote { mut spec } => {
-                    spec.enrich(&defaults);
+                    spec.enrich(&defaults)?;
                     self.print_dry_run(&spec)
                 }
                 DocumentInput::DebitNote { mut spec } => {
-                    spec.enrich(&defaults);
+                    spec.enrich(&defaults)?;
                     self.print_dry_run(&spec)
                 }
                 DocumentInput::DespatchAdvice { mut spec } => {
-                    spec.enrich(&defaults);
+                    spec.enrich(&defaults)?;
                     self.print_dry_run(&spec)
                 }
                 DocumentInput::Perception { mut spec } => {
-                    spec.enrich(&defaults);
+                    spec.enrich(&defaults)?;
                     self.print_dry_run(&spec)
                 }
                 DocumentInput::Retention { mut spec } => {
-                    spec.enrich(&defaults);
+                    spec.enrich(&defaults)?;
                     self.print_dry_run(&spec)
                 }
                 DocumentInput::SummaryDocuments { mut spec } => {
-                    spec.enrich(&defaults);
+                    spec.enrich(&defaults)?;
                     self.print_dry_run(&spec)
                 }
                 DocumentInput::VoidedDocuments { mut spec } => {
-                    spec.enrich(&defaults);
+                    spec.enrich(&defaults)?;
                     self.print_dry_run(&spec)
                 }
                 DocumentInput::Reversion { mut spec } => {
-                    spec.enrich(&defaults);
+                    spec.enrich(&defaults)?;
                     self.print_dry_run(&spec)
                 }
             };

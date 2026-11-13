@@ -5,8 +5,8 @@ use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
 use crate::models::common::{
-    Anticipo, Cliente, Descuento, Detalle, Detraccion, Direccion, DocumentoRelacionado, Firmante,
-    FormaDePago, Guia, Percepcion, Proveedor, TotalImporteInvoice, TotalImpuestos,
+    Anticipo, Cargo, Cliente, Descuento, Detalle, Detraccion, Direccion, DocumentoRelacionado,
+    Firmante, FormaDePago, Guia, Percepcion, Proveedor, TotalImporteInvoice, TotalImpuestos,
 };
 
 /// Boleta o Factura
@@ -39,10 +39,13 @@ pub struct Invoice {
     pub percepcion: Option<Percepcion>,
 
     pub direccion_entrega: Option<Direccion>,
+    /// Factura guia: the invoice also works as the guia de remision
+    pub guia_embebida: Option<GuiaEmbebida>,
     pub forma_de_pago: Option<FormaDePago>,
 
     pub anticipos: Vec<Anticipo>,
     pub descuentos: Vec<Descuento>,
+    pub cargos: Vec<Cargo>,
 
     pub detalles: Vec<Detalle>,
 
@@ -54,4 +57,20 @@ pub struct Invoice {
 
     pub observaciones: Option<String>,
     pub orden_de_compra: Option<String>,
+}
+
+/// Datos del traslado de una factura guia
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct GuiaEmbebida {
+    pub partida: Direccion,
+    pub destino: Direccion,
+    pub transportista: Cliente,
+    /// Licencia de conducir del chofer
+    pub licencia: String,
+    /// Placa del vehiculo
+    pub placa: String,
+    /// Catalog18: modalidad de traslado
+    pub tipo_modalidad_traslado: String,
+    pub peso_bruto: Decimal,
+    pub peso_bruto_unidad_medida: String,
 }

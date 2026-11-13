@@ -62,7 +62,7 @@ fn reversion_keeps_given_documento_id() {
         documento_id: Some("RR-20220131-9".into()),
         ..Default::default()
     });
-    doc.enrich(&defaults_base());
+    doc.enrich(&defaults_base()).expect("Could not enrich");
 
     assert_eq!(doc.0.documento_id.as_deref(), Some("RR-20220131-9"));
 }

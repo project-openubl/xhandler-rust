@@ -4,6 +4,8 @@ use chrono::NaiveDate;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
+use crate::catalogs::{Catalog53, FromCode};
+
 /// Quien provee el documento electronico. Quien genera o crea el documento.
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(default)]
@@ -128,6 +130,26 @@ pub struct Descuento {
     pub factor: Option<Decimal>,
 }
 
+/// Cargo global (AllowanceCharge con ChargeIndicator true)
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Cargo {
+    /// Catalog53, e.g. "49" (afecta la base imponible) or "50" (no la afecta)
+    pub tipo: String,
+    pub monto: Decimal,
+    /// `monto` when missing
+    pub monto_base: Option<Decimal>,
+    pub factor: Option<Decimal>,
+}
+
+impl Cargo {
+    /// Charges of type 49 increase the IGV base; any other type is added to
+    /// the amount payable only.
+    pub fn afecta_base_imponible(&self) -> bool {
+        Catalog53::from_code(&self.tipo)
+            == Ok(Catalog53::CargosGlobalesQueAfectanBaseImponibleIgvIvap)
+    }
+}
+
 /// Guia asociada a un documento
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Guia {
@@ -218,6 +240,9 @@ pub struct Detalle {
 pub struct TotalImporteInvoice {
     pub anticipos: Decimal,
     pub descuentos: Decimal,
+    /// Cargos que no afectan la base imponible (ChargeTotalAmount)
+    #[serde(default)]
+    pub cargos: Decimal,
     pub importe: Decimal,
     pub importe_sin_impuestos: Decimal,
     pub importe_con_impuestos: Decimal,

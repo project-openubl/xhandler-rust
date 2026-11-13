@@ -6,6 +6,7 @@ use rust_decimal::Decimal;
 use crate::catalogs::{Catalog5, Catalog53, FromCode};
 use crate::enricher::bounds::detalle::DetallesGetter;
 use crate::enricher::bounds::invoice::anticipos::InvoiceAnticiposGetter;
+use crate::enricher::bounds::invoice::cargos::InvoiceCargosGetter;
 use crate::enricher::bounds::invoice::descuentos::InvoiceDescuentosGetter;
 use crate::enricher::bounds::total_impuestos::{TotalImpuestosGetter, TotalImpuestosSetter};
 use crate::enricher::rules::phase3summary::utils::cal_impuesto_by_tipo;
@@ -21,6 +22,7 @@ where
         + TotalImpuestosSetter
         + DetallesGetter
         + InvoiceDescuentosGetter
+        + InvoiceCargosGetter
         + InvoiceAnticiposGetter,
 {
     fn summary(&mut self) -> Result<bool> {
@@ -110,10 +112,18 @@ where
                     Decimal::ZERO
                 };
 
-                // Aplicar ANTICIPOS Y DESCUENTOS
+                let cargos_que_afectan_base_imponible_sin_impuestos: Decimal = self
+                    .get_cargos()
+                    .iter()
+                    .filter(|cargo| cargo.afecta_base_imponible())
+                    .map(|cargo| cargo.monto)
+                    .sum();
+
+                // Aplicar ANTICIPOS, DESCUENTOS Y CARGOS
                 let gravado_base_imponible = gravado.base_imponible
                     - total_anticipos_gravados
-                    - descuentos_que_afectan_base_imponible_sin_impuestos;
+                    - descuentos_que_afectan_base_imponible_sin_impuestos
+                    + cargos_que_afectan_base_imponible_sin_impuestos;
 
                 let factor = if gravado.base_imponible > Decimal::ZERO {
                     gravado_base_imponible / gravado.base_imponible

@@ -45,7 +45,9 @@ fn credit_note_with_hora_emision() {
         }],
         ..credit_note_base()
     };
-    credit_note.enrich(&common::defaults_base());
+    credit_note
+        .enrich(&common::defaults_base())
+        .expect("Could not enrich");
     let xml = credit_note.render().expect("Could not render credit note");
 
     assert!(xml.contains("<cbc:IssueTime>10:30:00</cbc:IssueTime>"));
