@@ -88,6 +88,9 @@ fn verify_ticket_missing_credentials_without_beta_fails() {
 
 // --- End-to-end test against SUNAT beta ---
 
+// SUNAT beta's getStatus endpoint currently returns HTTP 500 after ~60s
+// ("Failed to establish a backside connection").
+#[ignore = "SUNAT beta getStatus returns HTTP 500 (backside connection failure)"]
 #[serial_test::serial]
 #[test]
 fn verify_ticket_from_voided_documents() {

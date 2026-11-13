@@ -18,7 +18,7 @@ cargo fmt --check
 cargo clippy --all-targets --all-features -- -D warnings
 ```
 
-Rust 1.83.0 pinned in `rust-toolchain.toml`. Clippy allows unwrap/expect in tests.
+Rust 1.100.0 pinned in `rust-toolchain.toml`. Clippy allows unwrap/expect in tests.
 
 ## Crates
 

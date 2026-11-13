@@ -137,10 +137,8 @@ impl UblFile {
                             Some(CBC_NS),
                             Some("cbc"),
                             "DocumentTypeCode",
-                        ) => {
-                            if voided_line_document_type_code.is_none() {
-                                voided_line_document_type_code = Some(current_text.clone());
-                            }
+                        ) if voided_line_document_type_code.is_none() => {
+                            voided_line_document_type_code = Some(current_text.clone());
                         }
                         _ => {}
                     };
