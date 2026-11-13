@@ -44,6 +44,8 @@ IGV=VAT, ISC=excise tax, ICB=bag tax, CDR=SUNAT receipt, detalle=line item, prov
 
 xbuilder integration tests in `xbuilder/tests/`, snapshot-compare against `xbuilder/tests/resources/`. xsender/xsigner use inline `#[cfg(test)]`.
 
+xbuilder test switches: `XBUILDER_SKIP_SUNAT=true` skips sending to SUNAT beta (snapshot + XSD still run); `XBUILDER_SNAPSHOT_UPDATE=true` rewrites snapshots with the rendered XML.
+
 ## Internal language
 
 - `Invoice` = `Boleta`|`Factura`

@@ -4,7 +4,7 @@ use rust_decimal_macros::dec;
 use xbuilder::models::common::Detalle;
 use xbuilder::prelude::*;
 
-use crate::common::assert_invoice;
+use crate::common::assert_invoice_offline;
 use crate::common::invoice_base;
 
 mod common;
@@ -32,12 +32,10 @@ static CATALOG7_VARIANTS: &[Catalog7] = &[
     Catalog7::Exportacion,
 ];
 
-// Sends ~20 invoices to SUNAT beta back to back; the burst gets rate limited
-// (HTTP 401) when run as part of the full suite.
-#[ignore = "SUNAT beta rate-limits this burst of requests (HTTP 401)"]
-#[serial_test::serial]
-#[tokio::test]
-async fn invoice_precio_unitario() {
+// One invoice per Catalog7 value. Sending all of them to SUNAT beta back to
+// back gets rate limited (HTTP 401), so these only check snapshot + XSD.
+#[test]
+fn invoice_precio_unitario() {
     for catalog7 in CATALOG7_VARIANTS {
         let mut invoice = Invoice {
             detalles: vec![Detalle {
@@ -50,6 +48,6 @@ async fn invoice_precio_unitario() {
             ..invoice_base()
         };
 
-        assert_invoice(&mut invoice, &format!("{BASE}/invoice_pu_{catalog7}.xml")).await;
+        assert_invoice_offline(&mut invoice, &format!("{BASE}/invoice_pu_{catalog7}.xml"));
     }
 }
