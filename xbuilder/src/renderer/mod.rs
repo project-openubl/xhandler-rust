@@ -54,12 +54,15 @@ pub fn multiply100(value: &Value, _: &HashMap<String, Value>) -> Result<Value, E
     }
 }
 
-pub fn round_decimal(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Error> {
+/// Rounds to `dp` decimal places (2 by default) and pads to that scale,
+/// e.g. `{{ peso | round_decimal(dp=3) }}` renders 1 as "1.000".
+pub fn round_decimal(value: &Value, args: &HashMap<String, Value>) -> Result<Value, Error> {
+    let dp = args.get("dp").and_then(Value::as_u64).unwrap_or(2) as u32;
     match value.as_str() {
         Some(number) => {
             let decimal =
                 Decimal::from_str(number).map_err(|err| tera::Error::msg(err.to_string()))?;
-            let rounded = decimal.round_dp(2).trunc_with_scale(2);
+            let rounded = decimal.round_dp(dp).trunc_with_scale(dp);
             Ok(to_value(rounded)?)
         }
         None => Err("number could not be parsed to string".into()),

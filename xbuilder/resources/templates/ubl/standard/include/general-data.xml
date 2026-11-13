@@ -1,6 +1,6 @@
 
     <cbc:UBLVersionID>2.1</cbc:UBLVersionID>
-    <cbc:CustomizationID>2.0</cbc:CustomizationID>
+    <cbc:CustomizationID>{{version | default(value="2.0")}}</cbc:CustomizationID>
     <cbc:ID>{{serie_numero}}</cbc:ID>
     <cbc:IssueDate>{{fecha_emision}}</cbc:IssueDate>
     {%- if hora_emision %}
