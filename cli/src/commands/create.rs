@@ -50,8 +50,7 @@ impl CreateArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
         if self.dry_run {
             let document = read_enriched(&self.file, self.format.as_deref())?;
-            let spec = &serde_json::to_value(&document)?["spec"];
-            eprintln!("{}", serde_json::to_string_pretty(spec)?);
+            eprintln!("{}", serde_json::to_string_pretty(&document)?);
             return Ok(ExitCode::SUCCESS);
         }
 

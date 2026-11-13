@@ -29,6 +29,7 @@ const RETENTION_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-Retention-1.0
 
 lazy_static::lazy_static! {
     pub static ref CLIENT: FileSender = FileSender {
+        // SUNAT has no beta for guias de remision: they go to production
         urls: Urls {
             despatch: Urls::production().despatch,
             ..Urls::beta()

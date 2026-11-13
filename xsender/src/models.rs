@@ -8,7 +8,8 @@ pub struct Urls {
 
 impl Urls {
     /// SUNAT beta (testing) services. SUNAT has no beta for guias de
-    /// remision, so `despatch` is empty: set it to send them elsewhere.
+    /// remision, so `despatch` is empty and sending them fails with
+    /// `FileSenderError::NoDespatchUrl` unless it is set.
     pub fn beta() -> Self {
         Self {
             invoice: "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService".into(),

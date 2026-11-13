@@ -8,7 +8,9 @@ use crate::analyzer::{
     filename_formatted_without_extension, send_file_target, verify_ticket_target,
 };
 use crate::fault::SunatFault;
-use crate::models::{Credentials, SendFileTarget, SoapFileTargetAction, Urls, VerifyTicketTarget};
+use crate::models::{
+    Credentials, DocumentType, SendFileTarget, SoapFileTargetAction, Urls, VerifyTicketTarget,
+};
 use crate::prelude::VerifyTicketStatus;
 use crate::soap::cdr::CdrMetadata;
 use crate::sunat_client::{
@@ -26,6 +28,8 @@ pub struct FileSender {
 pub enum FileSenderError {
     #[error("Couldn't infer the target destinations of file")]
     TargetDiscovery,
+    #[error("No URL is set for guias de remision (SUNAT has no beta for them)")]
+    NoDespatchUrl,
     #[error("An error while creating/reading the zip file")]
     Zip(ZipError),
     #[error(transparent)]
@@ -72,7 +76,7 @@ impl FileSender {
         &self,
         xml: &UblFile,
     ) -> Result<SendFileResponseWrapper, FileSenderError> {
-        let metadata = xml.metadata()?;
+        let metadata = self.checked_metadata(xml)?;
         let send_target = send_file_target(
             &metadata.document_type,
             &metadata.voided_line_document_type_code,
@@ -158,6 +162,23 @@ impl FileSender {
         })
     }
 
+    /// Checks the ticket SUNAT answered when `xml` was sent; the service to
+    /// ask is inferred from the document, like in [`Self::send_file`].
+    pub async fn verify_file_ticket(
+        &self,
+        xml: &UblFile,
+        ticket: &str,
+    ) -> Result<VerifyTicketResponseWrapper, FileSenderError> {
+        let metadata = self.checked_metadata(xml)?;
+        let target = verify_ticket_target(
+            &metadata.document_type,
+            &metadata.voided_line_document_type_code,
+            &self.urls,
+        )
+        .ok_or(FileSenderError::TargetDiscovery)?;
+        self.verify_ticket(&target, ticket).await
+    }
+
     pub async fn verify_ticket(
         &self,
         target: &VerifyTicketTarget,
@@ -185,6 +206,18 @@ impl FileSender {
 }
 
 /// File name SUNAT expects, without extension, e.g. "12345678912-01-F001-1"
+impl FileSender {
+    /// Metadata of a document this sender has a URL for
+    fn checked_metadata(&self, xml: &UblFile) -> Result<UblMetadata, FileSenderError> {
+        let metadata = xml.metadata()?;
+        if metadata.document_type == DocumentType::DESPATCH_ADVICE && self.urls.despatch.is_empty()
+        {
+            return Err(FileSenderError::NoDespatchUrl);
+        }
+        Ok(metadata)
+    }
+}
+
 fn sunat_filename(metadata: &UblMetadata) -> Result<String, FileSenderError> {
     filename_formatted_without_extension(
         &metadata.document_type,

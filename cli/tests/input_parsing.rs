@@ -161,8 +161,8 @@ fn parse_invalid_kind_fails() {
     assert!(result.is_err());
     let err = result.unwrap_err().to_string();
     assert!(
-        err.contains("Valores validos de 'kind'"),
-        "expected valid kinds hint but got: {err}"
+        err.contains("expected one of `Invoice`"),
+        "expected the valid kinds but got: {err}"
     );
 
     let _ = std::fs::remove_file(&temp_file);
@@ -266,4 +266,19 @@ spec:
         err.contains("fecha invalida") || err.contains("DD-MM-YYYY"),
         "expected date format hint but got: {err}"
     );
+}
+
+/// serde_yaml reads `spec` straight into the models when `kind` comes first,
+/// so YAML scalars like `123` are read as text; when `spec` comes first it is
+/// buffered and they keep their YAML type.
+#[test]
+fn parse_yaml_numbers_as_text_when_kind_comes_first() {
+    let doc = InputFormat::Yaml
+        .parse("kind: Invoice\nspec:\n  serie_numero: 123\n")
+        .unwrap();
+    assert!(matches!(doc, Document::Invoice(spec) if spec.serie_numero == "123"));
+
+    assert!(InputFormat::Yaml
+        .parse("spec:\n  serie_numero: 123\nkind: Invoice\n")
+        .is_err());
 }

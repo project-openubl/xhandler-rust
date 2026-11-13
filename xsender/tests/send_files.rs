@@ -4,6 +4,7 @@ const BASE: &str = "tests/resources/e2e";
 
 lazy_static::lazy_static! {
     pub static ref CLIENT: FileSender = FileSender {
+        // SUNAT has no beta for guias de remision: they go to production
         urls: Urls {
             despatch: Urls::production().despatch,
             ..Urls::beta()

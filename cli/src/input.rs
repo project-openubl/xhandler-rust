@@ -28,18 +28,10 @@ impl InputFormat {
 
     pub fn parse(&self, content: &str) -> anyhow::Result<Document> {
         match self {
-            InputFormat::Json => serde_json::from_str(content).map_err(|e| {
-                anyhow::anyhow!(
-                    "Error en el archivo JSON:\n  {e}\n  Valores validos de 'kind': {}",
-                    Document::KINDS
-                )
-            }),
-            InputFormat::Yaml => serde_yaml::from_str(content).map_err(|e| {
-                anyhow::anyhow!(
-                    "Error en el archivo YAML:\n  {e}\n  Valores validos de 'kind': {}",
-                    Document::KINDS
-                )
-            }),
+            InputFormat::Json => serde_json::from_str(content)
+                .map_err(|e| anyhow::anyhow!("Error en el archivo JSON:\n  {e}")),
+            InputFormat::Yaml => serde_yaml::from_str(content)
+                .map_err(|e| anyhow::anyhow!("Error en el archivo YAML:\n  {e}")),
         }
     }
 }

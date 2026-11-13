@@ -53,7 +53,7 @@ Generates UBL XML from a JSON/YAML document definition. Runs the xbuilder enrich
 | `--file <PATH>` | `-f` | Yes | — | Input JSON/YAML file. Use `-` for stdin. |
 | `--output <PATH>` | `-o` | No | — | Output XML file path. Writes to stdout if omitted. |
 | `--format <FMT>` | — | No | — | Input format when reading from stdin: `json`, `yaml`. Auto-detected from file extension otherwise. |
-| `--dry-run` | — | No | — | Validate and enrich input without rendering XML. Prints the enriched document as JSON. |
+| `--dry-run` | — | No | — | Validate and enrich input without rendering XML. Prints the enriched document as JSON (`kind` + `spec`), which can be used as input again. |
 
 ```bash
 # Generate XML to a file
@@ -240,20 +240,7 @@ Documents are defined using a kubectl-inspired `kind`/`spec` structure. The `kin
 
 Format is auto-detected from file extension (`.json`, `.yaml`, `.yml`). When reading from stdin, use `--format` to specify.
 
-```rust
-#[derive(Deserialize)]
-#[serde(tag = "kind")]
-enum DocumentInput {
-    Invoice { spec: Invoice },
-    CreditNote { spec: CreditNote },
-    DebitNote { spec: DebitNote },
-    DespatchAdvice { spec: DespatchAdvice },
-    Perception { spec: Perception },
-    Retention { spec: Retention },
-    SummaryDocuments { spec: SummaryDocuments },
-    VoidedDocuments { spec: VoidedDocuments },
-}
-```
+The input is read into `xbuilder::document::Document`, an enum over the nine document types (`Invoice`, `CreditNote`, `DebitNote`, `DespatchAdvice`, `Perception`, `Retention`, `SummaryDocuments`, `VoidedDocuments`, `Reversion`).
 
 #### Invoice (Boleta / Factura)
 

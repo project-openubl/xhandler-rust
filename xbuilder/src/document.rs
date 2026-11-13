@@ -26,12 +26,8 @@ pub enum Document {
     Reversion(Box<Reversion>),
 }
 
-impl Document {
-    /// Valid values of `kind`
-    pub const KINDS: &'static str = "Invoice, CreditNote, DebitNote, DespatchAdvice, Perception, Retention, SummaryDocuments, VoidedDocuments, Reversion";
-
-    /// See [`Enrich::enrich`]
-    pub fn enrich(&mut self, defaults: &Defaults) -> anyhow::Result<()> {
+impl Enrich for Document {
+    fn enrich(&mut self, defaults: &Defaults) -> anyhow::Result<()> {
         match self {
             Self::Invoice(spec) => spec.enrich(defaults),
             Self::CreditNote(spec) => spec.enrich(defaults),
@@ -44,9 +40,10 @@ impl Document {
             Self::Reversion(spec) => spec.enrich(defaults),
         }
     }
+}
 
-    /// UBL XML of the document
-    pub fn render(&self) -> tera::Result<String> {
+impl Renderer for Document {
+    fn render(&self) -> tera::Result<String> {
         match self {
             Self::Invoice(spec) => spec.render(),
             Self::CreditNote(spec) => spec.render(),
@@ -67,36 +64,68 @@ mod tests {
     use rust_decimal_macros::dec;
 
     use super::Document;
-    use crate::enricher::Defaults;
+    use crate::enricher::{Defaults, Enrich};
+    use crate::renderer::Renderer;
 
-    #[test]
-    fn document_reads_kind_and_spec() {
-        let json = r#"{
-            "kind": "Invoice",
-            "spec": {
-                "serie_numero": "F001-1",
-                "proveedor": {"ruc": "12345678912", "razon_social": "Softgreen S.A.C."},
-                "cliente": {
-                    "nombre": "Carlos Feria",
-                    "numero_documento_identidad": "12121212121",
-                    "tipo_documento_identidad": "6"
-                },
-                "detalles": [{"descripcion": "Item1", "cantidad": 10, "precio": 100}]
-            }
-        }"#;
-        let mut document: Document = serde_json::from_str(json).unwrap();
-        let defaults = Defaults {
+    const SPEC: &str = r#"{
+        "serie_numero": "F001-1",
+        "proveedor": {"ruc": "12345678912", "razon_social": "Softgreen S.A.C."},
+        "cliente": {
+            "nombre": "Carlos Feria",
+            "numero_documento_identidad": "12121212121",
+            "tipo_documento_identidad": "6"
+        },
+        "detalles": [{"descripcion": "Item1", "cantidad": 10, "precio": 100}]
+    }"#;
+
+    fn defaults() -> Defaults {
+        Defaults {
             icb_tasa: dec!(0.2),
             igv_tasa: dec!(0.18),
             ivap_tasa: dec!(0.04),
             fecha_emision: NaiveDate::from_ymd_opt(2026, 1, 1).unwrap(),
-        };
-        document.enrich(&defaults).unwrap();
+        }
+    }
 
-        let xml = document.render().unwrap();
-        assert!(xml.contains("<cbc:ID>F001-1</cbc:ID>"));
-        assert!(serde_json::to_string(&document)
+    #[test]
+    fn document_reads_kind_and_spec() {
+        let json = format!(r#"{{"kind": "Invoice", "spec": {SPEC}}}"#);
+        let mut document: Document = serde_json::from_str(&json).unwrap();
+        document.enrich(&defaults()).unwrap();
+
+        assert!(document
+            .render()
             .unwrap()
-            .starts_with(r#"{"kind":"Invoice","spec":{"#));
+            .contains("<cbc:ID>F001-1</cbc:ID>"));
+    }
+
+    #[test]
+    fn document_reads_spec_before_kind() {
+        let json = format!(r#"{{"spec": {SPEC}, "kind": "Invoice"}}"#);
+        assert!(matches!(
+            serde_json::from_str::<Document>(&json).unwrap(),
+            Document::Invoice(_)
+        ));
+    }
+
+    /// The enriched document can be stored as JSON and read back
+    #[test]
+    fn document_round_trips_through_json() {
+        let json = format!(r#"{{"kind": "Invoice", "spec": {SPEC}}}"#);
+        let mut document: Document = serde_json::from_str(&json).unwrap();
+        document.enrich(&defaults()).unwrap();
+
+        let stored = serde_json::to_string(&document).unwrap();
+        assert!(stored.starts_with(r#"{"kind":"Invoice","spec":{"#));
+        let read_back: Document = serde_json::from_str(&stored).unwrap();
+        assert_eq!(read_back.render().unwrap(), document.render().unwrap());
+    }
+
+    #[test]
+    fn document_rejects_unknown_kinds() {
+        let error = serde_json::from_str::<Document>(r#"{"kind": "Factura", "spec": {}}"#)
+            .unwrap_err()
+            .to_string();
+        assert!(error.contains("expected one of `Invoice`"), "{error}");
     }
 }
