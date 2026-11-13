@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::NaiveDate;
+use chrono::{NaiveDate, NaiveTime};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
@@ -19,6 +19,7 @@ pub struct CreditNote {
     pub moneda: Option<String>,
     #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
     pub fecha_emision: Option<NaiveDate>,
+    pub hora_emision: Option<NaiveTime>,
     pub proveedor: Proveedor,
     pub cliente: Cliente,
     pub firmante: Option<Firmante>,

@@ -69,8 +69,8 @@ async fn invoice_custom_cliente_direccion_and_contacto() {
     let mut invoice = Invoice {
         cliente: Cliente {
             contacto: Some(Contacto {
-                email: "carlos@gmail.com".into(),
-                telefono: "+123456789".into(),
+                email: Some("carlos@gmail.com".into()),
+                telefono: Some("+123456789".into()),
             }),
             direccion: Some(Direccion {
                 codigo_local: Some("0101".into()),
@@ -114,8 +114,8 @@ async fn invoice_custom_proveedor_direccion_and_contacto() {
     let mut invoice = Invoice {
         proveedor: Proveedor {
             contacto: Some(Contacto {
-                email: "carlos@gmail.com".into(),
-                telefono: "+123456789".into(),
+                email: Some("carlos@gmail.com".into()),
+                telefono: Some("+123456789".into()),
             }),
             direccion: Some(Direccion {
                 codigo_local: Some("0101".into()),
@@ -268,4 +268,26 @@ async fn invoice_with_custom_proveedor_direccion_not_null_and_codigo_local_null(
     };
 
     assert_invoice(&mut invoice, &format!("{BASE}/customCodigoLocal.xml")).await;
+}
+
+#[test]
+fn invoice_with_cliente_contacto_email_only() {
+    let mut invoice = Invoice {
+        detalles: vec![Detalle {
+            descripcion: "Item1".into(),
+            cantidad: dec!(1),
+            precio: Some(dec!(100)),
+            ..Default::default()
+        }],
+        ..invoice_base()
+    };
+    invoice.cliente.contacto = Some(Contacto {
+        email: Some("carlos@gmail.com".into()),
+        ..Default::default()
+    });
+    invoice.enrich(&common::defaults_base());
+    let xml = invoice.render().expect("Could not render invoice");
+
+    assert!(xml.contains("<cbc:ElectronicMail>carlos@gmail.com</cbc:ElectronicMail>"));
+    assert!(!xml.contains("<cbc:Telephone>"));
 }

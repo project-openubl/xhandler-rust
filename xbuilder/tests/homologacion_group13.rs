@@ -33,6 +33,7 @@ fn summary_items() -> Vec<SummaryDocumentsItem> {
                         igv: Some(igv),
                         igv_tasa: Some(dec!(18)),
                         icb: None,
+                        ..Default::default()
                     },
                     ..Default::default()
                 },

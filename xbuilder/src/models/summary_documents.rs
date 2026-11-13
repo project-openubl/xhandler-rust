@@ -40,8 +40,21 @@ pub struct SummaryDocumentsItemComprobante {
     pub moneda: Option<String>,
     pub cliente: SummaryDocumentsCliente,
     pub comprobante_afectado: Option<SummaryDocumentsComprobanteAfectado>,
+    pub percepcion: Option<SummaryDocumentsPercepcion>,
     pub valor_venta: SummaryDocumentsValorVenta,
     pub impuestos: SummaryDocumentsImpuestos,
+}
+
+/// Percepcion aplicada a una boleta del resumen
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct SummaryDocumentsPercepcion {
+    /// Catalog22: regimen de percepcion
+    pub tipo_regimen: String,
+    /// Tasa de percepcion en porcentaje (e.g. 2 para 2%)
+    pub tasa: Decimal,
+    pub monto_base: Decimal,
+    pub monto: Decimal,
+    pub monto_total: Decimal,
 }
 
 /// Cliente simplificado para SummaryDocuments
@@ -75,8 +88,12 @@ pub struct SummaryDocumentsValorVenta {
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(default)]
 pub struct SummaryDocumentsImpuestos {
+    /// Always rendered; 0 when missing
     pub igv: Option<Decimal>,
-    /// IGV rate as percentage (e.g., 18 for 18%). Required by SUNAT when igv is present.
+    /// IGV rate as percentage (e.g., 18 for 18%). Required by SUNAT; filled from the defaults when missing.
     pub igv_tasa: Option<Decimal>,
     pub icb: Option<Decimal>,
+    pub isc: Option<Decimal>,
+    pub ivap: Option<Decimal>,
+    pub otros: Option<Decimal>,
 }
