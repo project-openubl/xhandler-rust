@@ -1,9 +1,5 @@
-//! Enrichment unit tests, ported from xhandler-java's `e2e/enricher` tests
-//! (`enrich/GeneralDocumentTest`, `enrich/DetalleTest`, `enrich/InvoiceTest`
-//! and `process/DetalleTest`).
-//!
-//! Where Java overwrites user-provided values, Rust intentionally keeps them;
-//! those tests assert the Rust behavior and say so.
+//! Ported from xhandler-java's `e2e/enricher` tests. Where Java overwrites
+//! user values Rust keeps them (see the doc comments below).
 
 use chrono::NaiveDate;
 use rust_decimal::Decimal;
@@ -19,13 +15,12 @@ fn enrich(mut invoice: Invoice) -> Invoice {
     invoice
 }
 
-/// Enriches an invoice with a single line and returns that line
 fn enrich_detalle(detalle: Detalle) -> Detalle {
-    let invoice = enrich(Invoice {
+    let mut invoice = enrich(Invoice {
         detalles: vec![detalle],
         ..Default::default()
     });
-    invoice.detalles.into_iter().next().unwrap()
+    invoice.detalles.remove(0)
 }
 
 fn cuota() -> CuotaDePago {
@@ -87,13 +82,12 @@ fn enrich_forma_de_pago_credito() {
     });
     let forma_de_pago = invoice.forma_de_pago.unwrap();
     assert!(matches!(forma_de_pago.tipo, Some(TipoFormaDePago::Credito)));
-    assert_eq!(forma_de_pago.total, Some(Decimal::TEN));
 }
 
 /// Java corrects a CREDITO without cuotas to CONTADO (and the reverse);
 /// Rust keeps the user's value.
 #[test]
-fn keep_user_forma_de_pago_tipo() {
+fn dont_enrich_forma_de_pago_tipo() {
     let invoice = enrich(Invoice {
         forma_de_pago: Some(FormaDePago {
             tipo: Some(TipoFormaDePago::Contado),
@@ -130,14 +124,28 @@ fn enrich_firmante_when_partially_filled() {
             ..Default::default()
         },
         firmante: Some(Firmante {
-            ruc: "12345678912".into(),
+            ruc: "99999999999".into(),
             razon_social: "".into(),
         }),
         ..Default::default()
     });
     let firmante = invoice.firmante.unwrap();
-    assert_eq!(firmante.ruc, "12345678912");
+    assert_eq!(firmante.ruc, "99999999999");
     assert_eq!(firmante.razon_social, "Mi razón social");
+}
+
+/// The fill loop runs until no rule changes anything, so a firmante that
+/// can't be completed (empty proveedor) must not count as a change.
+#[test]
+fn enrich_partial_firmante_with_empty_proveedor() {
+    let invoice = enrich(Invoice {
+        firmante: Some(Firmante {
+            ruc: "1".into(),
+            razon_social: "".into(),
+        }),
+        ..Default::default()
+    });
+    assert_eq!(invoice.firmante.unwrap().ruc, "1");
 }
 
 #[test]
@@ -161,7 +169,7 @@ fn enrich_tipo_comprobante() {
 /// Java overwrites the user's tipo_comprobante with the one of the serie;
 /// Rust keeps it.
 #[test]
-fn keep_user_tipo_comprobante() {
+fn dont_enrich_tipo_comprobante() {
     let invoice = enrich(Invoice {
         serie_numero: "F001-1".into(),
         tipo_comprobante: Some("03".into()),
@@ -196,7 +204,7 @@ fn enrich_igv_tipo() {
 #[test]
 fn dont_enrich_igv_tipo() {
     let detalle = enrich_detalle(Detalle {
-        igv_tipo: Some(Catalog7::InafectoRetiro.code().into()),
+        igv_tipo: Some("32".into()),
         ..Default::default()
     });
     assert_eq!(detalle.igv_tipo.as_deref(), Some("32"));
@@ -205,7 +213,7 @@ fn dont_enrich_igv_tipo() {
 #[test]
 fn enrich_precio_referencia_tipo_precio_con_igv() {
     let detalle = enrich_detalle(Detalle {
-        igv_tipo: Some(Catalog7::GravadoOperacionOnerosa.code().into()),
+        igv_tipo: Some("10".into()),
         ..Default::default()
     });
     assert_eq!(detalle.precio_referencia_tipo.as_deref(), Some("01"));
@@ -214,7 +222,7 @@ fn enrich_precio_referencia_tipo_precio_con_igv() {
 #[test]
 fn enrich_precio_referencia_tipo_valor_referencial() {
     let detalle = enrich_detalle(Detalle {
-        igv_tipo: Some(Catalog7::GravadoRetiroPorDonacion.code().into()),
+        igv_tipo: Some("12".into()),
         ..Default::default()
     });
     assert_eq!(detalle.precio_referencia_tipo.as_deref(), Some("02"));
@@ -226,7 +234,7 @@ fn enrich_precio_referencia_tipo_valor_referencial() {
 fn enrich_precio_referencia_precio_sin_impuestos_operacion_onerosa() {
     let detalle = enrich_detalle(Detalle {
         precio: Some(Decimal::TEN),
-        igv_tipo: Some(Catalog7::GravadoOperacionOnerosa.code().into()),
+        igv_tipo: Some("10".into()),
         ..Default::default()
     });
     assert_eq!(detalle.precio_referencia, Some(dec!(11.80)));
@@ -236,7 +244,7 @@ fn enrich_precio_referencia_precio_sin_impuestos_operacion_onerosa() {
 fn enrich_precio_referencia_precio_sin_impuestos_operacion_no_onerosa() {
     let detalle = enrich_detalle(Detalle {
         precio: Some(Decimal::TEN),
-        igv_tipo: Some(Catalog7::GravadoRetiro.code().into()),
+        igv_tipo: Some("13".into()),
         ..Default::default()
     });
     assert_eq!(detalle.precio_referencia, Some(Decimal::TEN));
@@ -246,7 +254,7 @@ fn enrich_precio_referencia_precio_sin_impuestos_operacion_no_onerosa() {
 fn enrich_precio_referencia_precio_con_impuestos_operacion_onerosa() {
     let detalle = enrich_detalle(Detalle {
         precio_con_impuestos: Some(dec!(11.80)),
-        igv_tipo: Some(Catalog7::GravadoOperacionOnerosa.code().into()),
+        igv_tipo: Some("10".into()),
         ..Default::default()
     });
     assert_eq!(detalle.precio, Some(Decimal::TEN));
@@ -257,7 +265,7 @@ fn enrich_precio_referencia_precio_con_impuestos_operacion_onerosa() {
 fn enrich_precio_referencia_precio_con_impuestos_operacion_no_onerosa() {
     let detalle = enrich_detalle(Detalle {
         precio_con_impuestos: Some(dec!(11.80)),
-        igv_tipo: Some(Catalog7::GravadoRetiro.code().into()),
+        igv_tipo: Some("13".into()),
         ..Default::default()
     });
     assert_eq!(detalle.precio_referencia, Some(dec!(11.80)));

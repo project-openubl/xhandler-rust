@@ -16,7 +16,7 @@ pub struct Proveedor {
 }
 
 /// Quien firma electronicamente el XML
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub struct Firmante {
     pub ruc: String,
     pub razon_social: String,
