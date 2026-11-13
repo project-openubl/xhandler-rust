@@ -1,7 +1,6 @@
 use anyhow::Result;
 
 use crate::catalogs::{Catalog, Catalog1};
-
 use crate::enricher::bounds::voided_documents::VoidedDocumentsComprobantesGetter;
 
 pub trait VoidedDocumentsTipoComprobanteFillRule {
@@ -25,8 +24,8 @@ where
                     Some('R') => Some(Catalog1::Retencion),
                     _ => None,
                 };
-                item.tipo_comprobante = catalog.map(|catalog| catalog.code().to_string());
-                if item.tipo_comprobante.is_some() {
+                if let Some(catalog) = catalog {
+                    item.tipo_comprobante = Some(catalog.code().to_string());
                     changed = true;
                 }
             }

@@ -40,6 +40,7 @@ fn render_invoice(
 
 #[test]
 fn invoice_accepts_catalog_names() {
+    // (cliente tipo_documento_identidad, igv_tipo, isc_tipo, descuento tipo)
     let by_code = render_invoice("6", "10", "01", "02");
     let by_name = render_invoice(
         "RUC",

@@ -1,8 +1,6 @@
 use std::fmt;
 use std::fmt::{Display, Formatter};
 
-use rust_decimal::Decimal;
-
 /// A trait for providing the 'code' of a catalog
 pub trait Catalog {
     fn code(&self) -> &str;
@@ -39,15 +37,11 @@ macro_rules! catalog {
 
         impl FromCode for $name {
             fn from_code(value: &str) -> Result<Self, String> {
-                let name = normalize_name(value);
-                [$(Self::$variant,)*]
-                    .into_iter()
-                    .zip([$(stringify!($variant),)*])
-                    .find(|(variant, variant_name)| {
-                        variant.code() == value || normalize_name(variant_name) == name
-                    })
-                    .map(|(variant, _)| variant)
-                    .ok_or_else(|| format!("{value} is not a valid {}", stringify!($name)))
+                let name = value.replace('_', "");
+                $(if value == $code || name.eq_ignore_ascii_case(stringify!($variant)) {
+                    return Ok(Self::$variant);
+                })*
+                Err(format!("{value} is not a valid {}", stringify!($name)))
             }
         }
     };
@@ -60,10 +54,6 @@ pub fn code_for_name<C: Catalog + FromCode>(value: &str) -> Option<String> {
         .ok()
         .map(|catalog| catalog.code().to_string())
         .filter(|code| code != value)
-}
-
-fn normalize_name(value: &str) -> String {
-    value.replace('_', "").to_lowercase()
 }
 
 catalog! {
@@ -101,11 +91,6 @@ catalog! {
 }
 
 impl Catalog5 {
-    /// Tax category (UN/ECE 5305). SUNAT uses "S" for every tax.
-    pub fn categoria(&self) -> &'static str {
-        "S"
-    }
-
     pub fn tipo(&self) -> &'static str {
         match self {
             Catalog5::Igv => "VAT",
@@ -406,30 +391,10 @@ catalog! {
     }
 }
 
-impl Catalog22 {
-    /// Percentage of the regime, e.g. 2 for 2%
-    pub fn percent(&self) -> Decimal {
-        match self {
-            Self::VentaInterna => Decimal::TWO,
-            Self::AdquisicionDeCombustible => Decimal::ONE,
-            Self::AgenteDePercepcionConTasaEspecial => Decimal::new(5, 1),
-        }
-    }
-}
-
 catalog! {
     /// Régimen de retención
     Catalog23 {
         TasaTres = "01",
-    }
-}
-
-impl Catalog23 {
-    /// Percentage of the regime, e.g. 3 for 3%
-    pub fn percent(&self) -> Decimal {
-        match self {
-            Self::TasaTres => Decimal::from(3),
-        }
     }
 }
 
@@ -525,8 +490,6 @@ catalog! {
 
 #[cfg(test)]
 mod tests {
-    use rust_decimal::Decimal;
-
     use super::*;
 
     #[test]
@@ -549,15 +512,5 @@ mod tests {
         assert_eq!(code_for_name::<Catalog6>("RUC").as_deref(), Some("6"));
         assert_eq!(code_for_name::<Catalog6>("6"), None);
         assert_eq!(code_for_name::<Catalog6>("unknown"), None);
-    }
-
-    #[test]
-    fn regime_percentages() {
-        assert_eq!(Catalog22::VentaInterna.percent(), Decimal::TWO);
-        assert_eq!(
-            Catalog22::AgenteDePercepcionConTasaEspecial.percent(),
-            Decimal::new(5, 1)
-        );
-        assert_eq!(Catalog23::TasaTres.percent(), Decimal::from(3));
     }
 }
