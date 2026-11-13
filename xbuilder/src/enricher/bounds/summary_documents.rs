@@ -1,19 +1,11 @@
 use crate::models::summary_documents::{SummaryDocuments, SummaryDocumentsItem};
 
 pub trait SummaryDocumentsComprobantesGetter {
-    fn get_comprobantes(&mut self) -> &mut Vec<SummaryDocumentsItem>;
-}
-
-pub trait SummaryDocumentsMonedaGetter {
-    fn get_moneda(&self) -> &Option<String>;
-}
-
-pub trait SummaryDocumentsMonedaSetter {
-    fn set_moneda(&mut self, val: &str);
+    fn comprobantes_mut(&mut self) -> &mut Vec<SummaryDocumentsItem>;
 }
 
 pub trait SummaryDocumentsDocumentoIdGetter {
-    fn get_documento_id(&self) -> &Option<String>;
+    fn documento_id(&self) -> &Option<String>;
 }
 
 pub trait SummaryDocumentsDocumentoIdSetter {
@@ -21,29 +13,17 @@ pub trait SummaryDocumentsDocumentoIdSetter {
 }
 
 pub trait SummaryDocumentsNumeroGetter {
-    fn get_numero(&self) -> u32;
+    fn numero(&self) -> u32;
 }
 
 impl SummaryDocumentsComprobantesGetter for SummaryDocuments {
-    fn get_comprobantes(&mut self) -> &mut Vec<SummaryDocumentsItem> {
+    fn comprobantes_mut(&mut self) -> &mut Vec<SummaryDocumentsItem> {
         &mut self.comprobantes
     }
 }
 
-impl SummaryDocumentsMonedaGetter for SummaryDocuments {
-    fn get_moneda(&self) -> &Option<String> {
-        &self.moneda
-    }
-}
-
-impl SummaryDocumentsMonedaSetter for SummaryDocuments {
-    fn set_moneda(&mut self, val: &str) {
-        self.moneda = Some(val.to_string());
-    }
-}
-
 impl SummaryDocumentsDocumentoIdGetter for SummaryDocuments {
-    fn get_documento_id(&self) -> &Option<String> {
+    fn documento_id(&self) -> &Option<String> {
         &self.documento_id
     }
 }
@@ -55,7 +35,7 @@ impl SummaryDocumentsDocumentoIdSetter for SummaryDocuments {
 }
 
 impl SummaryDocumentsNumeroGetter for SummaryDocuments {
-    fn get_numero(&self) -> u32 {
+    fn numero(&self) -> u32 {
         self.numero
     }
 }

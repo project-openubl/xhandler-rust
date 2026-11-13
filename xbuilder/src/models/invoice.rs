@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::models::common::{
     Anticipo, Cargo, Cliente, Descuento, Detalle, Detraccion, Direccion, DocumentoRelacionado,
-    Firmante, FormaDePago, Guia, Percepcion, Proveedor, TotalImporteInvoice, TotalImpuestos,
+    Firmante, FormaPago, Guia, Percepcion, Proveedor, TotalImporteInvoice, TotalImpuestos,
 };
 
 /// Boleta o Factura
@@ -41,7 +41,7 @@ pub struct Invoice {
     pub direccion_entrega: Option<Direccion>,
     /// Factura guia: the invoice also works as the guia de remision
     pub guia_embebida: Option<GuiaEmbebida>,
-    pub forma_de_pago: Option<FormaDePago>,
+    pub forma_pago: Option<FormaPago>,
 
     pub anticipos: Vec<Anticipo>,
     pub descuentos: Vec<Descuento>,
@@ -56,7 +56,7 @@ pub struct Invoice {
     pub documentos_relacionados: Vec<DocumentoRelacionado>,
 
     pub observaciones: Option<String>,
-    pub orden_de_compra: Option<String>,
+    pub orden_compra: Option<String>,
 }
 
 /// Datos del traslado de una factura guia

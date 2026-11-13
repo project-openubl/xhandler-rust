@@ -23,8 +23,8 @@ fn enrich_detalle(detalle: Detalle) -> Detalle {
     invoice.detalles.remove(0)
 }
 
-fn cuota() -> CuotaDePago {
-    CuotaDePago {
+fn cuota() -> CuotaPago {
+    CuotaPago {
         importe: Decimal::TEN,
         fecha_pago: NaiveDate::from_ymd_opt(2022, 1, 1).unwrap(),
     }
@@ -50,7 +50,7 @@ fn dont_enrich_moneda() {
 #[test]
 fn enrich_fecha_emision() {
     let invoice = enrich(Invoice::default());
-    assert_eq!(invoice.fecha_emision, Some(defaults_base().date));
+    assert_eq!(invoice.fecha_emision, Some(defaults_base().fecha_emision));
 }
 
 #[test]
@@ -64,40 +64,40 @@ fn dont_enrich_fecha_emision() {
 }
 
 #[test]
-fn enrich_forma_de_pago_contado() {
+fn enrich_forma_pago_contado() {
     let invoice = enrich(Invoice::default());
-    let forma_de_pago = invoice.forma_de_pago.unwrap();
-    assert!(matches!(forma_de_pago.tipo, Some(TipoFormaDePago::Contado)));
+    let forma_pago = invoice.forma_pago.unwrap();
+    assert!(matches!(forma_pago.tipo, Some(TipoFormaPago::Contado)));
 }
 
 #[test]
-fn enrich_forma_de_pago_credito() {
+fn enrich_forma_pago_credito() {
     let invoice = enrich(Invoice {
-        forma_de_pago: Some(FormaDePago {
+        forma_pago: Some(FormaPago {
             tipo: None,
             cuotas: vec![cuota()],
             total: None,
         }),
         ..Default::default()
     });
-    let forma_de_pago = invoice.forma_de_pago.unwrap();
-    assert!(matches!(forma_de_pago.tipo, Some(TipoFormaDePago::Credito)));
+    let forma_pago = invoice.forma_pago.unwrap();
+    assert!(matches!(forma_pago.tipo, Some(TipoFormaPago::Credito)));
 }
 
 /// Java corrects a CREDITO without cuotas to CONTADO (and the reverse);
 /// Rust keeps the user's value.
 #[test]
-fn dont_enrich_forma_de_pago_tipo() {
+fn dont_enrich_forma_pago_tipo() {
     let invoice = enrich(Invoice {
-        forma_de_pago: Some(FormaDePago {
-            tipo: Some(TipoFormaDePago::Contado),
+        forma_pago: Some(FormaPago {
+            tipo: Some(TipoFormaPago::Contado),
             cuotas: vec![cuota()],
             total: None,
         }),
         ..Default::default()
     });
-    let forma_de_pago = invoice.forma_de_pago.unwrap();
-    assert!(matches!(forma_de_pago.tipo, Some(TipoFormaDePago::Contado)));
+    let forma_pago = invoice.forma_pago.unwrap();
+    assert!(matches!(forma_pago.tipo, Some(TipoFormaPago::Contado)));
 }
 
 #[test]

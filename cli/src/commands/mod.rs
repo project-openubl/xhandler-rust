@@ -44,8 +44,8 @@ pub fn absolute_path(path: &str) -> String {
 pub fn exit_code_for(status: xhandler::prelude::Status) -> ExitCode {
     use xhandler::prelude::Status;
     match status {
-        Status::Aceptado | Status::EnProceso => ExitCode::SUCCESS,
-        Status::Rechazado | Status::Excepcion | Status::Unknown => ExitCode::from(2),
+        Status::Accepted | Status::InProgress => ExitCode::SUCCESS,
+        Status::Rejected | Status::Exception | Status::Unknown => ExitCode::from(2),
     }
 }
 
@@ -121,14 +121,14 @@ pub fn verify_ticket_output(
                 status,
             ))
         }
-        VerifyTicketAggregatedResponse::Error(error) => {
-            let status = error.status();
+        VerifyTicketAggregatedResponse::Fault(fault) => {
+            let status = fault.status();
             Ok((
                 serde_json::json!({
-                    "code": error.code,
-                    "sunat_code": error.sunat_code(),
+                    "code": fault.code,
+                    "sunat_code": fault.sunat_code(),
                     "status": status.to_string(),
-                    "message": error.message,
+                    "message": fault.message,
                 }),
                 status,
             ))

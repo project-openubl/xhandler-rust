@@ -18,7 +18,7 @@ pub struct Defaults {
     pub icb_tasa: Decimal,
     pub igv_tasa: Decimal,
     pub ivap_tasa: Decimal,
-    pub date: NaiveDate,
+    pub fecha_emision: NaiveDate,
 }
 
 pub trait Enrich {

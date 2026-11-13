@@ -32,7 +32,7 @@ pub struct CreditNote {
     pub comprobante_afectado_serie_numero: String,
     /// Catalog1
     pub comprobante_afectado_tipo: Option<String>,
-    pub sustento_descripcion: String,
+    pub descripcion_sustento: String,
 
     pub detalles: Vec<Detalle>,
 
@@ -42,5 +42,5 @@ pub struct CreditNote {
     pub guias: Vec<Guia>,
     pub documentos_relacionados: Vec<DocumentoRelacionado>,
 
-    pub orden_de_compra: Option<String>,
+    pub orden_compra: Option<String>,
 }

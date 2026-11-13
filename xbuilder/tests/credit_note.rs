@@ -7,7 +7,7 @@ use crate::common::{assert_credit_note, credit_note_base};
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/creditnote/CreditNoteTest";
+const BASE: &str = "tests/resources/e2e/renderer/credit_note";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -30,7 +30,7 @@ async fn credit_note() {
         ..credit_note_base()
     };
 
-    assert_credit_note(&mut credit_note, &format!("{BASE}/MinData_RUC.xml")).await;
+    assert_credit_note(&mut credit_note, &format!("{BASE}/min_data_ruc.xml")).await;
 }
 
 #[test]

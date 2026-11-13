@@ -21,7 +21,7 @@ pub struct Perception {
     pub tipo_regimen_porcentaje: Decimal,
     pub importe_total_percibido: Decimal,
     pub importe_total_cobrado: Decimal,
-    pub observacion: Option<String>,
+    pub observaciones: Option<String>,
     pub operacion: Option<PercepcionRetencionOperacion>,
     /// Computed during enrichment: "{serie}-{numero}"
     pub documento_id: Option<String>,
@@ -44,7 +44,7 @@ pub struct Retention {
     pub tipo_regimen_porcentaje: Decimal,
     pub importe_total_retenido: Decimal,
     pub importe_total_pagado: Decimal,
-    pub observacion: Option<String>,
+    pub observaciones: Option<String>,
     pub operacion: Option<PercepcionRetencionOperacion>,
     /// Computed during enrichment: "{serie}-{numero}"
     pub documento_id: Option<String>,
@@ -57,7 +57,7 @@ pub struct PercepcionRetencionOperacion {
     #[serde(deserialize_with = "crate::serde_date::deserialize")]
     pub fecha_operacion: NaiveDate,
     pub importe_operacion: Decimal,
-    pub comprobante: PercepcionRetencionComprobanteAfectado,
+    pub comprobante_afectado: PercepcionRetencionComprobanteAfectado,
     pub tipo_cambio: Option<TipoCambio>,
 }
 

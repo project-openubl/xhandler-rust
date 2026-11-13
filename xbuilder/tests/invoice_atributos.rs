@@ -8,7 +8,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceAtributosTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_atributos";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -41,7 +41,7 @@ async fn invoice_with_atributos_simple() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/atributosSimple.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/atributos_simple.xml")).await;
 }
 
 #[serial_test::serial]
@@ -75,5 +75,5 @@ async fn invoice_with_atributos_con_periodo() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/atributosConPeriodo.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/atributos_con_periodo.xml")).await;
 }

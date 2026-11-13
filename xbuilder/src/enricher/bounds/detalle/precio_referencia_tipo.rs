@@ -1,7 +1,7 @@
 use crate::models::common::Detalle;
 
 pub trait DetallePrecioReferenciaTipoGetter {
-    fn get_precio_referencia_tipo(&self) -> &Option<String>;
+    fn precio_referencia_tipo(&self) -> &Option<String>;
 }
 
 pub trait DetallePrecioReferenciaTipoSetter {
@@ -9,7 +9,7 @@ pub trait DetallePrecioReferenciaTipoSetter {
 }
 
 impl DetallePrecioReferenciaTipoGetter for Detalle {
-    fn get_precio_referencia_tipo(&self) -> &Option<String> {
+    fn precio_referencia_tipo(&self) -> &Option<String> {
         &self.precio_referencia_tipo
     }
 }

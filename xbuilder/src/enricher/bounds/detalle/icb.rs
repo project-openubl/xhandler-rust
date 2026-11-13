@@ -3,7 +3,7 @@ use rust_decimal::Decimal;
 use crate::models::common::Detalle;
 
 pub trait DetalleIcbGetter {
-    fn get_icb(&self) -> &Option<Decimal>;
+    fn icb(&self) -> &Option<Decimal>;
 }
 
 pub trait DetalleIcbSetter {
@@ -11,7 +11,7 @@ pub trait DetalleIcbSetter {
 }
 
 impl DetalleIcbGetter for Detalle {
-    fn get_icb(&self) -> &Option<Decimal> {
+    fn icb(&self) -> &Option<Decimal> {
         &self.icb
     }
 }

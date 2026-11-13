@@ -7,69 +7,69 @@ use crate::models::summary_documents::SummaryDocuments;
 use crate::models::voided_documents::VoidedDocuments;
 
 pub trait ProveedorGetter {
-    fn get_proveedor(&self) -> &Proveedor;
+    fn proveedor(&self) -> &Proveedor;
 }
 
-pub trait ProveedorSetter {
+pub trait ProveedorDireccionSetter {
     fn set_proveedor_direccion(&mut self, val: Direccion);
 }
 
 impl ProveedorGetter for Invoice {
-    fn get_proveedor(&self) -> &Proveedor {
+    fn proveedor(&self) -> &Proveedor {
         &self.proveedor
     }
 }
 
 impl ProveedorGetter for CreditNote {
-    fn get_proveedor(&self) -> &Proveedor {
+    fn proveedor(&self) -> &Proveedor {
         &self.proveedor
     }
 }
 
 impl ProveedorGetter for DebitNote {
-    fn get_proveedor(&self) -> &Proveedor {
+    fn proveedor(&self) -> &Proveedor {
         &self.proveedor
     }
 }
 
-impl ProveedorSetter for Invoice {
+impl ProveedorDireccionSetter for Invoice {
     fn set_proveedor_direccion(&mut self, val: Direccion) {
         self.proveedor.direccion = Some(val);
     }
 }
 
-impl ProveedorSetter for CreditNote {
+impl ProveedorDireccionSetter for CreditNote {
     fn set_proveedor_direccion(&mut self, val: Direccion) {
         self.proveedor.direccion = Some(val);
     }
 }
 
-impl ProveedorSetter for DebitNote {
+impl ProveedorDireccionSetter for DebitNote {
     fn set_proveedor_direccion(&mut self, val: Direccion) {
         self.proveedor.direccion = Some(val);
     }
 }
 
 impl ProveedorGetter for VoidedDocuments {
-    fn get_proveedor(&self) -> &Proveedor {
+    fn proveedor(&self) -> &Proveedor {
         &self.proveedor
     }
 }
 
 impl ProveedorGetter for SummaryDocuments {
-    fn get_proveedor(&self) -> &Proveedor {
+    fn proveedor(&self) -> &Proveedor {
         &self.proveedor
     }
 }
 
 impl ProveedorGetter for Perception {
-    fn get_proveedor(&self) -> &Proveedor {
+    fn proveedor(&self) -> &Proveedor {
         &self.proveedor
     }
 }
 
 impl ProveedorGetter for Retention {
-    fn get_proveedor(&self) -> &Proveedor {
+    fn proveedor(&self) -> &Proveedor {
         &self.proveedor
     }
 }

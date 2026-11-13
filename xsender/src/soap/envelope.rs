@@ -29,15 +29,15 @@ pub enum BodyData {
 #[derive(Clone, Debug, Serialize)]
 pub struct FileData {
     pub filename: String,
-    pub file_content: String,
+    pub zip_base64: String,
 }
 
-pub trait ToStringXml {
-    fn to_string_xml(&self) -> Result<String>;
+pub trait ToXmlString {
+    fn to_xml_string(&self) -> Result<String>;
 }
 
-impl ToStringXml for EnvelopeData {
-    fn to_string_xml(&self) -> Result<String> {
+impl ToXmlString for EnvelopeData {
+    fn to_xml_string(&self) -> Result<String> {
         let mut context = Context::new();
         context.insert("username", &self.username);
         context.insert("password", &self.password);
@@ -86,12 +86,12 @@ mod tests {
                 operation: "sendBill",
                 file: FileData {
                     filename: String::from("my_filename"),
-                    file_content: String::from("my_file_content"),
+                    zip_base64: String::from("my_zip_base64"),
                 },
             },
         };
 
-        assert!(message.to_string_xml().unwrap().len() > 1);
+        assert!(message.to_xml_string().unwrap().len() > 1);
     }
 
     #[test]
@@ -103,12 +103,12 @@ mod tests {
                 operation: "sendSummary",
                 file: FileData {
                     filename: String::from("my_filename"),
-                    file_content: String::from("my_file_content"),
+                    zip_base64: String::from("my_zip_base64"),
                 },
             },
         };
 
-        assert!(message.to_string_xml().unwrap().len() > 1);
+        assert!(message.to_xml_string().unwrap().len() > 1);
     }
 
     #[test]
@@ -120,12 +120,12 @@ mod tests {
                 operation: "sendPack",
                 file: FileData {
                     filename: String::from("my_filename.zip"),
-                    file_content: String::from("my_file_content"),
+                    zip_base64: String::from("my_zip_base64"),
                 },
             },
         };
 
-        let xml = message.to_string_xml().unwrap();
+        let xml = message.to_xml_string().unwrap();
         assert!(xml.contains("<ns2:sendPack xmlns:ns2=\"http://service.sunat.gob.pe\">"));
         assert!(xml.contains("<fileName>my_filename.zip</fileName>"));
         assert!(!xml.contains("sendBill"));
@@ -139,7 +139,7 @@ mod tests {
             body: VerifyTicket(String::from("my_ticket")),
         };
 
-        assert!(message.to_string_xml().unwrap().len() > 1);
+        assert!(message.to_xml_string().unwrap().len() > 1);
     }
 
     fn document() -> ConsultDocument {
@@ -162,7 +162,7 @@ mod tests {
             },
         };
 
-        let xml = message.to_string_xml().unwrap();
+        let xml = message.to_xml_string().unwrap();
         assert!(xml.contains("<ns2:getStatusCdr xmlns:ns2=\"http://service.sunat.gob.pe\">"));
         assert!(xml.contains("<serieComprobante>F001</serieComprobante>"));
         assert!(xml.contains("<numeroComprobante>102</numeroComprobante>"));
@@ -183,7 +183,7 @@ mod tests {
             }),
         };
 
-        let xml = message.to_string_xml().unwrap();
+        let xml = message.to_xml_string().unwrap();
         assert!(xml.contains("<serieCDP>F001</serieCDP>"));
         // Tera escapes "/" as "&#x2F;", which XML parsers decode back
         assert!(xml.contains("<fechaEmision>31&#x2F;01&#x2F;2022</fechaEmision>"));
@@ -197,10 +197,10 @@ mod tests {
             password: String::from("my_password"),
             body: ValidateFile(FileData {
                 filename: String::from("my_filename"),
-                file_content: String::from("my_file_content"),
+                zip_base64: String::from("my_zip_base64"),
             }),
         };
 
-        assert!(message.to_string_xml().unwrap().len() > 1);
+        assert!(message.to_xml_string().unwrap().len() > 1);
     }
 }

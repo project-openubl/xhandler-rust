@@ -7,7 +7,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceGuiasTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_guias";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -28,11 +28,11 @@ async fn invoice_guia_serie_t() {
             },
         ],
         guias: vec![Guia {
-            tipo_documento: Catalog1::GuiaRemisionRemitente.code().into(),
+            tipo_comprobante: Catalog1::GuiaRemisionRemitente.code().into(),
             serie_numero: "T001-1".into(),
         }],
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/guiaSerieT.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/guia_serie_t.xml")).await;
 }

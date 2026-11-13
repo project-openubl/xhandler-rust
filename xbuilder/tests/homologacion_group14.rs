@@ -6,7 +6,7 @@ use crate::common::proveedor_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/homologacion/Group14Test";
+const BASE: &str = "tests/resources/e2e/homologacion/group14";
 
 fn voided_items() -> Vec<VoidedDocumentsItem> {
     (1..=5)
@@ -31,5 +31,5 @@ async fn caso100_comunicacion_de_baja() {
         comprobantes: voided_items(),
         ..Default::default()
     };
-    assert_voided_documents(&mut doc, &format!("{BASE}/comunicacionDeBaja.xml")).await;
+    assert_voided_documents(&mut doc, &format!("{BASE}/comunicacion_de_baja.xml")).await;
 }

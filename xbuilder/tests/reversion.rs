@@ -5,7 +5,7 @@ use crate::common::{assert_voided_documents, defaults_base, proveedor_base};
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/reversion/ReversionTest";
+const BASE: &str = "tests/resources/e2e/renderer/reversion";
 
 #[serial_test::serial]
 #[tokio::test]

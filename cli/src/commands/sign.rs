@@ -16,12 +16,12 @@ pub const BETA_CERTIFICATE: &str = include_str!("../../../xsigner/resources/test
   openubl sign -f factura.xml --pfx certificado.pfx --pfx-password clave -o firmado.xml")]
 pub struct SignArgs {
     /// Archivo XML sin firmar. Usar "-" para leer desde stdin
-    #[arg(short = 'f', long = "file")]
-    pub input_file: String,
+    #[arg(short = 'f', long)]
+    pub file: String,
 
     /// Ruta del archivo XML firmado. Si se omite, se imprime en stdout
-    #[arg(short = 'o', long = "output")]
-    pub output_file: Option<String>,
+    #[arg(short = 'o', long)]
+    pub output: Option<String>,
 
     #[command(flatten)]
     pub keys: KeyArgs,
@@ -34,19 +34,19 @@ pub struct SignArgs {
 impl SignArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
         // Accepts UTF-8 and ISO-8859-1 input
-        let signer = if self.input_file == "-" {
+        let signer = if self.file == "-" {
             let mut buf = Vec::new();
             std::io::stdin().read_to_end(&mut buf)?;
             XSigner::from_bytes(buf)
         } else {
-            XSigner::from_file(&self.input_file)
+            XSigner::from_path(&self.file)
         }
-        .with_context(|| format!("no se puede leer el archivo XML: {}", self.input_file))?;
+        .with_context(|| format!("no se puede leer el archivo XML: {}", self.file))?;
 
         let key_pair = self.keys.resolve(self.beta)?;
         let signed_xml = signer.sign(&key_pair)?;
 
-        match &self.output_file {
+        match &self.output {
             Some(path) => std::fs::write(path, &signed_xml)?,
             None => {
                 let output = String::from_utf8(signed_xml)?;
@@ -62,19 +62,19 @@ impl SignArgs {
 #[derive(Args)]
 pub struct KeyArgs {
     /// Ruta al archivo de llave privada PEM, PKCS#1 o PKCS#8 (con --beta se usan certificados de prueba)
-    #[arg(long = "private-key", env = "OPENUBL_PRIVATE_KEY")]
+    #[arg(long, env = "OPENUBL_PRIVATE_KEY")]
     pub private_key: Option<String>,
 
     /// Ruta al archivo de certificado X.509 PEM (con --beta se usan certificados de prueba)
-    #[arg(long = "certificate", env = "OPENUBL_CERTIFICATE")]
+    #[arg(long, env = "OPENUBL_CERTIFICATE")]
     pub certificate: Option<String>,
 
     /// Ruta al certificado PKCS#12 (.pfx/.p12). Tiene prioridad sobre --private-key/--certificate
-    #[arg(long = "pfx", env = "OPENUBL_PFX")]
+    #[arg(long, env = "OPENUBL_PFX")]
     pub pfx: Option<String>,
 
     /// Clave del certificado PKCS#12
-    #[arg(long = "pfx-password", env = "OPENUBL_PFX_PASSWORD")]
+    #[arg(long, env = "OPENUBL_PFX_PASSWORD")]
     pub pfx_password: Option<String>,
 }
 

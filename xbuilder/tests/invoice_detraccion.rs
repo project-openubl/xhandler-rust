@@ -7,7 +7,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDetraccionTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_detraccion";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -20,7 +20,7 @@ async fn invoice_detraccion() {
             ..Default::default()
         }],
         detraccion: Some(Detraccion {
-            medio_de_pago: Catalog59::DepositoEnCuenta.code().into(),
+            medio_pago: Catalog59::DepositoEnCuenta.code().into(),
             cuenta_bancaria: "0004-3342343243".into(),
             tipo_bien_detraido: "014".into(),
             porcentaje: dec!(0.04),

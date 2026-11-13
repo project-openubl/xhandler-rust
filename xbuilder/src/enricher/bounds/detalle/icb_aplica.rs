@@ -1,15 +1,15 @@
 use crate::models::common::Detalle;
 
-pub trait DetalleICBAplicaGetter {
-    fn get_icb_aplica(&self) -> bool;
+pub trait DetalleIcbAplicaGetter {
+    fn icb_aplica(&self) -> bool;
 }
 
 pub trait DetalleIcbAplicaSetter {
     fn set_icb_aplica(&mut self, val: bool);
 }
 
-impl DetalleICBAplicaGetter for Detalle {
-    fn get_icb_aplica(&self) -> bool {
+impl DetalleIcbAplicaGetter for Detalle {
+    fn icb_aplica(&self) -> bool {
         self.icb_aplica
     }
 }

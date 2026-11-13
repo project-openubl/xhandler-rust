@@ -8,7 +8,7 @@ use crate::models::summary_documents::SummaryDocuments;
 use crate::models::voided_documents::VoidedDocuments;
 
 pub trait FirmanteGetter {
-    fn get_firmante(&self) -> &Option<Firmante>;
+    fn firmante(&self) -> &Option<Firmante>;
 }
 
 pub trait FirmanteSetter {
@@ -16,19 +16,19 @@ pub trait FirmanteSetter {
 }
 
 impl FirmanteGetter for Invoice {
-    fn get_firmante(&self) -> &Option<Firmante> {
+    fn firmante(&self) -> &Option<Firmante> {
         &self.firmante
     }
 }
 
 impl FirmanteGetter for CreditNote {
-    fn get_firmante(&self) -> &Option<Firmante> {
+    fn firmante(&self) -> &Option<Firmante> {
         &self.firmante
     }
 }
 
 impl FirmanteGetter for DebitNote {
-    fn get_firmante(&self) -> &Option<Firmante> {
+    fn firmante(&self) -> &Option<Firmante> {
         &self.firmante
     }
 }
@@ -52,13 +52,13 @@ impl FirmanteSetter for DebitNote {
 }
 
 impl FirmanteGetter for VoidedDocuments {
-    fn get_firmante(&self) -> &Option<Firmante> {
+    fn firmante(&self) -> &Option<Firmante> {
         &self.firmante
     }
 }
 
 impl FirmanteGetter for SummaryDocuments {
-    fn get_firmante(&self) -> &Option<Firmante> {
+    fn firmante(&self) -> &Option<Firmante> {
         &self.firmante
     }
 }
@@ -76,13 +76,13 @@ impl FirmanteSetter for SummaryDocuments {
 }
 
 impl FirmanteGetter for Perception {
-    fn get_firmante(&self) -> &Option<Firmante> {
+    fn firmante(&self) -> &Option<Firmante> {
         &self.firmante
     }
 }
 
 impl FirmanteGetter for Retention {
-    fn get_firmante(&self) -> &Option<Firmante> {
+    fn firmante(&self) -> &Option<Firmante> {
         &self.firmante
     }
 }
@@ -100,7 +100,7 @@ impl FirmanteSetter for Retention {
 }
 
 impl FirmanteGetter for DespatchAdvice {
-    fn get_firmante(&self) -> &Option<Firmante> {
+    fn firmante(&self) -> &Option<Firmante> {
         &self.firmante
     }
 }

@@ -3,7 +3,7 @@ use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
 
 pub trait ClienteTipoDocumentoIdentidadGetter {
-    fn get_cliente_tipo_documento_identidad(&self) -> &str;
+    fn cliente_tipo_documento_identidad(&self) -> &str;
 }
 
 pub trait ClienteTipoDocumentoIdentidadSetter {
@@ -11,19 +11,19 @@ pub trait ClienteTipoDocumentoIdentidadSetter {
 }
 
 impl ClienteTipoDocumentoIdentidadGetter for Invoice {
-    fn get_cliente_tipo_documento_identidad(&self) -> &str {
+    fn cliente_tipo_documento_identidad(&self) -> &str {
         &self.cliente.tipo_documento_identidad
     }
 }
 
 impl ClienteTipoDocumentoIdentidadGetter for CreditNote {
-    fn get_cliente_tipo_documento_identidad(&self) -> &str {
+    fn cliente_tipo_documento_identidad(&self) -> &str {
         &self.cliente.tipo_documento_identidad
     }
 }
 
 impl ClienteTipoDocumentoIdentidadGetter for DebitNote {
-    fn get_cliente_tipo_documento_identidad(&self) -> &str {
+    fn cliente_tipo_documento_identidad(&self) -> &str {
         &self.cliente.tipo_documento_identidad
     }
 }

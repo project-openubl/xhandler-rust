@@ -14,29 +14,26 @@ use xhandler::prelude::*;
 La salida es JSON en stdout. Codigo de salida: 0=aceptado/ticket, 2=rechazado o error SUNAT.")]
 pub struct SendArgs {
     /// Archivo XML firmado a enviar
-    #[arg(short = 'f', long = "file")]
-    pub input_file: String,
+    #[arg(short = 'f', long)]
+    pub file: String,
 
     /// Ruta del archivo CDR zip de respuesta. Por defecto: <archivo_entrada>.zip
-    #[arg(short = 'o', long = "output")]
-    pub output_file: Option<String>,
+    #[arg(short = 'o', long)]
+    pub output: Option<String>,
 
     #[command(flatten)]
     pub credentials: CredentialArgs,
 
     /// Endpoint SOAP de facturas SUNAT (con --beta se usan URLs de prueba)
-    #[arg(long = "url-invoice", env = "OPENUBL_URL_INVOICE")]
+    #[arg(long, env = "OPENUBL_URL_INVOICE")]
     pub url_invoice: Option<String>,
 
     /// Endpoint SOAP de percepciones/retenciones SUNAT (con --beta se usan URLs de prueba)
-    #[arg(
-        long = "url-perception-retention",
-        env = "OPENUBL_URL_PERCEPTION_RETENTION"
-    )]
+    #[arg(long, env = "OPENUBL_URL_PERCEPTION_RETENTION")]
     pub url_perception_retention: Option<String>,
 
     /// Endpoint REST de guias de remision SUNAT (requerido con --beta: SUNAT no tiene beta para guias)
-    #[arg(long = "url-despatch", env = "OPENUBL_URL_DESPATCH")]
+    #[arg(long, env = "OPENUBL_URL_DESPATCH")]
     pub url_despatch: Option<String>,
 
     /// Usar URLs de prueba, credenciales de prueba de SUNAT beta
@@ -73,11 +70,11 @@ pub struct CredentialArgs {
     pub password: Option<String>,
 
     /// Client ID de la API REST de SUNAT (requerido para guias de remision)
-    #[arg(long = "client-id", env = "OPENUBL_CLIENT_ID")]
+    #[arg(long, env = "OPENUBL_CLIENT_ID")]
     pub client_id: Option<String>,
 
     /// Client secret de la API REST de SUNAT (requerido para guias de remision)
-    #[arg(long = "client-secret", env = "OPENUBL_CLIENT_SECRET")]
+    #[arg(long, env = "OPENUBL_CLIENT_SECRET")]
     pub client_secret: Option<String>,
 }
 
@@ -124,14 +121,14 @@ pub enum SendResult {
         verification: Option<(serde_json::Value, Status)>,
     },
     /// SUNAT returned an error (SOAP fault or REST error).
-    Error(ErrorResponse),
+    Fault(SunatFault),
 }
 
 impl SendResult {
     /// Prints the result as JSON, adding the `extra` fields, and returns the exit code.
     /// SUNAT errors go to stderr, everything else to stdout.
     pub fn print(self, extra: &[(&str, serde_json::Value)]) -> anyhow::Result<ExitCode> {
-        let is_fault = matches!(self, SendResult::Error(_));
+        let is_fault = matches!(self, SendResult::Fault(_));
         let (mut output, status) = match self {
             SendResult::Cdr { cdr_path, metadata } => (
                 serde_json::json!({
@@ -153,17 +150,17 @@ impl SendResult {
                         println!("{}", serde_json::to_string_pretty(&output)?);
                         (verify_output, status)
                     }
-                    None => (output, Status::EnProceso),
+                    None => (output, Status::InProgress),
                 }
             }
-            SendResult::Error(error) => (
+            SendResult::Fault(fault) => (
                 serde_json::json!({
-                    "code": error.code,
-                    "sunat_code": error.sunat_code(),
-                    "status": error.status().to_string(),
-                    "message": error.message,
+                    "code": fault.code,
+                    "sunat_code": fault.sunat_code(),
+                    "status": fault.status().to_string(),
+                    "message": fault.message,
                 }),
-                error.status(),
+                fault.status(),
             ),
         };
 
@@ -184,18 +181,14 @@ impl SendResult {
 impl SendArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
         // Read raw bytes: signed XML may be ISO-8859-1 and must reach SUNAT unchanged
-        let xml_bytes = std::fs::read(&self.input_file)
-            .with_context(|| format!("no se puede leer el archivo XML: {}", self.input_file))?;
-        let ubl_file = UblFile::from_bytes(xml_bytes).with_context(|| {
-            format!(
-                "no se puede decodificar el archivo XML: {}",
-                self.input_file
-            )
-        })?;
+        let xml_bytes = std::fs::read(&self.file)
+            .with_context(|| format!("no se puede leer el archivo XML: {}", self.file))?;
+        let ubl_file = UblFile::from_bytes(xml_bytes)
+            .with_context(|| format!("no se puede decodificar el archivo XML: {}", self.file))?;
         let default_cdr = self
-            .output_file
+            .output
             .clone()
-            .unwrap_or_else(|| format!("{}.zip", self.input_file));
+            .unwrap_or_else(|| format!("{}.zip", self.file));
 
         self.send_ubl_file(&ubl_file, &default_cdr)
             .await?
@@ -252,7 +245,7 @@ impl SendArgs {
                     verification,
                 })
             }
-            SendFileAggregatedResponse::Error(error) => Ok(SendResult::Error(error)),
+            SendFileAggregatedResponse::Fault(fault) => Ok(SendResult::Fault(fault)),
         }
     }
 

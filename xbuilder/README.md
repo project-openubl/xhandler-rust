@@ -8,7 +8,7 @@ use xbuilder::prelude::*;
 fn main() {
     // Defaults to be use while enriching the object
     let defaults = Defaults {
-        date: NaiveDate::from_ymd_opt(2019, 12, 24).unwrap(),
+        fecha_emision: NaiveDate::from_ymd_opt(2019, 12, 24).unwrap(),
         icb_tasa: dec!(0.2),
         igv_tasa: dec!(0.18),
         ivap_tasa: dec!(0.04),
@@ -30,7 +30,7 @@ fn main() {
         fecha_emision: None,
         hora_emision: None,
         fecha_vencimiento: None,
-        forma_de_pago: None,
+        forma_pago: None,
         direccion_entrega: None,
         observaciones: None,
 
@@ -46,7 +46,7 @@ fn main() {
             contacto: None,
         },
         cliente: Cliente {
-            tipo_documento_identidad: Catalog6::RUC.code(),
+            tipo_documento_identidad: Catalog6::Ruc.code(),
             numero_documento_identidad: "12121212121",
             nombre: "Cliente nombre",
             direccion: None,
@@ -63,7 +63,7 @@ fn main() {
         guias: vec![],
         documentos_relacionados: vec![],
 
-        orden_de_compra: None,
+        orden_compra: None,
         detalles: vec![
             Detalle {
                 descripcion: "Item1",

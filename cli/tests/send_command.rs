@@ -60,7 +60,7 @@ fn send_invoice_to_sunat_beta() {
         "output should contain description: {stdout}"
     );
 
-    // CDR should be saved to default path (input_file + .zip)
+    // CDR should be saved to default path (<file>.zip)
     assert!(
         default_cdr_path.exists(),
         "default CDR file should exist at {default_cdr_path:?}"
@@ -181,8 +181,8 @@ fn send_nonexistent_file_fails() {
 
 fn make_send_args(beta: bool) -> SendArgs {
     SendArgs {
-        input_file: String::new(),
-        output_file: None,
+        file: String::new(),
+        output: None,
         credentials: CredentialArgs::default(),
         url_invoice: None,
         url_perception_retention: None,

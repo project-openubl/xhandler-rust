@@ -1,0 +1,17 @@
+
+    <cac:DiscrepancyResponse>
+        <cbc:ReferenceID>{{comprobante_afectado_serie_numero}}</cbc:ReferenceID>
+        <cbc:ResponseCode>{{tipo_nota}}</cbc:ResponseCode>
+        <cbc:Description><![CDATA[{{descripcion_sustento | cdata | safe}}]]></cbc:Description>
+    </cac:DiscrepancyResponse>
+    {%- if orden_compra %}
+    <cac:OrderReference>
+        <cbc:ID>{{orden_compra}}</cbc:ID>
+    </cac:OrderReference>
+    {%- endif %}
+    <cac:BillingReference>
+        <cac:InvoiceDocumentReference>
+            <cbc:ID>{{comprobante_afectado_serie_numero}}</cbc:ID>
+            <cbc:DocumentTypeCode listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">{{comprobante_afectado_tipo}}</cbc:DocumentTypeCode>
+        </cac:InvoiceDocumentReference>
+    </cac:BillingReference>

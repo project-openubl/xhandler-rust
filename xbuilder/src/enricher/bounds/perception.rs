@@ -1,7 +1,7 @@
 use crate::models::perception_retention::Perception;
 
 pub trait PerceptionDocumentoIdGetter {
-    fn get_documento_id(&self) -> &Option<String>;
+    fn documento_id(&self) -> &Option<String>;
 }
 
 pub trait PerceptionDocumentoIdSetter {
@@ -9,23 +9,15 @@ pub trait PerceptionDocumentoIdSetter {
 }
 
 pub trait PerceptionSerieGetter {
-    fn get_serie(&self) -> &str;
+    fn serie(&self) -> &str;
 }
 
 pub trait PerceptionNumeroGetter {
-    fn get_numero(&self) -> u32;
-}
-
-pub trait PerceptionMonedaGetter {
-    fn get_moneda(&self) -> &Option<String>;
-}
-
-pub trait PerceptionMonedaSetter {
-    fn set_moneda(&mut self, val: &str);
+    fn numero(&self) -> u32;
 }
 
 impl PerceptionDocumentoIdGetter for Perception {
-    fn get_documento_id(&self) -> &Option<String> {
+    fn documento_id(&self) -> &Option<String> {
         &self.documento_id
     }
 }
@@ -37,25 +29,13 @@ impl PerceptionDocumentoIdSetter for Perception {
 }
 
 impl PerceptionSerieGetter for Perception {
-    fn get_serie(&self) -> &str {
+    fn serie(&self) -> &str {
         &self.serie
     }
 }
 
 impl PerceptionNumeroGetter for Perception {
-    fn get_numero(&self) -> u32 {
+    fn numero(&self) -> u32 {
         self.numero
-    }
-}
-
-impl PerceptionMonedaGetter for Perception {
-    fn get_moneda(&self) -> &Option<String> {
-        &self.moneda
-    }
-}
-
-impl PerceptionMonedaSetter for Perception {
-    fn set_moneda(&mut self, val: &str) {
-        self.moneda = Some(val.to_string());
     }
 }

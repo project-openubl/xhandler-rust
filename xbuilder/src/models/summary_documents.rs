@@ -50,8 +50,8 @@ pub struct SummaryDocumentsItemComprobante {
 pub struct SummaryDocumentsPercepcion {
     /// Catalog22: regimen de percepcion
     pub tipo_regimen: String,
-    /// Tasa de percepcion en porcentaje (e.g. 2 para 2%)
-    pub tasa: Decimal,
+    /// Porcentaje de percepcion (e.g. 2 para 2%)
+    pub porcentaje: Decimal,
     /// Base imponible (TaxableAmount)
     pub monto_base: Decimal,
     /// Importe percibido (TotalInvoiceAmount)

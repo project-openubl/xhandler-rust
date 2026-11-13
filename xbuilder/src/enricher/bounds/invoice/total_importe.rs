@@ -2,7 +2,7 @@ use crate::models::common::TotalImporteInvoice;
 use crate::models::invoice::Invoice;
 
 pub trait InvoiceTotalImporteGetter {
-    fn get_total_importe(&self) -> &Option<TotalImporteInvoice>;
+    fn total_importe(&self) -> &Option<TotalImporteInvoice>;
 }
 
 pub trait InvoiceTotalImporteSetter {
@@ -10,7 +10,7 @@ pub trait InvoiceTotalImporteSetter {
 }
 
 impl InvoiceTotalImporteGetter for Invoice {
-    fn get_total_importe(&self) -> &Option<TotalImporteInvoice> {
+    fn total_importe(&self) -> &Option<TotalImporteInvoice> {
         &self.total_importe
     }
 }

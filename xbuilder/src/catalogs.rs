@@ -90,7 +90,7 @@ catalog! {
         Gratuito = "9996",
         Exonerado = "9997",
         Inafecto = "9998",
-        IcbPer = "7152",
+        Icbper = "7152",
         Otros = "9999",
     }
 }
@@ -105,7 +105,7 @@ impl Catalog5 {
             Catalog5::Gratuito => "FRE",
             Catalog5::Exonerado => "VAT",
             Catalog5::Inafecto => "FRE",
-            Catalog5::IcbPer => "OTH",
+            Catalog5::Icbper => "OTH",
             Catalog5::Otros => "OTH",
         }
     }
@@ -119,7 +119,7 @@ impl Catalog5 {
             Catalog5::Gratuito => "GRA",
             Catalog5::Exonerado => "EXO",
             Catalog5::Inafecto => "INA",
-            Catalog5::IcbPer => "ICBPER",
+            Catalog5::Icbper => "ICBPER",
             Catalog5::Otros => "OTROS",
         }
     }
@@ -128,9 +128,9 @@ impl Catalog5 {
 catalog! {
     Catalog6 {
         DocTribNoDomSinRuc = "0",
-        DNI = "1",
+        Dni = "1",
         Extranjeria = "4",
-        RUC = "6",
+        Ruc = "6",
         Pasaporte = "7",
         DecDiplomatica = "A",
         DocIdentPaisResidenciaNoDomiciliado | DocIdentPaisResidenciaNoD = "B",
@@ -442,8 +442,8 @@ catalog! {
         DescuentoGlobalPorAnticiposInafectos = "06",
         FactorDeCompensacion = "07",
         AnticipoDeIsc = "20",
-        FISE = "45",
-        RecargoAlConsumoYOPropinas = "46",
+        Fise = "45",
+        RecargoAlConsumoOPropinas | RecargoAlConsumoYOPropinas = "46",
         CargosQueAfectanBaseImponibleIgvIvap = "47",
         CargosQueNoAfectanBaseImponibleIgvIvap = "48",
         CargosGlobalesQueAfectanBaseImponibleIgvIvap = "49",
@@ -499,9 +499,9 @@ mod tests {
 
     #[test]
     fn from_code_accepts_code_or_name() {
-        assert_eq!(Catalog6::from_code("1"), Ok(Catalog6::DNI));
-        assert_eq!(Catalog6::from_code("DNI"), Ok(Catalog6::DNI));
-        assert_eq!(Catalog6::from_code("dni"), Ok(Catalog6::DNI));
+        assert_eq!(Catalog6::from_code("1"), Ok(Catalog6::Dni));
+        assert_eq!(Catalog6::from_code("DNI"), Ok(Catalog6::Dni));
+        assert_eq!(Catalog6::from_code("dni"), Ok(Catalog6::Dni));
         assert_eq!(
             Catalog6::from_code("DOC_IDENT_PAIS_RESIDENCIA_NO_D"),
             Ok(Catalog6::DocIdentPaisResidenciaNoDomiciliado)

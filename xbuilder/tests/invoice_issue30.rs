@@ -7,7 +7,9 @@ use crate::common::{invoice_base, proveedor_base};
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceIssue30Test";
+// Regression tests for project-openubl issue #30: totals for a fractional unit
+// price (10 x 6.68), with and without IGV in the price and with ICB.
+const BASE: &str = "tests/resources/e2e/renderer/invoice_issue30";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -27,7 +29,7 @@ async fn invoice_issue30() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/with-precioUnitario.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/with_precio_unitario.xml")).await;
 }
 
 #[serial_test::serial]
@@ -49,7 +51,7 @@ async fn invoice_issue30_precio_con_igv() {
 
     assert_invoice(
         &mut invoice,
-        &format!("{BASE}/with-precioUnitarioConImpuestos.xml"),
+        &format!("{BASE}/with_precio_unitario_con_impuestos.xml"),
     )
     .await;
 }
@@ -72,7 +74,11 @@ async fn invoice_issue30_precio_unitario_and_icb() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/with-precioUnitario-ICB.xml")).await;
+    assert_invoice(
+        &mut invoice,
+        &format!("{BASE}/with_precio_unitario_icb.xml"),
+    )
+    .await;
 }
 
 #[serial_test::serial]
@@ -95,7 +101,7 @@ async fn invoice_issue30_precio_con_igv_and_icb() {
 
     assert_invoice(
         &mut invoice,
-        &format!("{BASE}/with-precioUnitario-conImpuestos-ICB.xml"),
+        &format!("{BASE}/with_precio_unitario_con_impuestos_icb.xml"),
     )
     .await;
 }

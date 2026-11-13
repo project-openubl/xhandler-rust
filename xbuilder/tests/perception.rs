@@ -6,16 +6,16 @@ use crate::common::{assert_perception, proveedor_base};
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/perception/PerceptionTest";
+const BASE: &str = "tests/resources/e2e/renderer/perception";
 
-fn perception_simple() -> Perception {
+fn perception_input() -> Perception {
     Perception {
         serie: "P001".into(),
         numero: 1,
         fecha_emision: NaiveDate::from_ymd_opt(2022, 1, 31),
         proveedor: proveedor_base(),
         cliente: Cliente {
-            tipo_documento_identidad: Catalog6::RUC.code().into(),
+            tipo_documento_identidad: Catalog6::Ruc.code().into(),
             numero_documento_identidad: "12121212121".into(),
             nombre: "Carlos Feria".into(),
             ..Default::default()
@@ -24,11 +24,12 @@ fn perception_simple() -> Perception {
         tipo_regimen_porcentaje: dec!(2),
         importe_total_percibido: dec!(10),
         importe_total_cobrado: dec!(210),
+        observaciones: Some("Percepcion de prueba".into()),
         operacion: Some(PercepcionRetencionOperacion {
             numero_operacion: 1,
             fecha_operacion: NaiveDate::from_ymd_opt(2022, 1, 31).unwrap(),
             importe_operacion: dec!(100),
-            comprobante: PercepcionRetencionComprobanteAfectado {
+            comprobante_afectado: PercepcionRetencionComprobanteAfectado {
                 tipo_comprobante: "01".into(),
                 serie_numero: "F001-1".into(),
                 fecha_emision: NaiveDate::from_ymd_opt(2022, 1, 31).unwrap(),
@@ -43,7 +44,7 @@ fn perception_simple() -> Perception {
 
 #[serial_test::serial]
 #[tokio::test]
-async fn perception_simple_test() {
-    let mut doc = perception_simple();
+async fn perception_simple() {
+    let mut doc = perception_input();
     assert_perception(&mut doc, &format!("{BASE}/perception_simple.xml")).await;
 }

@@ -8,11 +8,11 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceFechaVencimientoTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_fecha_vencimiento";
 
 #[serial_test::serial]
 #[tokio::test]
-async fn invoice_custom_moneda() {
+async fn invoice_fecha_vencimiento() {
     let mut invoice = Invoice {
         fecha_vencimiento: NaiveDate::from_ymd_opt(2022, 1, 1),
         detalles: vec![
@@ -32,5 +32,5 @@ async fn invoice_custom_moneda() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/conFechaVencimiento.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/con_fecha_vencimiento.xml")).await;
 }

@@ -2,11 +2,16 @@ use crate::models::common::Anticipo;
 use crate::models::invoice::Invoice;
 
 pub trait InvoiceAnticiposGetter {
-    fn get_anticipos(&mut self) -> &mut Vec<Anticipo>;
+    fn anticipos(&self) -> &[Anticipo];
+    fn anticipos_mut(&mut self) -> &mut Vec<Anticipo>;
 }
 
 impl InvoiceAnticiposGetter for Invoice {
-    fn get_anticipos(&mut self) -> &mut Vec<Anticipo> {
+    fn anticipos(&self) -> &[Anticipo] {
+        &self.anticipos
+    }
+
+    fn anticipos_mut(&mut self) -> &mut Vec<Anticipo> {
         &mut self.anticipos
     }
 }
@@ -14,9 +19,9 @@ impl InvoiceAnticiposGetter for Invoice {
 //
 
 pub trait AnticipoGetter {
-    fn get_tipo(&self) -> &Option<String>;
-    fn get_comprobante_tipo(&self) -> &Option<String>;
-    fn get_comprobante_serie_numero(&self) -> &str;
+    fn tipo(&self) -> &Option<String>;
+    fn comprobante_tipo(&self) -> &Option<String>;
+    fn comprobante_serie_numero(&self) -> &str;
 }
 
 pub trait AnticipoSetter {
@@ -25,15 +30,15 @@ pub trait AnticipoSetter {
 }
 
 impl AnticipoGetter for Anticipo {
-    fn get_tipo(&self) -> &Option<String> {
+    fn tipo(&self) -> &Option<String> {
         &self.tipo
     }
 
-    fn get_comprobante_tipo(&self) -> &Option<String> {
+    fn comprobante_tipo(&self) -> &Option<String> {
         &self.comprobante_tipo
     }
 
-    fn get_comprobante_serie_numero(&self) -> &str {
+    fn comprobante_serie_numero(&self) -> &str {
         &self.comprobante_serie_numero
     }
 }

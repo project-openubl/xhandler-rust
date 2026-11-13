@@ -1,2 +1,7 @@
 allow-unwrap-in-tests = true
 allow-expect-in-tests = true
+
+# Naming: acronyms are one CamelCase word (Igv, Sunat, Cdr). avoid-breaking-exported-api = false
+# also applies every other API-shape lint to pub items (fine pre-1.0).
+avoid-breaking-exported-api = false
+upper-case-acronyms-aggressive = true

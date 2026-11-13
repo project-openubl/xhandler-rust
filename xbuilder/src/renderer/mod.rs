@@ -211,13 +211,13 @@ impl Renderer for Invoice {
 
 impl Renderer for CreditNote {
     fn render(&self) -> tera::Result<String> {
-        TEMPLATES.render("renderer/creditNote.xml", &Context::from_serialize(self)?)
+        TEMPLATES.render("renderer/credit_note.xml", &Context::from_serialize(self)?)
     }
 }
 
 impl Renderer for DebitNote {
     fn render(&self) -> tera::Result<String> {
-        TEMPLATES.render("renderer/debitNote.xml", &Context::from_serialize(self)?)
+        TEMPLATES.render("renderer/debit_note.xml", &Context::from_serialize(self)?)
     }
 }
 
@@ -230,7 +230,7 @@ impl Renderer for Reversion {
 impl Renderer for VoidedDocuments {
     fn render(&self) -> tera::Result<String> {
         TEMPLATES.render(
-            "renderer/voidedDocuments.xml",
+            "renderer/voided_documents.xml",
             &Context::from_serialize(self)?,
         )
     }
@@ -239,7 +239,7 @@ impl Renderer for VoidedDocuments {
 impl Renderer for SummaryDocuments {
     fn render(&self) -> tera::Result<String> {
         TEMPLATES.render(
-            "renderer/summaryDocuments.xml",
+            "renderer/summary_documents.xml",
             &Context::from_serialize(self)?,
         )
     }
@@ -260,7 +260,7 @@ impl Renderer for Retention {
 impl Renderer for DespatchAdvice {
     fn render(&self) -> tera::Result<String> {
         TEMPLATES.render(
-            "renderer/despatchAdvice.xml",
+            "renderer/despatch_advice.xml",
             &Context::from_serialize(self)?,
         )
     }

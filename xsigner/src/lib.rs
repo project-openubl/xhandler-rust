@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::sync::OnceLock;
 use std::{fs, io};
 
@@ -25,7 +26,7 @@ const DS_NS: &str = "http://www.w3.org/2000/09/xmldsig#";
 const EXT_NS: &str = "urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2";
 
 #[derive(Debug, thiserror::Error)]
-pub enum SignErr {
+pub enum SignError {
     #[error(transparent)]
     OpenSsl(#[from] ErrorStack),
     #[error(transparent)]
@@ -45,7 +46,7 @@ pub struct RsaKeyPair {
 impl RsaKeyPair {
     /// Private key in PEM (PKCS#1 `RSA PRIVATE KEY` or PKCS#8 `PRIVATE KEY`)
     /// and X.509 certificate in PEM.
-    pub fn from_pem(private_key: &str, certificate: &str) -> Result<Self, SignErr> {
+    pub fn from_pem(private_key: &str, certificate: &str) -> Result<Self, SignError> {
         Ok(Self {
             private_key: PKey::private_key_from_pem(private_key.as_bytes())?,
             certificate: X509::from_pem(certificate.as_bytes())?,
@@ -54,7 +55,7 @@ impl RsaKeyPair {
 
     /// PKCS#12 keystore (`.pfx` / `.p12`), the format SUNAT certificates are
     /// usually delivered in.
-    pub fn from_pkcs12(der: &[u8], password: &str) -> Result<Self, SignErr> {
+    pub fn from_pkcs12(der: &[u8], password: &str) -> Result<Self, SignError> {
         let pkcs12 = Pkcs12::from_der(der)?;
         let keystore = match pkcs12.parse2(password) {
             Ok(keystore) => keystore,
@@ -72,7 +73,7 @@ impl RsaKeyPair {
                 private_key,
                 certificate,
             }),
-            _ => Err(SignErr::Invalid(
+            _ => Err(SignError::Invalid(
                 "The PKCS#12 keystore must contain a private key and its certificate".into(),
             )),
         }
@@ -102,8 +103,8 @@ impl XSigner {
     }
 
     /// Reads a UTF-8 or ISO-8859-1 XML file.
-    pub fn from_file(filename: &str) -> Result<Self, io::Error> {
-        Self::from_bytes(fs::read(filename)?)
+    pub fn from_path(path: impl AsRef<Path>) -> Result<Self, io::Error> {
+        Self::from_bytes(fs::read(path)?)
     }
 
     /// Signs the document with an enveloped RSA-SHA256 signature placed in the
@@ -111,7 +112,7 @@ impl XSigner {
     ///
     /// Returns the original document plus the signature, as UTF-8 with a UTF-8
     /// XML declaration. The rest of the document is left untouched.
-    pub fn sign(&self, key_pair: &RsaKeyPair) -> Result<Vec<u8>, SignErr> {
+    pub fn sign(&self, key_pair: &RsaKeyPair) -> Result<Vec<u8>, SignError> {
         // Without its declaration the text is parsed as what it is: UTF-8.
         // Keeping e.g. encoding="ISO-8859-1" would make libxml2 re-decode it.
         let mut document = strip_xml_declaration(&self.xml_document).to_string();
@@ -176,7 +177,7 @@ fn canonicalize(
 /// `ext:ExtensionContent` without child elements. A self-closing
 /// `<ext:ExtensionContent/>` is expanded first, and `ext:UBLExtensions` is added
 /// when the document has none; neither changes the document's C14N form.
-fn prepare_signature_slot(document: &mut String) -> Result<usize, SignErr> {
+fn prepare_signature_slot(document: &mut String) -> Result<usize, SignError> {
     match find_empty_extension_content(document)? {
         Some(Slot::Inside(position)) => Ok(position),
         Some(Slot::SelfClosing { start, end, name }) => {
@@ -210,7 +211,7 @@ fn is_extension_content(namespace: &ResolveResult, local_name: &[u8]) -> bool {
 
 /// Finds the first `ext:ExtensionContent` without child elements. Returns
 /// `None` when the document has no `ext:ExtensionContent` at all.
-fn find_empty_extension_content(document: &str) -> Result<Option<Slot>, SignErr> {
+fn find_empty_extension_content(document: &str) -> Result<Option<Slot>, SignError> {
     let mut reader = NsReader::from_str(document);
     // Byte offset right after an open ExtensionContent that has no children yet
     let mut open_content: Option<usize> = None;
@@ -239,7 +240,7 @@ fn find_empty_extension_content(document: &str) -> Result<Option<Slot>, SignErr>
             // Any child element means this ExtensionContent is already in use
             Event::Start(_) | Event::Empty(_) => open_content = None,
             Event::Eof if has_extension_content => {
-                return Err(SignErr::Invalid(
+                return Err(SignError::Invalid(
                     "Every ext:ExtensionContent already has content; add an empty one for the signature".into(),
                 ))
             }
@@ -251,13 +252,13 @@ fn find_empty_extension_content(document: &str) -> Result<Option<Slot>, SignErr>
 
 /// Inserts an empty `ext:UBLExtensions` block as the first child of the root
 /// and returns the offset inside its `ext:ExtensionContent`.
-fn add_ubl_extensions(document: &mut String) -> Result<usize, SignErr> {
+fn add_ubl_extensions(document: &mut String) -> Result<usize, SignError> {
     let mut reader = NsReader::from_str(document);
     loop {
         match reader.read_event()? {
             Event::Start(_) => break,
             Event::Eof | Event::Empty(_) => {
-                return Err(SignErr::Invalid("The XML has no root element".into()))
+                return Err(SignError::Invalid("The XML has no root element".into()))
             }
             _ => {}
         }
@@ -310,7 +311,7 @@ mod tests {
     use openssl::x509::X509;
     use xml_c14n::CanonicalizationMode;
 
-    use crate::{canonicalize, RsaKeyPair, SignErr, XSigner, DS_NS, SIGNATURE_ID};
+    use crate::{canonicalize, RsaKeyPair, SignError, XSigner, DS_NS, SIGNATURE_ID};
 
     const RESOURCES: &str = "resources/test";
     const HEAD: &str = r#"<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">"#;
@@ -321,7 +322,7 @@ mod tests {
         RsaKeyPair::from_pem(&private_key, &certificate).expect("Could not read certificates")
     }
 
-    fn sign(xml: &str) -> Result<String, SignErr> {
+    fn sign(xml: &str) -> Result<String, SignError> {
         let signer = XSigner {
             xml_document: xml.to_string(),
         };
@@ -400,7 +401,7 @@ mod tests {
 
     #[test]
     fn sign_file() {
-        let document = XSigner::from_file(&format!("{RESOURCES}/invoice_no_template.xml"))
+        let document = XSigner::from_path(format!("{RESOURCES}/invoice_no_template.xml"))
             .expect("Could read xml with no template");
         let signed = String::from_utf8(document.sign(&key_pair()).unwrap()).unwrap();
 
@@ -448,6 +449,6 @@ mod tests {
         let xml = format!(
             "{HEAD}<ext:UBLExtensions><ext:UBLExtension><ext:ExtensionContent><cbc:Note>info</cbc:Note></ext:ExtensionContent></ext:UBLExtension></ext:UBLExtensions></Invoice>"
         );
-        assert!(matches!(sign(&xml), Err(SignErr::Invalid(_))));
+        assert!(matches!(sign(&xml), Err(SignError::Invalid(_))));
     }
 }

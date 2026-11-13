@@ -7,7 +7,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDireccionEntregaTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_direccion_entrega";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -40,7 +40,7 @@ async fn invoice_direccion_entrega_min() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/direccionEntregaMin.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/direccion_entrega_min.xml")).await;
 }
 
 #[serial_test::serial]
@@ -74,5 +74,5 @@ async fn invoice_direccion_entrega_full() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/direccionEntregaFull.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/direccion_entrega_full.xml")).await;
 }

@@ -1,14 +1,15 @@
 use anyhow::anyhow;
 use std::str::FromStr;
 
-use crate::soap::{SoapFault, SOAP_ENV_NS};
-use crate::xml_utils::walk_xml;
+use crate::fault::SunatFault;
+use crate::soap::SOAP_ENV_NS;
+use crate::xml_walker::walk_xml;
 
 /// `<status>` answer shared by getStatus (tickets and consult),
 /// validaCDPcriterios and verificaCPEarchivo; getStatusCdr calls it `<statusCdr>`
 pub enum StatusXmlResponse {
     Status(StatusXml),
-    Fault(SoapFault),
+    Fault(SunatFault),
 }
 
 pub struct StatusXml {
@@ -59,7 +60,7 @@ impl FromStr for StatusXmlResponse {
                 status_message,
                 cdr_base64,
             })),
-            (_, Some(code)) => Ok(Self::Fault(SoapFault {
+            (_, Some(code)) => Ok(Self::Fault(SunatFault {
                 code,
                 message: fault_message.unwrap_or_default(),
             })),

@@ -20,7 +20,7 @@ use xsigner::XSigner;
 const INVOICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-Invoice-2.1.xsd";
 const CREDIT_NOTE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-CreditNote-2.1.xsd";
 const DEBIT_NOTE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-DebitNote-2.1.xsd";
-const _DESPATCH_ADVICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-DespatchAdvice-2.1.xsd";
+const DESPATCH_ADVICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-DespatchAdvice-2.1.xsd";
 const VOIDED_DOCUMENTS_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-VoidedDocuments-1.0.xsd";
 const SUMMARY_DOCUMENTS_XSD: &str =
     "tests/resources/xsd/2.0/maindoc/UBLPE-SummaryDocuments-1.0.xsd";
@@ -44,7 +44,7 @@ lazy_static::lazy_static! {
 
 pub fn defaults_base() -> Defaults {
     Defaults {
-        date: NaiveDate::from_ymd_opt(2019, 12, 24).unwrap(),
+        fecha_emision: NaiveDate::from_ymd_opt(2019, 12, 24).unwrap(),
         icb_tasa: dec!(0.2),
         igv_tasa: dec!(0.18),
         ivap_tasa: dec!(0.04),
@@ -66,7 +66,7 @@ pub fn credit_note_base() -> CreditNote {
     CreditNote {
         serie_numero: "FC01-1".into(),
         comprobante_afectado_serie_numero: "F001-1".into(),
-        sustento_descripcion: "mi sustento".into(),
+        descripcion_sustento: "mi sustento".into(),
         proveedor: proveedor_base(),
         cliente: cliente_base(),
         ..Default::default()
@@ -78,7 +78,7 @@ pub fn debit_note_base() -> DebitNote {
     DebitNote {
         serie_numero: "FD01-1".into(),
         comprobante_afectado_serie_numero: "F001-1".into(),
-        sustento_descripcion: "mi sustento".into(),
+        descripcion_sustento: "mi sustento".into(),
         proveedor: proveedor_base(),
         cliente: cliente_base(),
         ..Default::default()
@@ -95,7 +95,7 @@ pub fn proveedor_base() -> Proveedor {
 
 pub fn cliente_base() -> Cliente {
     Cliente {
-        tipo_documento_identidad: Catalog6::RUC.code().into(),
+        tipo_documento_identidad: Catalog6::Ruc.code().into(),
         numero_documento_identidad: "12121212121".into(),
         nombre: "Carlos Feria".into(),
         ..Default::default()
@@ -255,7 +255,7 @@ pub async fn assert_despatch_advice(doc: &mut DespatchAdvice, snapshot_filename:
     assert_snapshot(&xml, snapshot_filename);
 
     let xml_signed = sign_xml(&xml);
-    assert_xsd(&xml_signed, _DESPATCH_ADVICE_XSD);
+    assert_xsd(&xml_signed, DESPATCH_ADVICE_XSD);
     // SUNAT send skipped: DespatchAdvice uses REST endpoint, not SOAP
 }
 
@@ -320,18 +320,18 @@ async fn assert_sunat(xml: &[u8]) {
         .await
         .expect("Could not get a valid response");
 
-    let documet_type = xml_file
+    let document_type = xml_file
         .metadata()
         .expect("Could not extract xml metadata")
         .document_type;
 
-    match documet_type.as_str() {
+    match document_type.as_str() {
         DocumentType::VOIDED_DOCUMENTS | DocumentType::SUMMARY_DOCUMENTS => {
             let result = match &result.response {
                 SendFileAggregatedResponse::Cdr(_, _) => false,
                 SendFileAggregatedResponse::Ticket(_) => true,
-                SendFileAggregatedResponse::Error(e) => {
-                    println!("SUNAT Error: code={} message={}", e.code, e.message);
+                SendFileAggregatedResponse::Fault(fault) => {
+                    println!("SUNAT fault: code={} message={}", fault.code, fault.message);
                     false
                 }
             };
@@ -345,7 +345,7 @@ async fn assert_sunat(xml: &[u8]) {
                     true
                 }
                 SendFileAggregatedResponse::Ticket(_) => false,
-                SendFileAggregatedResponse::Error(_) => false,
+                SendFileAggregatedResponse::Fault(_) => false,
             };
             assert!(result)
         }

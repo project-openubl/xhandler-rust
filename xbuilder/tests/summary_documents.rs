@@ -6,7 +6,7 @@ use crate::common::{assert_summary_documents, proveedor_base};
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/summarydocuments/SummaryDocumentsTest";
+const BASE: &str = "tests/resources/e2e/renderer/summary_documents";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -70,7 +70,7 @@ async fn summary_documents() {
         ..Default::default()
     };
 
-    assert_summary_documents(&mut doc, &format!("{BASE}/summaryDocuments.xml")).await;
+    assert_summary_documents(&mut doc, &format!("{BASE}/summary_documents.xml")).await;
 }
 
 #[serial_test::serial]
@@ -108,7 +108,7 @@ async fn summary_documents_anular_boleta_exonerada() {
 
     assert_summary_documents(
         &mut doc,
-        &format!("{BASE}/summaryDocuments_anularBoletaExonerada.xml"),
+        &format!("{BASE}/summary_documents_anular_boleta_exonerada.xml"),
     )
     .await;
 }
@@ -132,7 +132,7 @@ async fn summary_documents_percepcion_and_other_taxes() {
                 },
                 percepcion: Some(SummaryDocumentsPercepcion {
                     tipo_regimen: Catalog22::VentaInterna.code().into(),
-                    tasa: dec!(2),
+                    porcentaje: dec!(2),
                     monto_base: dec!(130),
                     monto: dec!(2.6),
                     monto_total: dec!(132.6),
@@ -156,5 +156,9 @@ async fn summary_documents_percepcion_and_other_taxes() {
         ..Default::default()
     };
 
-    assert_summary_documents(&mut doc, &format!("{BASE}/summaryDocuments_percepcion.xml")).await;
+    assert_summary_documents(
+        &mut doc,
+        &format!("{BASE}/summary_documents_percepcion.xml"),
+    )
+    .await;
 }

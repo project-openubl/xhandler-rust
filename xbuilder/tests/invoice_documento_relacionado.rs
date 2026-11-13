@@ -7,11 +7,11 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDocumentoRelacionadoTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_documento_relacionado";
 
 #[serial_test::serial]
 #[tokio::test]
-async fn invoice_documento_relacionado_y_orden_de_compra() {
+async fn invoice_documento_relacionado_y_orden_compra() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -33,9 +33,9 @@ async fn invoice_documento_relacionado_y_orden_de_compra() {
                 .code()
                 .into(),
         }],
-        orden_de_compra: Some("123456".into()),
+        orden_compra: Some("123456".into()),
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/documentoRelacionado.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/documento_relacionado.xml")).await;
 }

@@ -1,7 +1,7 @@
 use crate::models::invoice::Invoice;
 
 pub trait InvoiceTipoComprobanteGetter {
-    fn get_tipo_comprobante(&self) -> &Option<String>;
+    fn tipo_comprobante(&self) -> &Option<String>;
 }
 
 pub trait InvoiceTipoComprobanteSetter {
@@ -9,7 +9,7 @@ pub trait InvoiceTipoComprobanteSetter {
 }
 
 impl InvoiceTipoComprobanteGetter for Invoice {
-    fn get_tipo_comprobante(&self) -> &Option<String> {
+    fn tipo_comprobante(&self) -> &Option<String> {
         &self.tipo_comprobante
     }
 }

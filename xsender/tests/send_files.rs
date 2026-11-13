@@ -1,4 +1,3 @@
-use std::path::Path;
 use xsender::prelude::*;
 
 const BASE: &str = "tests/resources/e2e";
@@ -22,7 +21,7 @@ lazy_static::lazy_static! {
 #[tokio::test]
 async fn send_invoice() {
     let file_path = format!("{BASE}/12345678912-01-F001-1.xml");
-    let xml_file = UblFile::from_path(Path::new(&file_path)).expect("File not found");
+    let xml_file = UblFile::from_path(&file_path).expect("File not found");
 
     let result = CLIENT
         .send_file(&xml_file)
@@ -40,7 +39,7 @@ async fn send_invoice() {
             true
         }
         SendFileAggregatedResponse::Ticket(_) => false,
-        SendFileAggregatedResponse::Error(_) => false,
+        SendFileAggregatedResponse::Fault(_) => false,
     };
 
     assert!(result);
@@ -50,7 +49,7 @@ async fn send_invoice() {
 #[tokio::test]
 async fn send_voided_documents() {
     let file_path = format!("{BASE}/12345678912-RA-20200328-1.xml");
-    let xml_file = UblFile::from_path(Path::new(&file_path)).expect("File not found");
+    let xml_file = UblFile::from_path(&file_path).expect("File not found");
 
     let file_result = CLIENT
         .send_file(&xml_file)
@@ -64,7 +63,7 @@ async fn send_voided_documents() {
     let ticket = match file_result.response {
         SendFileAggregatedResponse::Cdr(_, _) => "".to_string(),
         SendFileAggregatedResponse::Ticket(ticket) => ticket,
-        SendFileAggregatedResponse::Error(_) => "".to_string(),
+        SendFileAggregatedResponse::Fault(_) => "".to_string(),
     };
     assert!(!ticket.is_empty());
 
@@ -87,7 +86,7 @@ async fn send_voided_documents() {
 
     //         true
     //     }
-    //     VerifyTicketAggregatedResponse::Error(_) => false,
+    //     VerifyTicketAggregatedResponse::Fault(_) => false,
     // };
     // assert!(result);
 }
@@ -98,7 +97,7 @@ async fn send_voided_documents() {
 #[tokio::test]
 async fn send_pack() {
     let files = ["12345678912-01-F001-1.xml", "12345678912-RA-20200328-1.xml"]
-        .map(|name| UblFile::from_path(Path::new(&format!("{BASE}/{name}"))).unwrap());
+        .map(|name| UblFile::from_path(format!("{BASE}/{name}")).unwrap());
 
     let result = CLIENT
         .send_pack("12345678912-LT-20160405-1", &files)
@@ -107,7 +106,7 @@ async fn send_pack() {
 
     match result.response {
         SendFileAggregatedResponse::Ticket(_) => {}
-        SendFileAggregatedResponse::Error(error) => assert_eq!(error.status(), Status::Excepcion),
+        SendFileAggregatedResponse::Fault(fault) => assert_eq!(fault.status(), Status::Exception),
         SendFileAggregatedResponse::Cdr(..) => panic!("A pack is answered with a ticket"),
     }
 }

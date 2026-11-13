@@ -10,7 +10,7 @@
     <soap:Body>
         <ns2:verificaCPEarchivo xmlns:ns2="http://service.sunat.gob.pe">
             <nombre>{{body.filename}}</nombre>
-            <archivo>{{body.file_content}}</archivo>
+            <archivo>{{body.zip_base64}}</archivo>
         </ns2:verificaCPEarchivo>
     </soap:Body>
 </soap:Envelope>

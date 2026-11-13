@@ -1,10 +1,10 @@
-use crate::enricher::rules::phase3summary::invoice::detraccion::DetraccionSummaryRule;
-use crate::enricher::rules::phase3summary::invoice::percepcion::PercepcionSummaryRule;
-use crate::enricher::rules::phase3summary::invoice::total_importe::InvoiceTotalImporteSummaryRule;
-use crate::enricher::rules::phase3summary::invoice::total_impuestos::InvoiceTotalImpuestosSummaryRule;
-use crate::enricher::rules::phase3summary::leyenda::LeyendaIVAPSummaryRule;
-use crate::enricher::rules::phase3summary::note::total_importe::NoteTotalImporteSummaryRule;
-use crate::enricher::rules::phase3summary::note::total_impuestos::NoteTotalImpuestosSummaryRule;
+use crate::enricher::rules::phase3_summary::invoice::detraccion::InvoiceDetraccionSummaryRule;
+use crate::enricher::rules::phase3_summary::invoice::percepcion::InvoicePercepcionSummaryRule;
+use crate::enricher::rules::phase3_summary::invoice::total_importe::InvoiceTotalImporteSummaryRule;
+use crate::enricher::rules::phase3_summary::invoice::total_impuestos::InvoiceTotalImpuestosSummaryRule;
+use crate::enricher::rules::phase3_summary::leyenda::LeyendaIvapSummaryRule;
+use crate::enricher::rules::phase3_summary::note::total_importe::NoteTotalImporteSummaryRule;
+use crate::enricher::rules::phase3_summary::note::total_impuestos::NoteTotalImpuestosSummaryRule;
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::despatch_advice::DespatchAdvice;
@@ -76,13 +76,13 @@ impl Summary for DespatchAdvice {
 
 impl<T> SummaryCommon for T
 where
-    T: LeyendaIVAPSummaryRule,
+    T: LeyendaIvapSummaryRule,
 {
     fn summary_common(&mut self) {
         let mut changed = true;
 
         while changed {
-            let results = [LeyendaIVAPSummaryRule::summary(self).unwrap_or_default()];
+            let results = [LeyendaIvapSummaryRule::summary(self).unwrap_or_default()];
 
             changed = results.contains(&true);
         }
@@ -93,8 +93,8 @@ impl<T> SummaryInvoice for T
 where
     T: InvoiceTotalImpuestosSummaryRule
         + InvoiceTotalImporteSummaryRule
-        + PercepcionSummaryRule
-        + DetraccionSummaryRule,
+        + InvoicePercepcionSummaryRule
+        + InvoiceDetraccionSummaryRule,
 {
     fn summary_invoice(&mut self) {
         let mut changed = true;
@@ -103,8 +103,8 @@ where
             let results = [
                 InvoiceTotalImpuestosSummaryRule::summary(self).unwrap_or_default(),
                 InvoiceTotalImporteSummaryRule::summary(self).unwrap_or_default(),
-                PercepcionSummaryRule::summary(self).unwrap_or_default(),
-                DetraccionSummaryRule::summary(self).unwrap_or_default(),
+                InvoicePercepcionSummaryRule::summary(self).unwrap_or_default(),
+                InvoiceDetraccionSummaryRule::summary(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);

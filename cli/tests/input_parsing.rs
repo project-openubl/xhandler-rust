@@ -44,7 +44,7 @@ fn parse_credit_note_yaml() {
     if let DocumentInput::CreditNote { spec } = doc {
         assert_eq!(spec.serie_numero, "FC01-1");
         assert_eq!(spec.comprobante_afectado_serie_numero, "F001-1");
-        assert_eq!(spec.sustento_descripcion, "Anulación de operación");
+        assert_eq!(spec.descripcion_sustento, "Anulación de operación");
         assert_eq!(spec.detalles.len(), 1);
     }
 }

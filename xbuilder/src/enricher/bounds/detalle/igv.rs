@@ -3,7 +3,7 @@ use rust_decimal::Decimal;
 use crate::models::common::Detalle;
 
 pub trait DetalleIgvGetter {
-    fn get_igv(&self) -> &Option<Decimal>;
+    fn igv(&self) -> &Option<Decimal>;
 }
 
 pub trait DetalleIgvSetter {
@@ -11,7 +11,7 @@ pub trait DetalleIgvSetter {
 }
 
 impl DetalleIgvGetter for Detalle {
-    fn get_igv(&self) -> &Option<Decimal> {
+    fn igv(&self) -> &Option<Decimal> {
         &self.igv
     }
 }

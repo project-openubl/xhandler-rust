@@ -3,7 +3,7 @@ use rust_decimal::Decimal;
 use crate::models::common::Detalle;
 
 pub trait DetallePrecioConImpuestosGetter {
-    fn get_precio_con_impuestos(&self) -> &Option<Decimal>;
+    fn precio_con_impuestos(&self) -> &Option<Decimal>;
 }
 
 pub trait DetallePrecioConImpuestosSetter {
@@ -11,7 +11,7 @@ pub trait DetallePrecioConImpuestosSetter {
 }
 
 impl DetallePrecioConImpuestosGetter for Detalle {
-    fn get_precio_con_impuestos(&self) -> &Option<Decimal> {
+    fn precio_con_impuestos(&self) -> &Option<Decimal> {
         &self.precio_con_impuestos
     }
 }

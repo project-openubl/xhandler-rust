@@ -7,14 +7,15 @@ use zip::result::ZipError;
 use crate::analyzer::{
     filename_formatted_without_extension, send_file_target, verify_ticket_target,
 };
-use crate::client_sunat::{
-    ClientSUNAT, ClientSunatErr, ErrorResponse, File, SendFileResponse, VerifyTicketResponse,
-};
+use crate::fault::SunatFault;
 use crate::models::{Credentials, SendFileTarget, SoapFileTargetAction, Urls, VerifyTicketTarget};
 use crate::prelude::VerifyTicketStatus;
 use crate::soap::cdr::CdrMetadata;
+use crate::sunat_client::{
+    File, SendFileResponse, SunatClient, SunatClientError, VerifyTicketResponse,
+};
 use crate::ubl_file::{UblFile, UblMetadata};
-use crate::zip_manager::{create_zip, read_cdr_from_base64_zip};
+use crate::zip_archive::{create_zip, read_cdr_from_base64_zip};
 
 pub struct FileSender {
     pub urls: Urls,
@@ -22,20 +23,20 @@ pub struct FileSender {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub enum FileSenderErr {
+pub enum FileSenderError {
     #[error("Couldn't infer the target destinations of file")]
     TargetDiscovery,
     #[error("An error while creating/reading the zip file")]
-    ZipRead(ZipError),
+    Zip(ZipError),
     #[error(transparent)]
-    ClientSunat(#[from] ClientSunatErr),
+    SunatClient(#[from] SunatClientError),
     #[error(transparent)]
     Any(#[from] anyhow::Error),
 }
 
-impl From<ZipError> for FileSenderErr {
+impl From<ZipError> for FileSenderError {
     fn from(e: ZipError) -> Self {
-        Self::ZipRead(e)
+        Self::Zip(e)
     }
 }
 
@@ -49,7 +50,7 @@ pub enum SendFileAggregatedResponse {
     /// (CDR in base64, CDR base64 decoded into an object)
     Cdr(String, CdrMetadata),
     Ticket(String),
-    Error(ErrorResponse),
+    Fault(SunatFault),
 }
 
 pub struct VerifyTicketResponseWrapper {
@@ -63,18 +64,21 @@ pub enum VerifyTicketAggregatedResponse {
     NoCdr {
         status_code: String,
     },
-    Error(ErrorResponse),
+    Fault(SunatFault),
 }
 
 impl FileSender {
-    pub async fn send_file(&self, xml: &UblFile) -> Result<SendFileResponseWrapper, FileSenderErr> {
+    pub async fn send_file(
+        &self,
+        xml: &UblFile,
+    ) -> Result<SendFileResponseWrapper, FileSenderError> {
         let metadata = xml.metadata()?;
         let send_target = send_file_target(
             &metadata.document_type,
             &metadata.voided_line_document_type_code,
             &self.urls,
         )
-        .ok_or(FileSenderErr::TargetDiscovery)?;
+        .ok_or(FileSenderError::TargetDiscovery)?;
         let verify_ticket_target = verify_ticket_target(
             &metadata.document_type,
             &metadata.voided_line_document_type_code,
@@ -99,7 +103,7 @@ impl FileSender {
         &self,
         pack_name: &str,
         files: &[UblFile],
-    ) -> Result<SendFileResponseWrapper, FileSenderErr> {
+    ) -> Result<SendFileResponseWrapper, FileSenderError> {
         let entries = files
             .iter()
             .map(|xml| {
@@ -108,7 +112,7 @@ impl FileSender {
                     xml.bytes(),
                 ))
             })
-            .collect::<Result<Vec<_>, FileSenderErr>>()?;
+            .collect::<Result<Vec<_>, FileSenderError>>()?;
         let send_target =
             SendFileTarget::Soap(self.urls.invoice.clone(), SoapFileTargetAction::Pack);
         let verify_ticket_target = Some(VerifyTicketTarget::Soap(self.urls.invoice.clone()));
@@ -127,13 +131,13 @@ impl FileSender {
         entries: &[(String, &[u8])],
         send_target: SendFileTarget,
         verify_ticket_target: Option<VerifyTicketTarget>,
-    ) -> Result<SendFileResponseWrapper, FileSenderErr> {
+    ) -> Result<SendFileResponseWrapper, FileSenderError> {
         let file = File {
-            name: zip_name,
-            base_64: general_purpose::STANDARD.encode(create_zip(entries)?),
+            filename: zip_name,
+            zip_base64: general_purpose::STANDARD.encode(create_zip(entries)?),
         };
 
-        let result = ClientSUNAT::default()
+        let result = SunatClient::default()
             .send_file(&send_target, &file, &self.credentials)
             .await?;
 
@@ -144,7 +148,7 @@ impl FileSender {
                 SendFileAggregatedResponse::Cdr(cdr_base64, cdr_metadata)
             }
             SendFileResponse::Ticket(ticket) => SendFileAggregatedResponse::Ticket(ticket),
-            SendFileResponse::Error(error) => SendFileAggregatedResponse::Error(error),
+            SendFileResponse::Fault(fault) => SendFileAggregatedResponse::Fault(fault),
         };
 
         Ok(SendFileResponseWrapper {
@@ -158,8 +162,8 @@ impl FileSender {
         &self,
         target: &VerifyTicketTarget,
         ticket: &str,
-    ) -> Result<VerifyTicketResponseWrapper, FileSenderErr> {
-        let client = ClientSUNAT::default();
+    ) -> Result<VerifyTicketResponseWrapper, FileSenderError> {
+        let client = SunatClient::default();
         let result = client
             .verify_ticket(target, ticket, &self.credentials)
             .await?;
@@ -173,7 +177,7 @@ impl FileSender {
             VerifyTicketResponse::NoCdr { status_code } => {
                 VerifyTicketAggregatedResponse::NoCdr { status_code }
             }
-            VerifyTicketResponse::Error(error) => VerifyTicketAggregatedResponse::Error(error),
+            VerifyTicketResponse::Fault(fault) => VerifyTicketAggregatedResponse::Fault(fault),
         };
 
         Ok(VerifyTicketResponseWrapper { response })
@@ -181,11 +185,11 @@ impl FileSender {
 }
 
 /// File name SUNAT expects, without extension, e.g. "12345678912-01-F001-1"
-fn sunat_filename(metadata: &UblMetadata) -> Result<String, FileSenderErr> {
+fn sunat_filename(metadata: &UblMetadata) -> Result<String, FileSenderError> {
     filename_formatted_without_extension(
         &metadata.document_type,
         &metadata.document_id,
         &metadata.ruc,
     )
-    .map_err(|_| FileSenderErr::TargetDiscovery)
+    .map_err(|_| FileSenderError::TargetDiscovery)
 }

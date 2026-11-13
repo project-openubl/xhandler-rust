@@ -9,7 +9,7 @@ use crate::models::summary_documents::SummaryDocuments;
 use crate::models::voided_documents::VoidedDocuments;
 
 pub trait FechaEmisionGetter {
-    fn get_fecha_emision(&self) -> &Option<NaiveDate>;
+    fn fecha_emision(&self) -> &Option<NaiveDate>;
 }
 
 pub trait FechaEmisionSetter {
@@ -19,19 +19,19 @@ pub trait FechaEmisionSetter {
 //
 
 impl FechaEmisionGetter for Invoice {
-    fn get_fecha_emision(&self) -> &Option<NaiveDate> {
+    fn fecha_emision(&self) -> &Option<NaiveDate> {
         &self.fecha_emision
     }
 }
 
 impl FechaEmisionGetter for CreditNote {
-    fn get_fecha_emision(&self) -> &Option<NaiveDate> {
+    fn fecha_emision(&self) -> &Option<NaiveDate> {
         &self.fecha_emision
     }
 }
 
 impl FechaEmisionGetter for DebitNote {
-    fn get_fecha_emision(&self) -> &Option<NaiveDate> {
+    fn fecha_emision(&self) -> &Option<NaiveDate> {
         &self.fecha_emision
     }
 }
@@ -55,13 +55,13 @@ impl FechaEmisionSetter for DebitNote {
 }
 
 impl FechaEmisionGetter for VoidedDocuments {
-    fn get_fecha_emision(&self) -> &Option<NaiveDate> {
+    fn fecha_emision(&self) -> &Option<NaiveDate> {
         &self.fecha_emision
     }
 }
 
 impl FechaEmisionGetter for SummaryDocuments {
-    fn get_fecha_emision(&self) -> &Option<NaiveDate> {
+    fn fecha_emision(&self) -> &Option<NaiveDate> {
         &self.fecha_emision
     }
 }
@@ -79,13 +79,13 @@ impl FechaEmisionSetter for SummaryDocuments {
 }
 
 impl FechaEmisionGetter for Perception {
-    fn get_fecha_emision(&self) -> &Option<NaiveDate> {
+    fn fecha_emision(&self) -> &Option<NaiveDate> {
         &self.fecha_emision
     }
 }
 
 impl FechaEmisionGetter for Retention {
-    fn get_fecha_emision(&self) -> &Option<NaiveDate> {
+    fn fecha_emision(&self) -> &Option<NaiveDate> {
         &self.fecha_emision
     }
 }
@@ -103,7 +103,7 @@ impl FechaEmisionSetter for Retention {
 }
 
 impl FechaEmisionGetter for DespatchAdvice {
-    fn get_fecha_emision(&self) -> &Option<NaiveDate> {
+    fn fecha_emision(&self) -> &Option<NaiveDate> {
         &self.fecha_emision
     }
 }

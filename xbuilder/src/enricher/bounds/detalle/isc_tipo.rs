@@ -1,7 +1,7 @@
 use crate::models::common::Detalle;
 
 pub trait DetalleIscTipoGetter {
-    fn get_isc_tipo(&self) -> &Option<String>;
+    fn isc_tipo(&self) -> &Option<String>;
 }
 
 pub trait DetalleIscTipoSetter {
@@ -9,7 +9,7 @@ pub trait DetalleIscTipoSetter {
 }
 
 impl DetalleIscTipoGetter for Detalle {
-    fn get_isc_tipo(&self) -> &Option<String> {
+    fn isc_tipo(&self) -> &Option<String> {
         &self.isc_tipo
     }
 }

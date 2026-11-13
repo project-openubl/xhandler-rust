@@ -9,7 +9,7 @@ use crate::common::{assert_invoice, cliente_base, proveedor_base};
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -34,7 +34,7 @@ async fn invoice_custom_unidad_medida() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/customUnidadMedida.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/custom_unidad_medida.xml")).await;
 }
 
 #[serial_test::serial]
@@ -60,7 +60,7 @@ async fn invoice_custom_fecha_emision() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/customFechaEmision.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/custom_fecha_emision.xml")).await;
 }
 
 #[serial_test::serial]
@@ -103,7 +103,7 @@ async fn invoice_custom_cliente_direccion_and_contacto() {
 
     assert_invoice(
         &mut invoice,
-        &format!("{BASE}/customClienteDireccionAndContacto.xml"),
+        &format!("{BASE}/custom_cliente_direccion_and_contacto.xml"),
     )
     .await;
 }
@@ -148,7 +148,7 @@ async fn invoice_custom_proveedor_direccion_and_contacto() {
 
     assert_invoice(
         &mut invoice,
-        &format!("{BASE}/customProveedorDireccionAndContacto.xml"),
+        &format!("{BASE}/custom_proveedor_direccion_and_contacto.xml"),
     )
     .await;
 }
@@ -178,7 +178,7 @@ async fn invoice_custom_firmante() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/customFirmante.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/custom_firmante.xml")).await;
 }
 
 #[serial_test::serial]
@@ -267,7 +267,7 @@ async fn invoice_with_custom_proveedor_direccion_not_null_and_codigo_local_null(
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/customCodigoLocal.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/custom_codigo_local.xml")).await;
 }
 
 #[test]
