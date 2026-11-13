@@ -52,8 +52,11 @@ pub struct SummaryDocumentsPercepcion {
     pub tipo_regimen: String,
     /// Tasa de percepcion en porcentaje (e.g. 2 para 2%)
     pub tasa: Decimal,
+    /// Base imponible (TaxableAmount)
     pub monto_base: Decimal,
+    /// Importe percibido (TotalInvoiceAmount)
     pub monto: Decimal,
+    /// Total cobrado incluida la percepcion (SUNATTotalCashed)
     pub monto_total: Decimal,
 }
 
@@ -88,7 +91,7 @@ pub struct SummaryDocumentsValorVenta {
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(default)]
 pub struct SummaryDocumentsImpuestos {
-    /// Always rendered; 0 when missing
+    /// Filled with 0 when missing
     pub igv: Option<Decimal>,
     /// IGV rate as percentage (e.g., 18 for 18%). Required by SUNAT; filled from the defaults when missing.
     pub igv_tasa: Option<Decimal>,

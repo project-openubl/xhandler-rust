@@ -1,9 +1,12 @@
-{%- macro tax_total(amount, moneda, id, name, code) -%}
+{%- macro tax_total(amount, moneda, id, name, code, percent="") -%}
         <cac:TaxTotal>
             <cbc:TaxAmount currencyID="{{moneda}}">{{amount}}</cbc:TaxAmount>
             <cac:TaxSubtotal>
                 <cbc:TaxAmount currencyID="{{moneda}}">{{amount}}</cbc:TaxAmount>
                 <cac:TaxCategory>
+                    {%- if percent %}
+                    <cbc:Percent>{{percent}}</cbc:Percent>
+                    {%- endif %}
                     <cac:TaxScheme>
                         <cbc:ID>{{id}}</cbc:ID>
                         <cbc:Name>{{name}}</cbc:Name>
@@ -66,62 +69,47 @@
             <cbc:ConditionCode>{{it.tipo_operacion}}</cbc:ConditionCode>
         </cac:Status>
         <sac:TotalAmount currencyID="{{it.comprobante.moneda}}">{{it.comprobante.valor_venta.importe_total}}</sac:TotalAmount>
-        {%- if it.comprobante.valor_venta.gravado is nonzero %}
+        {%- if it.comprobante.valor_venta.gravado is gt0 %}
         <sac:BillingPayment>
             <cbc:PaidAmount currencyID="{{it.comprobante.moneda}}">{{it.comprobante.valor_venta.gravado}}</cbc:PaidAmount>
             <cbc:InstructionID>01</cbc:InstructionID>
         </sac:BillingPayment>
         {%- endif %}
-        {%- if it.comprobante.valor_venta.exonerado is nonzero %}
+        {%- if it.comprobante.valor_venta.exonerado is gt0 %}
         <sac:BillingPayment>
             <cbc:PaidAmount currencyID="{{it.comprobante.moneda}}">{{it.comprobante.valor_venta.exonerado}}</cbc:PaidAmount>
             <cbc:InstructionID>02</cbc:InstructionID>
         </sac:BillingPayment>
         {%- endif %}
-        {%- if it.comprobante.valor_venta.inafecto is nonzero %}
+        {%- if it.comprobante.valor_venta.inafecto is gt0 %}
         <sac:BillingPayment>
             <cbc:PaidAmount currencyID="{{it.comprobante.moneda}}">{{it.comprobante.valor_venta.inafecto}}</cbc:PaidAmount>
             <cbc:InstructionID>03</cbc:InstructionID>
         </sac:BillingPayment>
         {%- endif %}
-        {%- if it.comprobante.valor_venta.gratuito is nonzero %}
+        {%- if it.comprobante.valor_venta.gratuito is gt0 %}
         <sac:BillingPayment>
             <cbc:PaidAmount currencyID="{{it.comprobante.moneda}}">{{it.comprobante.valor_venta.gratuito}}</cbc:PaidAmount>
             <cbc:InstructionID>05</cbc:InstructionID>
         </sac:BillingPayment>
         {%- endif %}
-        {%- if it.comprobante.valor_venta.otros_cargos is nonzero %}
+        {%- if it.comprobante.valor_venta.otros_cargos is gt0 %}
         <cac:AllowanceCharge>
             <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
             <cbc:Amount currencyID="{{it.comprobante.moneda}}">{{it.comprobante.valor_venta.otros_cargos}}</cbc:Amount>
         </cac:AllowanceCharge>
         {%- endif %}
-        <cac:TaxTotal>
-            <cbc:TaxAmount currencyID="{{it.comprobante.moneda}}">{{it.comprobante.impuestos.igv | default(value=0)}}</cbc:TaxAmount>
-            <cac:TaxSubtotal>
-                <cbc:TaxAmount currencyID="{{it.comprobante.moneda}}">{{it.comprobante.impuestos.igv | default(value=0)}}</cbc:TaxAmount>
-                <cac:TaxCategory>
-                    {%- if it.comprobante.impuestos.igv_tasa %}
-                    <cbc:Percent>{{it.comprobante.impuestos.igv_tasa}}</cbc:Percent>
-                    {%- endif %}
-                    <cac:TaxScheme>
-                        <cbc:ID>1000</cbc:ID>
-                        <cbc:Name>IGV</cbc:Name>
-                        <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
-                    </cac:TaxScheme>
-                </cac:TaxCategory>
-            </cac:TaxSubtotal>
-        </cac:TaxTotal>
-        {%- if it.comprobante.impuestos.icb is nonzero %}
+        {{ self::tax_total(amount=it.comprobante.impuestos.igv, percent=it.comprobante.impuestos.igv_tasa, moneda=it.comprobante.moneda, id="1000", name="IGV", code="VAT") }}
+        {%- if it.comprobante.impuestos.icb is gt0 %}
         {{ self::tax_total(amount=it.comprobante.impuestos.icb, moneda=it.comprobante.moneda, id="7152", name="ICBPER", code="OTH") }}
         {%- endif %}
-        {%- if it.comprobante.impuestos.isc is nonzero %}
+        {%- if it.comprobante.impuestos.isc is gt0 %}
         {{ self::tax_total(amount=it.comprobante.impuestos.isc, moneda=it.comprobante.moneda, id="2000", name="ISC", code="EXC") }}
         {%- endif %}
-        {%- if it.comprobante.impuestos.ivap is nonzero %}
+        {%- if it.comprobante.impuestos.ivap is gt0 %}
         {{ self::tax_total(amount=it.comprobante.impuestos.ivap, moneda=it.comprobante.moneda, id="1016", name="IVAP", code="VAT") }}
         {%- endif %}
-        {%- if it.comprobante.impuestos.otros is nonzero %}
+        {%- if it.comprobante.impuestos.otros is gt0 %}
         {{ self::tax_total(amount=it.comprobante.impuestos.otros, moneda=it.comprobante.moneda, id="9999", name="OTROS", code="OTH") }}
         {%- endif %}
     </sac:SummaryDocumentsLine>

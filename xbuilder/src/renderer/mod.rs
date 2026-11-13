@@ -98,12 +98,15 @@ pub fn format03d(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Err
     }
 }
 
+/// True for a number greater than zero. A missing (null) value is false,
+/// unlike a plain `{% if %}`, which is true for the string "0".
 pub fn gt0(value: Option<&Value>, params: &[Value]) -> tera::Result<bool> {
     number_args_allowed("gt0", 0, params.len())?;
     value_defined("gt0", value)?;
 
-    match value.and_then(|v| v.as_str()) {
-        Some(v) => match Decimal::from_str(v) {
+    match value {
+        Some(Value::Null) => Ok(false),
+        Some(Value::String(v)) => match Decimal::from_str(v) {
             Ok(d) => Ok(d > Decimal::ZERO),
             Err(_) => Err(Error::msg(
                 "Tester `gt0` was called on a variable that isn't a Decimal",
@@ -113,18 +116,6 @@ pub fn gt0(value: Option<&Value>, params: &[Value]) -> tera::Result<bool> {
             "Tester `gt0` was called on a variable that isn't a number",
         )),
     }
-}
-
-/// True for a number other than zero. Unlike a plain `{% if %}`, which is true
-/// for the string "0", missing values and zero are false.
-pub fn nonzero(value: Option<&Value>, params: &[Value]) -> tera::Result<bool> {
-    number_args_allowed("nonzero", 0, params.len())?;
-    let number = match value {
-        Some(Value::String(text)) => Decimal::from_str(text).ok(),
-        Some(Value::Number(number)) => number.as_f64().and_then(Decimal::from_f64_retain),
-        _ => None,
-    };
-    Ok(number.is_some_and(|number| !number.is_zero()))
 }
 
 pub fn credito(value: Option<&Value>, params: &[Value]) -> tera::Result<bool> {
@@ -186,7 +177,6 @@ lazy_static::lazy_static! {
         tera.register_filter("cdata", cdata);
 
         tera.register_tester("gt0", gt0);
-        tera.register_tester("nonzero", nonzero);
         tera.register_tester("credito", credito);
 
         // tera.autoescape_on(vec![".xml"]);

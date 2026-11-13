@@ -32,7 +32,6 @@ fn summary_items() -> Vec<SummaryDocumentsItem> {
                     impuestos: SummaryDocumentsImpuestos {
                         igv: Some(igv),
                         igv_tasa: Some(dec!(18)),
-                        icb: None,
                         ..Default::default()
                     },
                     ..Default::default()

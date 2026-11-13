@@ -4,13 +4,14 @@ use rust_decimal::Decimal;
 use crate::enricher::bounds::summary_documents::SummaryDocumentsComprobantesGetter;
 use crate::enricher::Defaults;
 
-/// SUNAT requires the IGV rate (as a percentage, e.g. 18) on every line, even
-/// when the IGV is 0.
-pub trait SummaryDocumentsIgvTasaFillRule {
+/// SUNAT requires the IGV and its rate on every line, even when the IGV is 0.
+/// The IGV defaults to 0 and the rate to `Defaults.igv_tasa * 100`: the defaults
+/// hold a fraction (0.18) while the line holds a percentage (18).
+pub trait SummaryDocumentsIgvFillRule {
     fn fill(&mut self, defaults: &Defaults) -> Result<bool>;
 }
 
-impl<T> SummaryDocumentsIgvTasaFillRule for T
+impl<T> SummaryDocumentsIgvFillRule for T
 where
     T: SummaryDocumentsComprobantesGetter,
 {
@@ -18,6 +19,10 @@ where
         let mut changed = false;
         for item in self.get_comprobantes() {
             let impuestos = &mut item.comprobante.impuestos;
+            if impuestos.igv.is_none() {
+                impuestos.igv = Some(Decimal::ZERO);
+                changed = true;
+            }
             if impuestos.igv_tasa.is_none() {
                 impuestos.igv_tasa = Some((defaults.igv_tasa * Decimal::ONE_HUNDRED).normalize());
                 changed = true;

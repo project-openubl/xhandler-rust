@@ -61,7 +61,6 @@ async fn summary_documents() {
                     impuestos: SummaryDocumentsImpuestos {
                         igv: Some(dec!(18)),
                         igv_tasa: Some(dec!(18)),
-                        icb: None,
                         ..Default::default()
                     },
                     ..Default::default()
@@ -79,16 +78,17 @@ async fn summary_documents() {
 async fn summary_documents_anular_boleta_exonerada() {
     let mut doc = SummaryDocuments {
         numero: 1,
+        fecha_emision: NaiveDate::from_ymd_opt(2019, 12, 24),
         fecha_emision_comprobantes: NaiveDate::from_ymd_opt(2019, 12, 22),
         proveedor: proveedor_base(),
         comprobantes: vec![SummaryDocumentsItem {
-            tipo_operacion: Catalog19::Anulado.code().into(),
+            tipo_operacion: "3".into(),
             comprobante: SummaryDocumentsItemComprobante {
                 tipo_comprobante: "03".into(),
                 serie_numero: "B001-1".into(),
                 cliente: SummaryDocumentsCliente {
                     numero_documento_identidad: "12345678".into(),
-                    tipo_documento_identidad: Catalog6::DNI.code().into(),
+                    tipo_documento_identidad: "1".into(),
                 },
                 valor_venta: SummaryDocumentsValorVenta {
                     importe_total: dec!(100),
