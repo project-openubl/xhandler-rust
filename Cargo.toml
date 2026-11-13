@@ -19,7 +19,7 @@ chrono = { version = "0.4", features = ["serde"] }
 regex = "1.11"
 log = "0.4"
 tera = "1.20"
-static-files = "0.2"
+static-files = "0.3"
 lazy_static = "1.5"
 serde = { version = "1.0", features = ["derive"] }
 rust_decimal = { version = "1.36" }
