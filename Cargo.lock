@@ -1337,7 +1337,6 @@ dependencies = [
  "serde_json",
  "serde_yaml",
  "serial_test",
- "thiserror 2.0.21",
  "tokio",
  "xhandler",
 ]
@@ -3016,7 +3015,6 @@ dependencies = [
  "anyhow",
  "base64",
  "der",
- "libxml",
  "openssl",
  "quick-xml",
  "rsa",
