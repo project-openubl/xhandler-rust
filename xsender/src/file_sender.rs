@@ -7,12 +7,12 @@ use zip::result::ZipError;
 use crate::analyzer::{
     filename_formatted_without_extension, send_file_target, verify_ticket_target,
 };
-use crate::client_sunat::{
-    ClientSUNAT, ClientSunatErr, ErrorResponse, File, SendFileResponse, VerifyTicketResponse,
-};
 use crate::models::{Credentials, SendFileTarget, SoapFileTargetAction, Urls, VerifyTicketTarget};
 use crate::prelude::VerifyTicketStatus;
 use crate::soap::cdr::CdrMetadata;
+use crate::sunat_client::{
+    ClientSunatErr, ErrorResponse, File, SendFileResponse, SunatClient, VerifyTicketResponse,
+};
 use crate::ubl_file::{UblFile, UblMetadata};
 use crate::zip_manager::{create_zip, read_cdr_from_base64_zip};
 
@@ -133,7 +133,7 @@ impl FileSender {
             base_64: general_purpose::STANDARD.encode(create_zip(entries)?),
         };
 
-        let result = ClientSUNAT::default()
+        let result = SunatClient::default()
             .send_file(&send_target, &file, &self.credentials)
             .await?;
 
@@ -159,7 +159,7 @@ impl FileSender {
         target: &VerifyTicketTarget,
         ticket: &str,
     ) -> Result<VerifyTicketResponseWrapper, FileSenderErr> {
-        let client = ClientSUNAT::default();
+        let client = SunatClient::default();
         let result = client
             .verify_ticket(target, ticket, &self.credentials)
             .await?;

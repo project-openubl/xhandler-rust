@@ -12,12 +12,12 @@ use reqwest::StatusCode;
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 
-use crate::client_sunat::{
+use crate::constants::HTTP_CLIENT;
+use crate::models::Credentials;
+use crate::sunat_client::{
     send_request, ClientSunatErr, ErrorResponse, File, SendFileResponse, VerifyTicketResponse,
     VerifyTicketStatus,
 };
-use crate::constants::HTTP_CLIENT;
-use crate::models::Credentials;
 
 const TOKEN_URL: &str = "https://api-seguridad.sunat.gob.pe/v1/clientessol";
 const TOKEN_SCOPE: &str = "https://api-cpe.sunat.gob.pe";
@@ -233,9 +233,9 @@ mod tests {
         cached_token, forget_rejected_token, hash_zip, parse_send_response, parse_ticket_response,
         store_token,
     };
-    use crate::client_sunat::{SendFileResponse, VerifyTicketResponse};
     use crate::models::Credentials;
     use crate::models::Status;
+    use crate::sunat_client::{SendFileResponse, VerifyTicketResponse};
 
     #[test]
     fn hash_zip_is_hex_sha256_of_the_zip_bytes() {

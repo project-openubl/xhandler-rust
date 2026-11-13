@@ -6,7 +6,7 @@ pub trait DetalleIscGetter {
     fn get_isc(&self) -> &Option<Decimal>;
 }
 
-pub trait DetalleISCSetter {
+pub trait DetalleIscSetter {
     fn set_isc(&mut self, val: Decimal);
 }
 
@@ -16,7 +16,7 @@ impl DetalleIscGetter for Detalle {
     }
 }
 
-impl DetalleISCSetter for Detalle {
+impl DetalleIscSetter for Detalle {
     fn set_isc(&mut self, val: Decimal) {
         self.isc = Some(val);
     }

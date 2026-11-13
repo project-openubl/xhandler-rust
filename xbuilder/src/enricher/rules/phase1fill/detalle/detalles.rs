@@ -5,11 +5,11 @@ use crate::enricher::bounds::detalle::DetallesGetter;
 use crate::enricher::bounds::icb::IcbTasaGetter;
 use crate::enricher::bounds::igv::IgvTasaGetter;
 use crate::enricher::bounds::ivap::IvapTasaGetter;
-use crate::enricher::rules::phase1fill::detalle::icb_tasa::DetalleICBTasaFillRule;
-use crate::enricher::rules::phase1fill::detalle::igv_tasa::DetalleIGVTasaFillRule;
-use crate::enricher::rules::phase1fill::detalle::igv_tipo::DetalleIGVTipoFillRule;
-use crate::enricher::rules::phase1fill::detalle::isc_tasa::DetalleISCTasaFillRule;
-use crate::enricher::rules::phase1fill::detalle::isc_tipo::DetalleISCTipoFillRule;
+use crate::enricher::rules::phase1fill::detalle::icb_tasa::DetalleIcbTasaFillRule;
+use crate::enricher::rules::phase1fill::detalle::igv_tasa::DetalleIgvTasaFillRule;
+use crate::enricher::rules::phase1fill::detalle::igv_tipo::DetalleIgvTipoFillRule;
+use crate::enricher::rules::phase1fill::detalle::isc_tasa::DetalleIscTasaFillRule;
+use crate::enricher::rules::phase1fill::detalle::isc_tipo::DetalleIscTipoFillRule;
 use crate::enricher::rules::phase1fill::detalle::precio_referencia_tipo::DetallePrecioReferenciaTipoFillRule;
 use crate::enricher::rules::phase1fill::detalle::unidad_medida::DetalleUnidadMedidaFillRule;
 
@@ -42,11 +42,11 @@ where
 
         let result = self.get_detalles().iter_mut().any(|detalle| {
             let results = [
-                DetalleICBTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
-                DetalleIGVTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
-                DetalleIGVTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
-                DetalleISCTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
-                DetalleISCTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
+                DetalleIcbTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                DetalleIgvTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                DetalleIgvTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
+                DetalleIscTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
+                DetalleIscTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
                 DetallePrecioReferenciaTipoFillRule::fill(detalle, defaults).unwrap_or_default(),
                 DetalleUnidadMedidaFillRule::fill(detalle, defaults).unwrap_or_default(),
             ];

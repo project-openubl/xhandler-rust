@@ -4,11 +4,11 @@ use crate::catalogs::{code_for_name, Catalog, Catalog8};
 use crate::enricher::bounds::detalle::isc_tipo::{DetalleIscTipoGetter, DetalleIscTipoSetter};
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
 
-pub trait DetalleISCTipoFillRule {
+pub trait DetalleIscTipoFillRule {
     fn fill(&mut self, defaults: &DetalleDefaults) -> Result<bool>;
 }
 
-impl<T> DetalleISCTipoFillRule for T
+impl<T> DetalleIscTipoFillRule for T
 where
     T: DetalleIscTipoGetter + DetalleIscTipoSetter,
 {

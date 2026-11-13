@@ -4,7 +4,7 @@ use crate::catalogs::{Catalog, Catalog7};
 use crate::enricher::bounds::detalle::DetallesGetter;
 use crate::enricher::bounds::leyendas::{LeyendasGetter, LeyendasSetter};
 
-pub trait LeyendaIVAPSummaryRule {
+pub trait LeyendaIvapSummaryRule {
     fn summary(&mut self) -> Result<bool>;
 }
 
@@ -20,7 +20,7 @@ where
     }
 }
 
-impl<T> LeyendaIVAPSummaryRule for T
+impl<T> LeyendaIvapSummaryRule for T
 where
     T: DetallesGetter + LeyendasGetter + LeyendasSetter,
 {

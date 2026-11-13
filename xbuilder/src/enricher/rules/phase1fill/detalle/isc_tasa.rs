@@ -7,11 +7,11 @@ use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
 use crate::enricher::bounds::detalle::isc_tasa::{DetalleIscTasaGetter, DetalleIscTasaSetter};
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
 
-pub trait DetalleISCTasaFillRule {
+pub trait DetalleIscTasaFillRule {
     fn fill(&mut self, defaults: &DetalleDefaults) -> Result<bool>;
 }
 
-impl<T> DetalleISCTasaFillRule for T
+impl<T> DetalleIscTasaFillRule for T
 where
     T: DetalleIscTasaGetter + DetalleIscTasaSetter + DetalleIgvTipoGetter,
 {
@@ -31,7 +31,7 @@ where
                     };
 
                     if &tasa != isc_tasa {
-                        trace!("DetalleISCTasaEnrichRule: isc_tasa changed to {tasa}");
+                        trace!("DetalleIscTasaFillRule: isc_tasa changed to {tasa}");
                         self.set_isc_tasa(tasa);
                         Ok(true)
                     } else {

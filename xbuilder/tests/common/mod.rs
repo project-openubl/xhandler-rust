@@ -95,7 +95,7 @@ pub fn proveedor_base() -> Proveedor {
 
 pub fn cliente_base() -> Cliente {
     Cliente {
-        tipo_documento_identidad: Catalog6::RUC.code().into(),
+        tipo_documento_identidad: Catalog6::Ruc.code().into(),
         numero_documento_identidad: "12121212121".into(),
         nombre: "Carlos Feria".into(),
         ..Default::default()

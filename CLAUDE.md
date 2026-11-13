@@ -51,3 +51,16 @@ xbuilder test switches: `XBUILDER_SKIP_SUNAT=true` skips sending to SUNAT beta (
 - `Invoice` = `Boleta`|`Factura`
 - `CreditNote` = `NotaDeCredito`
 - `DebitNote` = `NotaDeDebito`
+
+## Naming conventions
+
+Follows RFC 430 and the Rust API Guidelines (C-CASE, C-CONV, C-GETTER, C-WORD-ORDER).
+
+- **Acronyms** are one CamelCase word: `Igv`, `Isc`, `Icb`, `Ivap`, `Sunat`, `Cdr`, `Xml`, `Ruc`, `Dni`, `Gs1`. Enforced by clippy (`.clippy.toml`).
+- **Modules/files**: snake_case with every word separated (`credit_note`, `phase1_fill`); the file stem is the concept it holds. No `utils`/`manager` when a domain name fits.
+- **Language**: SUNAT/domain concepts in Spanish (`Detalle`, `Percepcion`, `tipo_comprobante`); UBL document names in English (`Invoice`, `DespatchAdvice`); infrastructure in English (verbs, suffixes like `Getter`/`FillRule`/`Error`/`Client`, connectors, status enums, error and log messages). `Perception`/`Retention` = the standalone documents; `Percepcion` = the charge on an invoice.
+- **Domain field order**: Spanish head noun first, without `de`/`del` (`tipo_comprobante`, `forma_pago`, `descripcion_sustento`). When several fields describe the same sub-entity, the shared prefix wins (`igv_tipo`/`igv_tasa`, `comprobante_afectado_tipo`/`comprobante_afectado_serie_numero`). A Catalog1 document type is `tipo_comprobante`; other catalogs (12, 61) use `tipo_documento`.
+- **Enricher traits**: bounds are `<Scope><Field>Getter`/`Setter` with methods `field()`, `field_mut()`, `set_field(val)`; rules are `<Scope><Field><Phase>Rule` (`Fill`/`Process`/`Summary`). Scope is the struct the trait is implemented on (`Detalle`, `Invoice`, `Percepcion`, ...).
+- **Errors** are `XxxError`. Conversions use `as_`/`to_`/`into_` and std `FromStr`/`TryFrom`; constructors `new`/`from_*`; booleans `is_*`/`has_*`.
+- **Tests**: fns are `<doc>_<scenario>` (no `test_` prefix); snapshots live in `xbuilder/tests/resources/e2e/renderer/<test_file_stem>/<snapshot>.xml`, all snake_case.
+- **Templates**: snake_case file names (`renderer/credit_note.xml`, `include/document_line.xml`).

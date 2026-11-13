@@ -46,7 +46,7 @@ fn main() {
             contacto: None,
         },
         cliente: Cliente {
-            tipo_documento_identidad: Catalog6::RUC.code(),
+            tipo_documento_identidad: Catalog6::Ruc.code(),
             numero_documento_identidad: "12121212121",
             nombre: "Cliente nombre",
             direccion: None,

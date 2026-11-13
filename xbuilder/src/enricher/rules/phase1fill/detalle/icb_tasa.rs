@@ -3,11 +3,11 @@ use anyhow::Result;
 use crate::enricher::bounds::detalle::icb_tasa::{DetalleIcbTasaGetter, DetalleIcbTasaSetter};
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
 
-pub trait DetalleICBTasaFillRule {
+pub trait DetalleIcbTasaFillRule {
     fn fill(&mut self, defaults: &DetalleDefaults) -> Result<bool>;
 }
 
-impl<T> DetalleICBTasaFillRule for T
+impl<T> DetalleIcbTasaFillRule for T
 where
     T: DetalleIcbTasaGetter + DetalleIcbTasaSetter,
 {

@@ -4,21 +4,21 @@ use log::warn;
 use crate::catalogs::{Catalog7, FromCode};
 use crate::enricher::bounds::detalle::cantidad::DetalleCantidadGetter;
 use crate::enricher::bounds::detalle::igv_base_imponible::{
-    DetalleIGVBaseImponibleSetter, DetalleIgvBaseImponibleGetter,
+    DetalleIgvBaseImponibleGetter, DetalleIgvBaseImponibleSetter,
 };
 use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
 use crate::enricher::bounds::detalle::isc::DetalleIscGetter;
 use crate::enricher::bounds::detalle::precio::DetallePrecioGetter;
 use crate::enricher::bounds::detalle::precio_referencia::DetallePrecioReferenciaGetter;
 
-pub trait DetalleIGVBaseImponibleProcessRule {
+pub trait DetalleIgvBaseImponibleProcessRule {
     fn process(&mut self) -> Result<bool>;
 }
 
-impl<T> DetalleIGVBaseImponibleProcessRule for T
+impl<T> DetalleIgvBaseImponibleProcessRule for T
 where
     T: DetalleIgvBaseImponibleGetter
-        + DetalleIGVBaseImponibleSetter
+        + DetalleIgvBaseImponibleSetter
         + DetalleIgvTipoGetter
         + DetalleCantidadGetter
         + DetallePrecioGetter
@@ -44,7 +44,7 @@ where
                     self.set_igv_base_imponible(base_imponible + *isc);
                     Ok(true)
                 } else {
-                    warn!("DetalleIGVBaseImponibleProcessRule: {igv_tipo} codigo no valido para Catalog7");
+                    warn!("DetalleIgvBaseImponibleProcessRule: {igv_tipo} codigo no valido para Catalog7");
                     Ok(false)
                 }
             }

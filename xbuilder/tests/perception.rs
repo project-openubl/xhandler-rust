@@ -15,7 +15,7 @@ fn perception_simple() -> Perception {
         fecha_emision: NaiveDate::from_ymd_opt(2022, 1, 31),
         proveedor: proveedor_base(),
         cliente: Cliente {
-            tipo_documento_identidad: Catalog6::RUC.code().into(),
+            tipo_documento_identidad: Catalog6::Ruc.code().into(),
             numero_documento_identidad: "12121212121".into(),
             nombre: "Carlos Feria".into(),
             ..Default::default()

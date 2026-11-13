@@ -2,7 +2,7 @@ use crate::enricher::rules::phase3summary::invoice::detraccion::DetraccionSummar
 use crate::enricher::rules::phase3summary::invoice::percepcion::PercepcionSummaryRule;
 use crate::enricher::rules::phase3summary::invoice::total_importe::InvoiceTotalImporteSummaryRule;
 use crate::enricher::rules::phase3summary::invoice::total_impuestos::InvoiceTotalImpuestosSummaryRule;
-use crate::enricher::rules::phase3summary::leyenda::LeyendaIVAPSummaryRule;
+use crate::enricher::rules::phase3summary::leyenda::LeyendaIvapSummaryRule;
 use crate::enricher::rules::phase3summary::note::total_importe::NoteTotalImporteSummaryRule;
 use crate::enricher::rules::phase3summary::note::total_impuestos::NoteTotalImpuestosSummaryRule;
 use crate::models::credit_note::CreditNote;
@@ -76,13 +76,13 @@ impl Summary for DespatchAdvice {
 
 impl<T> SummaryCommon for T
 where
-    T: LeyendaIVAPSummaryRule,
+    T: LeyendaIvapSummaryRule,
 {
     fn summary_common(&mut self) {
         let mut changed = true;
 
         while changed {
-            let results = [LeyendaIVAPSummaryRule::summary(self).unwrap_or_default()];
+            let results = [LeyendaIvapSummaryRule::summary(self).unwrap_or_default()];
 
             changed = results.contains(&true);
         }

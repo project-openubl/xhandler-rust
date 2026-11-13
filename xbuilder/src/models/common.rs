@@ -168,7 +168,7 @@ pub struct DocumentoRelacionado {
 
 /// Código estándar GS1/GTIN para identificación de producto
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct CodigoGS1 {
+pub struct CodigoGs1 {
     /// Código GS1/GTIN del producto
     pub codigo: String,
     /// Tipo de estructura GTIN: e.g. "GTIN-8", "GTIN-13", "GTIN-14"
@@ -203,7 +203,7 @@ pub struct Detalle {
     pub codigo_sunat: Option<String>,
     /// Código estándar GS1/GTIN (StandardItemIdentification).
     /// Incluye el código y el tipo de estructura GTIN (e.g. "GTIN-8", "GTIN-13", "GTIN-14").
-    pub codigo_gs1: Option<CodigoGS1>,
+    pub codigo_gs1: Option<CodigoGs1>,
 
     /// Precio + bool. True si el precio incluye impuestos, false si no incluye impuestos
     pub precio: Option<Decimal>,

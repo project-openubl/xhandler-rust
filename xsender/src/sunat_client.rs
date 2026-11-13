@@ -13,7 +13,7 @@ use crate::soap::send_file_response::SendFileXmlResponse;
 use crate::soap::status_response::StatusXmlResponse;
 
 #[derive(Default)]
-pub struct ClientSUNAT {}
+pub struct SunatClient {}
 
 pub struct File {
     pub name: String,
@@ -81,7 +81,7 @@ pub struct VerifyTicketStatus {
 /// Error returned by SUNAT (SOAP fault or REST error)
 pub use crate::soap::SoapFault as ErrorResponse;
 
-impl ClientSUNAT {
+impl SunatClient {
     pub async fn send_file(
         &self,
         target: &SendFileTarget,

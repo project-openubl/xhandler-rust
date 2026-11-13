@@ -3,16 +3,16 @@ use rust_decimal::Decimal;
 
 use crate::enricher::bounds::detalle::icb::DetalleIcbGetter;
 use crate::enricher::bounds::detalle::icb_aplica::{
-    DetalleICBAplicaGetter, DetalleIcbAplicaSetter,
+    DetalleIcbAplicaGetter, DetalleIcbAplicaSetter,
 };
 
-pub trait DetalleICBAplicaProcessRule {
+pub trait DetalleIcbAplicaProcessRule {
     fn process(&mut self) -> Result<bool>;
 }
 
-impl<T> DetalleICBAplicaProcessRule for T
+impl<T> DetalleIcbAplicaProcessRule for T
 where
-    T: DetalleICBAplicaGetter + DetalleIcbAplicaSetter + DetalleIcbGetter,
+    T: DetalleIcbAplicaGetter + DetalleIcbAplicaSetter + DetalleIcbGetter,
 {
     fn process(&mut self) -> Result<bool> {
         match (&self.get_icb_aplica(), &self.get_icb()) {

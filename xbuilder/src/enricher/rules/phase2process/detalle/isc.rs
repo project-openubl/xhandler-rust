@@ -3,18 +3,18 @@ use rust_decimal::Decimal;
 
 use crate::catalogs::{Catalog7, Catalog7Group, FromCode};
 use crate::enricher::bounds::detalle::igv_tipo::DetalleIgvTipoGetter;
-use crate::enricher::bounds::detalle::isc::{DetalleISCSetter, DetalleIscGetter};
+use crate::enricher::bounds::detalle::isc::{DetalleIscGetter, DetalleIscSetter};
 use crate::enricher::bounds::detalle::isc_base_imponible::DetalleIscBaseImponibleGetter;
 use crate::enricher::bounds::detalle::isc_tasa::DetalleIscTasaGetter;
 
-pub trait DetalleISCProcessRule {
+pub trait DetalleIscProcessRule {
     fn process(&mut self) -> Result<bool>;
 }
 
-impl<T> DetalleISCProcessRule for T
+impl<T> DetalleIscProcessRule for T
 where
     T: DetalleIscGetter
-        + DetalleISCSetter
+        + DetalleIscSetter
         + DetalleIscBaseImponibleGetter
         + DetalleIscTasaGetter
         + DetalleIgvTipoGetter,

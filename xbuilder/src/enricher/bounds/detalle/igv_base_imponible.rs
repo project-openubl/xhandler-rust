@@ -6,7 +6,7 @@ pub trait DetalleIgvBaseImponibleGetter {
     fn get_igv_base_imponible(&self) -> &Option<Decimal>;
 }
 
-pub trait DetalleIGVBaseImponibleSetter {
+pub trait DetalleIgvBaseImponibleSetter {
     fn set_igv_base_imponible(&mut self, val: Decimal);
 }
 
@@ -16,7 +16,7 @@ impl DetalleIgvBaseImponibleGetter for Detalle {
     }
 }
 
-impl DetalleIGVBaseImponibleSetter for Detalle {
+impl DetalleIgvBaseImponibleSetter for Detalle {
     fn set_igv_base_imponible(&mut self, val: Decimal) {
         self.igv_base_imponible = Some(val);
     }

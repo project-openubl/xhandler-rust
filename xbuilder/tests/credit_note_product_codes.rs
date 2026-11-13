@@ -36,7 +36,7 @@ async fn credit_note_with_all_product_codes() {
             precio: Some(dec!(100)),
             codigo: Some("P001".into()),
             codigo_sunat: Some("43230000".into()),
-            codigo_gs1: Some(CodigoGS1 {
+            codigo_gs1: Some(CodigoGs1 {
                 codigo: "8888888888888".into(),
                 tipo: "GTIN-13".into(),
             }),

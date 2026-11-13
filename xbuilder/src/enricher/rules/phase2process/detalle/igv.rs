@@ -4,11 +4,11 @@ use crate::enricher::bounds::detalle::igv::{DetalleIgvGetter, DetalleIgvSetter};
 use crate::enricher::bounds::detalle::igv_base_imponible::DetalleIgvBaseImponibleGetter;
 use crate::enricher::bounds::detalle::igv_tasa::DetalleIgvTasaGetter;
 
-pub trait DetalleIGVProcessRule {
+pub trait DetalleIgvProcessRule {
     fn process(&mut self) -> Result<bool>;
 }
 
-impl<T> DetalleIGVProcessRule for T
+impl<T> DetalleIgvProcessRule for T
 where
     T: DetalleIgvGetter + DetalleIgvSetter + DetalleIgvBaseImponibleGetter + DetalleIgvTasaGetter,
 {
