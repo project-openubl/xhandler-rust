@@ -63,13 +63,14 @@ impl Enrich for VoidedDocuments {
 
 impl Enrich for Reversion {
     fn enrich(&mut self, defaults: &Defaults) {
-        let generate_id = self.0.documento_id.is_none();
-        self.0.enrich(defaults);
+        if self.0.documento_id.is_some() {
+            return self.0.enrich(defaults);
+        }
 
-        // Same enrichment as a VoidedDocuments, except for the "RR-" prefix
-        if generate_id {
-            if let Some(id) = self.0.documento_id.as_mut() {
-                id.replace_range(..2, "RR");
+        self.0.enrich(defaults);
+        if let Some(id) = self.0.documento_id.as_mut() {
+            if let Some(rest) = id.strip_prefix("RA") {
+                *id = format!("RR{rest}");
             }
         }
     }

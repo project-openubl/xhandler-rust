@@ -1,7 +1,7 @@
 use chrono::NaiveDate;
 use xbuilder::prelude::*;
 
-use crate::common::{assert_reversion, proveedor_base};
+use crate::common::{assert_voided_documents, defaults_base, proveedor_base};
 
 mod common;
 
@@ -32,7 +32,7 @@ async fn reversion_with_perceptions() {
         ..Default::default()
     });
 
-    assert_reversion(&mut doc, &format!("{BASE}/reversion.xml")).await;
+    assert_voided_documents(&mut doc, &format!("{BASE}/reversion.xml")).await;
 }
 
 #[serial_test::serial]
@@ -53,5 +53,16 @@ async fn reversion_with_retentions() {
         ..Default::default()
     });
 
-    assert_reversion(&mut doc, &format!("{BASE}/reversion_retention.xml")).await;
+    assert_voided_documents(&mut doc, &format!("{BASE}/reversion_retention.xml")).await;
+}
+
+#[test]
+fn reversion_keeps_given_documento_id() {
+    let mut doc = Reversion(VoidedDocuments {
+        documento_id: Some("RR-20220131-9".into()),
+        ..Default::default()
+    });
+    doc.enrich(&defaults_base());
+
+    assert_eq!(doc.0.documento_id.as_deref(), Some("RR-20220131-9"));
 }

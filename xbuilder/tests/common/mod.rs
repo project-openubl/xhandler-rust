@@ -188,25 +188,12 @@ pub async fn assert_debit_note(debit_note: &mut DebitNote, snapshot_filename: &s
 }
 
 #[allow(dead_code)]
-pub async fn assert_voided_documents(doc: &mut VoidedDocuments, snapshot_filename: &str) {
+/// Also used for [`Reversion`], which shares the VoidedDocuments template and XSD
+pub async fn assert_voided_documents(doc: &mut (impl Enrich + Renderer), snapshot_filename: &str) {
     let defaults = defaults_base();
     doc.enrich(&defaults);
 
     let xml = doc.render().expect("Could not render voided documents");
-
-    assert_snapshot(&xml, snapshot_filename);
-
-    let xml_signed = sign_xml(&xml);
-    assert_xsd(&xml_signed, VOIDED_DOCUMENTS_XSD);
-    assert_sunat(&xml_signed).await;
-}
-
-#[allow(dead_code)]
-pub async fn assert_reversion(doc: &mut Reversion, snapshot_filename: &str) {
-    let defaults = defaults_base();
-    doc.enrich(&defaults);
-
-    let xml = doc.render().expect("Could not render reversion");
 
     assert_snapshot(&xml, snapshot_filename);
 
