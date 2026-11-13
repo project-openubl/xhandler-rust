@@ -11,6 +11,7 @@ use crate::models::common::{
 
 /// Nota de debito
 #[derive(Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct DebitNote {
     pub leyendas: HashMap<String, String>,

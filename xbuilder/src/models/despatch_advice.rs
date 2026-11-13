@@ -6,6 +6,7 @@ use crate::models::common::{Firmante, Proveedor};
 
 /// Guia de Remision (GRE)
 #[derive(Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct DespatchAdvice {
     pub serie_numero: String,
@@ -34,6 +35,7 @@ pub struct DespatchAdvice {
 
 /// Remitente (emisor de la guia)
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Remitente {
     pub ruc: String,
@@ -44,6 +46,7 @@ pub struct Remitente {
 /// Persona identificada por su documento y nombre: el destinatario de la
 /// mercancia, y tambien el comprador y el tercero
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Destinatario {
     /// Catalog6
@@ -60,6 +63,7 @@ pub type Tercero = Destinatario;
 
 /// Documento adicional relacionado al transporte
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct DocumentoAdicional {
     /// Catalog61
@@ -71,6 +75,7 @@ pub struct DocumentoAdicional {
 
 /// Informacion del envio
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Envio {
     /// Catalog20: motivo de traslado
@@ -102,6 +107,7 @@ pub struct Envio {
 
 /// Transportista (transporte publico)
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Transportista {
     /// Catalog6
@@ -113,6 +119,7 @@ pub struct Transportista {
 
 /// Conductor del vehiculo
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Chofer {
     /// Free text rendered as JobTitle, e.g. "CONDUCTOR_PRINCIPAL", "COPILOTO"
@@ -127,6 +134,7 @@ pub struct Chofer {
 
 /// Vehiculo principal, o secundario dentro de `secundarios`
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Vehiculo {
     pub placa: String,
@@ -140,6 +148,7 @@ pub struct Vehiculo {
 
 /// Puerto o aeropuerto
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Puerto {
     pub codigo: String,
@@ -148,6 +157,7 @@ pub struct Puerto {
 
 /// Punto de partida
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Partida {
     pub ubigeo: String,
@@ -162,6 +172,7 @@ pub type Destino = Partida;
 
 /// Item de la guia de remision
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct DespatchAdviceItem {
     pub unidad_medida: String,
@@ -174,6 +185,7 @@ pub struct DespatchAdviceItem {
 
 /// Propiedad adicional de un item (AdditionalItemProperty)
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct DespatchAdviceAtributo {
     pub codigo: String,
@@ -183,6 +195,7 @@ pub struct DespatchAdviceAtributo {
 
 /// Documento de baja asociado
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DespatchAdviceDocumentoBaja {
     /// Catalog1
     pub tipo_comprobante: String,
@@ -191,6 +204,7 @@ pub struct DespatchAdviceDocumentoBaja {
 
 /// Documento relacionado
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DespatchAdviceDocumentoRelacionado {
     pub tipo_documento: String,
     pub serie_numero: String,

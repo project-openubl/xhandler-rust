@@ -6,6 +6,7 @@ members = [
     "xsigner",
     "xhandler",
     "cli",
+    "xhandler-wasm",
 ]
 
 [workspace.package]
@@ -15,10 +16,10 @@ publish = false
 license = "Apache-2.0"
 
 [workspace.dependencies]
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { version = "0.4", default-features = false, features = ["std", "serde"] }
 regex = "1.11"
 log = "0.4"
-tera = "1.20"
+tera = { version = "1.20", default-features = false }
 static-files = "0.3"
 lazy_static = "1.5"
 serde = { version = "1.0", features = ["derive"] }
@@ -39,7 +40,16 @@ quick-xml = "0.39"
 rsa = { version = "0.10", features = ["pkcs1v15"] }
 x509-cert = "0.3"
 p12-keystore = "0.4"
+schemars = { version = "1", features = ["chrono04", "rust_decimal1"] }
 
 clap = "4"
 serde_json = "1"
 serde_yaml = "0.9"
+
+# Small WebAssembly module for the bindings: cargo build --profile wasm
+[profile.wasm]
+inherits = "release"
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true

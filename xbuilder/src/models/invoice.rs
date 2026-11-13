@@ -11,6 +11,7 @@ use crate::models::common::{
 
 /// Boleta o Factura
 #[derive(Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Invoice {
     pub leyendas: HashMap<String, String>,
@@ -61,6 +62,7 @@ pub struct Invoice {
 
 /// Datos del traslado de una factura guia
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct GuiaEmbebida {
     pub partida: Direccion,
     pub destino: Direccion,
