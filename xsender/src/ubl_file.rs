@@ -144,10 +144,16 @@ impl UblFile {
     }
 
     pub fn sha256(&self) -> String {
-        let mut hasher = Sha256::new();
-        hasher.update(&self.file_bytes);
-        format!("{:x}", hasher.finalize())
+        sha256_hex(&self.file_bytes)
     }
+}
+
+/// Lowercase hex SHA-256
+pub(crate) fn sha256_hex(bytes: &[u8]) -> String {
+    Sha256::digest(bytes)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect()
 }
 
 #[cfg(test)]

@@ -6,4 +6,4 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        sudo apt-get -y install pkg-config libssl-dev libxml2-dev libclang-dev
+        sudo apt-get -y install pkg-config libxml2-dev libclang-dev

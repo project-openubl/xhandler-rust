@@ -33,3 +33,16 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - run: cargo test
+
+  # The libraries must keep building for Android and iOS (xhandler-mobile)
+  mobile-targets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: Swatinem/rust-cache@v2.9.3
+      - run: rustup target add aarch64-linux-android aarch64-apple-ios
+      # Pure Rust crates: no C toolchain for the target is needed
+      - run: cargo check -p xsigner -p xbuilder --target aarch64-apple-ios
+      # xsender's TLS (ring) compiles C, so use the runner's Android NDK
+      - run: cargo install cargo-ndk --locked
+      - run: cargo ndk --target arm64-v8a check -p xhandler

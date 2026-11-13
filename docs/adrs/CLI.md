@@ -9,7 +9,7 @@ Proposed
 The xhandler-rust project provides three Rust library crates for Peru SUNAT electronic invoicing:
 
 - **xbuilder** — Creates UBL XML from Rust structs via a 3-phase enrichment pipeline and Tera templates
-- **xsigner** — Signs XML documents with RSA-SHA256 digital signatures (libxml2/openssl C14N)
+- **xsigner** — Signs XML documents with RSA-SHA256 digital signatures (pure Rust C14N and RustCrypto)
 - **xsender** — Sends signed XML to SUNAT via SOAP/REST, parses CDR responses
 
 Currently, users must write Rust code to use these libraries. There is no standalone CLI tool that allows a user to define a document in a JSON or YAML file, generate UBL XML, sign it, and send it to SUNAT — all from the command line.

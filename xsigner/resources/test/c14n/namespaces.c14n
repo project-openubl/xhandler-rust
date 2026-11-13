@@ -1,0 +1,1 @@
+<a:root xmlns="urn:default" xmlns:a="urn:a" xmlns:b="urn:b"><a:x xmlns:c="urn:c" c="3" a:y="2" b:z="1"><plain></plain><other xmlns="urn:other"><back xmlns="urn:default"></back></other></a:x></a:root>

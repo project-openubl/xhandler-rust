@@ -9,8 +9,9 @@ Rust libraries for Peru SUNAT electronic invoicing: create UBL XML, sign, send v
 ## Commands
 
 ```bash
-# System deps (Ubuntu): sudo apt-get install pkg-config libssl-dev libxml2-dev libclang-dev
-# Fedora: sudo dnf install pkg-config libxml2-devel xmlsec1-devel xmlsec1-openssl clang-devel
+# No system libraries are needed to build. Only xbuilder's tests (XSD validation) need:
+# Ubuntu: sudo apt-get install pkg-config libxml2-dev libclang-dev
+# Fedora: sudo dnf install pkg-config libxml2-devel clang-devel
 cargo build
 cargo test
 cargo test -p xbuilder test_name    # single test
@@ -18,12 +19,12 @@ cargo fmt --check
 cargo clippy --all-targets --all-features -- -D warnings
 ```
 
-Rust 1.100.0 pinned in `rust-toolchain.toml`. Clippy allows unwrap/expect in tests.
+Rust 1.100.0 pinned in `rust-toolchain.toml`. The crates build for Android/iOS (used by xhandler-mobile): xsigner/xbuilder are pure Rust; xsender's TLS (`ring`) needs the target's C compiler (Android NDK / Xcode). CI checks both. Clippy allows unwrap/expect in tests.
 
 ## Crates
 
 - **xbuilder** — XML generation via Tera templates + 3-phase enrichment pipeline
-- **xsigner** — RSA-SHA256 XML digital signatures (libxml2/openssl C14N)
+- **xsigner** — RSA-SHA256 XML digital signatures, pure Rust (own C14N on quick-xml, RustCrypto)
 - **xsender** — ZIP, SOAP send to SUNAT, CDR response parsing, file analysis
 - **xhandler** — umbrella re-export
 

@@ -1,10 +1,15 @@
 # XSigner
 
-Sign your XML files
+Signs UBL XML documents with an enveloped RSA-SHA256 XML signature, as SUNAT
+requires.
 
-```shell
-https://xmlsec.readthedocs.io/en/stable/install.html
+Pure Rust: Canonical XML 1.0 is implemented on top of `quick-xml`, and keys
+are handled with RustCrypto (`rsa`, `x509-cert`, `p12-keystore`). No system
+libraries are needed, so the crate builds for Android and iOS too.
+
+```rust
+use xsigner::{RsaKeyPair, XSigner};
+
+let key_pair = RsaKeyPair::from_pkcs12(&std::fs::read("certificate.pfx")?, "password")?;
+let signed_xml: Vec<u8> = XSigner::from_path("invoice.xml")?.sign(&key_pair)?;
 ```
-
-## Fedora
-sudo dnf install pkg-config libxml2-devel xmlsec1-devel xmlsec1-openssl clang-devel

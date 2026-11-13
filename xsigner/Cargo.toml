@@ -9,5 +9,7 @@ description = "Sign your XML files"
 thiserror = { workspace = true }
 quick-xml = { workspace = true }
 base64 = { workspace = true }
-openssl = { workspace = true }
-xml_c14n = { workspace = true }
+sha2 = { workspace = true }
+rsa = { workspace = true }
+x509-cert = { workspace = true }
+p12-keystore = { workspace = true }

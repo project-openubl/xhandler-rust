@@ -1,22 +1,17 @@
 use std::path::Path;
-use std::sync::OnceLock;
 use std::{fs, io};
 
 use base64::engine::general_purpose;
 use base64::Engine;
-use openssl::error::ErrorStack;
-use openssl::hash::{hash, MessageDigest};
-use openssl::pkcs12::Pkcs12;
-use openssl::pkey::{PKey, Private};
-use openssl::provider::Provider;
-use openssl::sign::Signer;
-use openssl::x509::X509;
 use quick_xml::events::Event;
 use quick_xml::name::ResolveResult;
 use quick_xml::NsReader;
-use xml_c14n::{
-    canonicalize_xml, CanonicalizationErrorCode, CanonicalizationMode, CanonicalizationOptions,
-};
+use sha2::{Digest, Sha256};
+
+mod c14n;
+mod key_pair;
+
+pub use key_pair::RsaKeyPair;
 
 /// `Id` of the `ds:Signature`, referenced by the `cac:Signature` of the
 /// xbuilder templates (`#PROJECT-OPENUBL-SIGN`).
@@ -28,61 +23,11 @@ const EXT_NS: &str = "urn:oasis:names:specification:ubl:schema:xsd:CommonExtensi
 #[derive(Debug, thiserror::Error)]
 pub enum SignError {
     #[error(transparent)]
-    OpenSsl(#[from] ErrorStack),
-    #[error(transparent)]
-    Canonicalization(#[from] CanonicalizationErrorCode),
-    #[error(transparent)]
     QuickXml(#[from] quick_xml::Error),
     #[error("{0}")]
+    Key(String),
+    #[error("{0}")]
     Invalid(String),
-}
-
-/// Private key and X.509 certificate used to sign
-pub struct RsaKeyPair {
-    private_key: PKey<Private>,
-    certificate: X509,
-}
-
-impl RsaKeyPair {
-    /// Private key in PEM (PKCS#1 `RSA PRIVATE KEY` or PKCS#8 `PRIVATE KEY`)
-    /// and X.509 certificate in PEM.
-    pub fn from_pem(private_key: &str, certificate: &str) -> Result<Self, SignError> {
-        Ok(Self {
-            private_key: PKey::private_key_from_pem(private_key.as_bytes())?,
-            certificate: X509::from_pem(certificate.as_bytes())?,
-        })
-    }
-
-    /// PKCS#12 keystore (`.pfx` / `.p12`), the format SUNAT certificates are
-    /// usually delivered in.
-    pub fn from_pkcs12(der: &[u8], password: &str) -> Result<Self, SignError> {
-        let pkcs12 = Pkcs12::from_der(der)?;
-        let keystore = match pkcs12.parse2(password) {
-            Ok(keystore) => keystore,
-            Err(error) => {
-                // Older keystores (e.g. exported from Windows) use RC2/3DES,
-                // which OpenSSL 3 only offers through its legacy provider.
-                if !load_legacy_provider() {
-                    return Err(error.into());
-                }
-                pkcs12.parse2(password)?
-            }
-        };
-        match (keystore.pkey, keystore.cert) {
-            (Some(private_key), Some(certificate)) => Ok(Self {
-                private_key,
-                certificate,
-            }),
-            _ => Err(SignError::Invalid(
-                "The PKCS#12 keystore must contain a private key and its certificate".into(),
-            )),
-        }
-    }
-
-    pub fn certificate_to_pem(&self) -> Result<String, ErrorStack> {
-        let pem = self.certificate.to_pem()?;
-        Ok(String::from_utf8_lossy(&pem).into_owned())
-    }
 }
 
 pub struct XSigner {
@@ -113,16 +58,16 @@ impl XSigner {
     /// Returns the original document plus the signature, as UTF-8 with a UTF-8
     /// XML declaration. The rest of the document is left untouched.
     pub fn sign(&self, key_pair: &RsaKeyPair) -> Result<Vec<u8>, SignError> {
-        // Without its declaration the text is parsed as what it is: UTF-8.
-        // Keeping e.g. encoding="ISO-8859-1" would make libxml2 re-decode it.
+        // The text is already decoded: without its declaration (which may say
+        // e.g. encoding="ISO-8859-1") it is parsed as what it is, UTF-8.
         let mut document = strip_xml_declaration(&self.xml_document).to_string();
         let position = prepare_signature_slot(&mut document)?;
 
         // Reference URI="" + enveloped transform: the digest is the inclusive
         // C14N 1.0 (without comments) of the document without the signature.
-        let canonical_document = canonicalize(&document, CanonicalizationMode::Canonical1_0)?;
-        let digest = hash(MessageDigest::sha256(), canonical_document.as_bytes())?;
-        let digest_base64 = general_purpose::STANDARD.encode(digest);
+        let canonical_document = c14n::canonicalize(&document)?;
+        let digest_base64 =
+            general_purpose::STANDARD.encode(Sha256::digest(canonical_document.as_bytes()));
 
         let signed_info = format!(
             "<ds:SignedInfo xmlns:ds=\"{DS_NS}\">\
@@ -135,15 +80,14 @@ impl XSigner {
 </ds:Reference>\
 </ds:SignedInfo>"
         );
-        // Exclusive C14N, as declared: SignedInfo only uses the ds namespace,
-        // so its canonical form doesn't depend on where it is inserted.
-        let canonical_signed_info =
-            canonicalize(&signed_info, CanonicalizationMode::ExclusiveCanonical1_0)?;
+        // Exclusive C14N, as declared. SignedInfo only uses the ds namespace,
+        // declared on itself, so its exclusive and inclusive canonical forms
+        // are the same and don't depend on where it is inserted.
+        let canonical_signed_info = c14n::canonicalize(&signed_info)?;
 
-        let mut signer = Signer::new(MessageDigest::sha256(), &key_pair.private_key)?;
-        signer.update(canonical_signed_info.as_bytes())?;
-        let signature_value = general_purpose::STANDARD.encode(signer.sign_to_vec()?);
-        let certificate = general_purpose::STANDARD.encode(key_pair.certificate.to_der()?);
+        let signature_value =
+            general_purpose::STANDARD.encode(key_pair.sign(canonical_signed_info.as_bytes())?);
+        let certificate = general_purpose::STANDARD.encode(key_pair.certificate_der());
 
         let signature = format!(
             "<ds:Signature xmlns:ds=\"{DS_NS}\" Id=\"{SIGNATURE_ID}\">\
@@ -156,21 +100,6 @@ impl XSigner {
 
         Ok(format!("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n{document}").into_bytes())
     }
-}
-
-/// C14N without comments
-fn canonicalize(
-    xml: &str,
-    mode: CanonicalizationMode,
-) -> Result<String, CanonicalizationErrorCode> {
-    canonicalize_xml(
-        xml,
-        CanonicalizationOptions {
-            mode,
-            keep_comments: false,
-            inclusive_ns_prefixes: vec![],
-        },
-    )
 }
 
 /// Returns the byte offset where the signature goes: inside the first
@@ -275,15 +204,6 @@ fn add_ubl_extensions(document: &mut String) -> Result<usize, SignError> {
     Ok(position + content_offset)
 }
 
-/// Loads OpenSSL's legacy provider once for the whole process (keeping the
-/// default provider). Returns whether it is available.
-fn load_legacy_provider() -> bool {
-    static LEGACY: OnceLock<Option<Provider>> = OnceLock::new();
-    LEGACY
-        .get_or_init(|| Provider::try_load(None, "legacy", true).ok())
-        .is_some()
-}
-
 fn strip_xml_declaration(xml: &str) -> &str {
     let xml = xml.trim_start_matches('\u{feff}').trim_start();
     match xml
@@ -306,12 +226,16 @@ mod tests {
 
     use base64::engine::general_purpose;
     use base64::Engine;
-    use openssl::hash::{hash, MessageDigest};
-    use openssl::sign::Verifier;
-    use openssl::x509::X509;
-    use xml_c14n::CanonicalizationMode;
+    use rsa::pkcs1::DecodeRsaPrivateKey;
+    use rsa::pkcs1v15::{Signature, VerifyingKey};
+    use rsa::pkcs8::{DecodePublicKey, EncodePrivateKey, LineEnding};
+    use rsa::signature::Verifier;
+    use rsa::{PrivateKey, PublicKey};
+    use sha2::{Digest, Sha256};
+    use x509_cert::der::{Decode, Encode};
+    use x509_cert::Certificate;
 
-    use crate::{canonicalize, RsaKeyPair, SignError, XSigner, DS_NS, SIGNATURE_ID};
+    use crate::{c14n, RsaKeyPair, SignError, XSigner, DS_NS, SIGNATURE_ID};
 
     const RESOURCES: &str = "resources/test";
     const HEAD: &str = r#"<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">"#;
@@ -348,11 +272,9 @@ mod tests {
         let signature_start = signed.find("<ds:Signature ").unwrap();
         let signature_end = signed.find("</ds:Signature>").unwrap() + "</ds:Signature>".len();
         let unsigned = format!("{}{}", &signed[..signature_start], &signed[signature_end..]);
-        let unsigned = unsigned.split_once("?>").unwrap().1;
-        let canonical = canonicalize(unsigned, CanonicalizationMode::Canonical1_0).unwrap();
-        let digest = hash(MessageDigest::sha256(), canonical.as_bytes()).unwrap();
+        let canonical = c14n::canonicalize(&unsigned).unwrap();
         assert_eq!(
-            digest.to_vec(),
+            Sha256::digest(canonical.as_bytes()).to_vec(),
             base64("<ds:DigestValue>", "</ds:DigestValue>")
         );
 
@@ -361,19 +283,20 @@ mod tests {
             "{signed_info_start}{}</ds:SignedInfo>",
             between(signed, &signed_info_start, "</ds:SignedInfo>")
         );
-        let canonical_signed_info =
-            canonicalize(&signed_info, CanonicalizationMode::ExclusiveCanonical1_0).unwrap();
+        let canonical_signed_info = c14n::canonicalize(&signed_info).unwrap();
 
         let certificate =
-            X509::from_der(&base64("<ds:X509Certificate>", "</ds:X509Certificate>")).unwrap();
-        let public_key = certificate.public_key().unwrap();
-        let mut verifier = Verifier::new(MessageDigest::sha256(), &public_key).unwrap();
-        verifier.update(canonical_signed_info.as_bytes()).unwrap();
-        let signature_value = base64("<ds:SignatureValue>", "</ds:SignatureValue>");
-        assert!(
-            verifier.verify(&signature_value).unwrap(),
-            "Invalid SignatureValue"
-        );
+            Certificate::from_der(&base64("<ds:X509Certificate>", "</ds:X509Certificate>"))
+                .unwrap();
+        let public_key_info = certificate.tbs_certificate().subject_public_key_info();
+        let public_key =
+            PublicKey::from_public_key_der(&public_key_info.to_der().unwrap()).unwrap();
+        let signature =
+            Signature::try_from(base64("<ds:SignatureValue>", "</ds:SignatureValue>").as_slice())
+                .unwrap();
+        VerifyingKey::<Sha256>::new(public_key)
+            .verify(canonical_signed_info.as_bytes(), &signature)
+            .expect("Invalid SignatureValue");
     }
 
     #[test]
@@ -382,8 +305,11 @@ mod tests {
         assert_eq!(key_pair().certificate_to_pem().unwrap(), certificate);
 
         // PKCS#8 private keys are accepted too
-        let pkcs8 = key_pair().private_key.private_key_to_pem_pkcs8().unwrap();
-        let pkcs8 = String::from_utf8(pkcs8).unwrap();
+        let pkcs1 = fs::read_to_string(format!("{RESOURCES}/private.key")).unwrap();
+        let pkcs8 = PrivateKey::from_pkcs1_pem(&pkcs1)
+            .unwrap()
+            .to_pkcs8_pem(LineEnding::LF)
+            .unwrap();
         assert!(pkcs8.starts_with("-----BEGIN PRIVATE KEY-----"));
         assert!(RsaKeyPair::from_pem(&pkcs8, &certificate).is_ok());
     }
@@ -399,6 +325,21 @@ mod tests {
         assert!(RsaKeyPair::from_pkcs12(&pfx, "wrong password").is_err());
     }
 
+    /// Older keystores (e.g. exported from Windows) encrypt with 3DES
+    #[test]
+    fn read_legacy_pkcs12_keystore() {
+        let pfx = fs::read(format!("{RESOURCES}/legacy_3des.pfx")).unwrap();
+        let key_pair = RsaKeyPair::from_pkcs12(&pfx, "password").expect("Could not read pfx");
+        let certificate = fs::read_to_string(format!("{RESOURCES}/public.cer")).unwrap();
+        assert_eq!(key_pair.certificate_to_pem().unwrap(), certificate);
+
+        let signed = XSigner::from_path(format!("{RESOURCES}/invoice_no_template.xml"))
+            .unwrap()
+            .sign(&key_pair)
+            .unwrap();
+        assert_valid_signature(&String::from_utf8(signed).unwrap());
+    }
+
     #[test]
     fn sign_file() {
         let document = XSigner::from_path(format!("{RESOURCES}/invoice_no_template.xml"))
@@ -409,6 +350,37 @@ mod tests {
         assert!(signed.contains(&format!("<ext:ExtensionContent><ds:Signature xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"{SIGNATURE_ID}\">")));
         assert_eq!(signed.matches("<ds:Signature ").count(), 1);
         assert_valid_signature(&signed);
+    }
+
+    /// Each `signed/<name>.signed.xml` was produced from `signed/<name>.xml`
+    /// by the previous libxml2/OpenSSL implementation; RSA PKCS#1 v1.5 is
+    /// deterministic, so the output must be byte-for-byte the same.
+    #[test]
+    fn sign_matches_previous_implementation() {
+        let mut checked = 0;
+        for entry in fs::read_dir(format!("{RESOURCES}/signed")).unwrap() {
+            let expected_path = entry.unwrap().path();
+            let Some(source) = expected_path.to_str().unwrap().strip_suffix(".signed.xml") else {
+                continue;
+            };
+            let signed = XSigner::from_path(format!("{source}.xml"))
+                .unwrap()
+                .sign(&key_pair())
+                .unwrap();
+            assert!(signed == fs::read(&expected_path).unwrap(), "{source}");
+            checked += 1;
+        }
+        assert!(checked > 0);
+    }
+
+    #[test]
+    fn read_key_pair_rejects_a_certificate_of_another_key() {
+        let other_key = fs::read_to_string(format!("{RESOURCES}/other_private.key")).unwrap();
+        let certificate = fs::read_to_string(format!("{RESOURCES}/public.cer")).unwrap();
+        assert!(matches!(
+            RsaKeyPair::from_pem(&other_key, &certificate),
+            Err(SignError::Key(_))
+        ));
     }
 
     #[test]

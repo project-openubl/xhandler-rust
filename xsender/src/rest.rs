@@ -10,7 +10,6 @@ use base64::engine::general_purpose;
 use base64::Engine;
 use reqwest::StatusCode;
 use serde_json::{json, Value};
-use sha2::{Digest, Sha256};
 
 use crate::constants::HTTP_CLIENT;
 use crate::fault::SunatFault;
@@ -19,6 +18,7 @@ use crate::sunat_client::{
     send_request, File, SendFileResponse, SunatClientError, VerifyTicketResponse,
     VerifyTicketStatus,
 };
+use crate::ubl_file::sha256_hex;
 
 const TOKEN_URL: &str = "https://api-seguridad.sunat.gob.pe/v1/clientessol";
 const TOKEN_SCOPE: &str = "https://api-cpe.sunat.gob.pe";
@@ -146,7 +146,7 @@ fn hash_zip(zip_base64: &str) -> Result<String, SunatClientError> {
     let zip = general_purpose::STANDARD
         .decode(zip_base64)
         .map_err(|e| anyhow!("Invalid zip: {e}"))?;
-    Ok(format!("{:x}", Sha256::digest(zip)))
+    Ok(sha256_hex(&zip))
 }
 
 fn parse_send_response(
