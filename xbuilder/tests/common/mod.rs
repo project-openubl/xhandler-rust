@@ -119,6 +119,19 @@ fn sign_xml(xml: &str) -> Vec<u8> {
 
 #[allow(dead_code)]
 pub async fn assert_invoice(invoice: &mut Invoice, snapshot_filename: &str) {
+    let xml_signed = render_and_check_invoice(invoice, snapshot_filename);
+    assert_sunat(&xml_signed).await;
+}
+
+/// Same as [`assert_invoice`] but never sends the document to SUNAT.
+/// Use it for large parameterized batches that SUNAT beta would rate-limit;
+/// the snapshot and XSD assertions still run.
+#[allow(dead_code)]
+pub fn assert_invoice_offline(invoice: &mut Invoice, snapshot_filename: &str) {
+    render_and_check_invoice(invoice, snapshot_filename);
+}
+
+fn render_and_check_invoice(invoice: &mut Invoice, snapshot_filename: &str) -> Vec<u8> {
     let defaults = defaults_base();
     invoice.enrich(&defaults);
 
@@ -128,7 +141,7 @@ pub async fn assert_invoice(invoice: &mut Invoice, snapshot_filename: &str) {
 
     let xml_signed = sign_xml(&xml);
     assert_xsd(&xml_signed, INVOICE_XSD);
-    assert_sunat(&xml_signed).await;
+    xml_signed
 }
 
 #[allow(dead_code)]
@@ -229,13 +242,36 @@ pub async fn assert_despatch_advice(doc: &mut DespatchAdvice, snapshot_filename:
     // SUNAT send skipped: DespatchAdvice uses REST endpoint, not SOAP
 }
 
+/// Set `XBUILDER_SNAPSHOT_UPDATE=true` to overwrite snapshot files with the
+/// rendered XML instead of comparing against them.
+fn snapshot_update_enabled() -> bool {
+    env_flag("XBUILDER_SNAPSHOT_UPDATE")
+}
+
+/// Set `XBUILDER_SKIP_SUNAT=true` to skip sending documents to SUNAT beta.
+/// Snapshot and XSD assertions still run.
+fn skip_sunat_enabled() -> bool {
+    env_flag("XBUILDER_SKIP_SUNAT")
+}
+
+fn env_flag(name: &str) -> bool {
+    std::env::var(name)
+        .map(|value| matches!(value.to_lowercase().as_str(), "1" | "true" | "yes"))
+        .unwrap_or(false)
+}
+
 fn assert_snapshot(expected: &str, snapshot_filename: &str) {
-    let snapshot_file_content = fs::read_to_string(snapshot_filename);
-    assert!(snapshot_file_content.is_ok());
+    if snapshot_update_enabled() {
+        fs::write(snapshot_filename, expected)
+            .unwrap_or_else(|err| panic!("Could not write snapshot {snapshot_filename}: {err}"));
+        return;
+    }
+
+    let snapshot_file_content = fs::read_to_string(snapshot_filename)
+        .unwrap_or_else(|err| panic!("Could not read snapshot {snapshot_filename}: {err}"));
 
     assert_eq!(
-        expected,
-        snapshot_file_content.unwrap(),
+        expected, snapshot_file_content,
         "File {} does not match",
         snapshot_filename
     );
@@ -266,6 +302,10 @@ fn assert_xsd(xml: &Vec<u8>, schema: &str) {
 }
 
 async fn assert_sunat(xml: &[u8]) {
+    if skip_sunat_enabled() {
+        return;
+    }
+
     let file_content = String::from_utf8_lossy(xml).to_string();
     let xml_file = UblFile { file_content };
 
