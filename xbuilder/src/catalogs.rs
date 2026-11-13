@@ -19,8 +19,10 @@ pub trait Label {
 /// Declares a SUNAT catalog: the enum, its codes, and a `from_code` that
 /// accepts either the code (`"1"`) or the variant name, ignoring case and
 /// underscores, as xhandler-java does (`"DNI"`, `"GRAVADO_OPERACION_ONEROSA"`).
+/// `Variant | Alias = "code",` also accepts a Java name that differs from the
+/// variant name.
 macro_rules! catalog {
-    ($(#[$meta:meta])* $name:ident { $($variant:ident = $code:literal,)* }) => {
+    ($(#[$meta:meta])* $name:ident { $($variant:ident $(| $alias:ident)? = $code:literal,)* }) => {
         $(#[$meta])*
         #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
         pub enum $name {
@@ -38,7 +40,10 @@ macro_rules! catalog {
         impl FromCode for $name {
             fn from_code(value: &str) -> Result<Self, String> {
                 let name = value.replace('_', "");
-                $(if value == $code || name.eq_ignore_ascii_case(stringify!($variant)) {
+                $(if value == $code
+                    || name.eq_ignore_ascii_case(stringify!($variant))
+                    $(|| name.eq_ignore_ascii_case(stringify!($alias)))?
+                {
                     return Ok(Self::$variant);
                 })*
                 Err(format!("{value} is not a valid {}", stringify!($name)))
@@ -128,7 +133,7 @@ catalog! {
         RUC = "6",
         Pasaporte = "7",
         DecDiplomatica = "A",
-        DocIdentPaisResidenciaNoDomiciliado = "B",
+        DocIdentPaisResidenciaNoDomiciliado | DocIdentPaisResidenciaNoD = "B",
         TaxIdentificationNumberTinDocTribPpNn = "C",
         IdentificationNumberInDocTribPpJj = "D",
         TamTarjetaAndinaDeMigracion = "E",
@@ -497,6 +502,10 @@ mod tests {
         assert_eq!(Catalog6::from_code("1"), Ok(Catalog6::DNI));
         assert_eq!(Catalog6::from_code("DNI"), Ok(Catalog6::DNI));
         assert_eq!(Catalog6::from_code("dni"), Ok(Catalog6::DNI));
+        assert_eq!(
+            Catalog6::from_code("DOC_IDENT_PAIS_RESIDENCIA_NO_D"),
+            Ok(Catalog6::DocIdentPaisResidenciaNoDomiciliado)
+        );
         assert_eq!(
             Catalog7::from_code("GRAVADO_OPERACION_ONEROSA"),
             Ok(Catalog7::GravadoOperacionOnerosa)

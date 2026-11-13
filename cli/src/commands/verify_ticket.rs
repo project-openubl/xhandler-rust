@@ -54,6 +54,9 @@ impl VerifyTicketArgs {
             no_interactive: false,
         };
 
+        if self.despatch {
+            send_args.check_despatch_beta()?;
+        }
         let urls = send_args.resolve_urls();
         let credentials = send_args.credentials.resolve(send_args.beta)?;
 
