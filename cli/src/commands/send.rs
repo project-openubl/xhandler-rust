@@ -70,24 +70,70 @@ pub enum SendResult {
     /// CDR was received and saved to the given path.
     Cdr {
         cdr_path: String,
-        response_code: String,
-        status: Status,
-        description: String,
-        notes: Vec<String>,
+        metadata: CdrMetadata,
     },
-    /// A ticket was received (async processing). The ticket may have been verified
-    /// interactively if the user accepted.
+    /// A ticket was received (async processing), with the verification output
+    /// if the user verified it interactively.
     Ticket {
         ticket: String,
-        verify_result: Option<serde_json::Value>,
+        verification: Option<(serde_json::Value, Status)>,
     },
     /// SUNAT returned a SOAP fault.
-    Error {
-        code: String,
-        sunat_code: Option<u32>,
-        status: Status,
-        message: String,
-    },
+    Error(ErrorResponse),
+}
+
+impl SendResult {
+    /// Prints the result as JSON, adding the `extra` fields, and returns the exit code.
+    /// SOAP faults go to stderr, everything else to stdout.
+    pub fn print(self, extra: &[(&str, serde_json::Value)]) -> anyhow::Result<ExitCode> {
+        let is_fault = matches!(self, SendResult::Error(_));
+        let (mut output, status) = match self {
+            SendResult::Cdr { cdr_path, metadata } => (
+                serde_json::json!({
+                    "cdr": cdr_path,
+                    "response_code": metadata.response_code,
+                    "status": metadata.status().to_string(),
+                    "description": metadata.description,
+                    "notes": metadata.notes,
+                }),
+                metadata.status(),
+            ),
+            SendResult::Ticket {
+                ticket,
+                verification,
+            } => {
+                let output = serde_json::json!({ "ticket": ticket });
+                match verification {
+                    Some((verify_output, status)) => {
+                        println!("{}", serde_json::to_string_pretty(&output)?);
+                        (verify_output, status)
+                    }
+                    None => (output, Status::EnProceso),
+                }
+            }
+            SendResult::Error(error) => (
+                serde_json::json!({
+                    "code": error.code,
+                    "sunat_code": error.sunat_code(),
+                    "status": error.status().to_string(),
+                    "message": error.message,
+                }),
+                error.status(),
+            ),
+        };
+
+        for (key, value) in extra {
+            output[*key] = value.clone();
+        }
+
+        let output = serde_json::to_string_pretty(&output)?;
+        if is_fault {
+            eprintln!("{output}");
+        } else {
+            println!("{output}");
+        }
+        Ok(super::exit_code_for(status))
+    }
 }
 
 impl SendArgs {
@@ -106,63 +152,9 @@ impl SendArgs {
             .clone()
             .unwrap_or_else(|| format!("{}.zip", self.input_file));
 
-        let result = self.send_ubl_file(&ubl_file, &default_cdr).await?;
-
-        match result {
-            SendResult::Cdr {
-                cdr_path,
-                response_code,
-                status,
-                description,
-                notes,
-            } => {
-                let output = serde_json::json!({
-                    "cdr": cdr_path,
-                    "response_code": response_code,
-                    "status": status.to_string(),
-                    "description": description,
-                    "notes": notes,
-                });
-                println!("{}", serde_json::to_string_pretty(&output)?);
-                Ok(super::exit_code_for(status))
-            }
-            SendResult::Ticket {
-                ticket,
-                verify_result,
-            } => {
-                let output = serde_json::json!({ "ticket": ticket });
-                println!("{}", serde_json::to_string_pretty(&output)?);
-                if let Some(verify_output) = verify_result {
-                    println!("{}", serde_json::to_string_pretty(&verify_output)?);
-                }
-                Ok(ExitCode::SUCCESS)
-            }
-            SendResult::Error {
-                code,
-                sunat_code,
-                status,
-                message,
-            } => {
-                let output = serde_json::json!({
-                    "code": code,
-                    "sunat_code": sunat_code,
-                    "status": status.to_string(),
-                    "message": message,
-                });
-                eprintln!("{}", serde_json::to_string_pretty(&output)?);
-                Ok(ExitCode::from(2))
-            }
-        }
-    }
-
-    /// Sends XML content to SUNAT, handles CDR/ticket/error, and returns a structured result.
-    pub async fn send_xml_content(
-        &self,
-        xml_content: &str,
-        default_cdr_path: &str,
-    ) -> anyhow::Result<SendResult> {
-        self.send_ubl_file(&UblFile::from(xml_content), default_cdr_path)
-            .await
+        self.send_ubl_file(&ubl_file, &default_cdr)
+            .await?
+            .print(&[])
     }
 
     /// Sends a UBL file to SUNAT, handles CDR/ticket/error, and returns a structured result.
@@ -188,16 +180,10 @@ impl SendArgs {
                 let cdr_path = super::absolute_path(default_cdr_path);
                 std::fs::write(&cdr_path, cdr_bytes)?;
 
-                Ok(SendResult::Cdr {
-                    cdr_path,
-                    status: metadata.status(),
-                    response_code: metadata.response_code,
-                    description: metadata.description,
-                    notes: metadata.notes,
-                })
+                Ok(SendResult::Cdr { cdr_path, metadata })
             }
             SendFileAggregatedResponse::Ticket(ticket) => {
-                let verify_result = if self.no_interactive {
+                let verification = if self.no_interactive {
                     None
                 } else {
                     // Fall back to the invoice service, which handles most tickets
@@ -209,15 +195,10 @@ impl SendArgs {
 
                 Ok(SendResult::Ticket {
                     ticket,
-                    verify_result,
+                    verification,
                 })
             }
-            SendFileAggregatedResponse::Error(error) => Ok(SendResult::Error {
-                sunat_code: error.sunat_code(),
-                status: error.status(),
-                code: error.code,
-                message: error.message,
-            }),
+            SendFileAggregatedResponse::Error(error) => Ok(SendResult::Error(error)),
         }
     }
 

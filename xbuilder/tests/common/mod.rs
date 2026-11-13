@@ -258,18 +258,6 @@ pub async fn assert_despatch_advice(doc: &mut DespatchAdvice, snapshot_filename:
     // SUNAT send skipped: DespatchAdvice uses REST endpoint, not SOAP
 }
 
-/// Set `XBUILDER_SNAPSHOT_UPDATE=true` to overwrite snapshot files with the
-/// rendered XML instead of comparing against them.
-fn snapshot_update_enabled() -> bool {
-    env_flag("XBUILDER_SNAPSHOT_UPDATE")
-}
-
-/// Set `XBUILDER_SKIP_SUNAT=true` to skip sending documents to SUNAT beta.
-/// Snapshot and XSD assertions still run.
-fn skip_sunat_enabled() -> bool {
-    env_flag("XBUILDER_SKIP_SUNAT")
-}
-
 fn env_flag(name: &str) -> bool {
     std::env::var(name)
         .map(|value| matches!(value.to_lowercase().as_str(), "1" | "true" | "yes"))
@@ -277,7 +265,8 @@ fn env_flag(name: &str) -> bool {
 }
 
 fn assert_snapshot(expected: &str, snapshot_filename: &str) {
-    if snapshot_update_enabled() {
+    // XBUILDER_SNAPSHOT_UPDATE=true overwrites snapshots with the rendered XML
+    if env_flag("XBUILDER_SNAPSHOT_UPDATE") {
         fs::write(snapshot_filename, expected)
             .unwrap_or_else(|err| panic!("Could not write snapshot {snapshot_filename}: {err}"));
         return;
@@ -318,7 +307,8 @@ fn assert_xsd(xml: &Vec<u8>, schema: &str) {
 }
 
 async fn assert_sunat(xml: &[u8]) {
-    if skip_sunat_enabled() {
+    // XBUILDER_SKIP_SUNAT=true skips sending to SUNAT beta (snapshot + XSD still run)
+    if env_flag("XBUILDER_SKIP_SUNAT") {
         return;
     }
 

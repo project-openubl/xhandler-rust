@@ -11,9 +11,11 @@ pub struct EnvelopeData {
 
 #[allow(dead_code)]
 pub enum BodyData {
-    SendBill(FileData),
-    SendSummary(FileData),
-    SendPack(FileData),
+    /// sendBill, sendSummary or sendPack: same body, different operation
+    SendFile {
+        operation: &'static str,
+        file: FileData,
+    },
     VerifyTicket(String),
     GetStatusCrd(DocumentData),
     ValidateCdpCriterios(DocumentCdpData),
@@ -57,17 +59,10 @@ impl ToStringXml for EnvelopeData {
         context.insert("password", &self.password);
 
         match &self.body {
-            BodyData::SendBill(file_data) => {
-                context.insert("body", &file_data);
-                TEMPLATES.render("send_bill.xml", &context)
-            }
-            BodyData::SendSummary(file_data) => {
-                context.insert("body", &file_data);
-                TEMPLATES.render("send_summary.xml", &context)
-            }
-            BodyData::SendPack(file_data) => {
-                context.insert("body", &file_data);
-                TEMPLATES.render("send_pack.xml", &context)
+            BodyData::SendFile { operation, file } => {
+                context.insert("operation", operation);
+                context.insert("body", file);
+                TEMPLATES.render("send_file.xml", &context)
             }
             BodyData::VerifyTicket(ticket) => {
                 context.insert("ticket", ticket);
@@ -92,8 +87,7 @@ impl ToStringXml for EnvelopeData {
 #[cfg(test)]
 mod tests {
     use crate::soap::envelope::BodyData::{
-        GetStatusCrd, SendBill, SendPack, SendSummary, ValidateCdpCriterios, ValidateFile,
-        VerifyTicket,
+        GetStatusCrd, SendFile, ValidateCdpCriterios, ValidateFile, VerifyTicket,
     };
     use crate::soap::envelope::*;
 
@@ -102,10 +96,13 @@ mod tests {
         let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
-            body: SendBill(FileData {
-                filename: String::from("my_filename"),
-                file_content: String::from("my_file_content"),
-            }),
+            body: SendFile {
+                operation: "sendBill",
+                file: FileData {
+                    filename: String::from("my_filename"),
+                    file_content: String::from("my_file_content"),
+                },
+            },
         };
 
         assert!(message.to_string_xml().unwrap().len() > 1);
@@ -116,10 +113,13 @@ mod tests {
         let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
-            body: SendSummary(FileData {
-                filename: String::from("my_filename"),
-                file_content: String::from("my_file_content"),
-            }),
+            body: SendFile {
+                operation: "sendSummary",
+                file: FileData {
+                    filename: String::from("my_filename"),
+                    file_content: String::from("my_file_content"),
+                },
+            },
         };
 
         assert!(message.to_string_xml().unwrap().len() > 1);
@@ -130,10 +130,13 @@ mod tests {
         let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
-            body: SendPack(FileData {
-                filename: String::from("my_filename.zip"),
-                file_content: String::from("my_file_content"),
-            }),
+            body: SendFile {
+                operation: "sendPack",
+                file: FileData {
+                    filename: String::from("my_filename.zip"),
+                    file_content: String::from("my_file_content"),
+                },
+            },
         };
 
         let xml = message.to_string_xml().unwrap();

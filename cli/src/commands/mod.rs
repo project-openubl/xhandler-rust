@@ -50,13 +50,13 @@ pub fn exit_code_for(status: xhandler::prelude::Status) -> ExitCode {
 }
 
 /// Prompts the user to verify a ticket and runs verification if accepted.
-/// Returns the JSON output from verification, or None if the user declined.
+/// Returns the verification JSON output and status, or None if the user declined.
 pub async fn prompt_verify_ticket(
     ticket: &str,
     sender: &xhandler::prelude::FileSender,
     target: &xhandler::prelude::VerifyTicketTarget,
     default_cdr_path: &str,
-) -> anyhow::Result<Option<serde_json::Value>> {
+) -> anyhow::Result<Option<(serde_json::Value, xhandler::prelude::Status)>> {
     use std::io::Write;
 
     eprint!("Ticket recibido: {ticket}\nDesea verificar el ticket ahora? [y/N]: ");
@@ -82,8 +82,7 @@ pub async fn prompt_verify_ticket(
     };
 
     let result = sender.verify_ticket(target, ticket).await?;
-    let (output, _status) = verify_ticket_output(result.response, &cdr_output)?;
-    Ok(Some(output))
+    verify_ticket_output(result.response, &cdr_output).map(Some)
 }
 
 /// Saves the CDR (if any) and builds the JSON output of a ticket verification.
