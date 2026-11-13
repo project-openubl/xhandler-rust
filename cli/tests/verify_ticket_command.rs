@@ -88,9 +88,11 @@ fn verify_ticket_missing_credentials_without_beta_fails() {
 
 // --- End-to-end test against SUNAT beta ---
 
-// SUNAT beta's getStatus endpoint currently returns HTTP 500 after ~60s
-// ("Failed to establish a backside connection").
-#[ignore = "SUNAT beta getStatus returns HTTP 500 (backside connection failure)"]
+// SUNAT beta's getStatus endpoint may answer, after ~60s, with a SOAP fault
+// over HTTP 500 ("Failed to establish a backside connection"); it is reported
+// as structured JSON like any other SUNAT error.
+// Run on demand: `cargo test -p openubl-cli --test verify_ticket_command -- --ignored`
+#[ignore = "slow (~60s against SUNAT beta) and rate limited right after the send"]
 #[serial_test::serial]
 #[test]
 fn verify_ticket_from_voided_documents() {
@@ -138,11 +140,9 @@ fn verify_ticket_from_voided_documents() {
 
         let _ = std::fs::remove_file(&cdr_path);
     } else {
-        // SUNAT beta may return an error for ticket verification (known issue).
-        // Verify the error output is structured JSON.
-        assert!(
-            stderr.contains("code") || stderr.contains("message"),
-            "error output should be structured JSON, stderr: {stderr}"
-        );
+        // SUNAT beta may return an error for ticket verification (known issue)
+        let json: serde_json::Value = serde_json::from_str(&stderr)
+            .unwrap_or_else(|_| panic!("error output should be JSON, stderr: {stderr}"));
+        assert!(json.get("status").is_some() && json.get("code").is_some());
     }
 }

@@ -291,3 +291,24 @@ fn invoice_with_cliente_contacto_email_only() {
     assert!(xml.contains("<cbc:ElectronicMail>carlos@gmail.com</cbc:ElectronicMail>"));
     assert!(!xml.contains("<cbc:Telephone>"));
 }
+
+#[test]
+fn invoice_issue_time_without_fractional_seconds() {
+    let mut invoice = Invoice {
+        hora_emision: NaiveTime::from_hms_nano_opt(10, 11, 12, 123_456_789),
+        detalles: vec![Detalle {
+            descripcion: "Item1".into(),
+            cantidad: dec!(1),
+            precio: Some(dec!(100)),
+            ..Default::default()
+        }],
+        ..invoice_base()
+    };
+    invoice.enrich(&common::defaults_base());
+    let xml = invoice.render().expect("Could not render invoice");
+
+    assert!(
+        xml.contains("<cbc:IssueTime>10:11:12</cbc:IssueTime>"),
+        "{xml}"
+    );
+}

@@ -35,7 +35,7 @@ pub struct SendArgs {
     )]
     pub url_perception_retention: Option<String>,
 
-    /// Endpoint REST de guias de remision SUNAT (con --beta se usan URLs de prueba)
+    /// Endpoint REST de guias de remision SUNAT (requerido con --beta: SUNAT no tiene beta para guias)
     #[arg(long = "url-despatch", env = "OPENUBL_URL_DESPATCH")]
     pub url_despatch: Option<String>,
 
@@ -51,12 +51,12 @@ pub struct SendArgs {
 const BETA_URL_INVOICE: &str = "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService";
 const BETA_URL_PERCEPTION_RETENTION: &str =
     "https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService";
-const BETA_URL_DESPATCH: &str = "https://api-cpe.sunat.gob.pe/v1/contribuyente/gem";
 
 const PROD_URL_INVOICE: &str = "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService";
 const PROD_URL_PERCEPTION_RETENTION: &str =
     "https://e-factura.sunat.gob.pe/ol-ti-itemision-otroscpe-gem/billService";
-const PROD_URL_DESPATCH: &str = "https://api-cpe.sunat.gob.pe/v1/contribuyente/gem";
+/// SUNAT has no beta environment for guias de remision
+const URL_DESPATCH: &str = "https://api-cpe.sunat.gob.pe/v1/contribuyente/gem";
 
 const BETA_USERNAME: &str = "12345678959MODDATOS";
 const BETA_PASSWORD: &str = "MODDATOS";
@@ -208,6 +208,15 @@ impl SendArgs {
         ubl_file: &UblFile,
         default_cdr_path: &str,
     ) -> anyhow::Result<SendResult> {
+        let is_despatch = || {
+            ubl_file
+                .metadata()
+                .is_ok_and(|metadata| metadata.document_type == DocumentType::DESPATCH_ADVICE)
+        };
+        if self.beta && is_despatch() {
+            self.check_despatch_beta()?;
+        }
+
         let urls = self.resolve_urls();
         let credentials = self.credentials.resolve(self.beta)?;
 
@@ -247,19 +256,22 @@ impl SendArgs {
         }
     }
 
+    /// SUNAT has no beta environment for guias de remision, so `--beta` would
+    /// send them to production. Require an explicit `--url-despatch` instead.
+    pub fn check_despatch_beta(&self) -> anyhow::Result<()> {
+        if self.beta && self.url_despatch.is_none() {
+            anyhow::bail!(
+                "SUNAT no tiene ambiente beta para guias de remision; usar --url-despatch para indicar el endpoint"
+            );
+        }
+        Ok(())
+    }
+
     pub fn resolve_urls(&self) -> Urls {
-        let (default_invoice, default_pr, default_despatch) = if self.beta {
-            (
-                BETA_URL_INVOICE,
-                BETA_URL_PERCEPTION_RETENTION,
-                BETA_URL_DESPATCH,
-            )
+        let (default_invoice, default_pr) = if self.beta {
+            (BETA_URL_INVOICE, BETA_URL_PERCEPTION_RETENTION)
         } else {
-            (
-                PROD_URL_INVOICE,
-                PROD_URL_PERCEPTION_RETENTION,
-                PROD_URL_DESPATCH,
-            )
+            (PROD_URL_INVOICE, PROD_URL_PERCEPTION_RETENTION)
         };
 
         Urls {
@@ -274,7 +286,7 @@ impl SendArgs {
             despatch: self
                 .url_despatch
                 .clone()
-                .unwrap_or_else(|| default_despatch.to_string()),
+                .unwrap_or_else(|| URL_DESPATCH.to_string()),
         }
     }
 }

@@ -4,5 +4,5 @@
     <cbc:ID>{{serie_numero}}</cbc:ID>
     <cbc:IssueDate>{{fecha_emision}}</cbc:IssueDate>
     {%- if hora_emision %}
-    <cbc:IssueTime>{{hora_emision}}</cbc:IssueTime>
+    <cbc:IssueTime>{{hora_emision | format_time}}</cbc:IssueTime>
     {%- endif %}

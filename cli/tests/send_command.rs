@@ -229,11 +229,6 @@ fn resolve_urls_beta() {
         "beta perception_retention URL: {}",
         urls.perception_retention
     );
-    assert!(
-        urls.despatch.contains("api-cpe.sunat.gob.pe"),
-        "beta despatch URL: {}",
-        urls.despatch
-    );
 }
 
 #[test]
@@ -328,4 +323,16 @@ fn resolve_credentials_with_rest_client() {
 
     assert_eq!(credentials.client_id.as_deref(), Some("my-client-id"));
     assert_eq!(credentials.client_secret.as_deref(), Some("my-secret"));
+}
+
+#[test]
+fn beta_refuses_despatch_without_url() {
+    assert!(make_send_args(true).check_despatch_beta().is_err());
+    assert!(make_send_args(false).check_despatch_beta().is_ok());
+
+    let with_url = SendArgs {
+        url_despatch: Some("https://my-gre-test.example.com".to_string()),
+        ..make_send_args(true)
+    };
+    assert!(with_url.check_despatch_beta().is_ok());
 }
