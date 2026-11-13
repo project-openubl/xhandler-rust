@@ -6,4 +6,5 @@ mod models;
 pub mod prelude;
 mod soap;
 mod ubl_file;
+mod xml_utils;
 mod zip_manager;

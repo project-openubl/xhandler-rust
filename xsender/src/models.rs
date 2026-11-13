@@ -74,3 +74,76 @@ impl Catalog1 {
     pub const GUIA_REMISION_TRANSPORTISTA: &'static str = "31";
     pub const PERCEPCION: &'static str = "40";
 }
+
+/// Outcome of a document according to the SUNAT response code
+/// (CDR `ResponseCode`, SOAP fault code or ticket `statusCode`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Status {
+    /// 0, or 4000+ (accepted with observations)
+    Aceptado,
+    /// 2000-3999
+    Rechazado,
+    /// 99 and 100-1999: the document was not processed and can be sent again
+    Excepcion,
+    /// 98: ticket still being processed
+    EnProceso,
+    /// Any other code
+    Unknown,
+}
+
+impl Status {
+    pub fn from_code(code: u32) -> Self {
+        match code {
+            0 => Self::Aceptado,
+            98 => Self::EnProceso,
+            99..=1999 => Self::Excepcion,
+            2000..=3999 => Self::Rechazado,
+            4000.. => Self::Aceptado,
+            _ => Self::Unknown,
+        }
+    }
+
+    /// Parses a numeric code, ignoring surrounding whitespace and leading zeros.
+    pub fn from_code_str(code: &str) -> Self {
+        code.trim()
+            .parse::<u32>()
+            .map(Self::from_code)
+            .unwrap_or(Self::Unknown)
+    }
+}
+
+impl std::fmt::Display for Status {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let value = match self {
+            Self::Aceptado => "ACEPTADO",
+            Self::Rechazado => "RECHAZADO",
+            Self::Excepcion => "EXCEPCION",
+            Self::EnProceso => "EN_PROCESO",
+            Self::Unknown => "UNKNOWN",
+        };
+        write!(f, "{value}")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Status;
+
+    #[test]
+    fn status_from_code() {
+        assert_eq!(Status::from_code(0), Status::Aceptado);
+        assert_eq!(Status::from_code(1), Status::Unknown);
+        assert_eq!(Status::from_code(97), Status::Unknown);
+        assert_eq!(Status::from_code(98), Status::EnProceso);
+        assert_eq!(Status::from_code(99), Status::Excepcion);
+        assert_eq!(Status::from_code(100), Status::Excepcion);
+        assert_eq!(Status::from_code(1999), Status::Excepcion);
+        assert_eq!(Status::from_code(2000), Status::Rechazado);
+        assert_eq!(Status::from_code(2335), Status::Rechazado);
+        assert_eq!(Status::from_code(3999), Status::Rechazado);
+        assert_eq!(Status::from_code(4000), Status::Aceptado);
+        assert_eq!(Status::from_code(4252), Status::Aceptado);
+        assert_eq!(Status::from_code_str(" 0111 "), Status::Excepcion);
+        assert_eq!(Status::from_code_str("abc"), Status::Unknown);
+    }
+}

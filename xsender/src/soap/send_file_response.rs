@@ -1,20 +1,15 @@
 use anyhow::anyhow;
 use std::str::FromStr;
 
-use xml::name::OwnedName;
-use xml::reader::XmlEvent;
-use xml::EventReader;
-
-use crate::soap::SoapFault;
+use crate::soap::{SoapFault, SOAP_ENV_NS};
+use crate::xml_utils::walk_xml;
 
 /// Response from the SUNAT while sending a file through SOAP
 pub enum SendFileXmlResponse {
     /// Response from a successfully request
     Cdr(String),
-
     /// String contains the ticket code
     Ticket(String),
-
     /// Error
     Fault(SoapFault),
 }
@@ -23,105 +18,38 @@ impl FromStr for SendFileXmlResponse {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let event_reader = EventReader::from_str(s);
-
-        enum Wrapper {
-            SendBillResponse,
-            SendSummaryResponse,
-            Fault,
-        }
-
-        let mut current_wrapper: Option<Wrapper> = None;
-        let mut current_text: String = String::new();
-
-        // Send bill data
         let mut cdr_base64: Option<String> = None;
-
-        // Send summary data
         let mut ticket: Option<String> = None;
-
-        // Fault data
         let mut fault_code: Option<String> = None;
         let mut fault_message: Option<String> = None;
 
-        fn set_wrapper(
-            is_start: bool,
-            name: &OwnedName,
-            mut current_wrapper: Option<Wrapper>,
-        ) -> Option<Wrapper> {
-            let prefix = name.prefix.as_deref();
-            let local_name = name.local_name.as_str();
-
-            match (prefix, local_name) {
-                (Some("br"), "sendBillResponse") => {
-                    current_wrapper = if is_start {
-                        Some(Wrapper::SendBillResponse)
-                    } else {
-                        None
-                    }
-                }
-                (Some("br"), "sendSummaryResponse") => {
-                    current_wrapper = if is_start {
-                        Some(Wrapper::SendSummaryResponse)
-                    } else {
-                        None
-                    }
-                }
-                (Some("soap-env"), "Fault") => {
-                    current_wrapper = if is_start { Some(Wrapper::Fault) } else { None }
-                }
-                _ => {}
+        walk_xml(s, |path, text| {
+            let [.., parent, element] = path else {
+                return;
             };
+            let text = text.trim().to_string();
 
-            current_wrapper
-        }
-
-        for event in event_reader {
-            match event {
-                Ok(XmlEvent::StartElement { name, .. }) => {
-                    current_wrapper = set_wrapper(true, &name, current_wrapper);
-                }
-                Ok(XmlEvent::EndElement { name }) => {
-                    let local_name = name.local_name.as_str();
-
-                    match (&current_wrapper, local_name) {
-                        (Some(Wrapper::SendBillResponse), "applicationResponse") => {
-                            if cdr_base64.is_none() {
-                                cdr_base64 = Some(current_text.clone());
-                            }
-                        }
-                        (Some(Wrapper::SendSummaryResponse), "ticket") => {
-                            if ticket.is_none() {
-                                ticket = Some(current_text.clone());
-                            }
-                        }
-                        (Some(Wrapper::Fault), "faultcode") => {
-                            if fault_code.is_none() {
-                                fault_code = Some(current_text.clone());
-                            }
-                        }
-                        (Some(Wrapper::Fault), "faultstring") if fault_message.is_none() => {
-                            fault_message = Some(current_text.clone());
-                        }
-                        _ => {}
-                    };
-
-                    current_wrapper = set_wrapper(false, &name, current_wrapper);
-                }
-                Ok(XmlEvent::Characters(characters)) => {
-                    current_text = characters;
-                }
-                Err(_) => {
-                    break;
-                }
-                _ => {}
+            if parent.is_local("sendBillResponse") && element.is_local("applicationResponse") {
+                cdr_base64.get_or_insert(text);
+            } else if (parent.is_local("sendSummaryResponse")
+                || parent.is_local("sendPackResponse"))
+                && element.is_local("ticket")
+            {
+                ticket.get_or_insert(text);
+            } else if parent.is(SOAP_ENV_NS, "Fault") && element.is_local("faultcode") {
+                fault_code.get_or_insert(text);
+            } else if parent.is(SOAP_ENV_NS, "Fault") && element.is_local("faultstring") {
+                fault_message.get_or_insert(text);
             }
-        }
+        })?;
 
-        match (cdr_base64, ticket, fault_code, fault_message) {
-            (Some(cdr_base64), _, _, _) => Ok(Self::Cdr(cdr_base64)),
-            (_, Some(ticket), _, _) => Ok(Self::Ticket(ticket)),
-            (_, _, Some(code), Some(message)) => Ok(Self::Fault(SoapFault { code, message })),
+        match (cdr_base64, ticket, fault_code) {
+            (Some(cdr_base64), _, _) => Ok(Self::Cdr(cdr_base64)),
+            (_, Some(ticket), _) => Ok(Self::Ticket(ticket)),
+            (_, _, Some(code)) => Ok(Self::Fault(SoapFault {
+                code,
+                message: fault_message.unwrap_or_default(),
+            })),
             _ => Err(anyhow!("Could not read the expected data")),
         }
     }
@@ -186,5 +114,26 @@ mod tests {
         };
 
         assert_eq!("1703154974517", ticket);
+    }
+
+    #[test]
+    fn read_rechazo_fault_with_any_prefix() {
+        let file_content = fs::read_to_string(format!(
+            "{RESOURCES}/bill_service_response_fault_rechazo.xml"
+        ))
+        .expect("Could not read file");
+        let response =
+            SendFileXmlResponse::from_str(&file_content).expect("Could not read response");
+        let SendFileXmlResponse::Fault(fault) = response else {
+            panic!("Expected a fault");
+        };
+        assert_eq!(fault.code, "env:Client.2335");
+        assert!(fault
+            .message
+            .starts_with("El documento electrónico ingresado ha sido alterado - Detalle: xxx"));
+        assert_eq!(
+            crate::soap::sunat_fault_status(&fault.code, &fault.message),
+            crate::models::Status::Rechazado
+        );
     }
 }

@@ -138,6 +138,7 @@ impl ApplyArgs {
             SendResult::Cdr {
                 cdr_path,
                 response_code,
+                status,
                 description,
                 notes,
             } => {
@@ -146,11 +147,12 @@ impl ApplyArgs {
                     "signed_xml": signed_path,
                     "cdr": cdr_path,
                     "response_code": response_code,
+                    "status": status.to_string(),
                     "description": description,
                     "notes": notes,
                 });
                 println!("{}", serde_json::to_string_pretty(&output)?);
-                Ok(ExitCode::SUCCESS)
+                Ok(super::exit_code_for(status))
             }
             SendResult::Ticket {
                 ticket,
@@ -167,11 +169,18 @@ impl ApplyArgs {
                 }
                 Ok(ExitCode::SUCCESS)
             }
-            SendResult::Error { code, message } => {
+            SendResult::Error {
+                code,
+                sunat_code,
+                status,
+                message,
+            } => {
                 let output = serde_json::json!({
                     "unsigned_xml": unsigned_path,
                     "signed_xml": signed_path,
                     "code": code,
+                    "sunat_code": sunat_code,
+                    "status": status.to_string(),
                     "message": message,
                 });
                 eprintln!("{}", serde_json::to_string_pretty(&output)?);

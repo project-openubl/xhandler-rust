@@ -59,6 +59,11 @@ pub struct VerifyTicketResponseWrapper {
 
 pub enum VerifyTicketAggregatedResponse {
     Cdr(VerifyTicketStatus, CdrMetadata),
+    /// SUNAT answered without a CDR, e.g. status code 98 (still processing).
+    /// Use [`crate::models::Status::from_code_str`] to classify `status_code`.
+    NoCdr {
+        status_code: String,
+    },
     Error(ErrorResponse),
 }
 
@@ -137,6 +142,9 @@ impl FileSender {
                 )?;
                 let cdr_metadata = CdrMetadata::from_str(&cdr_xml)?;
                 VerifyTicketAggregatedResponse::Cdr(status, cdr_metadata)
+            }
+            VerifyTicketResponse::NoCdr { status_code } => {
+                VerifyTicketAggregatedResponse::NoCdr { status_code }
             }
             VerifyTicketResponse::Error(error) => VerifyTicketAggregatedResponse::Error(error),
         };

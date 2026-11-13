@@ -1,11 +1,10 @@
 use std::str::FromStr;
 
 use anyhow::anyhow;
-use xml::name::OwnedName;
-use xml::reader::XmlEvent;
-use xml::EventReader;
 
 use crate::constants::{CAC_NS, CBC_NS};
+use crate::models::Status;
+use crate::xml_utils::walk_xml;
 
 /// Response obtained from SUNAT
 pub struct CdrMetadata {
@@ -14,101 +13,47 @@ pub struct CdrMetadata {
     pub notes: Vec<String>,
 }
 
+impl CdrMetadata {
+    /// ACEPTADO, RECHAZADO, EXCEPCION... according to `response_code`
+    pub fn status(&self) -> Status {
+        Status::from_code_str(&self.response_code)
+    }
+}
+
 impl FromStr for CdrMetadata {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let event_reader = EventReader::from_str(s);
-
-        enum Wrapper {
-            Response,
-            Note,
-        }
-
-        let mut current_wrapper: Option<Wrapper> = None;
-        let mut current_text: String = String::new();
-
-        // Send bill data
         let mut response_code: Option<String> = None;
         let mut description: Option<String> = None;
-
-        // Send summary data
         let mut notes: Vec<String> = Vec::new();
 
-        fn set_wrapper(
-            is_start: bool,
-            name: &OwnedName,
-            mut current_wrapper: Option<Wrapper>,
-        ) -> Option<Wrapper> {
-            let namespace = name.namespace.as_deref();
-            let prefix = name.prefix.as_deref();
-            let local_name = name.local_name.as_str();
-
-            match (namespace, prefix, local_name) {
-                (Some(CAC_NS), Some("cac"), "Response") => {
-                    current_wrapper = if is_start {
-                        Some(Wrapper::Response)
-                    } else {
-                        None
-                    }
+        walk_xml(s, |path, text| match path {
+            // ApplicationResponse/cac:DocumentResponse/cac:Response/cbc:*
+            [_, document_response, response, element]
+                if document_response.is(CAC_NS, "DocumentResponse")
+                    && response.is(CAC_NS, "Response") =>
+            {
+                if element.is(CBC_NS, "ResponseCode") {
+                    response_code.get_or_insert(text.trim().to_string());
+                } else if element.is(CBC_NS, "Description") {
+                    description.get_or_insert(text.trim().to_string());
                 }
-                (Some(CBC_NS), Some("cbc"), "Note") => {
-                    current_wrapper = if is_start { Some(Wrapper::Note) } else { None }
-                }
-                _ => {}
-            };
-
-            current_wrapper
-        }
-
-        for event in event_reader {
-            match event {
-                Ok(XmlEvent::StartElement { name, .. }) => {
-                    current_wrapper = set_wrapper(true, &name, current_wrapper);
-                }
-                Ok(XmlEvent::EndElement { name }) => {
-                    let namespace = name.namespace.as_deref();
-                    let prefix = name.prefix.as_deref();
-                    let local_name = name.local_name.as_str();
-
-                    match (&current_wrapper, &namespace, &prefix, local_name) {
-                        (Some(Wrapper::Response), Some(CBC_NS), Some("cbc"), "ResponseCode") => {
-                            if response_code.is_none() {
-                                response_code = Some(current_text.clone());
-                            }
-                        }
-                        (Some(Wrapper::Response), Some(CBC_NS), Some("cbc"), "Description") => {
-                            if description.is_none() {
-                                description = Some(current_text.clone());
-                            }
-                        }
-                        (Some(Wrapper::Note), Some(CBC_NS), Some("cbc"), "Note") => {
-                            notes.push(current_text.clone());
-                        }
-                        _ => {}
-                    };
-
-                    current_wrapper = set_wrapper(false, &name, current_wrapper);
-                }
-                Ok(XmlEvent::Characters(characters)) => {
-                    current_text = characters;
-                }
-                Err(_) => {
-                    break;
-                }
-                _ => {}
             }
-        }
+            // ApplicationResponse/cbc:Note
+            [_, element] if element.is(CBC_NS, "Note") => {
+                notes.push(text.trim().to_string());
+            }
+            _ => {}
+        })?;
 
-        match (response_code, description) {
-            (Some(response_code), Some(description)) => Ok(Self {
-                description,
+        match response_code {
+            Some(response_code) => Ok(Self {
+                description: description.unwrap_or_default(),
                 response_code,
                 notes,
             }),
-            _ => Err(anyhow!(
-                "Could not find response_code and description inside the xml"
-            )),
+            None => Err(anyhow!("Could not find the response code inside the CDR")),
         }
     }
 }
@@ -155,5 +100,25 @@ mod tests {
             .last()
             .unwrap()
             .starts_with("4252 - El dato ingresado como atributo @listName es incorrecto."));
+    }
+
+    #[test]
+    fn read_cdr_without_description() {
+        let file_content = fs::read_to_string(format!("{RESOURCES}/cdr_without_description.xml"))
+            .expect("Could not read file");
+        let cdr = CdrMetadata::from_str(&file_content).expect("Could not read Cdr");
+        assert_eq!(cdr.response_code, "2335");
+        assert_eq!(cdr.description, "");
+        assert_eq!(cdr.notes, vec!["4252 - Observacion".to_string()]);
+        assert_eq!(cdr.status(), crate::models::Status::Rechazado);
+    }
+
+    #[test]
+    fn cdr_status() {
+        let file_content =
+            fs::read_to_string(format!("{RESOURCES}/R-20220557805-01-F001-22Openubl.xml"))
+                .expect("Could not read file");
+        let cdr = CdrMetadata::from_str(&file_content).expect("Could not read Cdr");
+        assert_eq!(cdr.status(), crate::models::Status::Aceptado);
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ar:ApplicationResponse xmlns:ar="urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
+    <cbc:ID>1</cbc:ID>
+    <cbc:Note>4252 - Observacion</cbc:Note>
+    <cac:DocumentResponse>
+        <cac:Response>
+            <cbc:ReferenceID>F001-1</cbc:ReferenceID>
+            <cbc:ResponseCode>2335</cbc:ResponseCode>
+        </cac:Response>
+        <cac:DocumentReference>
+            <cbc:ID>F001-1</cbc:ID>
+        </cac:DocumentReference>
+    </cac:DocumentResponse>
+</ar:ApplicationResponse>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+         xmlns:a="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+         xmlns:b="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+         xmlns:x="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+         xmlns:s="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
+         xmlns:sig="http://www.w3.org/2000/09/xmldsig#">
+    <x:UBLExtensions>
+        <x:UBLExtension>
+            <x:ExtensionContent>
+                <s:AdditionalInformation>
+                    <s:AdditionalMonetaryTotal>
+                        <b:ID>1001</b:ID>
+                    </s:AdditionalMonetaryTotal>
+                </s:AdditionalInformation>
+            </x:ExtensionContent>
+        </x:UBLExtension>
+        <x:UBLExtension>
+            <x:ExtensionContent>
+                <sig:Signature Id="SIGN">
+                    <sig:SignedInfo>
+                        <sig:Reference URI="">
+                            <sig:DigestValue>abc123=</sig:DigestValue>
+                        </sig:Reference>
+                    </sig:SignedInfo>
+                </sig:Signature>
+            </x:ExtensionContent>
+        </x:UBLExtension>
+    </x:UBLExtensions>
+    <b:UBLVersionID>2.0</b:UBLVersionID>
+    <b:ID>F001-00000042</b:ID>
+    <a:Signature>
+        <b:ID>SIGN</b:ID>
+    </a:Signature>
+    <a:AccountingSupplierParty>
+        <b:CustomerAssignedAccountID>20123456789</b:CustomerAssignedAccountID>
+    </a:AccountingSupplierParty>
+</Invoice>

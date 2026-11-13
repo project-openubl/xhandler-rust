@@ -27,23 +27,38 @@ pub fn decode_base64_zip_and_extract_first_file(base64: &str) -> anyhow::Result<
     Ok(extract_first_file_from_zip(&zip_buf)?)
 }
 
+/// Returns the CDR XML from a SUNAT zip: the first `.xml` entry, or the first
+/// file if no entry has that extension. SUNAT zips usually include a `dummy/`
+/// directory entry, which is skipped.
 pub fn extract_first_file_from_zip(zip_buf: &[u8]) -> Result<Option<String>, std::io::Error> {
     let reader = Cursor::new(zip_buf);
     let mut archive = ZipArchive::new(reader)?;
 
-    let mut result = None;
-
+    let mut first_file_index = None;
+    let mut xml_file_index = None;
     for index in 0..archive.len() {
-        let mut entry = archive.by_index(index)?;
-        if entry.is_file() {
-            let mut buffer = String::new();
-            entry.read_to_string(&mut buffer)?;
-            result = Some(buffer);
+        let entry = archive.by_index(index)?;
+        if !entry.is_file() {
+            continue;
+        }
+        if first_file_index.is_none() {
+            first_file_index = Some(index);
+        }
+        if entry.name().to_lowercase().ends_with(".xml") {
+            xml_file_index = Some(index);
             break;
         }
     }
 
-    Ok(result)
+    match xml_file_index.or(first_file_index) {
+        Some(index) => {
+            let mut entry = archive.by_index(index)?;
+            let mut buffer = String::new();
+            entry.read_to_string(&mut buffer)?;
+            Ok(Some(buffer))
+        }
+        None => Ok(None),
+    }
 }
 
 #[cfg(test)]
@@ -57,5 +72,29 @@ mod tests {
         let result =
             decode_base64_zip_and_extract_first_file(cdr).expect("Could not extract cdr file");
         assert!(result.is_some());
+    }
+
+    #[test]
+    fn extract_xml_entry_before_other_files() {
+        use std::io::{Cursor, Write};
+        use zip::write::SimpleFileOptions;
+        use zip::ZipWriter;
+
+        let mut data = Vec::new();
+        {
+            let mut zip = ZipWriter::new(Cursor::new(&mut data));
+            zip.add_directory("dummy/", SimpleFileOptions::default())
+                .unwrap();
+            zip.start_file("readme.txt", SimpleFileOptions::default())
+                .unwrap();
+            zip.write_all(b"not the cdr").unwrap();
+            zip.start_file("R-123.XML", SimpleFileOptions::default())
+                .unwrap();
+            zip.write_all(b"<cdr/>").unwrap();
+            zip.finish().unwrap();
+        }
+
+        let result = super::extract_first_file_from_zip(&data).unwrap();
+        assert_eq!(result.as_deref(), Some("<cdr/>"));
     }
 }
