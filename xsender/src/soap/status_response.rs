@@ -2,7 +2,7 @@ use anyhow::anyhow;
 use std::str::FromStr;
 
 use crate::soap::{SoapFault, SOAP_ENV_NS};
-use crate::xml_utils::walk_xml;
+use crate::xml_walker::walk_xml;
 
 /// `<status>` answer shared by getStatus (tickets and consult),
 /// validaCDPcriterios and verificaCPEarchivo; getStatusCdr calls it `<statusCdr>`

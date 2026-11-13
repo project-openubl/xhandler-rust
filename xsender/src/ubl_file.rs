@@ -3,7 +3,7 @@ use std::path::Path;
 
 use crate::constants::{CAC_NS, CBC_NS, DS, SAC_NS};
 use crate::encoding::{decode_xml, encode_xml};
-use crate::xml_utils::walk_xml;
+use crate::xml_walker::walk_xml;
 use anyhow::anyhow;
 use sha2::{Digest, Sha256};
 

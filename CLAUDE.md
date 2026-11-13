@@ -30,9 +30,9 @@ Rust 1.100.0 pinned in `rust-toolchain.toml`. Clippy allows unwrap/expect in tes
 ## XBuilder Enrichment Pipeline
 
 User provides minimal input; pipeline fills defaults and computes values:
-1. **Phase 1 Fill** (`rules/phase1fill/`) — defaults: tax rates, currency, doc types, units
-2. **Phase 2 Process** (`rules/phase2process/`) — compute: tax amounts, prices, line totals
-3. **Phase 3 Summary** (`rules/phase3summary/`) — document totals, detractions, legends
+1. **Phase 1 Fill** (`rules/phase1_fill/`) — defaults: tax rates, currency, doc types, units
+2. **Phase 2 Process** (`rules/phase2_process/`) — compute: tax amounts, prices, line totals
+3. **Phase 3 Summary** (`rules/phase3_summary/`) — document totals, detractions, legends
 
 Rules implement traits from `enricher/bounds/`. Output rendered via Tera templates (`xbuilder/resources/templates/`, embedded at build time via `build.rs`).
 

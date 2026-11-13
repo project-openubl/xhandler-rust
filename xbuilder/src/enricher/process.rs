@@ -1,4 +1,4 @@
-use crate::enricher::rules::phase2process::detalle::detalles::DetallesProcessRule;
+use crate::enricher::rules::phase2_process::detalle::detalles::DetallesProcessRule;
 use crate::models::credit_note::CreditNote;
 use crate::models::debit_note::DebitNote;
 use crate::models::despatch_advice::DespatchAdvice;
@@ -20,11 +20,11 @@ trait ProcessCommon {
 // }
 //
 // trait ProcessCreditNote {
-//     fn process_creditnote(&mut self);
+//     fn process_credit_note(&mut self);
 // }
 //
 // trait ProcessDebitNote {
-//     fn process_debitnote(&mut self);
+//     fn process_debit_note(&mut self);
 // }
 
 impl Process for Invoice {

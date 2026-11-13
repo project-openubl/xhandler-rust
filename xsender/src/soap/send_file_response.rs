@@ -2,7 +2,7 @@ use anyhow::anyhow;
 use std::str::FromStr;
 
 use crate::soap::{SoapFault, SOAP_ENV_NS};
-use crate::xml_utils::walk_xml;
+use crate::xml_walker::walk_xml;
 
 /// Response from the SUNAT while sending a file through SOAP
 pub enum SendFileXmlResponse {

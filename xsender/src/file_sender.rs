@@ -14,7 +14,7 @@ use crate::sunat_client::{
     ClientSunatErr, ErrorResponse, File, SendFileResponse, SunatClient, VerifyTicketResponse,
 };
 use crate::ubl_file::{UblFile, UblMetadata};
-use crate::zip_manager::{create_zip, read_cdr_from_base64_zip};
+use crate::zip_archive::{create_zip, read_cdr_from_base64_zip};
 
 pub struct FileSender {
     pub urls: Urls,

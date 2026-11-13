@@ -4,7 +4,7 @@ use anyhow::anyhow;
 
 use crate::constants::{CAC_NS, CBC_NS};
 use crate::models::Status;
-use crate::xml_utils::walk_xml;
+use crate::xml_walker::walk_xml;
 
 /// Response obtained from SUNAT
 pub struct CdrMetadata {
