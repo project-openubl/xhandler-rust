@@ -10,7 +10,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/homologacion/Group12Test";
+const BASE: &str = "tests/resources/e2e/homologacion/group12";
 
 fn items(n: usize) -> Vec<Detalle> {
     (1..=n)
@@ -36,7 +36,7 @@ async fn caso96_boleta1_con_3_items() {
         detalles: items(3),
         ..invoice_base()
     };
-    assert_invoice(&mut invoice, &format!("{BASE}/boleta1Con3Items.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/boleta_1_con_3_items.xml")).await;
 }
 
 // Case 97: Nota de Credito
@@ -54,7 +54,7 @@ async fn caso97_nota_credito_boleta1() {
     };
     assert_credit_note(
         &mut credit_note,
-        &format!("{BASE}/notaDeCreditoDeBoleta1.xml"),
+        &format!("{BASE}/nota_de_credito_de_boleta_1.xml"),
     )
     .await;
 }
@@ -74,7 +74,7 @@ async fn caso98_nota_debito_boleta1() {
     };
     assert_debit_note(
         &mut debit_note,
-        &format!("{BASE}/notaDeDebitoDeBoleta1.xml"),
+        &format!("{BASE}/nota_de_debito_de_boleta_1.xml"),
     )
     .await;
 }

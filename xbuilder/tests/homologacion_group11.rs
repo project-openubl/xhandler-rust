@@ -10,7 +10,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/homologacion/Group11Test";
+const BASE: &str = "tests/resources/e2e/homologacion/group11";
 
 fn items(n: usize) -> Vec<Detalle> {
     (1..=n)
@@ -47,7 +47,7 @@ async fn caso85_boleta1_con_10_items() {
         descuentos: descuento_global(),
         ..invoice_base()
     };
-    assert_invoice(&mut invoice, &format!("{BASE}/boleta1Con10Items.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/boleta_1_con_10_items.xml")).await;
 }
 
 #[serial_test::serial]
@@ -59,7 +59,7 @@ async fn caso86_boleta2_con_7_items() {
         descuentos: descuento_global(),
         ..invoice_base()
     };
-    assert_invoice(&mut invoice, &format!("{BASE}/boleta2Con7Items.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/boleta_2_con_7_items.xml")).await;
 }
 
 #[serial_test::serial]
@@ -71,7 +71,7 @@ async fn caso87_boleta3_con_6_items() {
         descuentos: descuento_global(),
         ..invoice_base()
     };
-    assert_invoice(&mut invoice, &format!("{BASE}/boleta3Con6Items.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/boleta_3_con_6_items.xml")).await;
 }
 
 #[serial_test::serial]
@@ -83,7 +83,7 @@ async fn caso88_boleta4_con_9_items() {
         descuentos: descuento_global(),
         ..invoice_base()
     };
-    assert_invoice(&mut invoice, &format!("{BASE}/boleta4Con9Items.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/boleta_4_con_9_items.xml")).await;
 }
 
 #[serial_test::serial]
@@ -95,7 +95,7 @@ async fn caso89_boleta5_con_4_items() {
         descuentos: descuento_global(),
         ..invoice_base()
     };
-    assert_invoice(&mut invoice, &format!("{BASE}/boleta5Con4Items.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/boleta_5_con_4_items.xml")).await;
 }
 
 // Cases 90-92: Notas de Credito
@@ -112,7 +112,7 @@ async fn caso90_nota_credito_boleta1() {
     };
     assert_credit_note(
         &mut credit_note,
-        &format!("{BASE}/notaDeCreditoDeBoleta1.xml"),
+        &format!("{BASE}/nota_de_credito_de_boleta_1.xml"),
     )
     .await;
 }
@@ -129,7 +129,7 @@ async fn caso91_nota_credito_boleta2() {
     };
     assert_credit_note(
         &mut credit_note,
-        &format!("{BASE}/notaDeCreditoDeBoleta2.xml"),
+        &format!("{BASE}/nota_de_credito_de_boleta_2.xml"),
     )
     .await;
 }
@@ -146,7 +146,7 @@ async fn caso92_nota_credito_boleta4() {
     };
     assert_credit_note(
         &mut credit_note,
-        &format!("{BASE}/notaDeCreditoDeBoleta4.xml"),
+        &format!("{BASE}/nota_de_credito_de_boleta_4.xml"),
     )
     .await;
 }
@@ -165,7 +165,7 @@ async fn caso93_nota_debito_boleta1() {
     };
     assert_debit_note(
         &mut debit_note,
-        &format!("{BASE}/notaDeDebitoDeBoleta1.xml"),
+        &format!("{BASE}/nota_de_debito_de_boleta_1.xml"),
     )
     .await;
 }
@@ -182,7 +182,7 @@ async fn caso94_nota_debito_boleta2() {
     };
     assert_debit_note(
         &mut debit_note,
-        &format!("{BASE}/notaDeDebitoDeBoleta2.xml"),
+        &format!("{BASE}/nota_de_debito_de_boleta_2.xml"),
     )
     .await;
 }
@@ -199,7 +199,7 @@ async fn caso95_nota_debito_boleta4() {
     };
     assert_debit_note(
         &mut debit_note,
-        &format!("{BASE}/notaDeDebitoDeBoleta4.xml"),
+        &format!("{BASE}/nota_de_debito_de_boleta_4.xml"),
     )
     .await;
 }

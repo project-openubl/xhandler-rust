@@ -7,7 +7,7 @@ use crate::common::{assert_credit_note, credit_note_base};
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/creditnote/CreditNoteOrdenDeCompraTest";
+const BASE: &str = "tests/resources/e2e/renderer/credit_note_orden_compra";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -31,5 +31,5 @@ async fn credit_note_orden_compra() {
         ..credit_note_base()
     };
 
-    assert_credit_note(&mut credit_note, &format!("{BASE}/ordenDeCompra.xml")).await;
+    assert_credit_note(&mut credit_note, &format!("{BASE}/orden_de_compra.xml")).await;
 }

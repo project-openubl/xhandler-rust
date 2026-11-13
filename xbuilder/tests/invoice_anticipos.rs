@@ -7,7 +7,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceAnticiposTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_anticipos";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -36,5 +36,5 @@ async fn invoice_anticipos() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/minAnticipos.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/min_anticipos.xml")).await;
 }

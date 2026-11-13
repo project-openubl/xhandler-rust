@@ -7,7 +7,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDetraccionTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_detraccion";
 
 #[serial_test::serial]
 #[tokio::test]

@@ -8,7 +8,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceMonedaTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_moneda";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -24,5 +24,5 @@ async fn invoice_custom_moneda() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/customMoneda.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/custom_moneda.xml")).await;
 }

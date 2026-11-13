@@ -1,11 +1,11 @@
-{%- import "ubl/standard/include/document-line.xml" as macros_document_line -%}
+{%- import "ubl/standard/include/document_line.xml" as macros_document_line -%}
 {%- import "ubl/standard/include/address.xml" as macros_address -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
     {%- include "ubl/standard/include/namespaces.xml" -%}
 >
-    {%- include "ubl/standard/include/ubl-extensions.xml" -%}
-    {%- include "ubl/standard/include/general-data.xml" -%}
+    {%- include "ubl/standard/include/ubl_extensions.xml" -%}
+    {%- include "ubl/standard/include/general_data.xml" -%}
     {%- if fecha_vencimiento %}
     <cbc:DueDate>{{fecha_vencimiento}}</cbc:DueDate>
     {%- endif %}
@@ -25,7 +25,7 @@
     </cac:OrderReference>
     {%- endif %}
     {%- include "ubl/standard/include/guias.xml" -%}
-    {%- include "ubl/standard/include/documentos-relacionados.xml" -%}
+    {%- include "ubl/standard/include/documentos_relacionados.xml" -%}
     {%- for it in anticipos %}
     <cac:AdditionalDocumentReference>
         <cbc:ID>{{it.comprobante_serie_numero}}</cbc:ID>
@@ -141,7 +141,7 @@
         <cbc:Amount currencyID="PEN">{{percepcion.monto_total | round_decimal}}</cbc:Amount>
     </cac:PaymentTerms>
     {%- endif %}
-    {%- include "ubl/standard/include/payment-terms.xml" -%}
+    {%- include "ubl/standard/include/payment_terms.xml" -%}
     {%- for it in anticipos %}
     <cac:PrepaidPayment>
         <cbc:ID>{{loop.index}}</cbc:ID>
@@ -188,7 +188,7 @@
         <cbc:BaseAmount currencyID="PEN">{{percepcion.monto_base | round_decimal}}</cbc:BaseAmount>
     </cac:AllowanceCharge>
     {%- endif %}
-    {%- include "ubl/standard/include/tax-total.xml" %}
+    {%- include "ubl/standard/include/tax_total.xml" %}
     <cac:LegalMonetaryTotal>
         <cbc:LineExtensionAmount currencyID="{{moneda}}">{{total_importe.importe_sin_impuestos | round_decimal}}</cbc:LineExtensionAmount>
         <cbc:TaxInclusiveAmount currencyID="{{moneda}}">{{total_importe.importe_con_impuestos | round_decimal}}</cbc:TaxInclusiveAmount>

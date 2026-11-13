@@ -9,7 +9,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceTipoIgvTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_igv_tipo";
 
 static CATALOG7_VARIANTS: &[Catalog7] = &[
     Catalog7::GravadoOperacionOnerosa,
@@ -32,6 +32,14 @@ static CATALOG7_VARIANTS: &[Catalog7] = &[
     Catalog7::Exportacion,
 ];
 
+/// Snapshot of one Catalog7 value, e.g. `invoice_pu_gravado_operacion_onerosa.xml`
+fn snapshot(prefix: &str, catalog7: &Catalog7) -> String {
+    format!(
+        "{BASE}/{prefix}_{}.xml",
+        catalog7.to_string().to_lowercase()
+    )
+}
+
 // One invoice per Catalog7 value. Sending all of them to SUNAT beta back to
 // back gets rate limited (HTTP 401), so these only check snapshot + XSD.
 #[test]
@@ -48,7 +56,7 @@ fn invoice_precio_unitario() {
             ..invoice_base()
         };
 
-        assert_invoice_offline(&mut invoice, &format!("{BASE}/invoice_pu_{catalog7}.xml"));
+        assert_invoice_offline(&mut invoice, &snapshot("invoice_pu", catalog7));
     }
 }
 
@@ -66,7 +74,7 @@ fn invoice_precio_con_impuestos() {
             ..invoice_base()
         };
 
-        assert_invoice_offline(&mut invoice, &format!("{BASE}/invoice_pr_{catalog7}.xml"));
+        assert_invoice_offline(&mut invoice, &snapshot("invoice_pr", catalog7));
     }
 }
 
@@ -85,10 +93,7 @@ fn invoice_precio_con_impuestos_and_icb() {
             ..invoice_base()
         };
 
-        assert_invoice_offline(
-            &mut invoice,
-            &format!("{BASE}/invoice_pr_icb_{catalog7}.xml"),
-        );
+        assert_invoice_offline(&mut invoice, &snapshot("invoice_pr_icb", catalog7));
     }
 }
 
@@ -112,9 +117,6 @@ fn invoice_precio_con_impuestos_and_icb_and_isc() {
             ..invoice_base()
         };
 
-        assert_invoice_offline(
-            &mut invoice,
-            &format!("{BASE}/invoice_pr_icb_isc_{catalog7}.xml"),
-        );
+        assert_invoice_offline(&mut invoice, &snapshot("invoice_pr_icb_isc", catalog7));
     }
 }

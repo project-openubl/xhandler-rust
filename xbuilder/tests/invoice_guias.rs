@@ -7,7 +7,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceGuiasTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_guias";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -34,5 +34,5 @@ async fn invoice_guia_serie_t() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/guiaSerieT.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/guia_serie_t.xml")).await;
 }

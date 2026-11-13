@@ -19,8 +19,8 @@
     {%- include "ubl/common/signature.xml" %}
     <cbc:ID>{{documento_id}}</cbc:ID>
     <cbc:IssueDate>{{fecha_emision}}</cbc:IssueDate>
-    {%- include "ubl/sunat/include/agent-party.xml" %}
-    {%- include "ubl/sunat/include/receiver-party.xml" %}
+    {%- include "ubl/sunat/include/agent_party.xml" %}
+    {%- include "ubl/sunat/include/receiver_party.xml" %}
     <sac:SUNATRetentionSystemCode>{{tipo_regimen}}</sac:SUNATRetentionSystemCode>
     <sac:SUNATRetentionPercent>{{tipo_regimen_porcentaje}}</sac:SUNATRetentionPercent>
     {%- if observaciones %}

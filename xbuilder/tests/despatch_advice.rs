@@ -6,7 +6,7 @@ use crate::common::assert_despatch_advice;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/despatchadvice";
+const BASE: &str = "tests/resources/e2e/renderer/despatch_advice";
 
 fn fecha() -> NaiveDate {
     NaiveDate::from_ymd_opt(2019, 12, 24).unwrap()
@@ -55,7 +55,7 @@ async fn despatch_advice_min_data() {
         ..Default::default()
     };
 
-    assert_despatch_advice(&mut doc, &format!("{BASE}/DespatchAdviceTest/minData.xml")).await;
+    assert_despatch_advice(&mut doc, &format!("{BASE}/min_data.xml")).await;
 }
 
 #[serial_test::serial]
@@ -123,11 +123,7 @@ async fn despatch_advice_carrier_data() {
         ..Default::default()
     };
 
-    assert_despatch_advice(
-        &mut doc,
-        &format!("{BASE}/DespatchAdviceCarrierTest/carrierData.xml"),
-    )
-    .await;
+    assert_despatch_advice(&mut doc, &format!("{BASE}/carrier_data.xml")).await;
 }
 
 #[serial_test::serial]
@@ -235,9 +231,5 @@ async fn despatch_advice_complex_data() {
         ..Default::default()
     };
 
-    assert_despatch_advice(
-        &mut doc,
-        &format!("{BASE}/DespatchAdviceComplexTest/complexData.xml"),
-    )
-    .await;
+    assert_despatch_advice(&mut doc, &format!("{BASE}/complex_data.xml")).await;
 }

@@ -7,7 +7,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoicePercepcionTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_percepcion";
 
 #[serial_test::serial]
 #[tokio::test]

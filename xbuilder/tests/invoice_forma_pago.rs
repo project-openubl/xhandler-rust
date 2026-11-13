@@ -8,7 +8,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceFormaPagoTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_forma_pago";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -31,7 +31,7 @@ async fn invoice_forma_pago_contado_defecto() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/sinFormaPago.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/sin_forma_pago.xml")).await;
 }
 
 #[serial_test::serial]
@@ -69,5 +69,5 @@ async fn invoice_forma_pago_credito() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/conFormaPago.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/con_forma_pago.xml")).await;
 }

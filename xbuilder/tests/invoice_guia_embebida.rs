@@ -7,7 +7,7 @@ use crate::common::{assert_invoice, invoice_base};
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceGuiaEmbebidaTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_guia_embebida";
 
 fn direccion(ubigeo: &str, direccion: &str) -> Direccion {
     Direccion {
@@ -50,5 +50,5 @@ async fn invoice_guia_embebida() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/guiaEmbebida.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/guia_embebida.xml")).await;
 }

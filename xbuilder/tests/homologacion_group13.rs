@@ -7,7 +7,7 @@ use crate::common::proveedor_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/homologacion/Group13Test";
+const BASE: &str = "tests/resources/e2e/homologacion/group13";
 
 fn summary_items() -> Vec<SummaryDocumentsItem> {
     (1..=5)
@@ -53,5 +53,5 @@ async fn caso99_resumen_diario_de_boletas() {
         comprobantes: summary_items(),
         ..Default::default()
     };
-    assert_summary_documents(&mut doc, &format!("{BASE}/resumenDiarioDeBoletas.xml")).await;
+    assert_summary_documents(&mut doc, &format!("{BASE}/resumen_diario_de_boletas.xml")).await;
 }

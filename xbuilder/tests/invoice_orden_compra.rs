@@ -7,7 +7,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceOrdenDeCompraTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_orden_compra";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -31,5 +31,5 @@ async fn invoice_orden_compra() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/ordenDeCompra.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/orden_de_compra.xml")).await;
 }

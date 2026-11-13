@@ -8,7 +8,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceIscTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_isc";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -33,7 +33,7 @@ async fn invoice_sistema_al_valor() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/isc_sistemaAlValor.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/isc_sistema_al_valor.xml")).await;
 }
 
 #[serial_test::serial]
@@ -61,7 +61,7 @@ async fn invoice_aplicacion_al_monto_fijo() {
 
     assert_invoice(
         &mut invoice,
-        &format!("{BASE}/isc_aplicacionAlMontoFijo.xml"),
+        &format!("{BASE}/isc_aplicacion_al_monto_fijo.xml"),
     )
     .await;
 }
@@ -91,7 +91,7 @@ async fn invoice_sistema_de_precios_de_venta_al_publico() {
 
     assert_invoice(
         &mut invoice,
-        &format!("{BASE}/isc_sistemaDePreciosDeVentaAlPublico.xml"),
+        &format!("{BASE}/isc_sistema_de_precios_de_venta_al_publico.xml"),
     )
     .await;
 }
@@ -124,7 +124,11 @@ async fn invoice_precio_con_impuestos() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/isc_precioConImpuestos.xml")).await;
+    assert_invoice(
+        &mut invoice,
+        &format!("{BASE}/isc_precio_con_impuestos.xml"),
+    )
+    .await;
 }
 
 #[serial_test::serial]
@@ -187,5 +191,5 @@ async fn invoice_mixed_tipo_igv() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/isc_mixedTipoIgv.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/isc_mixed_tipo_igv.xml")).await;
 }

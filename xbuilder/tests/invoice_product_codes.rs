@@ -7,7 +7,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceProductCodesTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_product_codes";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -24,7 +24,7 @@ async fn invoice_with_product_codes() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/productCodes.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/product_codes.xml")).await;
 }
 
 #[serial_test::serial]
@@ -41,7 +41,7 @@ async fn invoice_with_only_seller_code() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/onlySellerCode.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/only_seller_code.xml")).await;
 }
 
 #[serial_test::serial]
@@ -63,5 +63,5 @@ async fn invoice_with_all_product_codes() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/allProductCodes.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/all_product_codes.xml")).await;
 }

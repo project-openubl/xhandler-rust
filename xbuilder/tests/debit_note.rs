@@ -7,7 +7,7 @@ use crate::common::{assert_debit_note, debit_note_base};
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/debitnote/DebitNoteTest";
+const BASE: &str = "tests/resources/e2e/renderer/debit_note";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -30,5 +30,5 @@ async fn debit_note() {
         ..debit_note_base()
     };
 
-    assert_debit_note(&mut debit_note, &format!("{BASE}/MinData_RUC.xml")).await;
+    assert_debit_note(&mut debit_note, &format!("{BASE}/min_data_ruc.xml")).await;
 }

@@ -6,9 +6,9 @@ use crate::common::{assert_retention, proveedor_base};
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/retention/RetentionTest";
+const BASE: &str = "tests/resources/e2e/renderer/retention";
 
-fn retention_simple() -> Retention {
+fn retention_input() -> Retention {
     Retention {
         serie: "R001".into(),
         numero: 1,
@@ -44,7 +44,7 @@ fn retention_simple() -> Retention {
 
 #[serial_test::serial]
 #[tokio::test]
-async fn retention_simple_test() {
-    let mut doc = retention_simple();
+async fn retention_simple() {
+    let mut doc = retention_input();
     assert_retention(&mut doc, &format!("{BASE}/retention_simple.xml")).await;
 }

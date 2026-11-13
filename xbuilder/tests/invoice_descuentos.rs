@@ -8,7 +8,7 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceDescuentosTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice_descuentos";
 
 #[serial_test::serial]
 #[tokio::test]
@@ -29,7 +29,7 @@ async fn invoice_descuento_global() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/descuentoGlobal.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/descuento_global.xml")).await;
 }
 
 #[serial_test::serial]
@@ -55,7 +55,11 @@ async fn invoice_descuento_global_tipo02() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/descuentoGlobal_tipo02.xml")).await;
+    assert_invoice(
+        &mut invoice,
+        &format!("{BASE}/descuento_global_tipo_02.xml"),
+    )
+    .await;
 }
 
 #[serial_test::serial]
@@ -81,5 +85,9 @@ async fn invoice_descuento_global_tipo03() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/descuentoGlobal_tipo03.xml")).await;
+    assert_invoice(
+        &mut invoice,
+        &format!("{BASE}/descuento_global_tipo_03.xml"),
+    )
+    .await;
 }

@@ -6,9 +6,9 @@ use crate::common::{assert_perception, proveedor_base};
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/perception/PerceptionTest";
+const BASE: &str = "tests/resources/e2e/renderer/perception";
 
-fn perception_simple() -> Perception {
+fn perception_input() -> Perception {
     Perception {
         serie: "P001".into(),
         numero: 1,
@@ -44,7 +44,7 @@ fn perception_simple() -> Perception {
 
 #[serial_test::serial]
 #[tokio::test]
-async fn perception_simple_test() {
-    let mut doc = perception_simple();
+async fn perception_simple() {
+    let mut doc = perception_input();
     assert_perception(&mut doc, &format!("{BASE}/perception_simple.xml")).await;
 }
