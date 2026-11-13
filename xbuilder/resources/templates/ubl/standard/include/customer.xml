@@ -7,7 +7,7 @@
                 <cbc:ID schemeID="{{cliente.tipo_documento_identidad}}" schemeAgencyName="PE:SUNAT" schemeName="Documento de Identidad" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06">{{cliente.numero_documento_identidad}}</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName><![CDATA[{{cliente.nombre | escape}}]]></cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[{{cliente.nombre | cdata | safe}}]]></cbc:RegistrationName>
                 {%- if cliente.direccion %}
                 <cac:RegistrationAddress>{{ macros_address::address(direccion=cliente.direccion) }}
                 </cac:RegistrationAddress>

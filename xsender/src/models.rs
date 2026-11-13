@@ -56,7 +56,7 @@ impl DocumentType {
     pub const DEBIT_NOTE: &'static str = "DebitNote";
     pub const VOIDED_DOCUMENTS: &'static str = "VoidedDocuments";
     pub const SUMMARY_DOCUMENTS: &'static str = "SummaryDocuments";
-    pub const DESPATCH_ADVICE: &'static str = "DespatchAdvise";
+    pub const DESPATCH_ADVICE: &'static str = "DespatchAdvice";
     pub const PERCEPTION: &'static str = "Perception";
     pub const RETENTION: &'static str = "Retention";
 }

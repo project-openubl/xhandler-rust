@@ -5,10 +5,10 @@
         </cac:PartyIdentification>
         {%- if proveedor.nombre_comercial %}
         <cac:PartyName>
-            <cbc:Name><![CDATA[{{proveedor.nombre_comercial | escape}}]]></cbc:Name>
+            <cbc:Name><![CDATA[{{proveedor.nombre_comercial | cdata | safe}}]]></cbc:Name>
         </cac:PartyName>
         {%- endif %}
         <cac:PartyLegalEntity>
-            <cbc:RegistrationName><![CDATA[{{proveedor.razon_social | escape}}]]></cbc:RegistrationName>
+            <cbc:RegistrationName><![CDATA[{{proveedor.razon_social | cdata | safe}}]]></cbc:RegistrationName>
         </cac:PartyLegalEntity>
     </cac:AgentParty>

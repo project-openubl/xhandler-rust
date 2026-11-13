@@ -6,7 +6,7 @@
                 <cbc:ID>{{firmante.ruc}}</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyName>
-                <cbc:Name><![CDATA[{{firmante.razon_social | escape}}]]></cbc:Name>
+                <cbc:Name><![CDATA[{{firmante.razon_social | cdata | safe}}]]></cbc:Name>
             </cac:PartyName>
         </cac:SignatoryParty>
         <cac:DigitalSignatureAttachment>

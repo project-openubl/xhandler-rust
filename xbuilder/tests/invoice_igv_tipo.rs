@@ -51,3 +51,70 @@ fn invoice_precio_unitario() {
         assert_invoice_offline(&mut invoice, &format!("{BASE}/invoice_pu_{catalog7}.xml"));
     }
 }
+
+#[test]
+fn invoice_precio_con_impuestos() {
+    for catalog7 in CATALOG7_VARIANTS {
+        let mut invoice = Invoice {
+            detalles: vec![Detalle {
+                descripcion: "Item1".into(),
+                cantidad: Decimal::ONE,
+                precio_con_impuestos: Some(dec!(118)),
+                igv_tipo: Some(catalog7.code().into()),
+                ..Default::default()
+            }],
+            ..invoice_base()
+        };
+
+        assert_invoice_offline(&mut invoice, &format!("{BASE}/invoice_pr_{catalog7}.xml"));
+    }
+}
+
+#[test]
+fn invoice_precio_con_impuestos_and_icb() {
+    for catalog7 in CATALOG7_VARIANTS {
+        let mut invoice = Invoice {
+            detalles: vec![Detalle {
+                descripcion: "Item1".into(),
+                cantidad: Decimal::ONE,
+                precio_con_impuestos: Some(dec!(118)),
+                igv_tipo: Some(catalog7.code().into()),
+                icb_aplica: true,
+                ..Default::default()
+            }],
+            ..invoice_base()
+        };
+
+        assert_invoice_offline(
+            &mut invoice,
+            &format!("{BASE}/invoice_pr_icb_{catalog7}.xml"),
+        );
+    }
+}
+
+#[test]
+fn invoice_precio_con_impuestos_and_icb_and_isc() {
+    // SUNAT rejects ISC together with IVAP
+    for catalog7 in CATALOG7_VARIANTS
+        .iter()
+        .filter(|catalog7| !matches!(catalog7, Catalog7::GravadoIvap))
+    {
+        let mut invoice = Invoice {
+            detalles: vec![Detalle {
+                descripcion: "Item1".into(),
+                cantidad: Decimal::ONE,
+                precio_con_impuestos: Some(dec!(100)),
+                igv_tipo: Some(catalog7.code().into()),
+                icb_aplica: true,
+                isc_tasa: Some(dec!(0.10)),
+                ..Default::default()
+            }],
+            ..invoice_base()
+        };
+
+        assert_invoice_offline(
+            &mut invoice,
+            &format!("{BASE}/invoice_pr_icb_isc_{catalog7}.xml"),
+        );
+    }
+}

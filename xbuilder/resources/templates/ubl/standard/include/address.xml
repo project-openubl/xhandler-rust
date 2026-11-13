@@ -19,7 +19,7 @@
                     {%- endif %}
                     {%- if direccion.direccion %}
                     <cac:AddressLine>
-                        <cbc:Line><![CDATA[{{direccion.direccion | escape}}]]></cbc:Line>
+                        <cbc:Line><![CDATA[{{direccion.direccion | cdata | safe}}]]></cbc:Line>
                     </cac:AddressLine>
                     {%- endif %}
                     {%- if direccion.codigo_pais %}

@@ -24,7 +24,7 @@
     <sac:SUNATPerceptionSystemCode>{{tipo_regimen}}</sac:SUNATPerceptionSystemCode>
     <sac:SUNATPerceptionPercent>{{tipo_regimen_porcentaje}}</sac:SUNATPerceptionPercent>
     {%- if observacion %}
-    <cbc:Note><![CDATA[{{observacion | escape}}]]></cbc:Note>
+    <cbc:Note><![CDATA[{{observacion | cdata | safe}}]]></cbc:Note>
     {%- endif %}
     <cbc:TotalInvoiceAmount currencyID="{{moneda}}">{{importe_total_percibido}}</cbc:TotalInvoiceAmount>
     <sac:SUNATTotalCashed currencyID="{{moneda}}">{{importe_total_cobrado}}</sac:SUNATTotalCashed>

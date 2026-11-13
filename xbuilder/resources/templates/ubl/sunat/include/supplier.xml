@@ -4,7 +4,7 @@
         <cbc:AdditionalAccountID>6</cbc:AdditionalAccountID>
         <cac:Party>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName><![CDATA[{{proveedor.razon_social | escape}}]]></cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[{{proveedor.razon_social | cdata | safe}}]]></cbc:RegistrationName>
             </cac:PartyLegalEntity>
         </cac:Party>
     </cac:AccountingSupplierParty>

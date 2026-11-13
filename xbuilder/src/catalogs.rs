@@ -228,7 +228,7 @@ impl Catalog7 {
             Catalog7::InafectoRetiroPorPremio => Catalog7Group::Inafecto,
             Catalog7::InafectoRetiroPorPublicidad => Catalog7Group::Inafecto,
 
-            Catalog7::Exportacion => Catalog7Group::Exonerado,
+            Catalog7::Exportacion => Catalog7Group::Exportacion,
         }
     }
 
@@ -389,7 +389,7 @@ impl Catalog for Catalog9 {
             Self::DescuentoGlobal => "04",
             Self::DescuentoPorItem => "05",
             Self::DevolucionTotal => "06",
-            Self::DevolucionPorItem => "06",
+            Self::DevolucionPorItem => "07",
             Self::Bonificacion => "08",
             Self::DisminucionEnElValor => "09",
             Self::OtrosConceptos => "10",
@@ -556,10 +556,10 @@ impl Catalog for Catalog53 {
             Self::PercepcionVentaInterna => "51",
             Self::PercepcionALaAdquisicionDeCombustible => "52",
             Self::PercepcionRealizadaAlAgenteDePercepcionConTasaEspecial => "53",
-            Self::FactorDeAportacion => "61",
-            Self::RetencionDeRentaPorAnticipos => "62",
-            Self::RetencionDelIgv => "63",
-            Self::RetencionDeRentaDeSegundaCategoria => "64",
+            Self::FactorDeAportacion => "54",
+            Self::RetencionDeRentaPorAnticipos => "61",
+            Self::RetencionDelIgv => "62",
+            Self::RetencionDeRentaDeSegundaCategoria => "63",
         }
     }
 }
@@ -585,10 +585,10 @@ impl FromCode for Catalog53 {
             "51" => Ok(Catalog53::PercepcionVentaInterna),
             "52" => Ok(Catalog53::PercepcionALaAdquisicionDeCombustible),
             "53" => Ok(Catalog53::PercepcionRealizadaAlAgenteDePercepcionConTasaEspecial),
-            "61" => Ok(Catalog53::FactorDeAportacion),
-            "62" => Ok(Catalog53::RetencionDeRentaPorAnticipos),
-            "63" => Ok(Catalog53::RetencionDelIgv),
-            "64" => Ok(Catalog53::RetencionDeRentaDeSegundaCategoria),
+            "54" => Ok(Catalog53::FactorDeAportacion),
+            "61" => Ok(Catalog53::RetencionDeRentaPorAnticipos),
+            "62" => Ok(Catalog53::RetencionDelIgv),
+            "63" => Ok(Catalog53::RetencionDeRentaDeSegundaCategoria),
             _ => Err(format!("code {code} did not match")),
         }
     }

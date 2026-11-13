@@ -23,7 +23,7 @@
     <cbc:DocumentCurrencyCode listID="ISO 4217 Alpha" listAgencyName="United Nations Economic Commission for Europe" listName="Currency">USD</cbc:DocumentCurrencyCode>
     <cac:DiscrepancyResponse>
         <cbc:ReferenceID>FF50-1</cbc:ReferenceID>
-        <cbc:ResponseCode>01</cbc:ResponseCode>
+        <cbc:ResponseCode>02</cbc:ResponseCode>
         <cbc:Description><![CDATA[Homologacion]]></cbc:Description>
     </cac:DiscrepancyResponse>
     <cac:BillingReference>

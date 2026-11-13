@@ -1,8 +1,8 @@
 
     <cac:DiscrepancyResponse>
         <cbc:ReferenceID>{{comprobante_afectado_serie_numero}}</cbc:ReferenceID>
-        <cbc:ResponseCode>{{comprobante_afectado_tipo}}</cbc:ResponseCode>
-        <cbc:Description><![CDATA[{{sustento_descripcion | escape}}]]></cbc:Description>
+        <cbc:ResponseCode>{{tipo_nota}}</cbc:ResponseCode>
+        <cbc:Description><![CDATA[{{sustento_descripcion | cdata | safe}}]]></cbc:Description>
     </cac:DiscrepancyResponse>
     {%- if orden_de_compra %}
     <cac:OrderReference>

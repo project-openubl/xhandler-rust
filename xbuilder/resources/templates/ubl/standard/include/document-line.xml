@@ -57,7 +57,7 @@
             {%- endif %}
         </cac:TaxTotal>
         <cac:Item>
-            <cbc:Description><![CDATA[{{item.descripcion | escape}}]]></cbc:Description>
+            <cbc:Description><![CDATA[{{item.descripcion | cdata | safe}}]]></cbc:Description>
             {%- if item.codigo %}
             <cac:SellersItemIdentification>
                 <cbc:ID>{{item.codigo}}</cbc:ID>
