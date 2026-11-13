@@ -3,16 +3,17 @@ use std::process::ExitCode;
 use clap::Args;
 
 use crate::commands::create::create_xml;
-use xhandler::prelude::UblFile;
+use xhandler::prelude::{UblFile, XSigner};
 
 use crate::commands::send::SendArgs;
-use crate::commands::sign::SignArgs;
+use crate::commands::sign::KeyArgs;
 
 #[derive(Args)]
 #[command(after_help = "\x1b[1mEjemplos:\x1b[0m
   openubl apply -f factura.yaml --beta
   openubl apply -f factura.yaml --beta --save-xml --dry-run
   openubl apply -f factura.yaml --private-key llave.pem --certificate cert.pem --username user --password clave
+  openubl apply -f factura.yaml --pfx certificado.pfx --pfx-password clave --username user --password clave
 
 La salida es JSON en stdout. Codigo de salida: 0=aceptado/ticket, 2=rechazado o error SUNAT.")]
 pub struct ApplyArgs {
@@ -28,21 +29,8 @@ pub struct ApplyArgs {
     #[arg(long = "format")]
     pub format: Option<String>,
 
-    /// Ruta al archivo de llave privada PEM, PKCS#1 o PKCS#8 (con --beta se usan certificados de prueba)
-    #[arg(long = "private-key", env = "OPENUBL_PRIVATE_KEY")]
-    pub private_key: Option<String>,
-
-    /// Ruta al archivo de certificado X.509 PEM (con --beta se usan certificados de prueba)
-    #[arg(long = "certificate", env = "OPENUBL_CERTIFICATE")]
-    pub certificate: Option<String>,
-
-    /// Ruta al certificado PKCS#12 (.pfx/.p12), en lugar de --private-key y --certificate
-    #[arg(long = "pfx", env = "OPENUBL_PFX", conflicts_with_all = ["private_key", "certificate"])]
-    pub pfx: Option<String>,
-
-    /// Clave del certificado PKCS#12
-    #[arg(long = "pfx-password", env = "OPENUBL_PFX_PASSWORD", requires = "pfx")]
-    pub pfx_password: Option<String>,
+    #[command(flatten)]
+    pub keys: KeyArgs,
 
     /// Usuario SOL de SUNAT (con --beta se usan credenciales de prueba)
     #[arg(long, env = "OPENUBL_USERNAME")]
@@ -99,18 +87,8 @@ impl ApplyArgs {
         }
 
         // Step 2: Sign
-        let sign_args = SignArgs {
-            input_file: String::new(),
-            output_file: None,
-            private_key: self.private_key.clone(),
-            certificate: self.certificate.clone(),
-            pfx: self.pfx.clone(),
-            pfx_password: self.pfx_password.clone(),
-            beta: self.beta,
-        };
-
-        let key_pair = sign_args.resolve_key_pair()?;
-        let signed_xml = sign_args.sign_xml(&xml, &key_pair)?;
+        let key_pair = self.keys.resolve(self.beta)?;
+        let signed_xml = XSigner { xml_document: xml }.sign(&key_pair)?;
 
         std::fs::write(&signed_path, &signed_xml)?;
 
