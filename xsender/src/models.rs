@@ -7,10 +7,14 @@ pub struct Urls {
 }
 
 /// Credentials of the company for sending documents
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Credentials {
+    /// SOL user, e.g. "20123456789MODDATOS"
     pub username: String,
     pub password: String,
+    /// API client of the REST services (guias de remision), from SUNAT's SOL menu
+    pub client_id: Option<String>,
+    pub client_secret: Option<String>,
 }
 
 /// Defines where the document should be sent

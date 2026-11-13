@@ -9,6 +9,7 @@ use xhandler::prelude::*;
 #[command(after_help = "\x1b[1mEjemplos:\x1b[0m
   openubl send -f firmado.xml --beta
   openubl send -f firmado.xml --username 20123456789MODDATOS --password clave
+  openubl send -f guia.xml --username 20123456789USUARIO --password clave --client-id id --client-secret secreto
 
 La salida es JSON en stdout. Codigo de salida: 0=aceptado/ticket, 2=rechazado o error SUNAT.")]
 pub struct SendArgs {
@@ -27,6 +28,14 @@ pub struct SendArgs {
     /// Clave SOL de SUNAT (con --beta se usan credenciales de prueba)
     #[arg(long, env = "OPENUBL_PASSWORD")]
     pub password: Option<String>,
+
+    /// Client ID de la API REST de SUNAT (requerido para guias de remision)
+    #[arg(long = "client-id", env = "OPENUBL_CLIENT_ID")]
+    pub client_id: Option<String>,
+
+    /// Client secret de la API REST de SUNAT (requerido para guias de remision)
+    #[arg(long = "client-secret", env = "OPENUBL_CLIENT_SECRET")]
+    pub client_secret: Option<String>,
 
     /// Endpoint SOAP de facturas SUNAT (con --beta se usan URLs de prueba)
     #[arg(long = "url-invoice", env = "OPENUBL_URL_INVOICE")]
@@ -221,7 +230,12 @@ impl SendArgs {
                     "se requiere --password (o usar --beta para credenciales de prueba)"
                 )
             })?;
-        Ok(Credentials { username, password })
+        Ok(Credentials {
+            username,
+            password,
+            client_id: self.client_id.clone(),
+            client_secret: self.client_secret.clone(),
+        })
     }
 
     pub fn resolve_urls(&self) -> Urls {

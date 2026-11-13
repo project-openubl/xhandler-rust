@@ -185,6 +185,8 @@ fn make_send_args(beta: bool) -> SendArgs {
         output_file: None,
         username: None,
         password: None,
+        client_id: None,
+        client_secret: None,
         url_invoice: None,
         url_perception_retention: None,
         url_despatch: None,
@@ -307,4 +309,17 @@ fn resolve_credentials_prod_with_values() {
 
     assert_eq!(creds.username, "my_user");
     assert_eq!(creds.password, "my_pass");
+}
+
+#[test]
+fn resolve_credentials_with_rest_client() {
+    let args = SendArgs {
+        client_id: Some("my-client-id".to_string()),
+        client_secret: Some("my-secret".to_string()),
+        ..make_send_args(true)
+    };
+    let credentials = args.resolve_credentials().unwrap();
+
+    assert_eq!(credentials.client_id.as_deref(), Some("my-client-id"));
+    assert_eq!(credentials.client_secret.as_deref(), Some("my-secret"));
 }

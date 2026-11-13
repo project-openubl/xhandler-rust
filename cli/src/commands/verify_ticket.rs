@@ -28,9 +28,21 @@ pub struct VerifyTicketArgs {
     #[arg(long, env = "OPENUBL_PASSWORD")]
     pub password: Option<String>,
 
+    /// Client ID de la API REST de SUNAT (requerido para guias de remision)
+    #[arg(long = "client-id", env = "OPENUBL_CLIENT_ID")]
+    pub client_id: Option<String>,
+
+    /// Client secret de la API REST de SUNAT (requerido para guias de remision)
+    #[arg(long = "client-secret", env = "OPENUBL_CLIENT_SECRET")]
+    pub client_secret: Option<String>,
+
     /// Endpoint SOAP de facturas SUNAT (usado para verificar tickets)
     #[arg(long = "url-invoice", env = "OPENUBL_URL_INVOICE")]
     pub url_invoice: Option<String>,
+
+    /// El ticket es de una guia de remision (API REST, requiere --client-id y --client-secret)
+    #[arg(long)]
+    pub despatch: bool,
 
     /// Usar URLs de prueba y credenciales de prueba de SUNAT beta
     #[arg(long)]
@@ -44,6 +56,8 @@ impl VerifyTicketArgs {
             output_file: Some(self.output_file.clone()),
             username: self.username.clone(),
             password: self.password.clone(),
+            client_id: self.client_id.clone(),
+            client_secret: self.client_secret.clone(),
             url_invoice: self.url_invoice.clone(),
             url_perception_retention: None,
             url_despatch: None,
@@ -55,7 +69,11 @@ impl VerifyTicketArgs {
         let credentials = send_args.resolve_credentials()?;
 
         let sender = FileSender { urls, credentials };
-        let target = VerifyTicketTarget::Soap(sender.urls.invoice.clone());
+        let target = if self.despatch {
+            VerifyTicketTarget::Rest(sender.urls.despatch.clone())
+        } else {
+            VerifyTicketTarget::Soap(sender.urls.invoice.clone())
+        };
 
         let result = sender.verify_ticket(&target, &self.ticket).await?;
         let is_fault = matches!(result.response, VerifyTicketAggregatedResponse::Error(_));

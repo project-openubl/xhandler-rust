@@ -40,6 +40,14 @@ pub struct ApplyArgs {
     #[arg(long, env = "OPENUBL_PASSWORD")]
     pub password: Option<String>,
 
+    /// Client ID de la API REST de SUNAT (requerido para guias de remision)
+    #[arg(long = "client-id", env = "OPENUBL_CLIENT_ID")]
+    pub client_id: Option<String>,
+
+    /// Client secret de la API REST de SUNAT (requerido para guias de remision)
+    #[arg(long = "client-secret", env = "OPENUBL_CLIENT_SECRET")]
+    pub client_secret: Option<String>,
+
     /// Usar URLs de prueba, credenciales y certificados de prueba de SUNAT beta
     #[arg(long)]
     pub beta: bool,
@@ -113,6 +121,8 @@ impl ApplyArgs {
             output_file: self.output_file.clone(),
             username: self.username.clone(),
             password: self.password.clone(),
+            client_id: self.client_id.clone(),
+            client_secret: self.client_secret.clone(),
             url_invoice: None,
             url_perception_retention: None,
             url_despatch: None,

@@ -1,10 +1,10 @@
 use std::str::FromStr;
 
-use anyhow::anyhow;
 use reqwest::StatusCode;
 
 use crate::constants::HTTP_CLIENT;
 use crate::models::{Credentials, SendFileTarget, SoapFileTargetAction, VerifyTicketTarget};
+use crate::rest;
 use crate::soap::envelope::{BodyData, EnvelopeData, FileData, ToStringXml};
 use crate::soap::send_file_response::SendFileXmlResponse;
 use crate::soap::verify_ticket_response::VerifyTicketXmlResponse;
@@ -96,7 +96,7 @@ impl ClientSUNAT {
                 let (status, response_body) = post_soap(url, body, &soap_action).await?;
                 parse_soap_response::<SendFileXmlResponse>(status, &response_body).map(Into::into)
             }
-            SendFileTarget::Rest(_, _) => Err(ClientSunatErr::Any(anyhow!("Not implemented"))),
+            SendFileTarget::Rest(url, _) => rest::send_document(url, file, credentials).await,
         }
     }
 
@@ -119,7 +119,7 @@ impl ClientSUNAT {
                 parse_soap_response::<VerifyTicketXmlResponse>(status, &response_body)
                     .map(Into::into)
             }
-            VerifyTicketTarget::Rest(_) => Err(ClientSunatErr::Any(anyhow!("Not implemented"))),
+            VerifyTicketTarget::Rest(url) => rest::verify_ticket(url, ticket, credentials).await,
         }
     }
 }
