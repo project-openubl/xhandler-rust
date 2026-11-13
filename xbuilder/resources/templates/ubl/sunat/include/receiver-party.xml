@@ -3,6 +3,6 @@
             <cbc:ID schemeID="{{cliente.tipo_documento_identidad}}">{{cliente.numero_documento_identidad}}</cbc:ID>
         </cac:PartyIdentification>
         <cac:PartyLegalEntity>
-            <cbc:RegistrationName><![CDATA[{{cliente.nombre | escape}}]]></cbc:RegistrationName>
+            <cbc:RegistrationName><![CDATA[{{cliente.nombre | cdata | safe}}]]></cbc:RegistrationName>
         </cac:PartyLegalEntity>
     </cac:ReceiverParty>

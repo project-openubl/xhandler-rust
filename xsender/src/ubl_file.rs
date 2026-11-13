@@ -70,7 +70,8 @@ impl UblFile {
                     }
                 }
                 (Some(CAC_NS), Some("cac"), "AccountingSupplierParty")
-                | (Some(CAC_NS), Some("cac"), "AgentParty") => {
+                | (Some(CAC_NS), Some("cac"), "AgentParty")
+                | (Some(CAC_NS), Some("cac"), "DespatchSupplierParty") => {
                     current_wrapper = if is_start {
                         Some(Wrapper::AccountingSupplierParty)
                     } else {
@@ -236,5 +237,21 @@ mod tests {
         assert_eq!(metadata5.document_id, "R001-1");
         assert_eq!(metadata5.ruc, "12345678912");
         assert_eq!(metadata5.voided_line_document_type_code, None);
+    }
+
+    #[test]
+    fn metadata_despatch_advice() {
+        let file_t = UblFile::from_path(Path::new(&format!("{RESOURCES}/despatch-advice-T.xml")));
+        let metadata_t = file_t.unwrap().metadata().unwrap();
+        assert_eq!(metadata_t.document_type, "DespatchAdvice");
+        assert_eq!(metadata_t.document_id, "T001-123");
+        assert_eq!(metadata_t.ruc, "20123456789");
+        assert_eq!(metadata_t.voided_line_document_type_code, None);
+
+        let file_v = UblFile::from_path(Path::new(&format!("{RESOURCES}/despatch-advice-V.xml")));
+        let metadata_v = file_v.unwrap().metadata().unwrap();
+        assert_eq!(metadata_v.document_type, "DespatchAdvice");
+        assert_eq!(metadata_v.document_id, "VVV1-1");
+        assert_eq!(metadata_v.ruc, "20000000001");
     }
 }

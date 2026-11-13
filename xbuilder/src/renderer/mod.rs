@@ -76,6 +76,18 @@ pub fn currency(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Erro
     }
 }
 
+/// Prepares a value to be placed inside a `<![CDATA[...]]>` section.
+/// CDATA content is not entity-decoded, so the value must not be HTML-escaped;
+/// the only sequence that needs care is `]]>`, which would close the section.
+/// Use it as `{{ value | cdata | safe }}` so Tera's autoescape doesn't run on it.
+pub fn cdata(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Error> {
+    match value {
+        Value::String(text) => Ok(to_value(text.replace("]]>", "]]]]><![CDATA[>"))?),
+        Value::Null => Ok(to_value("")?),
+        other => Ok(to_value(other.to_string())?),
+    }
+}
+
 pub fn format03d(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Error> {
     match value.as_u64() {
         Some(number) => {
@@ -159,6 +171,7 @@ lazy_static::lazy_static! {
         tera.register_filter("round_decimal", round_decimal);
         tera.register_filter("currency", currency);
         tera.register_filter("format03d", format03d);
+        tera.register_filter("cdata", cdata);
 
         tera.register_tester("gt0", gt0);
         tera.register_tester("credito", credito);

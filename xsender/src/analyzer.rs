@@ -110,7 +110,9 @@ pub fn filename_formatted_without_extension(
 
 #[cfg(test)]
 mod tests {
-    use crate::analyzer::{send_file_target, verify_ticket_target};
+    use crate::analyzer::{
+        filename_formatted_without_extension, send_file_target, verify_ticket_target,
+    };
     use crate::models::{
         Catalog1, DocumentType, RestFileTargetAction, SendFileTarget, SoapFileTargetAction, Urls,
         VerifyTicketTarget,
@@ -538,7 +540,7 @@ mod tests {
     }
 
     #[test]
-    fn despatch_advise() {
+    fn despatch_advice() {
         let metadata = UblMetadata {
             document_type: String::from(DocumentType::DESPATCH_ADVICE),
             document_id: String::from("D001-1"),
@@ -570,6 +572,37 @@ mod tests {
         assert_eq!(
             ticket_delivery,
             VerifyTicketTarget::Rest(String::from("https://despatch"))
+        );
+    }
+
+    #[test]
+    fn filename_despatch_advice() {
+        assert_eq!(
+            filename_formatted_without_extension(
+                DocumentType::DESPATCH_ADVICE,
+                "T001-123",
+                "20123456789"
+            )
+            .unwrap(),
+            "20123456789-09-T001-123"
+        );
+        assert_eq!(
+            filename_formatted_without_extension(
+                DocumentType::DESPATCH_ADVICE,
+                "VVV1-1",
+                "20000000001"
+            )
+            .unwrap(),
+            "20000000001-31-VVV1-1"
+        );
+    }
+
+    #[test]
+    fn filename_boleta_lowercase_serie() {
+        assert_eq!(
+            filename_formatted_without_extension(DocumentType::INVOICE, "b001-1", "12345678912")
+                .unwrap(),
+            "12345678912-03-b001-1"
         );
     }
 }

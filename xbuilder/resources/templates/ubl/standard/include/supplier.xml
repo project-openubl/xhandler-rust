@@ -12,7 +12,7 @@
             </cac:PartyName>
             {%- endif %}
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName><![CDATA[{{proveedor.razon_social | escape}}]]></cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[{{proveedor.razon_social | cdata | safe}}]]></cbc:RegistrationName>
                 {%- if proveedor.direccion %}
                 <cac:RegistrationAddress>{{ macros_address::address(direccion=proveedor.direccion) }}
                 </cac:RegistrationAddress>
