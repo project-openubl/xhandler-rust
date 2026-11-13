@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::catalogs::{Catalog, Catalog9};
+use crate::catalogs::{code_for_name, Catalog, Catalog9};
 use crate::enricher::bounds::note::creditnote::tipo_nota::{
     CreditNoteTipoGetter, CreditNoteTipoSetter,
 };
@@ -15,7 +15,13 @@ where
 {
     fn fill(&mut self) -> Result<bool> {
         match &self.get_tipo_nota() {
-            Some(..) => Ok(false),
+            Some(value) => match code_for_name::<Catalog9>(value) {
+                Some(code) => {
+                    self.set_tipo_nota(&code);
+                    Ok(true)
+                }
+                None => Ok(false),
+            },
             None => {
                 self.set_tipo_nota(Catalog9::AnulacionDeLaOperacion.code());
                 Ok(true)

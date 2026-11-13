@@ -1,3 +1,4 @@
+use crate::enricher::rules::phase1fill::cliente::ClienteTipoDocumentoIdentidadFillRule;
 use crate::enricher::rules::phase1fill::despatch_advice::firmante::DespatchAdviceFirmanteFillRule;
 use crate::enricher::rules::phase1fill::despatch_advice::peso_total::DespatchAdvicePesoTotalFillRule;
 use crate::enricher::rules::phase1fill::despatch_advice::tipo_comprobante::DespatchAdviceTipoComprobanteFillRule;
@@ -29,6 +30,7 @@ use crate::enricher::rules::phase1fill::retention::documento_id::RetentionDocume
 use crate::enricher::rules::phase1fill::retention::moneda::RetentionMonedaFillRule;
 use crate::enricher::rules::phase1fill::summary_documents::documento_id::SummaryDocumentsDocumentoIdFillRule;
 use crate::enricher::rules::phase1fill::summary_documents::moneda::SummaryDocumentsMonedaFillRule;
+use crate::enricher::rules::phase1fill::summary_documents::tipo_operacion::SummaryDocumentsTipoOperacionFillRule;
 use crate::enricher::rules::phase1fill::voided_documents::documento_id::VoidedDocumentsDocumentoIdFillRule;
 use crate::enricher::rules::phase1fill::voided_documents::tipo_comprobante::VoidedDocumentsTipoComprobanteFillRule;
 use crate::enricher::Defaults;
@@ -133,7 +135,8 @@ impl Fill for DespatchAdvice {
 
 impl<T> FillCommon for T
 where
-    T: DetallesFillRule
+    T: ClienteTipoDocumentoIdentidadFillRule
+        + DetallesFillRule
         + FechaEmisionFillRule
         + FirmanteFillRule
         + IcbTasaFillRule
@@ -155,6 +158,7 @@ where
                 MonedaFillRule::fill(self).unwrap_or_default(),
                 ProveedorFillRule::fill(self).unwrap_or_default(),
                 DetallesFillRule::fill(self).unwrap_or_default(),
+                ClienteTipoDocumentoIdentidadFillRule::fill(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);
@@ -261,7 +265,8 @@ where
     T: FechaEmisionFillRule
         + FirmanteFillRule
         + SummaryDocumentsMonedaFillRule
-        + SummaryDocumentsDocumentoIdFillRule,
+        + SummaryDocumentsDocumentoIdFillRule
+        + SummaryDocumentsTipoOperacionFillRule,
 {
     fn fill_summary_documents(&mut self, defaults: &Defaults) {
         let mut changed = true;
@@ -272,6 +277,7 @@ where
                 FirmanteFillRule::fill(self).unwrap_or_default(),
                 SummaryDocumentsMonedaFillRule::fill(self).unwrap_or_default(),
                 SummaryDocumentsDocumentoIdFillRule::fill(self).unwrap_or_default(),
+                SummaryDocumentsTipoOperacionFillRule::fill(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);

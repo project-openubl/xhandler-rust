@@ -23,7 +23,7 @@ pub struct VoidedDocuments {
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(default)]
 pub struct VoidedDocumentsItem {
-    /// Catalog1: auto-filled from serie prefix (F->"01", B->"03")
+    /// Catalog1: auto-filled from serie prefix (F->"01", B->"03", T->"09", V->"31", P->"40", R->"20")
     pub tipo_comprobante: Option<String>,
     pub serie: String,
     pub numero: u32,

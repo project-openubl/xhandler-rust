@@ -1,3 +1,4 @@
+pub mod cliente;
 pub mod despatch_advice;
 pub mod detalle;
 pub mod fecha_emision;

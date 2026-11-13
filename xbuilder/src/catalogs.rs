@@ -1,6 +1,8 @@
 use std::fmt;
 use std::fmt::{Display, Formatter};
 
+use rust_decimal::Decimal;
+
 /// A trait for providing the 'code' of a catalog
 pub trait Catalog {
     fn code(&self) -> &str;
@@ -16,57 +18,94 @@ pub trait Label {
     fn label(&self) -> &str;
 }
 
-#[derive(Clone, Debug)]
-pub enum Catalog1 {
-    Factura,
-    Boleta,
-    NotaCredito,
-    NotaDebito,
-    GuiaRemisionRemitente,
+/// Declares a SUNAT catalog: the enum, its codes, and a `from_code` that
+/// accepts either the code (`"1"`) or the variant name, ignoring case and
+/// underscores, as xhandler-java does (`"DNI"`, `"GRAVADO_OPERACION_ONEROSA"`).
+macro_rules! catalog {
+    ($(#[$meta:meta])* $name:ident { $($variant:ident = $code:literal,)* }) => {
+        $(#[$meta])*
+        #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+        pub enum $name {
+            $($variant,)*
+        }
+
+        impl Catalog for $name {
+            fn code(&self) -> &str {
+                match self {
+                    $(Self::$variant => $code,)*
+                }
+            }
+        }
+
+        impl FromCode for $name {
+            fn from_code(value: &str) -> Result<Self, String> {
+                let name = normalize_name(value);
+                [$(Self::$variant,)*]
+                    .into_iter()
+                    .zip([$(stringify!($variant),)*])
+                    .find(|(variant, variant_name)| {
+                        variant.code() == value || normalize_name(variant_name) == name
+                    })
+                    .map(|(variant, _)| variant)
+                    .ok_or_else(|| format!("{value} is not a valid {}", stringify!($name)))
+            }
+        }
+    };
 }
 
-impl Catalog for Catalog1 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::Factura => "01",
-            Self::Boleta => "03",
-            Self::NotaCredito => "07",
-            Self::NotaDebito => "08",
-            Self::GuiaRemisionRemitente => "09",
-        }
+/// The code of a catalog value given by name, e.g. `code_for_name::<Catalog6>("DNI")`
+/// is `Some("1")`. `None` when the value is already a code or isn't in the catalog.
+pub fn code_for_name<C: Catalog + FromCode>(value: &str) -> Option<String> {
+    C::from_code(value)
+        .ok()
+        .map(|catalog| catalog.code().to_string())
+        .filter(|code| code != value)
+}
+
+fn normalize_name(value: &str) -> String {
+    value.replace('_', "").to_lowercase()
+}
+
+catalog! {
+    Catalog1 {
+        Factura = "01",
+        Boleta = "03",
+        NotaCredito = "07",
+        NotaDebito = "08",
+        GuiaRemisionRemitente = "09",
+        TicketMaquinaRegistradora = "12",
+        DocumentosFinancieros = "13",
+        DocumentosAfp = "18",
+        Retencion = "20",
+        PercepcionVentaInterna = "21",
+        GuiaRemisionTransportista = "31",
+        Percepcion = "40",
+        ComprobantePagoSeae = "56",
+        GuiaRemisionRemitenteComplementaria = "71",
+        GuiaRemisionTransportistaComplementaria = "72",
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub enum Catalog5 {
-    Igv,
-    ImpuestoArrozPilado,
-    Isc,
-    Exportacion,
-    Gratuito,
-    Exonerado,
-    Inafecto,
-    IcbPer,
-    Otros,
-}
-
-impl Catalog for Catalog5 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::Igv => "1000",
-            Self::ImpuestoArrozPilado => "1016",
-            Self::Isc => "2000",
-            Self::Exportacion => "9995",
-            Self::Gratuito => "9996",
-            Self::Exonerado => "9997",
-            Self::Inafecto => "9998",
-            Self::IcbPer => "7152",
-            Self::Otros => "9999",
-        }
+catalog! {
+    Catalog5 {
+        Igv = "1000",
+        ImpuestoArrozPilado = "1016",
+        Isc = "2000",
+        Exportacion = "9995",
+        Gratuito = "9996",
+        Exonerado = "9997",
+        Inafecto = "9998",
+        IcbPer = "7152",
+        Otros = "9999",
     }
 }
 
 impl Catalog5 {
+    /// Tax category (UN/ECE 5305). SUNAT uses "S" for every tax.
+    pub fn categoria(&self) -> &'static str {
+        "S"
+    }
+
     pub fn tipo(&self) -> &'static str {
         match self {
             Catalog5::Igv => "VAT",
@@ -96,112 +135,53 @@ impl Catalog5 {
     }
 }
 
-#[derive(Clone, Debug)]
-pub enum Catalog6 {
-    DocTribNoDomSinRuc,
-    DNI,
-    Extranjeria,
-    RUC,
-    Pasaporte,
-    DecDiplomatica,
-    DocIdentPaisResidenciaNoDomiciliado,
-    TaxIdentificationNumberTinDocTribPpNn,
-    IdentificationNumberInDocTribPpJj,
-    TamTarjetaAndinaDeMigracion,
-    PermisoTemporalDePermanenciaPtp,
-    SalvoConducto,
-}
-
-impl Catalog for Catalog6 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::DocTribNoDomSinRuc => "0",
-            Self::DNI => "1",
-            Self::Extranjeria => "4",
-            Self::RUC => "6",
-            Self::Pasaporte => "7",
-            Self::DecDiplomatica => "A",
-            Self::DocIdentPaisResidenciaNoDomiciliado => "B",
-            Self::TaxIdentificationNumberTinDocTribPpNn => "C",
-            Self::IdentificationNumberInDocTribPpJj => "D",
-            Self::TamTarjetaAndinaDeMigracion => "E",
-            Self::PermisoTemporalDePermanenciaPtp => "F",
-            Self::SalvoConducto => "G",
-        }
+catalog! {
+    Catalog6 {
+        DocTribNoDomSinRuc = "0",
+        DNI = "1",
+        Extranjeria = "4",
+        RUC = "6",
+        Pasaporte = "7",
+        DecDiplomatica = "A",
+        DocIdentPaisResidenciaNoDomiciliado = "B",
+        TaxIdentificationNumberTinDocTribPpNn = "C",
+        IdentificationNumberInDocTribPpJj = "D",
+        TamTarjetaAndinaDeMigracion = "E",
+        PermisoTemporalDePermanenciaPtp = "F",
+        SalvoConducto = "G",
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub enum Catalog7 {
-    GravadoOperacionOnerosa,
-    GravadoRetiroPorPremio,
-    GravadoRetiroPorDonacion,
-    GravadoRetiro,
-    GravadoRetiroPorPublicidad,
-    GravadoBonificaciones,
-    GravadoRetiroPorEntregaATrabajadores,
-    GravadoIvap,
-
-    ExoneradoOperacionOnerosa,
-    ExoneradoTransferenciaGratuita,
-
-    InafectoOperacionOnerosa,
-    InafectoRetiroPorBonificacion,
-    InafectoRetiro,
-    InafectoRetiroPorMuestrasMedicas,
-    InafectoRetiroPorConvenioColectivo,
-    InafectoRetiroPorPremio,
-    InafectoRetiroPorPublicidad,
-
-    Exportacion,
-}
-
-impl Catalog for Catalog7 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::GravadoOperacionOnerosa => "10",
-            Self::GravadoRetiroPorPremio => "11",
-            Self::GravadoRetiroPorDonacion => "12",
-            Self::GravadoRetiro => "13",
-            Self::GravadoRetiroPorPublicidad => "14",
-            Self::GravadoBonificaciones => "15",
-            Self::GravadoRetiroPorEntregaATrabajadores => "16",
-            Self::GravadoIvap => "17",
-
-            Self::ExoneradoOperacionOnerosa => "20",
-            Self::ExoneradoTransferenciaGratuita => "21",
-
-            Self::InafectoOperacionOnerosa => "30",
-            Self::InafectoRetiroPorBonificacion => "31",
-            Self::InafectoRetiro => "32",
-            Self::InafectoRetiroPorMuestrasMedicas => "33",
-            Self::InafectoRetiroPorConvenioColectivo => "34",
-            Self::InafectoRetiroPorPremio => "35",
-            Self::InafectoRetiroPorPublicidad => "36",
-
-            Self::Exportacion => "40",
-        }
+catalog! {
+    Catalog7 {
+        GravadoOperacionOnerosa = "10",
+        GravadoRetiroPorPremio = "11",
+        GravadoRetiroPorDonacion = "12",
+        GravadoRetiro = "13",
+        GravadoRetiroPorPublicidad = "14",
+        GravadoBonificaciones = "15",
+        GravadoRetiroPorEntregaATrabajadores = "16",
+        GravadoIvap = "17",
+        ExoneradoOperacionOnerosa = "20",
+        ExoneradoTransferenciaGratuita = "21",
+        InafectoOperacionOnerosa = "30",
+        InafectoRetiroPorBonificacion = "31",
+        InafectoRetiro = "32",
+        InafectoRetiroPorMuestrasMedicas = "33",
+        InafectoRetiroPorConvenioColectivo = "34",
+        InafectoRetiroPorPremio = "35",
+        InafectoRetiroPorPublicidad = "36",
+        Exportacion = "40",
     }
 }
 
-#[derive(Clone, Debug)]
-pub enum Catalog7Group {
-    Gravado,
-    Exonerado,
-    Inafecto,
-    Exportacion,
-    Gratuita,
-}
-
-impl Catalog for Catalog7Group {
-    fn code(&self) -> &str {
-        match &self {
-            Self::Gravado => "01",
-            Self::Exonerado => "02",
-            Self::Inafecto => "03",
-            Self::Exportacion => "04",
-            Self::Gratuita => "05",
-        }
+catalog! {
+    Catalog7Group {
+        Gravado = "01",
+        Exonerado = "02",
+        Inafecto = "03",
+        Exportacion = "04",
+        Gratuita = "05",
     }
 }
 
@@ -319,182 +299,154 @@ impl Display for Catalog7 {
     }
 }
 
-impl FromCode for Catalog7 {
-    fn from_code(code: &str) -> Result<Self, String> {
-        match code {
-            "10" => Ok(Catalog7::GravadoOperacionOnerosa),
-            "11" => Ok(Catalog7::GravadoRetiroPorPremio),
-            "12" => Ok(Catalog7::GravadoRetiroPorDonacion),
-            "13" => Ok(Catalog7::GravadoRetiro),
-            "14" => Ok(Catalog7::GravadoRetiroPorPublicidad),
-            "15" => Ok(Catalog7::GravadoBonificaciones),
-            "16" => Ok(Catalog7::GravadoRetiroPorEntregaATrabajadores),
-            "17" => Ok(Catalog7::GravadoIvap),
+catalog! {
+    Catalog8 {
+        SistemaAlValor = "01",
+        AplicacionAlMontoFijo = "02",
+        SistemaDePreciosDeVentaAlPublico = "03",
+    }
+}
 
-            "20" => Ok(Catalog7::ExoneradoOperacionOnerosa),
-            "21" => Ok(Catalog7::ExoneradoTransferenciaGratuita),
+catalog! {
+    Catalog9 {
+        AnulacionDeLaOperacion = "01",
+        AnulacionPorErrorEnElRuc = "02",
+        CorreccionPorErrorEnLaDescripcion = "03",
+        DescuentoGlobal = "04",
+        DescuentoPorItem = "05",
+        DevolucionTotal = "06",
+        DevolucionPorItem = "07",
+        Bonificacion = "08",
+        DisminucionEnElValor = "09",
+        OtrosConceptos = "10",
+    }
+}
 
-            "30" => Ok(Catalog7::InafectoOperacionOnerosa),
-            "31" => Ok(Catalog7::InafectoRetiroPorBonificacion),
-            "32" => Ok(Catalog7::InafectoRetiro),
-            "33" => Ok(Catalog7::InafectoRetiroPorMuestrasMedicas),
-            "34" => Ok(Catalog7::InafectoRetiroPorConvenioColectivo),
-            "35" => Ok(Catalog7::InafectoRetiroPorPremio),
-            "36" => Ok(Catalog7::InafectoRetiroPorPublicidad),
+catalog! {
+    Catalog10 {
+        InteresPorMora = "01",
+        AumentoEnElValor = "02",
+        PenalidadOtrosConceptos = "03",
+    }
+}
 
-            "40" => Ok(Catalog7::Exportacion),
+catalog! {
+    Catalog12 {
+        FacturaEmitidaParaCorregirErrorEnElRuc = "01",
+        FacturaEmitidaPorAnticipos = "02",
+        BoletaDeVentaEmitidaPorAnticipos = "03",
+        TicketDeSalida = "04",
+        CodigoScop = "05",
+        FacturaElectronicaRemitente = "06",
+        GuiaDeRemisionRemitente = "07",
+        DeclaracionDeSalidaDelDepositoFranco = "08",
+        DeclaracionSimplificadaDeImportacion = "09",
+        LiquidacionDeCompraEmitidaPorAnticipos = "10",
+        Otros = "99",
+    }
+}
 
-            _ => Err(format!("code {code} did not match")),
+catalog! {
+    Catalog16 {
+        PrecioUnitarioIncluyeIgv = "01",
+        ValorReferencialUnitarioEnOperacionesNoOnerosas = "02",
+    }
+}
+
+catalog! {
+    /// Modalidad de traslado
+    Catalog18 {
+        TransportePublico = "01",
+        TransportePrivado = "02",
+    }
+}
+
+catalog! {
+    /// Estado del ítem en un resumen diario
+    Catalog19 {
+        Adicionar = "1",
+        Modificar = "2",
+        Anulado = "3",
+    }
+}
+
+catalog! {
+    /// Motivo de traslado
+    Catalog20 {
+        Venta = "01",
+        Compra = "02",
+        TrasladoEntreEstablecimientosDeLaMismaEmpresa = "04",
+        Importacion = "08",
+        Exportacion = "09",
+        Otros = "13",
+        VentaSujetaAConfirmacionDelComprador = "14",
+        TrasladoEmisorItineranteCp = "18",
+        TrasladoAZonaPrimaria = "19",
+    }
+}
+
+catalog! {
+    /// Documentos relacionados al transporte de bienes
+    Catalog21 {
+        NumeracionDam = "01",
+        NumeroDeOrdenDeEntrega = "02",
+        NumeroScop = "03",
+        NumeroDeManifiestoDeCarga = "04",
+        NumeroDeConstanciaDeDetraccion = "05",
+        Otros = "06",
+    }
+}
+
+catalog! {
+    /// Régimen de percepción
+    Catalog22 {
+        VentaInterna = "01",
+        AdquisicionDeCombustible = "02",
+        AgenteDePercepcionConTasaEspecial = "03",
+    }
+}
+
+impl Catalog22 {
+    /// Percentage of the regime, e.g. 2 for 2%
+    pub fn percent(&self) -> Decimal {
+        match self {
+            Self::VentaInterna => Decimal::TWO,
+            Self::AdquisicionDeCombustible => Decimal::ONE,
+            Self::AgenteDePercepcionConTasaEspecial => Decimal::new(5, 1),
         }
     }
 }
 
-#[derive(Clone, Debug)]
-pub enum Catalog8 {
-    SistemaAlValor,
-    AplicacionAlMontoFijo,
-    SistemaDePreciosDeVentaAlPublico,
+catalog! {
+    /// Régimen de retención
+    Catalog23 {
+        TasaTres = "01",
+    }
 }
 
-impl Catalog for Catalog8 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::SistemaAlValor => "01",
-            Self::AplicacionAlMontoFijo => "02",
-            Self::SistemaDePreciosDeVentaAlPublico => "03",
+impl Catalog23 {
+    /// Percentage of the regime, e.g. 3 for 3%
+    pub fn percent(&self) -> Decimal {
+        match self {
+            Self::TasaTres => Decimal::from(3),
         }
     }
 }
 
-#[derive(Clone, Debug)]
-pub enum Catalog9 {
-    AnulacionDeLaOperacion,
-    AnulacionPorErrorEnElRuc,
-    CorreccionPorErrorEnLaDescripcion,
-    DescuentoGlobal,
-    DescuentoPorItem,
-    DevolucionTotal,
-    DevolucionPorItem,
-    Bonificacion,
-    DisminucionEnElValor,
-    OtrosConceptos,
-}
-
-impl Catalog for Catalog9 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::AnulacionDeLaOperacion => "01",
-            Self::AnulacionPorErrorEnElRuc => "02",
-            Self::CorreccionPorErrorEnLaDescripcion => "03",
-            Self::DescuentoGlobal => "04",
-            Self::DescuentoPorItem => "05",
-            Self::DevolucionTotal => "06",
-            Self::DevolucionPorItem => "07",
-            Self::Bonificacion => "08",
-            Self::DisminucionEnElValor => "09",
-            Self::OtrosConceptos => "10",
-        }
+catalog! {
+    Catalog51 {
+        VentaInterna = "0101",
+        OperacionSujetaADetraccion = "1001",
+        OperacionSujetaAPercepcion = "2001",
     }
 }
 
-#[derive(Clone, Debug)]
-pub enum Catalog10 {
-    InteresPorMora,
-    AumentoEnElValor,
-    PenalidadOtrosConceptos,
-}
-
-impl Catalog for Catalog10 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::InteresPorMora => "01",
-            Self::AumentoEnElValor => "02",
-            Self::PenalidadOtrosConceptos => "03",
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum Catalog12 {
-    FacturaEmitidaParaCorregirErrorEnElRuc,
-    FacturaEmitidaPorAnticipos,
-    BoletaDeVentaEmitidaPorAnticipos,
-    TicketDeSalida,
-    CodigoScop,
-    FacturaElectronicaRemitente,
-    GuiaDeRemisionRemitente,
-    DeclaracionDeSalidaDelDepositoFranco,
-    DeclaracionSimplificadaDeImportacion,
-    LiquidacionDeCompraEmitidaPorAnticipos,
-    Otros,
-}
-
-impl Catalog for Catalog12 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::FacturaEmitidaParaCorregirErrorEnElRuc => "01",
-            Self::FacturaEmitidaPorAnticipos => "02",
-            Self::BoletaDeVentaEmitidaPorAnticipos => "03",
-            Self::TicketDeSalida => "04",
-            Self::CodigoScop => "05",
-            Self::FacturaElectronicaRemitente => "06",
-            Self::GuiaDeRemisionRemitente => "07",
-            Self::DeclaracionDeSalidaDelDepositoFranco => "08",
-            Self::DeclaracionSimplificadaDeImportacion => "09",
-            Self::LiquidacionDeCompraEmitidaPorAnticipos => "10",
-            Self::Otros => "99",
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum Catalog16 {
-    PrecioUnitarioIncluyeIgv,
-    ValorReferencialUnitarioEnOperacionesNoOnerosas,
-}
-
-impl Catalog for Catalog16 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::PrecioUnitarioIncluyeIgv => "01",
-            Self::ValorReferencialUnitarioEnOperacionesNoOnerosas => "02",
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum Catalog51 {
-    VentaInterna,
-    OperacionSujetaADetraccion,
-    OperacionSujetaAPercepcion,
-}
-
-impl Catalog for Catalog51 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::VentaInterna => "0101",
-            Self::OperacionSujetaADetraccion => "1001",
-            Self::OperacionSujetaAPercepcion => "2001",
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum Catalog52 {
-    MontoEnLetras,
-    ComprobanteDePercepcion,
-    VentaRealizadaPorEmisorItinerante,
-    OperacionSujetaADetraccion,
-}
-
-impl Catalog for Catalog52 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::MontoEnLetras => "1000",
-            Self::ComprobanteDePercepcion => "2000",
-            Self::VentaRealizadaPorEmisorItinerante => "2005",
-            Self::OperacionSujetaADetraccion => "2006",
-        }
+catalog! {
+    Catalog52 {
+        MontoEnLetras = "1000",
+        ComprobanteDePercepcion = "2000",
+        VentaRealizadaPorEmisorItinerante = "2005",
+        OperacionSujetaADetraccion = "2006",
     }
 }
 
@@ -509,159 +461,103 @@ impl Label for Catalog52 {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Hash, Eq)]
-pub enum Catalog53 {
-    DescuentoAfectaBaseImponibleIgvIvap,
-    DescuentoNoAfectaBaseImponibleIgvIvap,
-    DescuentoGlobalAfectaBaseImponibleIgvIvap,
-    DescuentoGlobalNoAfectaBaseImponibleIgvIvap,
-    DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap,
-    DescuentoGlobalPorAnticiposExonerados,
-    DescuentoGlobalPorAnticiposInafectos,
-    FactorDeCompensacion,
-    AnticipoDeIsc,
-    FISE,
-    RecargoAlConsumoYOPropinas,
-    CargosQueAfectanBaseImponibleIgvIvap,
-    CargosQueNoAfectanBaseImponibleIgvIvap,
-    CargosGlobalesQueAfectanBaseImponibleIgvIvap,
-    CargosGlobalesQueNoAfectanBaseImponibleIgvIvap,
-    PercepcionVentaInterna,
-    PercepcionALaAdquisicionDeCombustible,
-    PercepcionRealizadaAlAgenteDePercepcionConTasaEspecial,
-    FactorDeAportacion,
-    RetencionDeRentaPorAnticipos,
-    RetencionDelIgv,
-    RetencionDeRentaDeSegundaCategoria,
-}
-
-impl Catalog for Catalog53 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::DescuentoAfectaBaseImponibleIgvIvap => "00",
-            Self::DescuentoNoAfectaBaseImponibleIgvIvap => "01",
-            Self::DescuentoGlobalAfectaBaseImponibleIgvIvap => "02",
-            Self::DescuentoGlobalNoAfectaBaseImponibleIgvIvap => "03",
-            Self::DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap => "04",
-            Self::DescuentoGlobalPorAnticiposExonerados => "05",
-            Self::DescuentoGlobalPorAnticiposInafectos => "06",
-            Self::FactorDeCompensacion => "07",
-            Self::AnticipoDeIsc => "20",
-            Self::FISE => "45",
-            Self::RecargoAlConsumoYOPropinas => "46",
-            Self::CargosQueAfectanBaseImponibleIgvIvap => "47",
-            Self::CargosQueNoAfectanBaseImponibleIgvIvap => "48",
-            Self::CargosGlobalesQueAfectanBaseImponibleIgvIvap => "49",
-            Self::CargosGlobalesQueNoAfectanBaseImponibleIgvIvap => "50",
-            Self::PercepcionVentaInterna => "51",
-            Self::PercepcionALaAdquisicionDeCombustible => "52",
-            Self::PercepcionRealizadaAlAgenteDePercepcionConTasaEspecial => "53",
-            Self::FactorDeAportacion => "54",
-            Self::RetencionDeRentaPorAnticipos => "61",
-            Self::RetencionDelIgv => "62",
-            Self::RetencionDeRentaDeSegundaCategoria => "63",
-        }
+catalog! {
+    Catalog53 {
+        DescuentoAfectaBaseImponibleIgvIvap = "00",
+        DescuentoNoAfectaBaseImponibleIgvIvap = "01",
+        DescuentoGlobalAfectaBaseImponibleIgvIvap = "02",
+        DescuentoGlobalNoAfectaBaseImponibleIgvIvap = "03",
+        DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap = "04",
+        DescuentoGlobalPorAnticiposExonerados = "05",
+        DescuentoGlobalPorAnticiposInafectos = "06",
+        FactorDeCompensacion = "07",
+        AnticipoDeIsc = "20",
+        FISE = "45",
+        RecargoAlConsumoYOPropinas = "46",
+        CargosQueAfectanBaseImponibleIgvIvap = "47",
+        CargosQueNoAfectanBaseImponibleIgvIvap = "48",
+        CargosGlobalesQueAfectanBaseImponibleIgvIvap = "49",
+        CargosGlobalesQueNoAfectanBaseImponibleIgvIvap = "50",
+        PercepcionVentaInterna = "51",
+        PercepcionALaAdquisicionDeCombustible = "52",
+        PercepcionRealizadaAlAgenteDePercepcionConTasaEspecial = "53",
+        FactorDeAportacion = "54",
+        RetencionDeRentaPorAnticipos = "61",
+        RetencionDelIgv = "62",
+        RetencionDeRentaDeSegundaCategoria = "63",
     }
 }
 
-impl FromCode for Catalog53 {
-    fn from_code(code: &str) -> Result<Self, String> {
-        match code {
-            "00" => Ok(Catalog53::DescuentoAfectaBaseImponibleIgvIvap),
-            "01" => Ok(Catalog53::DescuentoNoAfectaBaseImponibleIgvIvap),
-            "02" => Ok(Catalog53::DescuentoGlobalAfectaBaseImponibleIgvIvap),
-            "03" => Ok(Catalog53::DescuentoGlobalNoAfectaBaseImponibleIgvIvap),
-            "04" => Ok(Catalog53::DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap),
-            "05" => Ok(Catalog53::DescuentoGlobalPorAnticiposExonerados),
-            "06" => Ok(Catalog53::DescuentoGlobalPorAnticiposInafectos),
-            "07" => Ok(Catalog53::FactorDeCompensacion),
-            "20" => Ok(Catalog53::AnticipoDeIsc),
-            "45" => Ok(Catalog53::FISE),
-            "46" => Ok(Catalog53::RecargoAlConsumoYOPropinas),
-            "47" => Ok(Catalog53::CargosQueAfectanBaseImponibleIgvIvap),
-            "48" => Ok(Catalog53::CargosQueNoAfectanBaseImponibleIgvIvap),
-            "49" => Ok(Catalog53::CargosGlobalesQueAfectanBaseImponibleIgvIvap),
-            "50" => Ok(Catalog53::CargosGlobalesQueNoAfectanBaseImponibleIgvIvap),
-            "51" => Ok(Catalog53::PercepcionVentaInterna),
-            "52" => Ok(Catalog53::PercepcionALaAdquisicionDeCombustible),
-            "53" => Ok(Catalog53::PercepcionRealizadaAlAgenteDePercepcionConTasaEspecial),
-            "54" => Ok(Catalog53::FactorDeAportacion),
-            "61" => Ok(Catalog53::RetencionDeRentaPorAnticipos),
-            "62" => Ok(Catalog53::RetencionDelIgv),
-            "63" => Ok(Catalog53::RetencionDeRentaDeSegundaCategoria),
-            _ => Err(format!("code {code} did not match")),
-        }
+catalog! {
+    Catalog54 {
+        Azucar = "001",
+        AlcoholEtilico = "003",
+        RecursosHidrobiologicos = "004",
     }
 }
 
-#[derive(Clone, Debug)]
-pub enum Catalog54 {
-    Azucar,
-    AlcoholEtilico,
-    RecursosHidrobiologicos,
-}
-
-impl Catalog for Catalog54 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::Azucar => "001",
-            Self::AlcoholEtilico => "003",
-            Self::RecursosHidrobiologicos => "004",
-        }
+catalog! {
+    Catalog59 {
+        DepositoEnCuenta = "001",
+        Giro = "002",
+        TransferenciaDeFondos = "003",
+        OrdenDePago = "004",
+        TarjetaDeDebito = "005",
+        TarjetaDeCreditoEmitidaEnElPaisPorUnaEmpresaDelSistemaFinanciero = "006",
+        ChequesConLaClausulaDeNonegociableIntransferibleNoalaordenUOtraEquivalente = "007",
+        EfectivoPorOperacionesEnLasQueNoExisteObligacionDeUtilizarMedioDePago = "008",
+        EfectivoEnLosDemasCasos = "009",
+        MediosDePagoUsadosEnComercioExterior = "010",
+        DocumentosEmitidosPorLasEdpymesYLasCooperativas = "011",
+        TarjetaDeCreditoEmitidaEnElPaisOEnExteriorEmitidaPorEmpresaNoPertenecienteAlSistemaFinanciero = "012",
+        TarjetasDeCreditoEmitidasEnElExteriorPorEmpresasBancariasOFinancierasNoDomiciliadas = "013",
+        TransferenciasComercioExterior = "101",
+        ChequesBancariosComercioExterior = "102",
+        OrdenDePagoSimpleComercioExterior = "103",
+        OrdenDePagoDocumentarioComercioExterior = "104",
+        RemesaSimpleComercioExterior = "105",
+        RemesaDocumentariaComercioExterior = "106",
+        CartaDeCreditoSimpleComercioExterior = "107",
+        CartaDeCreditoDocumentarioComercioExterior = "108",
+        OtrosMediosDePago = "999",
     }
 }
 
-#[derive(Clone, Debug)]
-pub enum Catalog59 {
-    DepositoEnCuenta,
-    Giro,
-    TransferenciaDeFondos,
-    OrdenDePago,
-    TarjetaDeDebito,
-    TarjetaDeCreditoEmitidaEnElPaisPorUnaEmpresaDelSistemaFinanciero,
-    ChequesConLaClausulaDeNonegociableIntransferibleNoalaordenUOtraEquivalente,
-    EfectivoPorOperacionesEnLasQueNoExisteObligacionDeUtilizarMedioDePago,
-    EfectivoEnLosDemasCasos,
-    MediosDePagoUsadosEnComercioExterior,
-    DocumentosEmitidosPorLasEdpymesYLasCooperativas,
-    TarjetaDeCreditoEmitidaEnElPaisOEnExteriorEmitidaPorEmpresaNoPertenecienteAlSistemaFinanciero,
-    TarjetasDeCreditoEmitidasEnElExteriorPorEmpresasBancariasOFinancierasNoDomiciliadas,
-    TransferenciasComercioExterior,
-    ChequesBancariosComercioExterior,
-    OrdenDePagoSimpleComercioExterior,
-    OrdenDePagoDocumentarioComercioExterior,
-    RemesaSimpleComercioExterior,
-    RemesaDocumentariaComercioExterior,
-    CartaDeCreditoSimpleComercioExterior,
-    CartaDeCreditoDocumentarioComercioExterior,
-    OtrosMediosDePago,
-}
+#[cfg(test)]
+mod tests {
+    use rust_decimal::Decimal;
 
-impl Catalog for Catalog59 {
-    fn code(&self) -> &str {
-        match &self {
-            Self::DepositoEnCuenta => "001",
-            Self::Giro => "002",
-            Self::TransferenciaDeFondos => "003",
-            Self::OrdenDePago => "004",
-            Self::TarjetaDeDebito => "005",
-            Self::TarjetaDeCreditoEmitidaEnElPaisPorUnaEmpresaDelSistemaFinanciero => "006",
-            Self::ChequesConLaClausulaDeNonegociableIntransferibleNoalaordenUOtraEquivalente => "007",
-            Self::EfectivoPorOperacionesEnLasQueNoExisteObligacionDeUtilizarMedioDePago => "008",
-            Self::EfectivoEnLosDemasCasos => "009",
-            Self::MediosDePagoUsadosEnComercioExterior => "010",
-            Self::DocumentosEmitidosPorLasEdpymesYLasCooperativas => "011",
-            Self::TarjetaDeCreditoEmitidaEnElPaisOEnExteriorEmitidaPorEmpresaNoPertenecienteAlSistemaFinanciero => "012",
-            Self::TarjetasDeCreditoEmitidasEnElExteriorPorEmpresasBancariasOFinancierasNoDomiciliadas => "013",
-            Self::TransferenciasComercioExterior => "101",
-            Self::ChequesBancariosComercioExterior => "102",
-            Self::OrdenDePagoSimpleComercioExterior => "103",
-            Self::OrdenDePagoDocumentarioComercioExterior => "104",
-            Self::RemesaSimpleComercioExterior => "105",
-            Self::RemesaDocumentariaComercioExterior => "106",
-            Self::CartaDeCreditoSimpleComercioExterior => "107",
-            Self::CartaDeCreditoDocumentarioComercioExterior => "108",
-            Self::OtrosMediosDePago => "999"
-        }
+    use super::*;
+
+    #[test]
+    fn from_code_accepts_code_or_name() {
+        assert_eq!(Catalog6::from_code("1"), Ok(Catalog6::DNI));
+        assert_eq!(Catalog6::from_code("DNI"), Ok(Catalog6::DNI));
+        assert_eq!(Catalog6::from_code("dni"), Ok(Catalog6::DNI));
+        assert_eq!(
+            Catalog7::from_code("GRAVADO_OPERACION_ONEROSA"),
+            Ok(Catalog7::GravadoOperacionOnerosa)
+        );
+        assert_eq!(Catalog19::from_code("adicionar"), Ok(Catalog19::Adicionar));
+        assert_eq!(Catalog1::from_code("40"), Ok(Catalog1::Percepcion));
+        assert!(Catalog7::from_code("99").is_err());
+        assert!(Catalog7::from_code("").is_err());
+    }
+
+    #[test]
+    fn code_for_name_only_converts_names() {
+        assert_eq!(code_for_name::<Catalog6>("RUC").as_deref(), Some("6"));
+        assert_eq!(code_for_name::<Catalog6>("6"), None);
+        assert_eq!(code_for_name::<Catalog6>("unknown"), None);
+    }
+
+    #[test]
+    fn regime_percentages() {
+        assert_eq!(Catalog22::VentaInterna.percent(), Decimal::TWO);
+        assert_eq!(
+            Catalog22::AgenteDePercepcionConTasaEspecial.percent(),
+            Decimal::new(5, 1)
+        );
+        assert_eq!(Catalog23::TasaTres.percent(), Decimal::from(3));
     }
 }
