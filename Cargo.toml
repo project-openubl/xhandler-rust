@@ -38,7 +38,7 @@ tokio = "1.49"
 libxml = "0.3"
 quick-xml = "0.39"
 x509-cert = "0.2"
-der = { version = "0.7" }
+der = { version = "0.8" }
 openssl = "0.10"
 xml_c14n = "0.3"
 
