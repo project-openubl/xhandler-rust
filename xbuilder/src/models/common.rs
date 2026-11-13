@@ -48,10 +48,11 @@ pub struct Direccion {
 }
 
 /// Contacto
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[serde(default)]
 pub struct Contacto {
-    pub telefono: String,
-    pub email: String,
+    pub telefono: Option<String>,
+    pub email: Option<String>,
 }
 
 /// Detraccion

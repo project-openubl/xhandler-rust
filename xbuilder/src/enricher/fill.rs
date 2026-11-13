@@ -29,6 +29,7 @@ use crate::enricher::rules::phase1fill::proveedor::ProveedorFillRule;
 use crate::enricher::rules::phase1fill::retention::documento_id::RetentionDocumentoIdFillRule;
 use crate::enricher::rules::phase1fill::retention::moneda::RetentionMonedaFillRule;
 use crate::enricher::rules::phase1fill::summary_documents::documento_id::SummaryDocumentsDocumentoIdFillRule;
+use crate::enricher::rules::phase1fill::summary_documents::igv::SummaryDocumentsIgvFillRule;
 use crate::enricher::rules::phase1fill::summary_documents::moneda::SummaryDocumentsMonedaFillRule;
 use crate::enricher::rules::phase1fill::summary_documents::tipo_operacion::SummaryDocumentsTipoOperacionFillRule;
 use crate::enricher::rules::phase1fill::voided_documents::documento_id::VoidedDocumentsDocumentoIdFillRule;
@@ -266,6 +267,7 @@ where
         + FirmanteFillRule
         + SummaryDocumentsMonedaFillRule
         + SummaryDocumentsDocumentoIdFillRule
+        + SummaryDocumentsIgvFillRule
         + SummaryDocumentsTipoOperacionFillRule,
 {
     fn fill_summary_documents(&mut self, defaults: &Defaults) {
@@ -277,6 +279,7 @@ where
                 FirmanteFillRule::fill(self).unwrap_or_default(),
                 SummaryDocumentsMonedaFillRule::fill(self).unwrap_or_default(),
                 SummaryDocumentsDocumentoIdFillRule::fill(self).unwrap_or_default(),
+                SummaryDocumentsIgvFillRule::fill(self, defaults).unwrap_or_default(),
                 SummaryDocumentsTipoOperacionFillRule::fill(self).unwrap_or_default(),
             ];
 

@@ -98,12 +98,15 @@ pub fn format03d(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Err
     }
 }
 
+/// True for a number greater than zero. A missing (null) value is false,
+/// unlike a plain `{% if %}`, which is true for the string "0".
 pub fn gt0(value: Option<&Value>, params: &[Value]) -> tera::Result<bool> {
     number_args_allowed("gt0", 0, params.len())?;
     value_defined("gt0", value)?;
 
-    match value.and_then(|v| v.as_str()) {
-        Some(v) => match Decimal::from_str(v) {
+    match value {
+        Some(Value::Null) => Ok(false),
+        Some(Value::String(v)) => match Decimal::from_str(v) {
             Ok(d) => Ok(d > Decimal::ZERO),
             Err(_) => Err(Error::msg(
                 "Tester `gt0` was called on a variable that isn't a Decimal",
