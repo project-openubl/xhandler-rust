@@ -280,6 +280,15 @@ def dependency_order(models: list[Model]) -> list[Model]:
     return list(ordered.values())
 
 
+def py_doc(text: str | None, indent: str) -> list[str]:
+    if not text:
+        return []
+    text = text.replace("\\", "\\\\").replace('"""', '\\"""')
+    if text.endswith('"'):
+        text = text[:-1] + '\\"'
+    return comment(f'"""{text}"""', indent)
+
+
 def gen_python(models: list[Model], kinds: list[str]) -> str:
     enums = {m.name for m in models if m.enum}
     models = dependency_order(models)
@@ -304,18 +313,18 @@ def gen_python(models: list[Model], kinds: list[str]) -> str:
         out.append("")
         if m.enum:
             out.append(f"class {m.name}(str, Enum):")
-            out += comment(f'"""{m.description}"""' if m.description else None, "    ")
+            out += py_doc(m.description, "    ")
             out += [f"    {v.upper()} = {v!r}" for v in m.enum]
             out.append("")
             continue
         out.append(f"class {m.name}(_Model):")
-        out += comment(f'"""{m.description}"""' if m.description else None, "    ")
+        out += py_doc(m.description, "    ")
         for p in m.props:
             if keyword.iskeyword(p.name):
                 raise ValueError(f"python keyword as field name: {p.name}")
             default = py_default(p, enums)
             out.append(f"    {p.name}: {py_type(p.type)}" + (f" = {default}" if default else ""))
-            out += comment(f'"""{p.description}"""' if p.description else None, "    ")
+            out += py_doc(p.description, "    ")
         out.append("")
     out += ["", f"Document = Union[{', '.join(kinds)}]", '"""Any document xbuilder can enrich and render."""', ""]
     out += [f"DOCUMENT_KINDS = {tuple(kinds)!r}", ""]
