@@ -34,18 +34,3 @@ updates:
     groups:
       cargo:
         update-types: ["minor", "patch"]
-
-  # Maintain dependencies for NPM
-  - package-ecosystem: "npm"
-    directory: "/server/ui"
-    schedule:
-      interval: "weekly"
-    cooldown:
-      default-days: 7
-      semver-major-days: 14
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    allow:
-      - dependency-name: "@patternfly/*"
-        dependency-type: "direct"
