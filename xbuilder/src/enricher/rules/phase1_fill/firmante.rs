@@ -13,8 +13,8 @@ where
 {
     /// Fills the firmante, or its empty fields, from the proveedor
     fn fill(&mut self) -> Result<bool> {
-        let proveedor = self.get_proveedor();
-        let mut firmante = self.get_firmante().clone().unwrap_or_default();
+        let proveedor = self.proveedor();
+        let mut firmante = self.firmante().clone().unwrap_or_default();
         if firmante.ruc.is_empty() {
             firmante.ruc = proveedor.ruc.clone();
         }
@@ -22,7 +22,7 @@ where
             firmante.razon_social = proveedor.razon_social.clone();
         }
 
-        let changed = self.get_firmante().as_ref() != Some(&firmante);
+        let changed = self.firmante().as_ref() != Some(&firmante);
         if changed {
             self.set_firmante(firmante);
         }

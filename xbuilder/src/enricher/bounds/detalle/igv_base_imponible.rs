@@ -3,7 +3,7 @@ use rust_decimal::Decimal;
 use crate::models::common::Detalle;
 
 pub trait DetalleIgvBaseImponibleGetter {
-    fn get_igv_base_imponible(&self) -> &Option<Decimal>;
+    fn igv_base_imponible(&self) -> &Option<Decimal>;
 }
 
 pub trait DetalleIgvBaseImponibleSetter {
@@ -11,7 +11,7 @@ pub trait DetalleIgvBaseImponibleSetter {
 }
 
 impl DetalleIgvBaseImponibleGetter for Detalle {
-    fn get_igv_base_imponible(&self) -> &Option<Decimal> {
+    fn igv_base_imponible(&self) -> &Option<Decimal> {
         &self.igv_base_imponible
     }
 }

@@ -13,7 +13,7 @@ where
     T: DetalleIscTipoGetter + DetalleIscTipoSetter,
 {
     fn fill(&mut self, _: &DetalleDefaults) -> Result<bool> {
-        match &self.get_isc_tipo() {
+        match &self.isc_tipo() {
             Some(value) => match code_for_name::<Catalog8>(value) {
                 Some(code) => {
                     self.set_isc_tipo(&code);

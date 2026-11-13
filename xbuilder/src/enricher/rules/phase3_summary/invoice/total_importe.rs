@@ -29,17 +29,17 @@ where
         + IgvTasaGetter,
 {
     fn summary(&mut self) -> Result<bool> {
-        match &self.get_total_importe() {
+        match &self.total_importe() {
             Some(..) => Ok(false),
             None => {
                 let total_impuestos = self
-                    .get_detalles()
+                    .detalles()
                     .iter()
                     .filter_map(|e| e.total_impuestos)
                     .fold(Decimal::ZERO, |a, b| a + b);
 
                 let importe_sin_impuestos = self
-                    .get_detalles()
+                    .detalles()
                     .iter()
                     .filter(|e| {
                         if let Ok(catalog7) =
@@ -66,7 +66,7 @@ where
 
                 // Anticipos
                 let anticipos = self
-                    .get_anticipos()
+                    .anticipos()
                     .iter()
                     .map(|e| e.monto)
                     .fold(Decimal::ZERO, |a, b| a + b);
@@ -75,7 +75,7 @@ where
 
                 // Descuentos
                 let descuentos =
-                    self.get_descuentos()
+                    self.descuentos()
                         .iter()
                         .fold(HashMap::new(), |mut acc, current| {
                             if let Some(tipo) = current.tipo.as_deref() {
@@ -97,7 +97,7 @@ where
                 };
                 let descuentos_que_afectan_base_imponible_con_impuestos =
                     descuentos_que_afectan_base_imponible_sin_impuestos
-                        * (self.get_igv_tasa().unwrap_or(Decimal::ZERO) + Decimal::ONE);
+                        * (self.igv_tasa().unwrap_or(Decimal::ZERO) + Decimal::ONE);
                 let descuentos_que_no_afectan_base_imponible_sin_impuestos = if let Some(val) =
                     descuentos.get(&Catalog53::DescuentoGlobalNoAfectaBaseImponibleIgvIvap)
                 {
@@ -107,8 +107,8 @@ where
                 };
 
                 // Cargos
-                let igv_factor = self.get_igv_tasa().unwrap_or(Decimal::ZERO) + Decimal::ONE;
-                let cargos = self.get_cargos();
+                let igv_factor = self.igv_tasa().unwrap_or(Decimal::ZERO) + Decimal::ONE;
+                let cargos = self.cargos();
                 let cargos_que_afectan_base_imponible_sin_impuestos: Decimal = cargos
                     .iter()
                     .filter(|cargo| cargo.afecta_base_imponible())

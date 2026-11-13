@@ -22,10 +22,10 @@ where
 {
     fn process(&mut self) -> Result<bool> {
         match (
-            &self.get_precio_referencia(),
-            &self.get_igv_tipo(),
-            &self.get_precio(),
-            &self.get_precio_con_impuestos(),
+            &self.precio_referencia(),
+            &self.igv_tipo(),
+            &self.precio(),
+            &self.precio_con_impuestos(),
         ) {
             (None, Some(igv_tipo), Some(precio), Some(precio_con_impuestos)) => {
                 if let Ok(catalog) = Catalog7::from_code(igv_tipo) {

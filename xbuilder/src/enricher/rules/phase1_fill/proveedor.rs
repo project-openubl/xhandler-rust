@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::enricher::bounds::proveedor::{ProveedorGetter, ProveedorSetter};
+use crate::enricher::bounds::proveedor::{ProveedorDireccionSetter, ProveedorGetter};
 use crate::models::common::Direccion;
 
 pub trait ProveedorFillRule {
@@ -9,10 +9,10 @@ pub trait ProveedorFillRule {
 
 impl<T> ProveedorFillRule for T
 where
-    T: ProveedorGetter + ProveedorSetter,
+    T: ProveedorGetter + ProveedorDireccionSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_proveedor().direccion {
+        match &self.proveedor().direccion {
             Some(direccion) => match direccion.codigo_local {
                 None => {
                     self.set_proveedor_direccion(Direccion {

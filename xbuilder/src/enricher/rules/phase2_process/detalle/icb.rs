@@ -19,12 +19,12 @@ where
         + DetalleIcbTasaGetter,
 {
     fn process(&mut self) -> Result<bool> {
-        match &self.get_icb() {
+        match &self.icb() {
             Some(..) => Ok(false),
             None => {
-                if self.get_icb_aplica() {
-                    if let Some(icb_tasa) = self.get_icb_tasa() {
-                        let icb = self.get_cantidad() * *icb_tasa;
+                if self.icb_aplica() {
+                    if let Some(icb_tasa) = self.icb_tasa() {
+                        let icb = self.cantidad() * *icb_tasa;
                         self.set_icb(icb);
                         Ok(true)
                     } else {

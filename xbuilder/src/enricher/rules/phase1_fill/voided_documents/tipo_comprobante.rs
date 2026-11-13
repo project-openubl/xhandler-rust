@@ -13,7 +13,7 @@ where
 {
     fn fill(&mut self) -> Result<bool> {
         let mut changed = false;
-        for item in self.get_comprobantes() {
+        for item in self.comprobantes_mut() {
             if item.tipo_comprobante.is_none() {
                 let catalog = match item.serie.chars().next().map(|c| c.to_ascii_uppercase()) {
                     Some('F') => Some(Catalog1::Factura),

@@ -14,7 +14,7 @@ where
     T: DetalleUnidadMedidaGetter + DetalleUnidadMedidaSetter,
 {
     fn fill(&mut self, _: &DetalleDefaults) -> Result<bool> {
-        match &self.get_unidad_medida() {
+        match &self.unidad_medida() {
             Some(..) => Ok(false),
             None => {
                 self.set_unidad_medida("NIU");

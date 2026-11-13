@@ -1,9 +1,9 @@
 use anyhow::Result;
 
 use crate::enricher::bounds::despatch_advice::{
-    DespatchAdviceSerieNumeroGetter, DespatchAdviceTipoComprobanteGetter,
-    DespatchAdviceTipoComprobanteSetter,
+    DespatchAdviceTipoComprobanteGetter, DespatchAdviceTipoComprobanteSetter,
 };
+use crate::enricher::bounds::serie_numero::SerieNumeroGetter;
 
 pub trait DespatchAdviceTipoComprobanteFillRule {
     fn fill(&mut self) -> Result<bool>;
@@ -13,13 +13,13 @@ impl<T> DespatchAdviceTipoComprobanteFillRule for T
 where
     T: DespatchAdviceTipoComprobanteGetter
         + DespatchAdviceTipoComprobanteSetter
-        + DespatchAdviceSerieNumeroGetter,
+        + SerieNumeroGetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_tipo_comprobante() {
+        match &self.tipo_comprobante() {
             Some(_) => Ok(false),
             None => {
-                let tipo = match self.get_serie_numero().chars().next() {
+                let tipo = match self.serie_numero().chars().next() {
                     Some('T') | Some('t') => Some("09"),
                     Some('V') | Some('v') => Some("31"),
                     _ => None,

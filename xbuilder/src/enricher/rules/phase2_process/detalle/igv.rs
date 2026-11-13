@@ -13,11 +13,7 @@ where
     T: DetalleIgvGetter + DetalleIgvSetter + DetalleIgvBaseImponibleGetter + DetalleIgvTasaGetter,
 {
     fn process(&mut self) -> Result<bool> {
-        match (
-            &self.get_igv(),
-            &self.get_igv_base_imponible(),
-            &self.get_igv_tasa(),
-        ) {
+        match (&self.igv(), &self.igv_base_imponible(), &self.igv_tasa()) {
             (None, Some(igv_base_imponible), Some(igv_tasa)) => {
                 let igv = igv_base_imponible * *igv_tasa;
                 self.set_igv(igv);

@@ -1,7 +1,7 @@
 use crate::models::common::Detalle;
 
 pub trait DetalleIcbAplicaGetter {
-    fn get_icb_aplica(&self) -> bool;
+    fn icb_aplica(&self) -> bool;
 }
 
 pub trait DetalleIcbAplicaSetter {
@@ -9,7 +9,7 @@ pub trait DetalleIcbAplicaSetter {
 }
 
 impl DetalleIcbAplicaGetter for Detalle {
-    fn get_icb_aplica(&self) -> bool {
+    fn icb_aplica(&self) -> bool {
         self.icb_aplica
     }
 }

@@ -14,12 +14,12 @@ where
     T: FirmanteGetter + FirmanteSetter + DespatchAdviceRemitenteGetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_firmante() {
+        match &self.firmante() {
             Some(_) => Ok(false),
             None => {
                 let firmante = Firmante {
-                    ruc: self.get_remitente().ruc.clone(),
-                    razon_social: self.get_remitente().razon_social.clone(),
+                    ruc: self.remitente().ruc.clone(),
+                    razon_social: self.remitente().razon_social.clone(),
                 };
                 self.set_firmante(firmante);
                 Ok(true)

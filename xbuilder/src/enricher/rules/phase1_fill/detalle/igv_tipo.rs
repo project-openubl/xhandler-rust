@@ -13,7 +13,7 @@ where
     T: DetalleIgvTipoGetter + DetalleIgvTipoSetter,
 {
     fn fill(&mut self, _: &DetalleDefaults) -> Result<bool> {
-        match &self.get_igv_tipo() {
+        match &self.igv_tipo() {
             Some(value) => match code_for_name::<Catalog7>(value) {
                 Some(code) => {
                     self.set_igv_tipo(&code);

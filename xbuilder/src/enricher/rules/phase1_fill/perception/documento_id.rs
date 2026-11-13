@@ -17,10 +17,10 @@ where
         + PerceptionNumeroGetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_documento_id() {
+        match &self.documento_id() {
             Some(_) => Ok(false),
             None => {
-                let id = format!("{}-{}", self.get_serie(), self.get_numero());
+                let id = format!("{}-{}", self.serie(), self.numero());
                 self.set_documento_id(id);
                 Ok(true)
             }

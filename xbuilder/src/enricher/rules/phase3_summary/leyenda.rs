@@ -3,21 +3,10 @@ use anyhow::Result;
 use crate::catalogs::{Catalog, Catalog7};
 use crate::enricher::bounds::detalle::DetallesGetter;
 use crate::enricher::bounds::leyendas::{LeyendasGetter, LeyendasSetter};
+use crate::enricher::rules::insert_leyenda_if_absent;
 
 pub trait LeyendaIvapSummaryRule {
     fn summary(&mut self) -> Result<bool>;
-}
-
-fn insert_leyenda<T>(obj: &mut T, code: &str, label: &str) -> bool
-where
-    T: LeyendasGetter + LeyendasSetter,
-{
-    if !obj.get_leyendas().contains_key(code) {
-        obj.insert_leyendas(code, label);
-        true
-    } else {
-        false
-    }
 }
 
 impl<T> LeyendaIvapSummaryRule for T
@@ -26,11 +15,11 @@ where
 {
     fn summary(&mut self) -> Result<bool> {
         if self
-            .get_detalles()
+            .detalles()
             .iter()
             .any(|e| e.igv_tipo.as_deref().unwrap_or("") == Catalog7::GravadoIvap.code())
         {
-            Ok(insert_leyenda(
+            Ok(insert_leyenda_if_absent(
                 self,
                 "2007",
                 "Leyenda: Operacion sujeta a IVAP",

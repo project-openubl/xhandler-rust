@@ -12,7 +12,7 @@ where
     T: IcbTasaGetter + IcbTasaSetter,
 {
     fn fill(&mut self, defaults: &Defaults) -> Result<bool> {
-        match &self.get_icb_tasa() {
+        match &self.icb_tasa() {
             Some(..) => Ok(false),
             None => {
                 self.set_icb_tasa(defaults.icb_tasa);

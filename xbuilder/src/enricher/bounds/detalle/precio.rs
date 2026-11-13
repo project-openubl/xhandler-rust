@@ -3,7 +3,7 @@ use rust_decimal::Decimal;
 use crate::models::common::Detalle;
 
 pub trait DetallePrecioGetter {
-    fn get_precio(&self) -> &Option<Decimal>;
+    fn precio(&self) -> &Option<Decimal>;
 }
 
 pub trait DetallePrecioSetter {
@@ -11,7 +11,7 @@ pub trait DetallePrecioSetter {
 }
 
 impl DetallePrecioGetter for Detalle {
-    fn get_precio(&self) -> &Option<Decimal> {
+    fn precio(&self) -> &Option<Decimal> {
         &self.precio
     }
 }

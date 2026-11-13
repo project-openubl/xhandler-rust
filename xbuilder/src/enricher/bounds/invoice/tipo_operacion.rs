@@ -1,7 +1,7 @@
 use crate::models::invoice::Invoice;
 
 pub trait InvoiceTipoOperacionGetter {
-    fn get_tipo_operacion(&self) -> &Option<String>;
+    fn tipo_operacion(&self) -> &Option<String>;
 }
 
 pub trait InvoiceTipoOperacionSetter {
@@ -9,7 +9,7 @@ pub trait InvoiceTipoOperacionSetter {
 }
 
 impl InvoiceTipoOperacionGetter for Invoice {
-    fn get_tipo_operacion(&self) -> &Option<String> {
+    fn tipo_operacion(&self) -> &Option<String> {
         &self.tipo_operacion
     }
 }

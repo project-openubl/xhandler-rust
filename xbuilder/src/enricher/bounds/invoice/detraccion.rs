@@ -4,32 +4,37 @@ use crate::models::common::Detraccion;
 use crate::models::invoice::Invoice;
 
 pub trait InvoiceDetraccionGetter {
-    fn get_detraccion(&mut self) -> &mut Option<Detraccion>;
+    fn detraccion(&self) -> &Option<Detraccion>;
+    fn detraccion_mut(&mut self) -> &mut Option<Detraccion>;
 }
 
 impl InvoiceDetraccionGetter for Invoice {
-    fn get_detraccion(&mut self) -> &mut Option<Detraccion> {
+    fn detraccion(&self) -> &Option<Detraccion> {
+        &self.detraccion
+    }
+
+    fn detraccion_mut(&mut self) -> &mut Option<Detraccion> {
         &mut self.detraccion
     }
 }
 
 // Monto
 
-pub trait InvoiceDetraccionMontoGetter {
-    fn get_monto(&self) -> &Option<Decimal>;
+pub trait DetraccionMontoGetter {
+    fn monto(&self) -> &Option<Decimal>;
 }
 
-pub trait InvoiceDetraccionMontoSetter {
+pub trait DetraccionMontoSetter {
     fn set_monto(&mut self, val: Decimal);
 }
 
-impl InvoiceDetraccionMontoGetter for Detraccion {
-    fn get_monto(&self) -> &Option<Decimal> {
+impl DetraccionMontoGetter for Detraccion {
+    fn monto(&self) -> &Option<Decimal> {
         &self.monto
     }
 }
 
-impl InvoiceDetraccionMontoSetter for Detraccion {
+impl DetraccionMontoSetter for Detraccion {
     fn set_monto(&mut self, val: Decimal) {
         self.monto = Some(val);
     }
@@ -39,12 +44,12 @@ impl InvoiceDetraccionMontoSetter for Detraccion {
 
 // Monto
 
-pub trait InvoiceDetraccionPorcentajeGetter {
-    fn get_porcentaje(&self) -> &Decimal;
+pub trait DetraccionPorcentajeGetter {
+    fn porcentaje(&self) -> &Decimal;
 }
 
-impl InvoiceDetraccionPorcentajeGetter for Detraccion {
-    fn get_porcentaje(&self) -> &Decimal {
+impl DetraccionPorcentajeGetter for Detraccion {
+    fn porcentaje(&self) -> &Decimal {
         &self.porcentaje
     }
 }

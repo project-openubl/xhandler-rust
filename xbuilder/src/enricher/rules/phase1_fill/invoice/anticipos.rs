@@ -17,10 +17,10 @@ where
     T: InvoiceAnticiposGetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        let result = self.get_anticipos().iter_mut().any(|anticipo| {
+        let result = self.anticipos_mut().iter_mut().any(|anticipo| {
             let results = [
-                AnticipoTipoRule::fill(anticipo).unwrap_or_default(),
-                AnticipoComprobanteTipoRule::fill(anticipo).unwrap_or_default(),
+                AnticipoTipoFillRule::fill(anticipo).unwrap_or_default(),
+                AnticipoComprobanteTipoFillRule::fill(anticipo).unwrap_or_default(),
             ];
             results.contains(&true)
         });
@@ -30,20 +30,20 @@ where
 
 //
 
-pub trait AnticipoTipoRule {
+pub trait AnticipoTipoFillRule {
     fn fill(&mut self) -> Result<bool>;
 }
 
-pub trait AnticipoComprobanteTipoRule {
+pub trait AnticipoComprobanteTipoFillRule {
     fn fill(&mut self) -> Result<bool>;
 }
 
-impl<T> AnticipoTipoRule for T
+impl<T> AnticipoTipoFillRule for T
 where
     T: AnticipoGetter + AnticipoSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match self.get_tipo() {
+        match self.tipo() {
             Some(value) => match code_for_name::<Catalog53>(value) {
                 Some(code) => {
                     self.set_tipo(&code);
@@ -61,12 +61,12 @@ where
     }
 }
 
-impl<T> AnticipoComprobanteTipoRule for T
+impl<T> AnticipoComprobanteTipoFillRule for T
 where
     T: AnticipoGetter + AnticipoSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match self.get_comprobante_tipo() {
+        match self.comprobante_tipo() {
             Some(value) => match code_for_name::<Catalog12>(value) {
                 Some(code) => {
                     self.set_comprobante_tipo(&code);
@@ -75,11 +75,10 @@ where
                 None => Ok(false),
             },
             None => {
-                if Regex::new(FACTURA_SERIE_REGEX)?.is_match(self.get_comprobante_serie_numero()) {
+                if Regex::new(FACTURA_SERIE_REGEX)?.is_match(self.comprobante_serie_numero()) {
                     self.set_comprobante_tipo(Catalog12::FacturaEmitidaPorAnticipos.code());
                     return Ok(true);
-                } else if Regex::new(BOLETA_SERIE_REGEX)?
-                    .is_match(self.get_comprobante_serie_numero())
+                } else if Regex::new(BOLETA_SERIE_REGEX)?.is_match(self.comprobante_serie_numero())
                 {
                     self.set_comprobante_tipo(Catalog12::BoletaDeVentaEmitidaPorAnticipos.code());
                     return Ok(true);

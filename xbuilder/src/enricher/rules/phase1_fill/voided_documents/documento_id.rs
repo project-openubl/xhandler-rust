@@ -17,9 +17,9 @@ where
         + FechaEmisionGetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match (&self.get_documento_id(), &self.get_fecha_emision()) {
+        match (&self.documento_id(), &self.fecha_emision()) {
             (None, Some(fecha)) => {
-                let id = format!("RA-{}-{}", fecha.format("%Y%m%d"), self.get_numero());
+                let id = format!("RA-{}-{}", fecha.format("%Y%m%d"), self.numero());
                 self.set_documento_id(id);
                 Ok(true)
             }

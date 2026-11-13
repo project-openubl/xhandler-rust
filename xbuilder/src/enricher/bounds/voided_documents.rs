@@ -1,11 +1,11 @@
 use crate::models::voided_documents::{VoidedDocuments, VoidedDocumentsItem};
 
 pub trait VoidedDocumentsComprobantesGetter {
-    fn get_comprobantes(&mut self) -> &mut Vec<VoidedDocumentsItem>;
+    fn comprobantes_mut(&mut self) -> &mut Vec<VoidedDocumentsItem>;
 }
 
 pub trait VoidedDocumentsDocumentoIdGetter {
-    fn get_documento_id(&self) -> &Option<String>;
+    fn documento_id(&self) -> &Option<String>;
 }
 
 pub trait VoidedDocumentsDocumentoIdSetter {
@@ -13,17 +13,17 @@ pub trait VoidedDocumentsDocumentoIdSetter {
 }
 
 pub trait VoidedDocumentsNumeroGetter {
-    fn get_numero(&self) -> u32;
+    fn numero(&self) -> u32;
 }
 
 impl VoidedDocumentsComprobantesGetter for VoidedDocuments {
-    fn get_comprobantes(&mut self) -> &mut Vec<VoidedDocumentsItem> {
+    fn comprobantes_mut(&mut self) -> &mut Vec<VoidedDocumentsItem> {
         &mut self.comprobantes
     }
 }
 
 impl VoidedDocumentsDocumentoIdGetter for VoidedDocuments {
-    fn get_documento_id(&self) -> &Option<String> {
+    fn documento_id(&self) -> &Option<String> {
         &self.documento_id
     }
 }
@@ -35,7 +35,7 @@ impl VoidedDocumentsDocumentoIdSetter for VoidedDocuments {
 }
 
 impl VoidedDocumentsNumeroGetter for VoidedDocuments {
-    fn get_numero(&self) -> u32 {
+    fn numero(&self) -> u32 {
         self.numero
     }
 }

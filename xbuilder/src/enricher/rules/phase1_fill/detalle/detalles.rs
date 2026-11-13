@@ -30,17 +30,17 @@ where
     fn fill(&mut self) -> Result<bool> {
         let defaults = &DetalleDefaults {
             igv_tasa: self
-                .get_igv_tasa()
+                .igv_tasa()
                 .ok_or(anyhow!("IGV Tasa could not be found"))?,
             icb_tasa: self
-                .get_icb_tasa()
+                .icb_tasa()
                 .ok_or(anyhow!("ICB Tasa could not be found"))?,
             ivap_tasa: self
-                .get_ivap_tasa()
+                .ivap_tasa()
                 .ok_or(anyhow!("IVAP Tasa could not be found"))?,
         };
 
-        let result = self.get_detalles().iter_mut().any(|detalle| {
+        let result = self.detalles_mut().iter_mut().any(|detalle| {
             let results = [
                 DetalleIcbTasaFillRule::fill(detalle, defaults).unwrap_or_default(),
                 DetalleIgvTasaFillRule::fill(detalle, defaults).unwrap_or_default(),

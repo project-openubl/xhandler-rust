@@ -3,7 +3,7 @@ use rust_decimal::Decimal;
 use crate::models::common::Detalle;
 
 pub trait DetalleIscBaseImponibleGetter {
-    fn get_isc_base_imponible(&self) -> &Option<Decimal>;
+    fn isc_base_imponible(&self) -> &Option<Decimal>;
 }
 
 pub trait DetalleIscBaseImponibleSetter {
@@ -11,7 +11,7 @@ pub trait DetalleIscBaseImponibleSetter {
 }
 
 impl DetalleIscBaseImponibleGetter for Detalle {
-    fn get_isc_base_imponible(&self) -> &Option<Decimal> {
+    fn isc_base_imponible(&self) -> &Option<Decimal> {
         &self.isc_base_imponible
     }
 }

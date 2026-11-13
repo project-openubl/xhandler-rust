@@ -1,5 +1,5 @@
-use crate::enricher::rules::phase3_summary::invoice::detraccion::DetraccionSummaryRule;
-use crate::enricher::rules::phase3_summary::invoice::percepcion::PercepcionSummaryRule;
+use crate::enricher::rules::phase3_summary::invoice::detraccion::InvoiceDetraccionSummaryRule;
+use crate::enricher::rules::phase3_summary::invoice::percepcion::InvoicePercepcionSummaryRule;
 use crate::enricher::rules::phase3_summary::invoice::total_importe::InvoiceTotalImporteSummaryRule;
 use crate::enricher::rules::phase3_summary::invoice::total_impuestos::InvoiceTotalImpuestosSummaryRule;
 use crate::enricher::rules::phase3_summary::leyenda::LeyendaIvapSummaryRule;
@@ -93,8 +93,8 @@ impl<T> SummaryInvoice for T
 where
     T: InvoiceTotalImpuestosSummaryRule
         + InvoiceTotalImporteSummaryRule
-        + PercepcionSummaryRule
-        + DetraccionSummaryRule,
+        + InvoicePercepcionSummaryRule
+        + InvoiceDetraccionSummaryRule,
 {
     fn summary_invoice(&mut self) {
         let mut changed = true;
@@ -103,8 +103,8 @@ where
             let results = [
                 InvoiceTotalImpuestosSummaryRule::summary(self).unwrap_or_default(),
                 InvoiceTotalImporteSummaryRule::summary(self).unwrap_or_default(),
-                PercepcionSummaryRule::summary(self).unwrap_or_default(),
-                DetraccionSummaryRule::summary(self).unwrap_or_default(),
+                InvoicePercepcionSummaryRule::summary(self).unwrap_or_default(),
+                InvoiceDetraccionSummaryRule::summary(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);

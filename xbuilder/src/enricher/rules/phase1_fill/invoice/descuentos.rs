@@ -15,11 +15,11 @@ where
     T: InvoiceDescuentosGetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        let result = self.get_descuentos().iter_mut().any(|descuento| {
+        let result = self.descuentos_mut().iter_mut().any(|descuento| {
             let results = [
-                DescuentoFactorRule::fill(descuento).unwrap_or_default(),
-                DescuentoMontoBaseRule::fill(descuento).unwrap_or_default(),
-                DescuentoTipoRule::fill(descuento).unwrap_or_default(),
+                DescuentoFactorFillRule::fill(descuento).unwrap_or_default(),
+                DescuentoMontoBaseFillRule::fill(descuento).unwrap_or_default(),
+                DescuentoTipoFillRule::fill(descuento).unwrap_or_default(),
             ];
             results.contains(&true)
         });
@@ -29,24 +29,24 @@ where
 
 //
 
-pub trait DescuentoFactorRule {
+pub trait DescuentoFactorFillRule {
     fn fill(&mut self) -> Result<bool>;
 }
 
-pub trait DescuentoMontoBaseRule {
+pub trait DescuentoMontoBaseFillRule {
     fn fill(&mut self) -> Result<bool>;
 }
 
-pub trait DescuentoTipoRule {
+pub trait DescuentoTipoFillRule {
     fn fill(&mut self) -> Result<bool>;
 }
 
-impl<T> DescuentoFactorRule for T
+impl<T> DescuentoFactorFillRule for T
 where
     T: DescuentoGetter + DescuentoSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match self.get_factor() {
+        match self.factor() {
             Some(..) => Ok(false),
             None => {
                 self.set_factor(Decimal::ONE);
@@ -56,27 +56,27 @@ where
     }
 }
 
-impl<T> DescuentoMontoBaseRule for T
+impl<T> DescuentoMontoBaseFillRule for T
 where
     T: DescuentoGetter + DescuentoSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match self.get_monto_base() {
+        match self.monto_base() {
             Some(..) => Ok(false),
             None => {
-                self.set_monto_base(self.get_monto());
+                self.set_monto_base(self.monto());
                 Ok(true)
             }
         }
     }
 }
 
-impl<T> DescuentoTipoRule for T
+impl<T> DescuentoTipoFillRule for T
 where
     T: DescuentoGetter + DescuentoSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match self.get_tipo() {
+        match self.tipo() {
             Some(value) => match code_for_name::<Catalog53>(value) {
                 Some(code) => {
                     self.set_tipo(&code);

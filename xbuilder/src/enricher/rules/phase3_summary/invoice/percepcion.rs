@@ -2,29 +2,29 @@ use anyhow::Result;
 use rust_decimal::Decimal;
 
 use crate::enricher::bounds::invoice::percepcion::{
-    InvoicePercepcionGetter, InvoicePercepcionMontoBaseGetter, InvoicePercepcionMontoBaseSetter,
-    InvoicePercepcionMontoGetter, InvoicePercepcionMontoSetter, InvoicePercepcionMontoTotalGetter,
-    InvoicePercepcionMontoTotalSetter, InvoicePercepcionPorcentajeGetter,
-    InvoicePercepcionPorcentajeSetter,
+    InvoicePercepcionGetter, PercepcionMontoBaseGetter, PercepcionMontoBaseSetter,
+    PercepcionMontoGetter, PercepcionMontoSetter, PercepcionMontoTotalGetter,
+    PercepcionMontoTotalSetter, PercepcionPorcentajeGetter, PercepcionPorcentajeSetter,
 };
 use crate::enricher::bounds::invoice::total_importe::InvoiceTotalImporteGetter;
 use crate::models::common::TotalImporteInvoice;
 
-pub trait PercepcionSummaryRule {
+pub trait InvoicePercepcionSummaryRule {
     fn summary(&mut self) -> Result<bool>;
 }
 
-impl<T> PercepcionSummaryRule for T
+impl<T> InvoicePercepcionSummaryRule for T
 where
     T: InvoicePercepcionGetter + InvoiceTotalImporteGetter,
 {
     fn summary(&mut self) -> Result<bool> {
-        match (self.get_total_importe().clone(), self.get_percepcion()) {
+        match (self.total_importe().clone(), self.percepcion_mut()) {
             (Some(total_importe), Some(percepcion)) => [
-                PerceptionPorcentajeBaseRule::summary(percepcion).unwrap_or_default(),
-                PerceptionMontoBaseRule::summary(percepcion, &total_importe).unwrap_or_default(),
-                PerceptionMontoRule::summary(percepcion).unwrap_or_default(),
-                PerceptionMontoTotalRule::summary(percepcion).unwrap_or_default(),
+                PercepcionPorcentajeSummaryRule::summary(percepcion).unwrap_or_default(),
+                PercepcionMontoBaseSummaryRule::summary(percepcion, &total_importe)
+                    .unwrap_or_default(),
+                PercepcionMontoSummaryRule::summary(percepcion).unwrap_or_default(),
+                PercepcionMontoTotalSummaryRule::summary(percepcion).unwrap_or_default(),
             ]
             .contains(&true),
             _ => false,
@@ -35,16 +35,16 @@ where
 
 //
 
-pub trait PerceptionPorcentajeBaseRule {
+pub trait PercepcionPorcentajeSummaryRule {
     fn summary(&mut self) -> Result<bool>;
 }
 
-impl<T> PerceptionPorcentajeBaseRule for T
+impl<T> PercepcionPorcentajeSummaryRule for T
 where
-    T: InvoicePercepcionPorcentajeGetter + InvoicePercepcionPorcentajeSetter,
+    T: PercepcionPorcentajeGetter + PercepcionPorcentajeSetter,
 {
     fn summary(&mut self) -> Result<bool> {
-        match &self.get_porcentaje() {
+        match &self.porcentaje() {
             Some(_) => Ok(false),
             None => {
                 self.set_porcentaje(Decimal::ONE);
@@ -56,19 +56,19 @@ where
 
 //
 
-pub trait PerceptionMontoBaseRule {
+pub trait PercepcionMontoBaseSummaryRule {
     fn summary(&mut self, total_importe: &TotalImporteInvoice) -> Result<bool>;
 }
 
-impl<T> PerceptionMontoBaseRule for T
+impl<T> PercepcionMontoBaseSummaryRule for T
 where
-    T: InvoicePercepcionMontoBaseGetter + InvoicePercepcionMontoBaseSetter,
+    T: PercepcionMontoBaseGetter + PercepcionMontoBaseSetter,
 {
     fn summary(&mut self, total_importe: &TotalImporteInvoice) -> Result<bool> {
-        match &self.get_montobase() {
+        match &self.monto_base() {
             Some(_) => Ok(false),
             None => {
-                self.set_montobase(total_importe.importe_sin_impuestos);
+                self.set_monto_base(total_importe.importe_sin_impuestos);
                 Ok(true)
             }
         }
@@ -77,23 +77,19 @@ where
 
 //
 
-pub trait PerceptionMontoRule {
+pub trait PercepcionMontoSummaryRule {
     fn summary(&mut self) -> Result<bool>;
 }
 
-impl<T> PerceptionMontoRule for T
+impl<T> PercepcionMontoSummaryRule for T
 where
-    T: InvoicePercepcionMontoGetter
-        + InvoicePercepcionMontoSetter
-        + InvoicePercepcionMontoBaseGetter
-        + InvoicePercepcionPorcentajeGetter,
+    T: PercepcionMontoGetter
+        + PercepcionMontoSetter
+        + PercepcionMontoBaseGetter
+        + PercepcionPorcentajeGetter,
 {
     fn summary(&mut self) -> Result<bool> {
-        match (
-            self.get_monto(),
-            self.get_montobase(),
-            self.get_porcentaje(),
-        ) {
+        match (self.monto(), self.monto_base(), self.porcentaje()) {
             (None, Some(monto_base), Some(porcentaje)) => {
                 self.set_monto(monto_base * porcentaje);
                 Ok(false)
@@ -105,25 +101,21 @@ where
 
 //
 
-pub trait PerceptionMontoTotalRule {
+pub trait PercepcionMontoTotalSummaryRule {
     fn summary(&mut self) -> Result<bool>;
 }
 
-impl<T> PerceptionMontoTotalRule for T
+impl<T> PercepcionMontoTotalSummaryRule for T
 where
-    T: InvoicePercepcionMontoTotalGetter
-        + InvoicePercepcionMontoTotalSetter
-        + InvoicePercepcionMontoBaseGetter
-        + InvoicePercepcionMontoGetter,
+    T: PercepcionMontoTotalGetter
+        + PercepcionMontoTotalSetter
+        + PercepcionMontoBaseGetter
+        + PercepcionMontoGetter,
 {
     fn summary(&mut self) -> Result<bool> {
-        match (
-            self.get_montototal(),
-            self.get_montobase(),
-            self.get_monto(),
-        ) {
+        match (self.monto_total(), self.monto_base(), self.monto()) {
             (None, Some(monto_total), Some(monto)) => {
-                self.set_montototal(monto_total + monto);
+                self.set_monto_total(monto_total + monto);
                 Ok(false)
             }
             _ => Ok(false),

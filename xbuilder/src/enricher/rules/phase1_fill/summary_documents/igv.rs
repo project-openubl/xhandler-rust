@@ -17,7 +17,7 @@ where
 {
     fn fill(&mut self, defaults: &Defaults) -> Result<bool> {
         let mut changed = false;
-        for item in self.get_comprobantes() {
+        for item in self.comprobantes_mut() {
             let impuestos = &mut item.comprobante.impuestos;
             if impuestos.igv.is_none() {
                 impuestos.igv = Some(Decimal::ZERO);

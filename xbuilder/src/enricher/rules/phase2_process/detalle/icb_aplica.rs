@@ -15,7 +15,7 @@ where
     T: DetalleIcbAplicaGetter + DetalleIcbAplicaSetter + DetalleIcbGetter,
 {
     fn process(&mut self) -> Result<bool> {
-        match (&self.get_icb_aplica(), &self.get_icb()) {
+        match (&self.icb_aplica(), &self.icb()) {
             (false, Some(icb)) => {
                 if icb > &Decimal::ZERO {
                     self.set_icb_aplica(true);

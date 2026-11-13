@@ -12,7 +12,7 @@ where
     T: FechaEmisionGetter + FechaEmisionSetter,
 {
     fn fill(&mut self, defaults: &Defaults) -> Result<bool> {
-        match &self.get_fecha_emision() {
+        match &self.fecha_emision() {
             Some(..) => Ok(false),
             None => {
                 self.set_fecha_emision(defaults.date);

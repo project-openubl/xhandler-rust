@@ -1,23 +1,19 @@
 use crate::models::despatch_advice::{DespatchAdvice, Remitente};
 
 pub trait DespatchAdviceTipoComprobanteGetter {
-    fn get_tipo_comprobante(&self) -> &Option<String>;
+    fn tipo_comprobante(&self) -> &Option<String>;
 }
 
 pub trait DespatchAdviceTipoComprobanteSetter {
     fn set_tipo_comprobante(&mut self, val: &str);
 }
 
-pub trait DespatchAdviceSerieNumeroGetter {
-    fn get_serie_numero(&self) -> &str;
-}
-
 pub trait DespatchAdviceRemitenteGetter {
-    fn get_remitente(&self) -> &Remitente;
+    fn remitente(&self) -> &Remitente;
 }
 
 impl DespatchAdviceTipoComprobanteGetter for DespatchAdvice {
-    fn get_tipo_comprobante(&self) -> &Option<String> {
+    fn tipo_comprobante(&self) -> &Option<String> {
         &self.tipo_comprobante
     }
 }
@@ -28,14 +24,8 @@ impl DespatchAdviceTipoComprobanteSetter for DespatchAdvice {
     }
 }
 
-impl DespatchAdviceSerieNumeroGetter for DespatchAdvice {
-    fn get_serie_numero(&self) -> &str {
-        &self.serie_numero
-    }
-}
-
 impl DespatchAdviceRemitenteGetter for DespatchAdvice {
-    fn get_remitente(&self) -> &Remitente {
+    fn remitente(&self) -> &Remitente {
         &self.remitente
     }
 }

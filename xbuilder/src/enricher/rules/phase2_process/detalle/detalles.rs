@@ -21,7 +21,7 @@ where
     T: DetallesGetter,
 {
     fn process(&mut self) -> Result<bool> {
-        let result = self.get_detalles().iter_mut().any(|detalle| {
+        let result = self.detalles_mut().iter_mut().any(|detalle| {
             let results = [
                 DetallePrecioProcessRule::process(detalle).unwrap_or_default(),
                 DetallePrecioConImpuestosProcessRule::process(detalle).unwrap_or_default(),

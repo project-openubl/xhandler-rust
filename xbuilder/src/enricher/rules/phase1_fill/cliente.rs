@@ -15,7 +15,7 @@ where
     T: ClienteTipoDocumentoIdentidadGetter + ClienteTipoDocumentoIdentidadSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match code_for_name::<Catalog6>(self.get_cliente_tipo_documento_identidad()) {
+        match code_for_name::<Catalog6>(self.cliente_tipo_documento_identidad()) {
             Some(code) => {
                 self.set_cliente_tipo_documento_identidad(&code);
                 Ok(true)

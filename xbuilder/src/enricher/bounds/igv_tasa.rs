@@ -5,7 +5,7 @@ use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
 
 pub trait IgvTasaGetter {
-    fn get_igv_tasa(&self) -> &Option<Decimal>;
+    fn igv_tasa(&self) -> &Option<Decimal>;
 }
 
 pub trait IgvTasaSetter {
@@ -13,19 +13,19 @@ pub trait IgvTasaSetter {
 }
 
 impl IgvTasaGetter for Invoice {
-    fn get_igv_tasa(&self) -> &Option<Decimal> {
+    fn igv_tasa(&self) -> &Option<Decimal> {
         &self.igv_tasa
     }
 }
 
 impl IgvTasaGetter for CreditNote {
-    fn get_igv_tasa(&self) -> &Option<Decimal> {
+    fn igv_tasa(&self) -> &Option<Decimal> {
         &self.igv_tasa
     }
 }
 
 impl IgvTasaGetter for DebitNote {
-    fn get_igv_tasa(&self) -> &Option<Decimal> {
+    fn igv_tasa(&self) -> &Option<Decimal> {
         &self.igv_tasa
     }
 }

@@ -10,7 +10,7 @@ use crate::enricher::rules::phase1_fill::invoice::anticipos::InvoiceAnticiposFil
 use crate::enricher::rules::phase1_fill::invoice::cargos::InvoiceCargosFillRule;
 use crate::enricher::rules::phase1_fill::invoice::descuentos::InvoiceDescuentosFillRule;
 use crate::enricher::rules::phase1_fill::invoice::forma_de_pago::{
-    InvoiceFormaDePagoFillRule, InvoiceFormaDePagoTipoRule, InvoiceFormaDePagoTotalRule,
+    InvoiceFormaDePagoFillRule, InvoiceFormaDePagoTipoFillRule, InvoiceFormaDePagoTotalFillRule,
 };
 use crate::enricher::rules::phase1_fill::invoice::leyenda::{
     InvoiceLeyendaDetraccionFillRule, InvoiceLeyendaDireccionEntregaFillRule,
@@ -20,14 +20,12 @@ use crate::enricher::rules::phase1_fill::invoice::tipo_comprobante::InvoiceTipoC
 use crate::enricher::rules::phase1_fill::invoice::tipo_operacion::InvoiceTipoOperacionFillRule;
 use crate::enricher::rules::phase1_fill::ivap_tasa::IvapTasaFillRule;
 use crate::enricher::rules::phase1_fill::moneda::MonedaFillRule;
-use crate::enricher::rules::phase1_fill::note::credit_note::tipo_nota::CreditNoteTipoFillRule;
-use crate::enricher::rules::phase1_fill::note::debit_note::tipo_nota::DebitNoteTipoFillRule;
+use crate::enricher::rules::phase1_fill::note::credit_note::tipo_nota::CreditNoteTipoNotaFillRule;
+use crate::enricher::rules::phase1_fill::note::debit_note::tipo_nota::DebitNoteTipoNotaFillRule;
 use crate::enricher::rules::phase1_fill::note::tipo_comprobante_afectado::NoteComprobanteAfectadoTipoFillRule;
 use crate::enricher::rules::phase1_fill::perception::documento_id::PerceptionDocumentoIdFillRule;
-use crate::enricher::rules::phase1_fill::perception::moneda::PerceptionMonedaFillRule;
 use crate::enricher::rules::phase1_fill::proveedor::ProveedorFillRule;
 use crate::enricher::rules::phase1_fill::retention::documento_id::RetentionDocumentoIdFillRule;
-use crate::enricher::rules::phase1_fill::retention::moneda::RetentionMonedaFillRule;
 use crate::enricher::rules::phase1_fill::summary_documents::documento_id::SummaryDocumentsDocumentoIdFillRule;
 use crate::enricher::rules::phase1_fill::summary_documents::igv::SummaryDocumentsIgvFillRule;
 use crate::enricher::rules::phase1_fill::summary_documents::moneda::SummaryDocumentsMonedaFillRule;
@@ -173,8 +171,8 @@ where
         + InvoiceCargosFillRule
         + InvoiceDescuentosFillRule
         + InvoiceFormaDePagoFillRule
-        + InvoiceFormaDePagoTotalRule
-        + InvoiceFormaDePagoTipoRule
+        + InvoiceFormaDePagoTotalFillRule
+        + InvoiceFormaDePagoTipoFillRule
         + InvoiceLeyendaDetraccionFillRule
         + InvoiceLeyendaDireccionEntregaFillRule
         + InvoiceLeyendaPercepcionFillRule
@@ -190,8 +188,8 @@ where
                 InvoiceCargosFillRule::fill(self).unwrap_or_default(),
                 InvoiceDescuentosFillRule::fill(self).unwrap_or_default(),
                 InvoiceFormaDePagoFillRule::fill(self).unwrap_or_default(),
-                InvoiceFormaDePagoTotalRule::fill(self).unwrap_or_default(),
-                InvoiceFormaDePagoTipoRule::fill(self).unwrap_or_default(),
+                InvoiceFormaDePagoTotalFillRule::fill(self).unwrap_or_default(),
+                InvoiceFormaDePagoTipoFillRule::fill(self).unwrap_or_default(),
                 InvoiceLeyendaDetraccionFillRule::fill(self).unwrap_or_default(),
                 InvoiceLeyendaDireccionEntregaFillRule::fill(self).unwrap_or_default(),
                 InvoiceLeyendaPercepcionFillRule::fill(self).unwrap_or_default(),
@@ -206,7 +204,7 @@ where
 
 impl<T> FillCreditNote for T
 where
-    T: NoteComprobanteAfectadoTipoFillRule + CreditNoteTipoFillRule,
+    T: NoteComprobanteAfectadoTipoFillRule + CreditNoteTipoNotaFillRule,
 {
     fn fill_credit_note(&mut self, _: &Defaults) {
         let mut changed = true;
@@ -214,7 +212,7 @@ where
         while changed {
             let results = [
                 NoteComprobanteAfectadoTipoFillRule::fill(self).unwrap_or_default(),
-                CreditNoteTipoFillRule::fill(self).unwrap_or_default(),
+                CreditNoteTipoNotaFillRule::fill(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);
@@ -224,7 +222,7 @@ where
 
 impl<T> FillDebitNote for T
 where
-    T: NoteComprobanteAfectadoTipoFillRule + DebitNoteTipoFillRule,
+    T: NoteComprobanteAfectadoTipoFillRule + DebitNoteTipoNotaFillRule,
 {
     fn fill_debit_note(&mut self, _: &Defaults) {
         let mut changed = true;
@@ -232,7 +230,7 @@ where
         while changed {
             let results = [
                 NoteComprobanteAfectadoTipoFillRule::fill(self).unwrap_or_default(),
-                DebitNoteTipoFillRule::fill(self).unwrap_or_default(),
+                DebitNoteTipoNotaFillRule::fill(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);
@@ -292,10 +290,7 @@ where
 
 impl<T> FillPerception for T
 where
-    T: FechaEmisionFillRule
-        + FirmanteFillRule
-        + PerceptionMonedaFillRule
-        + PerceptionDocumentoIdFillRule,
+    T: FechaEmisionFillRule + FirmanteFillRule + MonedaFillRule + PerceptionDocumentoIdFillRule,
 {
     fn fill_perception(&mut self, defaults: &Defaults) {
         let mut changed = true;
@@ -304,7 +299,7 @@ where
             let results = [
                 FechaEmisionFillRule::fill(self, defaults).unwrap_or_default(),
                 FirmanteFillRule::fill(self).unwrap_or_default(),
-                PerceptionMonedaFillRule::fill(self).unwrap_or_default(),
+                MonedaFillRule::fill(self).unwrap_or_default(),
                 PerceptionDocumentoIdFillRule::fill(self).unwrap_or_default(),
             ];
 
@@ -315,10 +310,7 @@ where
 
 impl<T> FillRetention for T
 where
-    T: FechaEmisionFillRule
-        + FirmanteFillRule
-        + RetentionMonedaFillRule
-        + RetentionDocumentoIdFillRule,
+    T: FechaEmisionFillRule + FirmanteFillRule + MonedaFillRule + RetentionDocumentoIdFillRule,
 {
     fn fill_retention(&mut self, defaults: &Defaults) {
         let mut changed = true;
@@ -327,7 +319,7 @@ where
             let results = [
                 FechaEmisionFillRule::fill(self, defaults).unwrap_or_default(),
                 FirmanteFillRule::fill(self).unwrap_or_default(),
-                RetentionMonedaFillRule::fill(self).unwrap_or_default(),
+                MonedaFillRule::fill(self).unwrap_or_default(),
                 RetentionDocumentoIdFillRule::fill(self).unwrap_or_default(),
             ];
 

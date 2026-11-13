@@ -16,7 +16,7 @@ where
     T: DetalleIscTasaGetter + DetalleIscTasaSetter + DetalleIgvTipoGetter,
 {
     fn fill(&mut self, _: &DetalleDefaults) -> Result<bool> {
-        match (&self.get_isc_tasa(), &self.get_igv_tipo()) {
+        match (&self.isc_tasa(), &self.igv_tipo()) {
             (Some(isc_tasa), Some(igv_tipo)) => {
                 if let Ok(catalog) = Catalog7::from_code(igv_tipo) {
                     let tasa = if !catalog.onerosa() {

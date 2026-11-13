@@ -17,14 +17,14 @@ where
     T: InvoiceTipoComprobanteGetter + InvoiceTipoComprobanteSetter + SerieNumeroGetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_tipo_comprobante() {
+        match &self.tipo_comprobante() {
             Some(..) => Ok(false),
             None => {
-                if Regex::new(FACTURA_SERIE_REGEX)?.is_match(self.get_serie_numero()) {
+                if Regex::new(FACTURA_SERIE_REGEX)?.is_match(self.serie_numero()) {
                     self.set_tipo_comprobante(Catalog1::Factura.code());
 
                     return Ok(true);
-                } else if Regex::new(BOLETA_SERIE_REGEX)?.is_match(self.get_serie_numero()) {
+                } else if Regex::new(BOLETA_SERIE_REGEX)?.is_match(self.serie_numero()) {
                     self.set_tipo_comprobante(Catalog1::Boleta.code());
 
                     return Ok(true);

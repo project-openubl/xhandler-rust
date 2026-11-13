@@ -11,7 +11,7 @@ where
     T: MonedaGetter + MonedaSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_moneda() {
+        match &self.moneda() {
             Some(..) => Ok(false),
             None => {
                 self.set_moneda("PEN");

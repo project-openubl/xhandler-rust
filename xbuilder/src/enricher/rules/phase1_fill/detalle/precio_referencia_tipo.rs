@@ -16,10 +16,7 @@ where
     T: DetallePrecioReferenciaTipoGetter + DetallePrecioReferenciaTipoSetter + DetalleIgvTipoGetter,
 {
     fn fill(&mut self, _: &DetalleDefaults) -> Result<bool> {
-        match (
-            self.get_precio_referencia_tipo(),
-            self.get_igv_tipo().as_deref(),
-        ) {
+        match (self.precio_referencia_tipo(), self.igv_tipo().as_deref()) {
             (None, Some(igv_tipo)) => {
                 if let Ok(catalog) = Catalog7::from_code(igv_tipo) {
                     let catalog16 = if catalog.onerosa() {

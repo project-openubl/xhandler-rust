@@ -2,19 +2,19 @@ use anyhow::Result;
 
 use crate::catalogs::{code_for_name, Catalog, Catalog10};
 use crate::enricher::bounds::note::debit_note::tipo_nota::{
-    DebitNoteTipoGetter, DebitNoteTipoSetter,
+    DebitNoteTipoNotaGetter, DebitNoteTipoNotaSetter,
 };
 
-pub trait DebitNoteTipoFillRule {
+pub trait DebitNoteTipoNotaFillRule {
     fn fill(&mut self) -> Result<bool>;
 }
 
-impl<T> DebitNoteTipoFillRule for T
+impl<T> DebitNoteTipoNotaFillRule for T
 where
-    T: DebitNoteTipoGetter + DebitNoteTipoSetter,
+    T: DebitNoteTipoNotaGetter + DebitNoteTipoNotaSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_tipo_nota() {
+        match &self.tipo_nota() {
             Some(value) => match code_for_name::<Catalog10>(value) {
                 Some(code) => {
                     self.set_tipo_nota(&code);

@@ -10,11 +10,11 @@ pub trait InvoiceFormaDePagoFillRule {
     fn fill(&mut self) -> Result<bool>;
 }
 
-pub trait InvoiceFormaDePagoTotalRule {
+pub trait InvoiceFormaDePagoTotalFillRule {
     fn fill(&mut self) -> Result<bool>;
 }
 
-pub trait InvoiceFormaDePagoTipoRule {
+pub trait InvoiceFormaDePagoTipoFillRule {
     fn fill(&mut self) -> Result<bool>;
 }
 
@@ -23,7 +23,7 @@ where
     T: InvoiceFormaDePagoGetter + InvoiceFormaDePagoSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_forma_de_pago() {
+        match &self.forma_de_pago() {
             Some(_) => Ok(false),
             None => {
                 self.set_forma_de_pago(FormaDePago {
@@ -37,12 +37,12 @@ where
     }
 }
 
-impl<T> InvoiceFormaDePagoTipoRule for T
+impl<T> InvoiceFormaDePagoTipoFillRule for T
 where
     T: InvoiceFormaDePagoGetter + InvoiceFormaDePagoSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        if let Some(forma_de_pago) = self.get_forma_de_pago() {
+        if let Some(forma_de_pago) = self.forma_de_pago() {
             if forma_de_pago.tipo.is_none() {
                 let tipo = if forma_de_pago.cuotas.is_empty() {
                     TipoFormaDePago::Contado
@@ -62,12 +62,12 @@ where
     }
 }
 
-impl<T> InvoiceFormaDePagoTotalRule for T
+impl<T> InvoiceFormaDePagoTotalFillRule for T
 where
     T: InvoiceFormaDePagoGetter + InvoiceFormaDePagoSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        if let Some(forma_de_pago) = self.get_forma_de_pago() {
+        if let Some(forma_de_pago) = self.forma_de_pago() {
             if forma_de_pago.total.is_none() {
                 let total = forma_de_pago
                     .cuotas

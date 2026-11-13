@@ -5,6 +5,7 @@ use crate::enricher::bounds::invoice::detraccion::InvoiceDetraccionGetter;
 use crate::enricher::bounds::invoice::direccion_entrega::InvoiceDireccionEntregaGetter;
 use crate::enricher::bounds::invoice::percepcion::InvoicePercepcionGetter;
 use crate::enricher::bounds::leyendas::{LeyendasGetter, LeyendasSetter};
+use crate::enricher::rules::insert_leyenda_if_absent;
 
 pub trait InvoiceLeyendaDetraccionFillRule {
     fn fill(&mut self) -> Result<bool>;
@@ -18,28 +19,20 @@ pub trait InvoiceLeyendaPercepcionFillRule {
     fn fill(&mut self) -> Result<bool>;
 }
 
-fn insert_leyenda<T>(obj: &mut T, code: &str, label: &str) -> bool
-where
-    T: LeyendasGetter + LeyendasSetter,
-{
-    if !obj.get_leyendas().contains_key(code) {
-        obj.insert_leyendas(code, label);
-        true
-    } else {
-        false
-    }
-}
-
 impl<T> InvoiceLeyendaDetraccionFillRule for T
 where
     T: InvoiceDetraccionGetter + LeyendasGetter + LeyendasSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_detraccion() {
+        match &self.detraccion() {
             None => Ok(false),
             Some(..) => {
                 let catalog = &Catalog52::OperacionSujetaADetraccion;
-                Ok(insert_leyenda(self, catalog.code(), catalog.label()))
+                Ok(insert_leyenda_if_absent(
+                    self,
+                    catalog.code(),
+                    catalog.label(),
+                ))
             }
         }
     }
@@ -50,11 +43,15 @@ where
     T: InvoiceDireccionEntregaGetter + LeyendasGetter + LeyendasSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_direccion_entrega() {
+        match &self.direccion_entrega() {
             None => Ok(false),
             Some(..) => {
                 let catalog = &Catalog52::VentaRealizadaPorEmisorItinerante;
-                Ok(insert_leyenda(self, catalog.code(), catalog.label()))
+                Ok(insert_leyenda_if_absent(
+                    self,
+                    catalog.code(),
+                    catalog.label(),
+                ))
             }
         }
     }
@@ -65,11 +62,15 @@ where
     T: InvoicePercepcionGetter + LeyendasGetter + LeyendasSetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_percepcion() {
+        match &self.percepcion() {
             None => Ok(false),
             Some(..) => {
                 let catalog = &Catalog52::ComprobanteDePercepcion;
-                Ok(insert_leyenda(self, catalog.code(), catalog.label()))
+                Ok(insert_leyenda_if_absent(
+                    self,
+                    catalog.code(),
+                    catalog.label(),
+                ))
             }
         }
     }

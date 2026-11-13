@@ -14,7 +14,7 @@ where
 {
     fn fill(&mut self) -> Result<bool> {
         let mut changed = false;
-        for item in self.get_comprobantes() {
+        for item in self.comprobantes_mut() {
             if let Some(code) = code_for_name::<Catalog19>(&item.tipo_operacion) {
                 item.tipo_operacion = code;
                 changed = true;

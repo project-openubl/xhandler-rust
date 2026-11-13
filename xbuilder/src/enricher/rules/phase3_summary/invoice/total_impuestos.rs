@@ -26,17 +26,15 @@ where
         + InvoiceAnticiposGetter,
 {
     fn summary(&mut self) -> Result<bool> {
-        match &self.get_total_impuestos() {
+        match &self.total_impuestos() {
             Some(..) => Ok(false),
             None => {
-                let ivap =
-                    compute_impuesto_by_tipo(self.get_detalles(), Catalog5::ImpuestoArrozPilado);
-                let exportacion =
-                    compute_impuesto_by_tipo(self.get_detalles(), Catalog5::Exportacion);
-                let gravado = compute_impuesto_by_tipo(self.get_detalles(), Catalog5::Igv);
-                let inafecto = compute_impuesto_by_tipo(self.get_detalles(), Catalog5::Inafecto);
-                let exonerado = compute_impuesto_by_tipo(self.get_detalles(), Catalog5::Exonerado);
-                let gratuito = compute_impuesto_by_tipo(self.get_detalles(), Catalog5::Gratuito);
+                let ivap = compute_impuesto_by_tipo(self.detalles(), Catalog5::ImpuestoArrozPilado);
+                let exportacion = compute_impuesto_by_tipo(self.detalles(), Catalog5::Exportacion);
+                let gravado = compute_impuesto_by_tipo(self.detalles(), Catalog5::Igv);
+                let inafecto = compute_impuesto_by_tipo(self.detalles(), Catalog5::Inafecto);
+                let exonerado = compute_impuesto_by_tipo(self.detalles(), Catalog5::Exonerado);
+                let gratuito = compute_impuesto_by_tipo(self.detalles(), Catalog5::Gratuito);
 
                 // ICB
                 let icb_importe = [
@@ -63,7 +61,7 @@ where
                 .fold(Decimal::ZERO, |a, b| a + b);
 
                 let isc_base_imponible = &self
-                    .get_detalles()
+                    .detalles()
                     .iter()
                     .filter(|e| match (e.isc_tasa, e.isc) {
                         (Some(isc_tasa), Some(isc)) => {
@@ -75,7 +73,7 @@ where
                     .fold(Decimal::ZERO, |a, b| a + b);
 
                 // Anticipos
-                let total_anticipos_gravados = &self.get_anticipos().iter()
+                let total_anticipos_gravados = &self.anticipos().iter()
                     .filter(|e| {
                         if let Some(tipo) = e.tipo.as_deref() {
                             if let Ok(catalog53) = Catalog53::from_code(tipo) {
@@ -93,7 +91,7 @@ where
                 // Descuentos
                 let descuentos =
                     &self
-                        .get_descuentos()
+                        .descuentos()
                         .iter()
                         .fold(HashMap::new(), |mut acc, current| {
                             if let Some(tipo) = current.tipo.as_deref() {
@@ -115,7 +113,7 @@ where
                 };
 
                 let cargos_que_afectan_base_imponible_sin_impuestos: Decimal = self
-                    .get_cargos()
+                    .cargos()
                     .iter()
                     .filter(|cargo| cargo.afecta_base_imponible())
                     .map(|cargo| cargo.monto)

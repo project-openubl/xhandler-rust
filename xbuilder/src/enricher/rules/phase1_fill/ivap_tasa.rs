@@ -13,7 +13,7 @@ where
     T: IvapTasaGetter + IvapTasaSetter,
 {
     fn fill(&mut self, defaults: &Defaults) -> Result<bool> {
-        match &self.get_ivap_tasa() {
+        match &self.ivap_tasa() {
             Some(..) => Ok(false),
             None => {
                 self.set_ivap_tasa(defaults.ivap_tasa);

@@ -19,12 +19,12 @@ where
         + InvoicePercepcionGetter,
 {
     fn fill(&mut self) -> Result<bool> {
-        match &self.get_tipo_operacion() {
+        match &self.tipo_operacion() {
             Some(..) => Ok(false),
             None => {
-                if self.get_detraccion().is_some() {
+                if self.detraccion().is_some() {
                     self.set_tipo_operacion(Catalog51::OperacionSujetaADetraccion.code());
-                } else if self.get_percepcion().is_some() {
+                } else if self.percepcion().is_some() {
                     self.set_tipo_operacion(Catalog51::OperacionSujetaAPercepcion.code());
                 } else {
                     self.set_tipo_operacion(Catalog51::VentaInterna.code());

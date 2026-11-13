@@ -1,25 +1,26 @@
 use anyhow::Result;
 
 use crate::enricher::bounds::invoice::detraccion::{
-    InvoiceDetraccionGetter, InvoiceDetraccionMontoGetter, InvoiceDetraccionMontoSetter,
-    InvoiceDetraccionPorcentajeGetter,
+    DetraccionMontoGetter, DetraccionMontoSetter, DetraccionPorcentajeGetter,
+    InvoiceDetraccionGetter,
 };
 use crate::enricher::bounds::invoice::total_importe::InvoiceTotalImporteGetter;
 use crate::models::common::TotalImporteInvoice;
 
-pub trait DetraccionSummaryRule {
+pub trait InvoiceDetraccionSummaryRule {
     fn summary(&mut self) -> Result<bool>;
 }
 
-impl<T> DetraccionSummaryRule for T
+impl<T> InvoiceDetraccionSummaryRule for T
 where
     T: InvoiceDetraccionGetter + InvoiceTotalImporteGetter,
 {
     fn summary(&mut self) -> Result<bool> {
-        match (self.get_total_importe().clone(), self.get_detraccion()) {
+        match (self.total_importe().clone(), self.detraccion_mut()) {
             (Some(total_importe), Some(detraccion)) => {
                 let results = [
-                    DetraccionMontoRule::summary(detraccion, &total_importe).unwrap_or_default()
+                    DetraccionMontoSummaryRule::summary(detraccion, &total_importe)
+                        .unwrap_or_default(),
                 ];
                 Ok(results.contains(&true))
             }
@@ -30,21 +31,19 @@ where
 
 //
 
-pub trait DetraccionMontoRule {
+pub trait DetraccionMontoSummaryRule {
     fn summary(&mut self, total_importe: &TotalImporteInvoice) -> Result<bool>;
 }
 
-impl<T> DetraccionMontoRule for T
+impl<T> DetraccionMontoSummaryRule for T
 where
-    T: InvoiceDetraccionMontoGetter
-        + InvoiceDetraccionMontoSetter
-        + InvoiceDetraccionPorcentajeGetter,
+    T: DetraccionMontoGetter + DetraccionMontoSetter + DetraccionPorcentajeGetter,
 {
     fn summary(&mut self, total_importe: &TotalImporteInvoice) -> Result<bool> {
-        match &self.get_monto() {
+        match &self.monto() {
             Some(_) => Ok(false),
             None => {
-                let monto = total_importe.importe_con_impuestos * self.get_porcentaje();
+                let monto = total_importe.importe_con_impuestos * self.porcentaje();
                 self.set_monto(monto);
                 Ok(true)
             }

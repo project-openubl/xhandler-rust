@@ -14,7 +14,7 @@ where
 {
     fn fill(&mut self) -> Result<bool> {
         let mut changed = false;
-        for cargo in self.get_cargos() {
+        for cargo in self.cargos_mut() {
             if let Some(code) = code_for_name::<Catalog53>(&cargo.tipo) {
                 cargo.tipo = code;
                 changed = true;

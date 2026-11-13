@@ -1,7 +1,7 @@
 use crate::models::common::Detalle;
 
 pub trait DetalleIgvTipoGetter {
-    fn get_igv_tipo(&self) -> &Option<String>;
+    fn igv_tipo(&self) -> &Option<String>;
 }
 
 pub trait DetalleIgvTipoSetter {
@@ -9,7 +9,7 @@ pub trait DetalleIgvTipoSetter {
 }
 
 impl DetalleIgvTipoGetter for Detalle {
-    fn get_igv_tipo(&self) -> &Option<String> {
+    fn igv_tipo(&self) -> &Option<String> {
         &self.igv_tipo
     }
 }

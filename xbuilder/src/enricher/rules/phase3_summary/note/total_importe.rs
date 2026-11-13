@@ -16,11 +16,11 @@ where
     T: NoteTotalImporteGetter + NoteTotalImporteSetter + DetallesGetter,
 {
     fn summary(&mut self) -> Result<bool> {
-        match &self.get_total_importe() {
+        match &self.total_importe() {
             Some(..) => Ok(false),
             None => {
-                let total_impuestos = total_impuestos(self.get_detalles());
-                let importe_sin_impuestos = importe_sin_impuestos(self.get_detalles());
+                let total_impuestos = total_impuestos(self.detalles());
+                let importe_sin_impuestos = importe_sin_impuestos(self.detalles());
 
                 let importe = importe_sin_impuestos + total_impuestos;
 

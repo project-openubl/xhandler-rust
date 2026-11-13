@@ -4,11 +4,16 @@ use crate::models::common::Descuento;
 use crate::models::invoice::Invoice;
 
 pub trait InvoiceDescuentosGetter {
-    fn get_descuentos(&mut self) -> &mut Vec<Descuento>;
+    fn descuentos(&self) -> &[Descuento];
+    fn descuentos_mut(&mut self) -> &mut Vec<Descuento>;
 }
 
 impl InvoiceDescuentosGetter for Invoice {
-    fn get_descuentos(&mut self) -> &mut Vec<Descuento> {
+    fn descuentos(&self) -> &[Descuento] {
+        &self.descuentos
+    }
+
+    fn descuentos_mut(&mut self) -> &mut Vec<Descuento> {
         &mut self.descuentos
     }
 }
@@ -16,10 +21,10 @@ impl InvoiceDescuentosGetter for Invoice {
 //
 
 pub trait DescuentoGetter {
-    fn get_tipo(&self) -> &Option<String>;
-    fn get_monto(&self) -> Decimal;
-    fn get_monto_base(&self) -> &Option<Decimal>;
-    fn get_factor(&self) -> &Option<Decimal>;
+    fn tipo(&self) -> &Option<String>;
+    fn monto(&self) -> Decimal;
+    fn monto_base(&self) -> &Option<Decimal>;
+    fn factor(&self) -> &Option<Decimal>;
 }
 
 pub trait DescuentoSetter {
@@ -29,19 +34,19 @@ pub trait DescuentoSetter {
 }
 
 impl DescuentoGetter for Descuento {
-    fn get_tipo(&self) -> &Option<String> {
+    fn tipo(&self) -> &Option<String> {
         &self.tipo
     }
 
-    fn get_monto(&self) -> Decimal {
+    fn monto(&self) -> Decimal {
         self.monto
     }
 
-    fn get_monto_base(&self) -> &Option<Decimal> {
+    fn monto_base(&self) -> &Option<Decimal> {
         &self.monto_base
     }
 
-    fn get_factor(&self) -> &Option<Decimal> {
+    fn factor(&self) -> &Option<Decimal> {
         &self.factor
     }
 }

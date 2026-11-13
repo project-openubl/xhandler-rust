@@ -4,7 +4,7 @@ use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
 
 pub trait TotalImpuestosGetter {
-    fn get_total_impuestos(&self) -> &Option<TotalImpuestos>;
+    fn total_impuestos(&self) -> &Option<TotalImpuestos>;
 }
 
 pub trait TotalImpuestosSetter {
@@ -12,19 +12,19 @@ pub trait TotalImpuestosSetter {
 }
 
 impl TotalImpuestosGetter for Invoice {
-    fn get_total_impuestos(&self) -> &Option<TotalImpuestos> {
+    fn total_impuestos(&self) -> &Option<TotalImpuestos> {
         &self.total_impuestos
     }
 }
 
 impl TotalImpuestosGetter for CreditNote {
-    fn get_total_impuestos(&self) -> &Option<TotalImpuestos> {
+    fn total_impuestos(&self) -> &Option<TotalImpuestos> {
         &self.total_impuestos
     }
 }
 
 impl TotalImpuestosGetter for DebitNote {
-    fn get_total_impuestos(&self) -> &Option<TotalImpuestos> {
+    fn total_impuestos(&self) -> &Option<TotalImpuestos> {
         &self.total_impuestos
     }
 }

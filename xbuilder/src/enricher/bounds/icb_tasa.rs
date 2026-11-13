@@ -5,7 +5,7 @@ use crate::models::debit_note::DebitNote;
 use crate::models::invoice::Invoice;
 
 pub trait IcbTasaGetter {
-    fn get_icb_tasa(&self) -> &Option<Decimal>;
+    fn icb_tasa(&self) -> &Option<Decimal>;
 }
 
 pub trait IcbTasaSetter {
@@ -13,19 +13,19 @@ pub trait IcbTasaSetter {
 }
 
 impl IcbTasaGetter for Invoice {
-    fn get_icb_tasa(&self) -> &Option<Decimal> {
+    fn icb_tasa(&self) -> &Option<Decimal> {
         &self.icb_tasa
     }
 }
 
 impl IcbTasaGetter for CreditNote {
-    fn get_icb_tasa(&self) -> &Option<Decimal> {
+    fn icb_tasa(&self) -> &Option<Decimal> {
         &self.icb_tasa
     }
 }
 
 impl IcbTasaGetter for DebitNote {
-    fn get_icb_tasa(&self) -> &Option<Decimal> {
+    fn icb_tasa(&self) -> &Option<Decimal> {
         &self.icb_tasa
     }
 }

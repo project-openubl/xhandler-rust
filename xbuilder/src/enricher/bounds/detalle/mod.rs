@@ -23,23 +23,36 @@ pub mod total_impuestos;
 pub mod unidad_medida;
 
 pub trait DetallesGetter {
-    fn get_detalles(&mut self) -> &mut Vec<Detalle>;
+    fn detalles(&self) -> &[Detalle];
+    fn detalles_mut(&mut self) -> &mut Vec<Detalle>;
 }
 
 impl DetallesGetter for Invoice {
-    fn get_detalles(&mut self) -> &mut Vec<Detalle> {
+    fn detalles(&self) -> &[Detalle] {
+        &self.detalles
+    }
+
+    fn detalles_mut(&mut self) -> &mut Vec<Detalle> {
         &mut self.detalles
     }
 }
 
 impl DetallesGetter for CreditNote {
-    fn get_detalles(&mut self) -> &mut Vec<Detalle> {
+    fn detalles(&self) -> &[Detalle] {
+        &self.detalles
+    }
+
+    fn detalles_mut(&mut self) -> &mut Vec<Detalle> {
         &mut self.detalles
     }
 }
 
 impl DetallesGetter for DebitNote {
-    fn get_detalles(&mut self) -> &mut Vec<Detalle> {
+    fn detalles(&self) -> &[Detalle] {
+        &self.detalles
+    }
+
+    fn detalles_mut(&mut self) -> &mut Vec<Detalle> {
         &mut self.detalles
     }
 }

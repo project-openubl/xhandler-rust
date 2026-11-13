@@ -12,7 +12,7 @@ where
     T: IgvTasaGetter + IgvTasaSetter,
 {
     fn fill(&mut self, defaults: &Defaults) -> Result<bool> {
-        match &self.get_igv_tasa() {
+        match &self.igv_tasa() {
             Some(..) => Ok(false),
             None => {
                 self.set_igv_tasa(defaults.igv_tasa);

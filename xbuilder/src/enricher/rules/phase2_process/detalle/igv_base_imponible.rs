@@ -27,18 +27,18 @@ where
 {
     fn process(&mut self) -> Result<bool> {
         match (
-            &self.get_igv_base_imponible(),
-            &self.get_igv_tipo(),
-            &self.get_precio(),
-            &self.get_precio_referencia(),
-            &self.get_isc(),
+            &self.igv_base_imponible(),
+            &self.igv_tipo(),
+            &self.precio(),
+            &self.precio_referencia(),
+            &self.isc(),
         ) {
             (None, Some(igv_tipo), Some(precio), Some(precio_referencia), Some(isc)) => {
                 if let Ok(catalog) = Catalog7::from_code(igv_tipo) {
                     let base_imponible = if catalog.onerosa() {
-                        self.get_cantidad() * precio
+                        self.cantidad() * precio
                     } else {
-                        self.get_cantidad() * precio_referencia
+                        self.cantidad() * precio_referencia
                     };
 
                     self.set_igv_base_imponible(base_imponible + *isc);
