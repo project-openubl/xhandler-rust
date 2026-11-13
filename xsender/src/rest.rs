@@ -1,6 +1,10 @@
 //! SUNAT REST API used for guias de remision (GRE): an OAuth token, then the
 //! zipped document is sent and its ticket checked with that token.
 
+use std::collections::HashMap;
+use std::sync::{LazyLock, Mutex};
+use std::time::{Duration, Instant};
+
 use anyhow::anyhow;
 use base64::engine::general_purpose;
 use base64::Engine;
@@ -62,8 +66,12 @@ pub async fn verify_ticket(
     parse_ticket_response(status, &body)
 }
 
-/// Requests an access token with the SOL user and the API client id/secret.
-/// A new token is requested for every call; it is valid for about an hour.
+/// Access tokens by client id and SOL user, with the instant they stop being reused
+static TOKENS: LazyLock<Mutex<HashMap<String, (String, Instant)>>> =
+    LazyLock::new(Default::default);
+
+/// Requests an access token with the SOL user and the API client id/secret,
+/// reusing the previous one until a minute before it expires.
 async fn fetch_token(credentials: &Credentials) -> Result<String, ClientSunatErr> {
     let (Some(client_id), Some(client_secret)) =
         (&credentials.client_id, &credentials.client_secret)
@@ -72,6 +80,11 @@ async fn fetch_token(credentials: &Credentials) -> Result<String, ClientSunatErr
             anyhow!("client_id and client_secret are required for guias de remision").into(),
         );
     };
+
+    let key = format!("{client_id}:{}", credentials.username);
+    if let Some(token) = cached_token(&key) {
+        return Ok(token);
+    }
 
     let (status, body) = send_request(|| {
         HTTP_CLIENT
@@ -90,8 +103,24 @@ async fn fetch_token(credentials: &Credentials) -> Result<String, ClientSunatErr
     let Some(json) = parse_json(&body) else {
         return Err(ClientSunatErr::Response(status));
     };
-    text(&json["access_token"])
-        .ok_or_else(|| anyhow!("Could not get a SUNAT access token ({status}): {json}").into())
+    let token = text(&json["access_token"])
+        .ok_or_else(|| anyhow!("Could not get a SUNAT access token ({status}): {json}"))?;
+    let expires_in = json["expires_in"].as_u64().unwrap_or(3600);
+    store_token(key, &token, expires_in);
+    Ok(token)
+}
+
+fn cached_token(key: &str) -> Option<String> {
+    let tokens = TOKENS.lock().ok()?;
+    let (token, reuse_until) = tokens.get(key)?;
+    (Instant::now() < *reuse_until).then(|| token.clone())
+}
+
+fn store_token(key: String, token: &str, expires_in: u64) {
+    let reuse_until = Instant::now() + Duration::from_secs(expires_in.saturating_sub(60));
+    if let Ok(mut tokens) = TOKENS.lock() {
+        tokens.insert(key, (token.to_string(), reuse_until));
+    }
 }
 
 /// Hex SHA-256 of the zip, as SUNAT expects in `hashZip`
@@ -183,7 +212,7 @@ fn text(value: &Value) -> Option<String> {
 mod tests {
     use reqwest::StatusCode;
 
-    use super::{hash_zip, parse_send_response, parse_ticket_response};
+    use super::{cached_token, hash_zip, parse_send_response, parse_ticket_response, store_token};
     use crate::client_sunat::{SendFileResponse, VerifyTicketResponse};
     use crate::models::Status;
 
@@ -259,5 +288,17 @@ mod tests {
         let body = r#"{"status":404,"message":"Ticket no encontrado"}"#;
         let response = parse_ticket_response(StatusCode::NOT_FOUND, body).unwrap();
         assert!(matches!(response, VerifyTicketResponse::Error(error) if error.code == "404"));
+    }
+
+    #[test]
+    fn tokens_are_reused_until_a_minute_before_they_expire() {
+        store_token("client-a:user".into(), "token-a", 3600);
+        assert_eq!(cached_token("client-a:user").as_deref(), Some("token-a"));
+
+        // Less than a minute left: request a new one
+        store_token("client-b:user".into(), "token-b", 30);
+        assert_eq!(cached_token("client-b:user"), None);
+
+        assert_eq!(cached_token("unknown"), None);
     }
 }

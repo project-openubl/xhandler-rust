@@ -4,68 +4,65 @@ use std::str::FromStr;
 use crate::soap::{SoapFault, SOAP_ENV_NS};
 use crate::xml_utils::walk_xml;
 
-/// Response from SUNAT while getting a ticket status through SOAP
-pub enum VerifyTicketXmlResponse {
-    Status(VerifyTicketXmlStatus),
-    /// Error
+/// `<status>` answer shared by getStatus (tickets and consult),
+/// validaCDPcriterios and verificaCPEarchivo; getStatusCdr calls it `<statusCdr>`
+pub enum StatusXmlResponse {
+    Status(StatusXml),
     Fault(SoapFault),
 }
 
-pub struct VerifyTicketXmlStatus {
-    /// CDR zip in base64. SUNAT omits it while the ticket is still being
-    /// processed (status code 98).
-    pub cdr_base64: Option<String>,
+pub struct StatusXml {
     pub status_code: String,
+    pub status_message: Option<String>,
+    /// CDR zip in base64, when the answer carries one
+    pub content: Option<String>,
 }
 
-impl FromStr for VerifyTicketXmlResponse {
+impl FromStr for StatusXmlResponse {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut cdr_base64: Option<String> = None;
         let mut status_code: Option<String> = None;
+        let mut status_message: Option<String> = None;
+        let mut content: Option<String> = None;
         let mut fault_code: Option<String> = None;
         let mut fault_message: Option<String> = None;
 
         walk_xml(s, |path, text| {
+            let [.., parent, element] = path else {
+                return;
+            };
             let text = text.trim().to_string();
-            let in_status_response = path.iter().any(|e| e.is_local("getStatusResponse"));
 
-            match path {
-                [.., parent, element]
-                    if parent.is(SOAP_ENV_NS, "Fault") && element.is_local("faultcode") =>
-                {
+            if parent.is(SOAP_ENV_NS, "Fault") {
+                if element.is_local("faultcode") {
                     fault_code.get_or_insert(text);
-                }
-                [.., parent, element]
-                    if parent.is(SOAP_ENV_NS, "Fault") && element.is_local("faultstring") =>
-                {
+                } else if element.is_local("faultstring") {
                     fault_message.get_or_insert(text);
                 }
-                [.., element] if in_status_response && element.is_local("content") => {
-                    if !text.is_empty() {
-                        cdr_base64.get_or_insert(text);
-                    }
-                }
-                [.., element] if in_status_response && element.is_local("statusCode") => {
-                    status_code.get_or_insert(text);
-                }
-                _ => {}
+            } else if (parent.is_local("status") || parent.is_local("statusCdr"))
+                && !text.is_empty()
+            {
+                match element.local_name.as_str() {
+                    "statusCode" => status_code.get_or_insert(text),
+                    "statusMessage" => status_message.get_or_insert(text),
+                    "content" => content.get_or_insert(text),
+                    _ => return,
+                };
             }
         })?;
 
         match (status_code, fault_code) {
-            (Some(status_code), _) => Ok(Self::Status(VerifyTicketXmlStatus {
-                cdr_base64,
+            (Some(status_code), _) => Ok(Self::Status(StatusXml {
                 status_code,
+                status_message,
+                content,
             })),
             (_, Some(code)) => Ok(Self::Fault(SoapFault {
                 code,
                 message: fault_message.unwrap_or_default(),
             })),
-            _ => Err(anyhow!(
-                "Could not extract the expected data from ticket response"
-            )),
+            _ => Err(anyhow!("Could not extract the status from the response")),
         }
     }
 }
@@ -75,7 +72,7 @@ mod tests {
     use std::fs;
     use std::str::FromStr;
 
-    use crate::soap::verify_ticket_response::VerifyTicketXmlResponse;
+    use crate::soap::status_response::StatusXmlResponse;
 
     const RESOURCES: &str = "resources/test";
 
@@ -83,14 +80,11 @@ mod tests {
     fn read_ok_response() {
         let file_content = fs::read_to_string(format!("{RESOURCES}/get_status_response_ok.xml"))
             .expect("Could not read file");
-        let response =
-            VerifyTicketXmlResponse::from_str(&file_content).expect("Could not read response");
+        let response = StatusXmlResponse::from_str(&file_content).expect("Could not read response");
 
         let result = match response {
-            VerifyTicketXmlResponse::Status(data) => {
-                (data.cdr_base64.unwrap_or_default(), data.status_code)
-            }
-            VerifyTicketXmlResponse::Fault(_) => ("".to_string(), "".to_string()),
+            StatusXmlResponse::Status(data) => (data.content.unwrap_or_default(), data.status_code),
+            StatusXmlResponse::Fault(_) => ("".to_string(), "".to_string()),
         };
 
         let expected_cdr = "UEsDBBQAAgAIAK07lVcAAAAAAgAAAAAAAAAGAAAAZHVtbXkvAwBQSwMEFAACAAgArTuVV2PumuIyBAAACA0AAB8AAABSLTEyMzQ1Njc4OTEyLVJBLTIwMjAwMzI4LTEueG1stVdRT+M4EH7fXxGVh5X2LjhJoYUoZFUo3FULPba0gPbNJEMbLrFzttMWfv2OkyZNS9C2K53gwZn55puZz2MbvK/LJDbmIGTE2VnLPrRaBrCAhxGbnrUm4yvzpPXV/+RR4fbSNI4CqhA4AplyJsHAYCbPWplgLqcyki6jCUhXphBEzyuwmz3FrgxmkFB3KUN3wOY8CsB0WkW4S8WeDA2VrNlgqfaku+BJwtnlUgHTKuAnUgJTck0aPAW/RXqO8KCRkP4eYW86FTClCppIQ9yKmVKpS8hisThctA+5mBLHsixinRLEhDKaHpRoyWla4YtE8hBd2p4H6gUBNoeYp0CqJJi8CoOljFUO1mZpUhaaKsJeqiRlnzJjVH3YZwoiqzd7p9FNvdol8fKjXm3yeHN9l1OVWGSBZdpQNDqymAoTvQKk3nzZ8j2cIHdyfl0NhCzHvMFXWGqzw3ClfO8ummIHmaiOyA77gsdMh0E4YM/c/2QY3gVlnKFOcfSWa3UDasZDoxdPuYjULPlQAtvStNhXYAb2ETt4QLQeIK1hi+TcVYU7k1pHZa1mwgUcCElNOaPHtrOiHMEzCLw9wJiMBlouNKJ5LCiTz1wksjDUTb9MuyFROYyhKcvqi9R7ku4iEBKS7cq9fjQFqfZUDBU5qOtU8dzTOAP/hS7D/iWx5peB9eMvMumyf9KnvmN/z0bf528L/kYerkZXr7Ph+ViSm5voPusOX5aTq6Pn3n8PCfs7kT+GycPL203YW9BR6jyO/7gNF2dnHqln0ftDqg3CUSObs1afiCLiy62I5nj6jH/h1fh8Dore4lHF6wyE+mwwrows/VLQ1KK8b/Cac3qPx9ZpnyparHRUceaReYjXQGgEa9OKv0iIDDX+7eCcbSBlBuIORETjukUT709fi825Ct5hljyB2J9tI7qeoCyXrJUhlVprHXHdfKeQ95fPO5P0PXyrtOm+eNMHfd85tDzyzprjLjKpeLK6XdBol9BtR47WgK7Vtjt2t9M5alt2ga3cukvsC0jte4yvgW9Zbv67wlf2HFY+4TrSdyynbdqO6ay4N5wb8IK46zqnrtPZBK+4aeDWRF1Vqi13k2FvXKu9AnLxekuFei1s+XIQovbVY1XROJbdxh/n9Ph4TUQ+jiodxZDpgHxVq6TwkC0k+ag4PNuRonHVYE8pGsySfFC0X0+EYDReH/liMEYD/2BLA20rEjUEkV8lI9s6609gIYj/R0rSmGAEAUTznXPaTvvouNM9ObWdnXM2pOjzINMqlINX1lJ95UO50hJTjHomDrhltZ0TsxrwtXtjvi94iPO9Odi5LUf1QQYiSvPyrqmBT1em/1AI8NsIwXiiL9TYyPanMaOGjEJu0ABSRUNaUNeJyj7rzaxb3Jij5mYqFZuiCgmjNEL7jtvUMffZnQ1q0rw/pPkfGf8nUEsBAgAAFAACAAgArTuVVwAAAAACAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAAAGR1bW15L1BLAQIAABQAAgAIAK07lVdj7priMgQAAAgNAAAfAAAAAAAAAAEAAAAAACYAAABSLTEyMzQ1Njc4OTEyLVJBLTIwMjAwMzI4LTEueG1sUEsFBgAAAAACAAIAgQAAAJUEAAAAAA==";
@@ -103,14 +97,13 @@ mod tests {
         let file_content =
             fs::read_to_string(format!("{RESOURCES}/get_status_response_in_progress.xml"))
                 .expect("Could not read file");
-        let response =
-            VerifyTicketXmlResponse::from_str(&file_content).expect("Could not read response");
+        let response = StatusXmlResponse::from_str(&file_content).expect("Could not read response");
         match response {
-            VerifyTicketXmlResponse::Status(data) => {
-                assert_eq!(data.cdr_base64, None);
+            StatusXmlResponse::Status(data) => {
+                assert_eq!(data.content, None);
                 assert_eq!(data.status_code, "98");
             }
-            VerifyTicketXmlResponse::Fault(_) => panic!("Expected a status"),
+            StatusXmlResponse::Fault(_) => panic!("Expected a status"),
         }
     }
 
@@ -118,14 +111,41 @@ mod tests {
     fn read_fault_with_any_prefix() {
         let file_content = fs::read_to_string(format!("{RESOURCES}/get_status_response_fault.xml"))
             .expect("Could not read file");
-        let response =
-            VerifyTicketXmlResponse::from_str(&file_content).expect("Could not read response");
+        let response = StatusXmlResponse::from_str(&file_content).expect("Could not read response");
         match response {
-            VerifyTicketXmlResponse::Fault(fault) => {
+            StatusXmlResponse::Fault(fault) => {
                 assert_eq!(fault.code, "S:Client.0127");
                 assert_eq!(fault.message, "El ticket no existe");
             }
-            VerifyTicketXmlResponse::Status(_) => panic!("Expected a fault"),
+            StatusXmlResponse::Status(_) => panic!("Expected a fault"),
         }
+    }
+
+    #[test]
+    fn read_validation_response() {
+        let file_content = fs::read_to_string(format!("{RESOURCES}/valida_cdp_response.xml"))
+            .expect("Could not read file");
+        let StatusXmlResponse::Status(status) = StatusXmlResponse::from_str(&file_content).unwrap()
+        else {
+            panic!("Expected a status");
+        };
+        assert_eq!(status.status_code, "0");
+        assert_eq!(
+            status.status_message.as_deref(),
+            Some("El comprobante existe y está aceptado.")
+        );
+        assert_eq!(status.content, None);
+    }
+
+    #[test]
+    fn read_status_cdr_response() {
+        let file_content = fs::read_to_string(format!("{RESOURCES}/get_status_cdr_response.xml"))
+            .expect("Could not read file");
+        let StatusXmlResponse::Status(status) = StatusXmlResponse::from_str(&file_content).unwrap()
+        else {
+            panic!("Expected a status");
+        };
+        assert_eq!(status.status_code, "0004");
+        assert_eq!(status.content.as_deref(), Some("UEsDBA=="));
     }
 }

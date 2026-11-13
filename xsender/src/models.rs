@@ -17,6 +17,37 @@ pub struct Credentials {
     pub client_secret: Option<String>,
 }
 
+/// SUNAT service to look up documents already sent (getStatus, getStatusCdr)
+pub const BILL_CONSULT_SERVICE_URL: &str =
+    "https://e-factura.sunat.gob.pe/ol-it-wsconscpegem/billConsultService";
+/// SUNAT service to validate documents (validaCDPcriterios, verificaCPEarchivo)
+pub const BILL_VALID_SERVICE_URL: &str =
+    "https://e-factura.sunat.gob.pe/ol-it-wsconsvalidcpe/billValidService";
+
+/// A document already sent to SUNAT, to look up in the consult services
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct ConsultDocument {
+    pub ruc: String,
+    /// Catalog1, e.g. "01"
+    pub tipo_comprobante: String,
+    pub serie: String,
+    pub numero: u32,
+}
+
+/// Criteria to validate a document with `validaCDPcriterios`
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct ValidateCdp {
+    #[serde(flatten)]
+    pub document: ConsultDocument,
+    /// Catalog6
+    pub tipo_documento_identidad_receptor: String,
+    pub numero_documento_identidad_receptor: String,
+    /// "dd/MM/yyyy"
+    pub fecha_emision: String,
+    pub importe_total: String,
+    pub numero_autorizacion: Option<String>,
+}
+
 /// Defines where the document should be sent
 #[derive(Debug, PartialEq)]
 pub enum SendFileTarget {

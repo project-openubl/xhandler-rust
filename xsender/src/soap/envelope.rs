@@ -2,6 +2,7 @@ use serde::Serialize;
 use tera::{Context, Result};
 
 use crate::constants::TEMPLATES;
+use crate::models::{ConsultDocument, ValidateCdp};
 
 pub struct EnvelopeData {
     pub username: String,
@@ -9,7 +10,6 @@ pub struct EnvelopeData {
     pub body: BodyData,
 }
 
-#[allow(dead_code)]
 pub enum BodyData {
     /// sendBill, sendSummary or sendPack: same body, different operation
     SendFile {
@@ -17,8 +17,12 @@ pub enum BodyData {
         file: FileData,
     },
     VerifyTicket(String),
-    GetStatusCrd(DocumentData),
-    ValidateCdpCriterios(DocumentCdpData),
+    /// getStatus or getStatusCdr: same body, different operation
+    ConsultDocument {
+        operation: &'static str,
+        document: ConsultDocument,
+    },
+    ValidateCdp(ValidateCdp),
     ValidateFile(FileData),
 }
 
@@ -26,26 +30,6 @@ pub enum BodyData {
 pub struct FileData {
     pub filename: String,
     pub file_content: String,
-}
-
-#[derive(Serialize)]
-pub struct DocumentData {
-    ruc: String,
-    tipo_comprobante: String,
-    serie_comprobante: String,
-    numero_comprobante: String,
-}
-
-#[derive(Serialize)]
-pub struct DocumentCdpData {
-    ruc: String,
-    tipo_comprobante: String,
-    serie_comprobante: String,
-    numero_comprobante: String,
-    tipo_documento_identidad_receptor: String,
-    numero_documento_identidad_receptor: String,
-    fecha_emision: String,
-    importe_total: String,
 }
 
 pub trait ToStringXml {
@@ -68,12 +52,16 @@ impl ToStringXml for EnvelopeData {
                 context.insert("ticket", ticket);
                 TEMPLATES.render("verify_ticket.xml", &context)
             }
-            BodyData::GetStatusCrd(document_data) => {
-                context.insert("body", document_data);
-                TEMPLATES.render("get_status_crd.xml", &context)
+            BodyData::ConsultDocument {
+                operation,
+                document,
+            } => {
+                context.insert("operation", operation);
+                context.insert("body", document);
+                TEMPLATES.render("consult_document.xml", &context)
             }
-            BodyData::ValidateCdpCriterios(document_data) => {
-                context.insert("body", document_data);
+            BodyData::ValidateCdp(cdp) => {
+                context.insert("body", cdp);
                 TEMPLATES.render("validate_cdp_criterios.xml", &context)
             }
             BodyData::ValidateFile(file_data) => {
@@ -87,7 +75,8 @@ impl ToStringXml for EnvelopeData {
 #[cfg(test)]
 mod tests {
     use crate::soap::envelope::BodyData::{
-        GetStatusCrd, SendFile, ValidateCdpCriterios, ValidateFile, VerifyTicket,
+        ConsultDocument as ConsultDocumentBody, SendFile, ValidateCdp as ValidateCdpBody,
+        ValidateFile, VerifyTicket,
     };
     use crate::soap::envelope::*;
 
@@ -156,20 +145,30 @@ mod tests {
         assert!(message.to_string_xml().unwrap().len() > 1);
     }
 
+    fn document() -> ConsultDocument {
+        ConsultDocument {
+            ruc: String::from("12345678912"),
+            tipo_comprobante: String::from("01"),
+            serie: String::from("F001"),
+            numero: 102,
+        }
+    }
+
     #[test]
-    fn get_status_crd() {
+    fn get_status_cdr() {
         let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
-            body: GetStatusCrd(DocumentData {
-                ruc: String::from("my_ruc"),
-                tipo_comprobante: String::from("my_tipo"),
-                serie_comprobante: String::from("my_serie"),
-                numero_comprobante: String::from("my_numero"),
-            }),
+            body: ConsultDocumentBody {
+                operation: "getStatusCdr",
+                document: document(),
+            },
         };
 
-        assert!(message.to_string_xml().unwrap().len() > 1);
+        let xml = message.to_string_xml().unwrap();
+        assert!(xml.contains("<ns2:getStatusCdr xmlns:ns2=\"http://service.sunat.gob.pe\">"));
+        assert!(xml.contains("<serieComprobante>F001</serieComprobante>"));
+        assert!(xml.contains("<numeroComprobante>102</numeroComprobante>"));
     }
 
     #[test]
@@ -177,19 +176,21 @@ mod tests {
         let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
-            body: ValidateCdpCriterios(DocumentCdpData {
-                ruc: String::from("my_ruc"),
-                tipo_comprobante: String::from("my_tipo"),
-                serie_comprobante: String::from("my_serie"),
-                numero_comprobante: String::from("my_numero"),
-                tipo_documento_identidad_receptor: String::from("my_tipo_receptor"),
-                numero_documento_identidad_receptor: String::from("my_numero_receptor"),
-                fecha_emision: String::from("my_fecha_emision"),
-                importe_total: String::from("my_importe_total"),
+            body: ValidateCdpBody(ValidateCdp {
+                document: document(),
+                tipo_documento_identidad_receptor: String::from("6"),
+                numero_documento_identidad_receptor: String::from("12121212121"),
+                fecha_emision: String::from("31/01/2022"),
+                importe_total: String::from("118.00"),
+                numero_autorizacion: None,
             }),
         };
 
-        assert!(message.to_string_xml().unwrap().len() > 1);
+        let xml = message.to_string_xml().unwrap();
+        assert!(xml.contains("<serieCDP>F001</serieCDP>"));
+        // Tera escapes "/" as "&#x2F;", which XML parsers decode back
+        assert!(xml.contains("<fechaEmision>31&#x2F;01&#x2F;2022</fechaEmision>"));
+        assert!(xml.contains("<nroAutorizacion></nroAutorizacion>"));
     }
 
     #[test]

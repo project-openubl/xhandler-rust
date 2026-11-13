@@ -3,11 +3,14 @@ use std::str::FromStr;
 use reqwest::StatusCode;
 
 use crate::constants::HTTP_CLIENT;
-use crate::models::{Credentials, SendFileTarget, SoapFileTargetAction, VerifyTicketTarget};
+use crate::models::{
+    ConsultDocument, Credentials, SendFileTarget, SoapFileTargetAction, ValidateCdp,
+    VerifyTicketTarget,
+};
 use crate::rest;
 use crate::soap::envelope::{BodyData, EnvelopeData, FileData, ToStringXml};
 use crate::soap::send_file_response::SendFileXmlResponse;
-use crate::soap::verify_ticket_response::VerifyTicketXmlResponse;
+use crate::soap::status_response::StatusXmlResponse;
 
 #[derive(Default)]
 pub struct ClientSUNAT {}
@@ -54,6 +57,20 @@ pub enum VerifyTicketResponse {
         status_code: String,
     },
     Error(ErrorResponse),
+}
+
+/// Answer of the consult (BillConsultService) and validation (BillValidService) services
+pub enum ConsultResponse {
+    Status(ConsultStatus),
+    Error(ErrorResponse),
+}
+
+pub struct ConsultStatus {
+    /// e.g. "0001" (accepted) for getStatus, or "0" for validaCDPcriterios
+    pub status_code: String,
+    pub status_message: String,
+    /// CDR zip in base64 (getStatusCdr)
+    pub cdr_base64: Option<String>,
 }
 
 pub struct VerifyTicketStatus {
@@ -116,12 +133,91 @@ impl ClientSUNAT {
 
                 let body = envelope.to_string_xml()?;
                 let (status, response_body) = post_soap(url, body, "urn:getStatus").await?;
-                parse_soap_response::<VerifyTicketXmlResponse>(status, &response_body)
-                    .map(Into::into)
+                parse_soap_response::<StatusXmlResponse>(status, &response_body).map(Into::into)
             }
             VerifyTicketTarget::Rest(url) => rest::verify_ticket(url, ticket, credentials).await,
         }
     }
+}
+
+impl ClientSUNAT {
+    /// BillConsultService getStatus: status of a document already sent
+    pub async fn get_status(
+        &self,
+        url: &str,
+        document: &ConsultDocument,
+        credentials: &Credentials,
+    ) -> Result<ConsultResponse, ClientSunatErr> {
+        let body = BodyData::ConsultDocument {
+            operation: "getStatus",
+            document: document.clone(),
+        };
+        consult(url, body, "getStatus", credentials).await
+    }
+
+    /// BillConsultService getStatusCdr: status and CDR of a document already sent
+    pub async fn get_status_cdr(
+        &self,
+        url: &str,
+        document: &ConsultDocument,
+        credentials: &Credentials,
+    ) -> Result<ConsultResponse, ClientSunatErr> {
+        let body = BodyData::ConsultDocument {
+            operation: "getStatusCdr",
+            document: document.clone(),
+        };
+        consult(url, body, "getStatusCdr", credentials).await
+    }
+
+    /// BillValidService validaCDPcriterios: checks a document by its data
+    pub async fn validate_cdp(
+        &self,
+        url: &str,
+        cdp: &ValidateCdp,
+        credentials: &Credentials,
+    ) -> Result<ConsultResponse, ClientSunatErr> {
+        let body = BodyData::ValidateCdp(cdp.clone());
+        consult(url, body, "validaCDPcriterios", credentials).await
+    }
+
+    /// BillValidService verificaCPEarchivo: checks a signed XML file
+    pub async fn validate_file(
+        &self,
+        url: &str,
+        file: &File,
+        credentials: &Credentials,
+    ) -> Result<ConsultResponse, ClientSunatErr> {
+        let body = BodyData::ValidateFile(FileData {
+            filename: file.name.clone(),
+            file_content: file.base_64.clone(),
+        });
+        consult(url, body, "verificaCPEarchivo", credentials).await
+    }
+}
+
+async fn consult(
+    url: &str,
+    body: BodyData,
+    operation: &str,
+    credentials: &Credentials,
+) -> Result<ConsultResponse, ClientSunatErr> {
+    let envelope = EnvelopeData {
+        username: credentials.username.clone(),
+        password: credentials.password.clone(),
+        body,
+    };
+    let (status, response_body) =
+        post_soap(url, envelope.to_string_xml()?, &format!("urn:{operation}")).await?;
+    Ok(
+        match parse_soap_response::<StatusXmlResponse>(status, &response_body)? {
+            StatusXmlResponse::Status(status) => ConsultResponse::Status(ConsultStatus {
+                status_code: status.status_code,
+                status_message: status.status_message.unwrap_or_default(),
+                cdr_base64: status.content,
+            }),
+            StatusXmlResponse::Fault(fault) => ConsultResponse::Error(fault),
+        },
+    )
 }
 
 impl From<SendFileXmlResponse> for SendFileResponse {
@@ -134,10 +230,10 @@ impl From<SendFileXmlResponse> for SendFileResponse {
     }
 }
 
-impl From<VerifyTicketXmlResponse> for VerifyTicketResponse {
-    fn from(value: VerifyTicketXmlResponse) -> Self {
+impl From<StatusXmlResponse> for VerifyTicketResponse {
+    fn from(value: StatusXmlResponse) -> Self {
         match value {
-            VerifyTicketXmlResponse::Status(status) => match status.cdr_base64 {
+            StatusXmlResponse::Status(status) => match status.content {
                 Some(cdr_base64) => Self::Cdr(VerifyTicketStatus {
                     cdr_base64,
                     status_code: status.status_code,
@@ -146,7 +242,7 @@ impl From<VerifyTicketXmlResponse> for VerifyTicketResponse {
                     status_code: status.status_code,
                 },
             },
-            VerifyTicketXmlResponse::Fault(fault) => Self::Error(fault),
+            StatusXmlResponse::Fault(fault) => Self::Error(fault),
         }
     }
 }

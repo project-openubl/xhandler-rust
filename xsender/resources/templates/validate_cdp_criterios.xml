@@ -11,13 +11,13 @@
         <ns2:validaCDPcriterios xmlns:ns2="http://service.sunat.gob.pe">
             <rucEmisor>{{body.ruc}}</rucEmisor>
             <tipoCDP>{{body.tipo_comprobante}}</tipoCDP>
-            <serieCDP>{{body.serie_comprobante}}</serieCDP>
-            <numeroCDP>{{body.numero_comprobante}}</numeroCDP>
+            <serieCDP>{{body.serie}}</serieCDP>
+            <numeroCDP>{{body.numero}}</numeroCDP>
             <tipoDocIdReceptor>{{body.tipo_documento_identidad_receptor}}</tipoDocIdReceptor>
             <numeroDocIdReceptor>{{body.numero_documento_identidad_receptor}}</numeroDocIdReceptor>
             <fechaEmision>{{body.fecha_emision}}</fechaEmision>
             <importeTotal>{{body.importe_total}}</importeTotal>
-            <nroAutorizacion/>
+            <nroAutorizacion>{{body.numero_autorizacion | default(value="")}}</nroAutorizacion>
         </ns2:validaCDPcriterios>
     </soap:Body>
 </soap:Envelope>

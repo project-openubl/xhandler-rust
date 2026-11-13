@@ -10,10 +10,10 @@ use crate::analyzer::{
 use crate::client_sunat::{
     ClientSUNAT, ClientSunatErr, ErrorResponse, File, SendFileResponse, VerifyTicketResponse,
 };
-use crate::models::{Credentials, SendFileTarget, Urls, VerifyTicketTarget};
+use crate::models::{Credentials, SendFileTarget, SoapFileTargetAction, Urls, VerifyTicketTarget};
 use crate::prelude::VerifyTicketStatus;
 use crate::soap::cdr::CdrMetadata;
-use crate::ubl_file::UblFile;
+use crate::ubl_file::{UblFile, UblMetadata};
 use crate::zip_manager::{create_zip, read_cdr_from_base64_zip};
 
 pub struct FileSender {
@@ -69,14 +69,6 @@ pub enum VerifyTicketAggregatedResponse {
 impl FileSender {
     pub async fn send_file(&self, xml: &UblFile) -> Result<SendFileResponseWrapper, FileSenderErr> {
         let metadata = xml.metadata()?;
-
-        let filename_without_extension = filename_formatted_without_extension(
-            &metadata.document_type,
-            &metadata.document_id,
-            &metadata.ruc,
-        )
-        .map_err(|_| FileSenderErr::TargetDiscovery)?;
-
         let send_target = send_file_target(
             &metadata.document_type,
             &metadata.voided_line_document_type_code,
@@ -89,20 +81,60 @@ impl FileSender {
             &self.urls,
         );
 
-        let zip_file_name = format!("{filename_without_extension}.zip");
-        let file_name_inside_zip = format!("{filename_without_extension}.xml");
+        let name = sunat_filename(&metadata)?;
+        let entries = [(format!("{name}.xml"), xml.bytes())];
+        self.send(
+            format!("{name}.zip"),
+            &entries,
+            send_target,
+            verify_ticket_target,
+        )
+        .await
+    }
 
-        let zip = create_zip(xml.bytes(), &file_name_inside_zip)?;
-        let zip_base64 = general_purpose::STANDARD.encode(zip);
+    /// Sends several documents in one zip with sendPack (SUNAT answers with a
+    /// ticket). `pack_name` is the zip name without extension, e.g.
+    /// "20123456789-LT-20240131-1". SUNAT only accepts packs in production.
+    pub async fn send_pack(
+        &self,
+        pack_name: &str,
+        files: &[UblFile],
+    ) -> Result<SendFileResponseWrapper, FileSenderErr> {
+        let entries = files
+            .iter()
+            .map(|xml| {
+                Ok((
+                    format!("{}.xml", sunat_filename(&xml.metadata()?)?),
+                    xml.bytes(),
+                ))
+            })
+            .collect::<Result<Vec<_>, FileSenderErr>>()?;
+        let send_target =
+            SendFileTarget::Soap(self.urls.invoice.clone(), SoapFileTargetAction::Pack);
+        let verify_ticket_target = Some(VerifyTicketTarget::Soap(self.urls.invoice.clone()));
+        self.send(
+            format!("{pack_name}.zip"),
+            &entries,
+            send_target,
+            verify_ticket_target,
+        )
+        .await
+    }
 
-        let file_to_be_sent = File {
-            name: zip_file_name,
-            base_64: zip_base64,
+    async fn send(
+        &self,
+        zip_name: String,
+        entries: &[(String, &[u8])],
+        send_target: SendFileTarget,
+        verify_ticket_target: Option<VerifyTicketTarget>,
+    ) -> Result<SendFileResponseWrapper, FileSenderErr> {
+        let file = File {
+            name: zip_name,
+            base_64: general_purpose::STANDARD.encode(create_zip(entries)?),
         };
 
-        let client = ClientSUNAT::default();
-        let result = client
-            .send_file(&send_target, &file_to_be_sent, &self.credentials)
+        let result = ClientSUNAT::default()
+            .send_file(&send_target, &file, &self.credentials)
             .await?;
 
         let response = match result {
@@ -146,4 +178,14 @@ impl FileSender {
 
         Ok(VerifyTicketResponseWrapper { response })
     }
+}
+
+/// File name SUNAT expects, without extension, e.g. "12345678912-01-F001-1"
+fn sunat_filename(metadata: &UblMetadata) -> Result<String, FileSenderErr> {
+    filename_formatted_without_extension(
+        &metadata.document_type,
+        &metadata.document_id,
+        &metadata.ruc,
+    )
+    .map_err(|_| FileSenderErr::TargetDiscovery)
 }
