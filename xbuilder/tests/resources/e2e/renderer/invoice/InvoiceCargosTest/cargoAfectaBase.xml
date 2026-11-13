@@ -68,9 +68,8 @@
     <cac:AllowanceCharge>
         <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
         <cbc:AllowanceChargeReasonCode>49</cbc:AllowanceChargeReasonCode>
-        <cbc:MultiplierFactorNumeric>0.10</cbc:MultiplierFactorNumeric>
         <cbc:Amount currencyID="PEN">10.00</cbc:Amount>
-        <cbc:BaseAmount currencyID="PEN">100.00</cbc:BaseAmount>
+        <cbc:BaseAmount currencyID="PEN">10.00</cbc:BaseAmount>
     </cac:AllowanceCharge>
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="PEN">19.80</cbc:TaxAmount>

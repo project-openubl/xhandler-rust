@@ -12,10 +12,11 @@ use crate::models::perception_retention::{Perception, Retention};
 use crate::models::summary_documents::SummaryDocuments;
 use crate::models::voided_documents::VoidedDocuments;
 
-/// Checks, after enrichment, the catalog codes xhandler-java rejects. Names
-/// were already turned into codes, so anything left is not in the catalog.
+/// Checks, after enrichment, the catalog codes xhandler-java rejects
 pub trait Validate {
-    fn validate(&self) -> Result<()>;
+    fn validate(&self) -> Result<()> {
+        Ok(())
+    }
 }
 
 /// Fails when `value` is given and is not a code (or name) of the catalog
@@ -98,15 +99,8 @@ impl Validate for SummaryDocuments {
     }
 }
 
-/// No catalog codes to check for these documents
-macro_rules! no_validation {
-    ($($document:ty),*) => {
-        $(impl Validate for $document {
-            fn validate(&self) -> Result<()> {
-                Ok(())
-            }
-        })*
-    };
-}
-
-no_validation!(VoidedDocuments, Perception, Retention, DespatchAdvice);
+// No catalog codes to check for these documents
+impl Validate for VoidedDocuments {}
+impl Validate for Perception {}
+impl Validate for Retention {}
+impl Validate for DespatchAdvice {}

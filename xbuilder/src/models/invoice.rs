@@ -63,14 +63,14 @@ pub struct Invoice {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GuiaEmbebida {
     pub partida: Direccion,
-    pub llegada: Direccion,
+    pub destino: Direccion,
     pub transportista: Cliente,
     /// Licencia de conducir del chofer
-    pub numero_licencia: String,
+    pub licencia: String,
     /// Placa del vehiculo
     pub placa: String,
     /// Catalog18: modalidad de traslado
-    pub modalidad_traslado: String,
+    pub tipo_modalidad_traslado: String,
     pub peso_bruto: Decimal,
-    pub unidad_peso_bruto: String,
+    pub peso_bruto_unidad_medida: String,
 }

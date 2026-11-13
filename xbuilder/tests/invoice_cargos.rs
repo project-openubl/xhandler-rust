@@ -9,7 +9,7 @@ mod common;
 
 const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceCargosTest";
 
-fn invoice_with_cargo(tipo: &str) -> Invoice {
+fn invoice_with_cargo(tipo: &str, monto_base: Option<Decimal>, factor: Option<Decimal>) -> Invoice {
     Invoice {
         detalles: vec![Detalle {
             descripcion: "Item1".into(),
@@ -20,8 +20,8 @@ fn invoice_with_cargo(tipo: &str) -> Invoice {
         cargos: vec![Cargo {
             tipo: tipo.into(),
             monto: dec!(10),
-            monto_base: Some(dec!(100)),
-            factor: Some(dec!(0.10)),
+            monto_base,
+            factor,
         }],
         ..invoice_base()
     }
@@ -31,14 +31,14 @@ fn invoice_with_cargo(tipo: &str) -> Invoice {
 #[serial_test::serial]
 #[tokio::test]
 async fn invoice_cargo_que_no_afecta_base_imponible() {
-    let mut invoice = invoice_with_cargo("50");
+    let mut invoice = invoice_with_cargo("50", Some(dec!(100)), Some(dec!(0.10)));
     assert_invoice(&mut invoice, &format!("{BASE}/cargoNoAfectaBase.xml")).await;
 }
 
-/// Charge that increases the IGV base
+/// Charge that increases the IGV base; BaseAmount defaults to the amount
 #[serial_test::serial]
 #[tokio::test]
 async fn invoice_cargo_que_afecta_base_imponible() {
-    let mut invoice = invoice_with_cargo("49");
+    let mut invoice = invoice_with_cargo("49", None, None);
     assert_invoice(&mut invoice, &format!("{BASE}/cargoAfectaBase.xml")).await;
 }

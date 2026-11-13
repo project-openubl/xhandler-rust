@@ -107,22 +107,20 @@ where
                 };
 
                 // Cargos
-                let (cargos_que_afectan_base, cargos_que_no_afectan_base): (Vec<_>, Vec<_>) = self
-                    .get_cargos()
+                let igv_factor = self.get_igv_tasa().unwrap_or(Decimal::ZERO) + Decimal::ONE;
+                let cargos = self.get_cargos();
+                let cargos_que_afectan_base_imponible_sin_impuestos: Decimal = cargos
                     .iter()
-                    .partition(|cargo| cargo.afecta_base_imponible());
-                let cargos_que_afectan_base_imponible_sin_impuestos: Decimal =
-                    cargos_que_afectan_base
-                        .iter()
-                        .map(|cargo| cargo.monto)
-                        .sum();
-                let cargos_que_afectan_base_imponible_con_impuestos =
-                    cargos_que_afectan_base_imponible_sin_impuestos
-                        * (self.get_igv_tasa().unwrap_or(Decimal::ZERO) + Decimal::ONE);
-                let cargos_que_no_afectan_base_imponible: Decimal = cargos_que_no_afectan_base
-                    .iter()
+                    .filter(|cargo| cargo.afecta_base_imponible())
                     .map(|cargo| cargo.monto)
                     .sum();
+                let cargos_que_no_afectan_base_imponible: Decimal = cargos
+                    .iter()
+                    .filter(|cargo| !cargo.afecta_base_imponible())
+                    .map(|cargo| cargo.monto)
+                    .sum();
+                let cargos_que_afectan_base_imponible_con_impuestos =
+                    cargos_que_afectan_base_imponible_sin_impuestos * igv_factor;
 
                 //
                 let importe_sin_impuestos = importe_sin_impuestos

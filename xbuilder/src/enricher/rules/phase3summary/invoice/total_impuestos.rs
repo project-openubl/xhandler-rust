@@ -112,7 +112,7 @@ where
                     Decimal::ZERO
                 };
 
-                let cargos_que_afectan_base_imponible: Decimal = self
+                let cargos_que_afectan_base_imponible_sin_impuestos: Decimal = self
                     .get_cargos()
                     .iter()
                     .filter(|cargo| cargo.afecta_base_imponible())
@@ -123,7 +123,7 @@ where
                 let gravado_base_imponible = gravado.base_imponible
                     - total_anticipos_gravados
                     - descuentos_que_afectan_base_imponible_sin_impuestos
-                    + cargos_que_afectan_base_imponible;
+                    + cargos_que_afectan_base_imponible_sin_impuestos;
 
                 let factor = if gravado.base_imponible > Decimal::ZERO {
                     gravado_base_imponible / gravado.base_imponible

@@ -50,19 +50,21 @@
     </cac:Delivery>
     {%- endif %}
     {%- if guia_embebida %}
+    {#- Explicit StreetName addresses: with AddressLine, SUNAT reads this
+        Delivery as an itinerant sale and asks for legend 2005 (4266) #}
     <cac:Delivery>
         <cac:DeliveryLocation>
             <cac:Address>
-                <cbc:ID>{{guia_embebida.llegada.ubigeo}}</cbc:ID>
-                <cbc:StreetName>{{guia_embebida.llegada.direccion}}</cbc:StreetName>
-                {%- if guia_embebida.llegada.urbanizacion %}
-                <cbc:CitySubdivisionName>{{guia_embebida.llegada.urbanizacion}}</cbc:CitySubdivisionName>
+                <cbc:ID>{{guia_embebida.destino.ubigeo}}</cbc:ID>
+                <cbc:StreetName>{{guia_embebida.destino.direccion}}</cbc:StreetName>
+                {%- if guia_embebida.destino.urbanizacion %}
+                <cbc:CitySubdivisionName>{{guia_embebida.destino.urbanizacion}}</cbc:CitySubdivisionName>
                 {%- endif %}
-                <cbc:CityName>{{guia_embebida.llegada.provincia}}</cbc:CityName>
-                <cbc:CountrySubentity>{{guia_embebida.llegada.departamento}}</cbc:CountrySubentity>
-                <cbc:District>{{guia_embebida.llegada.distrito}}</cbc:District>
+                <cbc:CityName>{{guia_embebida.destino.provincia}}</cbc:CityName>
+                <cbc:CountrySubentity>{{guia_embebida.destino.departamento}}</cbc:CountrySubentity>
+                <cbc:District>{{guia_embebida.destino.distrito}}</cbc:District>
                 <cac:Country>
-                    <cbc:IdentificationCode>{{guia_embebida.llegada.codigo_pais}}</cbc:IdentificationCode>
+                    <cbc:IdentificationCode>{{guia_embebida.destino.codigo_pais}}</cbc:IdentificationCode>
                 </cac:Country>
             </cac:Address>
         </cac:DeliveryLocation>
@@ -83,9 +85,9 @@
         </cac:Despatch>
         <cac:Shipment>
             <cbc:ID>1</cbc:ID>
-            <cbc:GrossWeightMeasure unitCode="{{guia_embebida.unidad_peso_bruto}}">{{guia_embebida.peso_bruto}}</cbc:GrossWeightMeasure>
+            <cbc:GrossWeightMeasure unitCode="{{guia_embebida.peso_bruto_unidad_medida}}">{{guia_embebida.peso_bruto}}</cbc:GrossWeightMeasure>
             <cac:ShipmentStage>
-                <cbc:TransportModeCode>{{guia_embebida.modalidad_traslado}}</cbc:TransportModeCode>
+                <cbc:TransportModeCode>{{guia_embebida.tipo_modalidad_traslado}}</cbc:TransportModeCode>
                 <cac:TransitPeriod>
                     <cbc:StartDate>{{fecha_emision}}</cbc:StartDate>
                 </cac:TransitPeriod>
@@ -98,15 +100,15 @@
                     </cac:PartyName>
                 </cac:CarrierParty>
                 <cac:DriverPerson>
-                    <cbc:ID schemeID="1">{{guia_embebida.numero_licencia}}</cbc:ID>
+                    <cbc:ID schemeID="1">{{guia_embebida.licencia}}</cbc:ID>
                 </cac:DriverPerson>
             </cac:ShipmentStage>
             <cac:Delivery>
                 <cac:DeliveryAddress>
-                    <cbc:ID>{{guia_embebida.llegada.ubigeo}}</cbc:ID>
-                    <cbc:StreetName>{{guia_embebida.llegada.direccion}}</cbc:StreetName>
+                    <cbc:ID>{{guia_embebida.destino.ubigeo}}</cbc:ID>
+                    <cbc:StreetName>{{guia_embebida.destino.direccion}}</cbc:StreetName>
                     <cac:Country>
-                        <cbc:IdentificationCode>{{guia_embebida.llegada.codigo_pais}}</cbc:IdentificationCode>
+                        <cbc:IdentificationCode>{{guia_embebida.destino.codigo_pais}}</cbc:IdentificationCode>
                     </cac:Country>
                 </cac:DeliveryAddress>
             </cac:Delivery>

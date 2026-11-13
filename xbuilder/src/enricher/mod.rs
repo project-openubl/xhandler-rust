@@ -5,13 +5,7 @@ use crate::enricher::fill::Fill;
 use crate::enricher::process::Process;
 use crate::enricher::summary::Summary;
 use crate::enricher::validate::Validate;
-use crate::models::credit_note::CreditNote;
-use crate::models::debit_note::DebitNote;
-use crate::models::despatch_advice::DespatchAdvice;
-use crate::models::invoice::Invoice;
-use crate::models::perception_retention::{Perception, Retention};
-use crate::models::summary_documents::SummaryDocuments;
-use crate::models::voided_documents::{Reversion, VoidedDocuments};
+use crate::models::voided_documents::Reversion;
 
 mod bounds;
 mod fill;
@@ -33,36 +27,14 @@ pub trait Enrich {
     fn enrich(&mut self, defaults: &Defaults) -> anyhow::Result<()>;
 }
 
-fn enrich_document<T: Fill + Process + Summary + Validate>(
-    document: &mut T,
-    defaults: &Defaults,
-) -> anyhow::Result<()> {
-    Fill::fill(document, defaults);
-    Process::process(document);
-    Summary::summary(document);
-    document.validate()
+impl<T: Fill + Process + Summary + Validate> Enrich for T {
+    fn enrich(&mut self, defaults: &Defaults) -> anyhow::Result<()> {
+        Fill::fill(self, defaults);
+        Process::process(self);
+        Summary::summary(self);
+        self.validate()
+    }
 }
-
-macro_rules! impl_enrich {
-    ($($document:ty),*) => {
-        $(impl Enrich for $document {
-            fn enrich(&mut self, defaults: &Defaults) -> anyhow::Result<()> {
-                enrich_document(self, defaults)
-            }
-        })*
-    };
-}
-
-impl_enrich!(
-    Invoice,
-    CreditNote,
-    DebitNote,
-    VoidedDocuments,
-    SummaryDocuments,
-    Perception,
-    Retention,
-    DespatchAdvice
-);
 
 impl Enrich for Reversion {
     fn enrich(&mut self, defaults: &Defaults) -> anyhow::Result<()> {

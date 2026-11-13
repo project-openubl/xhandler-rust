@@ -390,7 +390,11 @@ fn invalid_igv_tipo_is_an_error() {
 fn invalid_cliente_tipo_documento_identidad_is_an_error() {
     let mut invoice = Invoice::default();
     invoice.cliente.tipo_documento_identidad = "PASAPORTE_X".into();
-    assert!(invoice.enrich(&defaults_base()).is_err());
+    let error = invoice.enrich(&defaults_base()).unwrap_err();
+    assert_eq!(
+        error.to_string(),
+        "cliente.tipo_documento_identidad: PASAPORTE_X is not a valid Catalog6"
+    );
 }
 
 #[test]
@@ -399,5 +403,20 @@ fn invalid_tipo_nota_is_an_error() {
         tipo_nota: Some("99".into()),
         ..Default::default()
     };
-    assert!(credit_note.enrich(&defaults_base()).is_err());
+    let error = credit_note.enrich(&defaults_base()).unwrap_err();
+    assert_eq!(error.to_string(), "tipo_nota: 99 is not a valid Catalog9");
+}
+
+#[test]
+fn cargo_tipo_by_name() {
+    let invoice = enrich(Invoice {
+        cargos: vec![Cargo {
+            tipo: "CARGOS_GLOBALES_QUE_AFECTAN_BASE_IMPONIBLE_IGV_IVAP".into(),
+            monto: Decimal::TEN,
+            monto_base: None,
+            factor: None,
+        }],
+        ..Default::default()
+    });
+    assert_eq!(invoice.cargos[0].tipo, "49");
 }

@@ -34,18 +34,18 @@ async fn invoice_guia_embebida() {
         }],
         guia_embebida: Some(GuiaEmbebida {
             partida: direccion("150101", "Av. Origen 123"),
-            llegada: direccion("150102", "Av. Destino 456"),
+            destino: direccion("150102", "Av. Destino 456"),
             transportista: Cliente {
                 tipo_documento_identidad: "6".into(),
                 numero_documento_identidad: "20123456789".into(),
                 nombre: "Transportes Veloz S.A.C.".into(),
                 ..Default::default()
             },
-            numero_licencia: "Q12345678".into(),
+            licencia: "Q12345678".into(),
             placa: "ABC-123".into(),
-            modalidad_traslado: "01".into(),
+            tipo_modalidad_traslado: "01".into(),
             peso_bruto: dec!(10.5),
-            unidad_peso_bruto: "KGM".into(),
+            peso_bruto_unidad_medida: "KGM".into(),
         }),
         ..invoice_base()
     };
