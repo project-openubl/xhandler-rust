@@ -9,19 +9,17 @@ use zip::{ZipArchive, ZipWriter};
 
 use crate::encoding::decode_xml;
 
-pub fn create_zip(content: &[u8], file_name_inside_zip: &str) -> ZipResult<Vec<u8>> {
+/// Zips `(file name, content)` entries
+pub fn create_zip(entries: &[(String, &[u8])]) -> ZipResult<Vec<u8>> {
     let mut data = Vec::new();
-
     {
-        let buff = Cursor::new(&mut data);
-        let mut zip = ZipWriter::new(buff);
-
-        let file_options = SimpleFileOptions::default();
-        zip.start_file(file_name_inside_zip, file_options)?;
-        zip.write_all(content)?;
+        let mut zip = ZipWriter::new(Cursor::new(&mut data));
+        for (name, content) in entries {
+            zip.start_file(name.as_str(), SimpleFileOptions::default())?;
+            zip.write_all(content)?;
+        }
         zip.finish()?;
     }
-
     Ok(data)
 }
 
@@ -86,5 +84,26 @@ mod tests {
 
         let result = super::read_cdr_from_zip(&data).unwrap();
         assert_eq!(result, "<cdr/>");
+    }
+
+    #[test]
+    fn create_zip_with_several_files() {
+        use std::io::{Cursor, Read};
+
+        let entries = [
+            ("a.xml".to_string(), b"<a/>".as_slice()),
+            ("b.xml".to_string(), b"<b/>".as_slice()),
+        ];
+        let zip = super::create_zip(&entries).unwrap();
+
+        let mut archive = zip::ZipArchive::new(Cursor::new(zip)).unwrap();
+        assert_eq!(archive.file_names().collect::<Vec<_>>(), ["a.xml", "b.xml"]);
+        let mut content = String::new();
+        archive
+            .by_name("b.xml")
+            .unwrap()
+            .read_to_string(&mut content)
+            .unwrap();
+        assert_eq!(content, "<b/>");
     }
 }

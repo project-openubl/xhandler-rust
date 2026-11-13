@@ -91,3 +91,23 @@ async fn send_voided_documents() {
     // };
     // assert!(result);
 }
+
+/// SUNAT only accepts packs in production; beta answers with a fault
+/// (EXCEPCION), like in xhandler-java's billService_sendPack test.
+#[serial_test::serial]
+#[tokio::test]
+async fn send_pack() {
+    let files = ["12345678912-01-F001-1.xml", "12345678912-RA-20200328-1.xml"]
+        .map(|name| UblFile::from_path(Path::new(&format!("{BASE}/{name}"))).unwrap());
+
+    let result = CLIENT
+        .send_pack("12345678912-LT-20160405-1", &files)
+        .await
+        .expect("Could not get a valid response");
+
+    match result.response {
+        SendFileAggregatedResponse::Ticket(_) => {}
+        SendFileAggregatedResponse::Error(error) => assert_eq!(error.status(), Status::Excepcion),
+        SendFileAggregatedResponse::Cdr(..) => panic!("A pack is answered with a ticket"),
+    }
+}
