@@ -1,10 +1,10 @@
 use std::str::FromStr;
 
-use anyhow::anyhow;
 use reqwest::StatusCode;
 
 use crate::constants::HTTP_CLIENT;
 use crate::models::{Credentials, SendFileTarget, SoapFileTargetAction, VerifyTicketTarget};
+use crate::rest;
 use crate::soap::envelope::{BodyData, EnvelopeData, FileData, ToStringXml};
 use crate::soap::send_file_response::SendFileXmlResponse;
 use crate::soap::verify_ticket_response::VerifyTicketXmlResponse;
@@ -61,7 +61,7 @@ pub struct VerifyTicketStatus {
     pub status_code: String,
 }
 
-/// SOAP fault returned by SUNAT
+/// Error returned by SUNAT (SOAP fault or REST error)
 pub use crate::soap::SoapFault as ErrorResponse;
 
 impl ClientSUNAT {
@@ -96,7 +96,7 @@ impl ClientSUNAT {
                 let (status, response_body) = post_soap(url, body, &soap_action).await?;
                 parse_soap_response::<SendFileXmlResponse>(status, &response_body).map(Into::into)
             }
-            SendFileTarget::Rest(_, _) => Err(ClientSunatErr::Any(anyhow!("Not implemented"))),
+            SendFileTarget::Rest(url, _) => rest::send_document(url, file, credentials).await,
         }
     }
 
@@ -119,7 +119,7 @@ impl ClientSUNAT {
                 parse_soap_response::<VerifyTicketXmlResponse>(status, &response_body)
                     .map(Into::into)
             }
-            VerifyTicketTarget::Rest(_) => Err(ClientSunatErr::Any(anyhow!("Not implemented"))),
+            VerifyTicketTarget::Rest(url) => rest::verify_ticket(url, ticket, credentials).await,
         }
     }
 }
@@ -151,32 +151,34 @@ impl From<VerifyTicketXmlResponse> for VerifyTicketResponse {
     }
 }
 
-/// POSTs a SOAP envelope and returns the HTTP status and body. A connection
-/// failure is retried once; that request never reached SUNAT, so retrying it
-/// can't register the same document twice.
+/// Sends a request and returns the HTTP status and body. A connection failure
+/// is retried once; that request never reached SUNAT, so retrying it can't
+/// register the same document twice.
+pub(crate) async fn send_request(
+    request: impl Fn() -> reqwest::RequestBuilder,
+) -> Result<(StatusCode, String), ClientSunatErr> {
+    let response = match request().send().await {
+        Err(error) if error.is_connect() => request().send().await?,
+        other => other?,
+    };
+    let status = response.status();
+    Ok((status, response.text().await?))
+}
+
+/// POSTs a SOAP envelope
 async fn post_soap(
     url: &str,
     body: String,
     soap_action: &str,
 ) -> Result<(StatusCode, String), ClientSunatErr> {
-    let client = &*HTTP_CLIENT;
-    let request = || {
-        client
+    send_request(|| {
+        HTTP_CLIENT
             .post(url)
             .body(body.clone())
             .header("Content-Type", "text/xml; charset=utf-8")
             .header("SOAPAction", soap_action)
-            .send()
-    };
-
-    let response = match request().await {
-        Err(error) if error.is_connect() => request().await?,
-        other => other?,
-    };
-
-    let status = response.status();
-    let body = response.text().await?;
-    Ok((status, body))
+    })
+    .await
 }
 
 /// SUNAT reports rejections as SOAP faults with HTTP 500, so the body is

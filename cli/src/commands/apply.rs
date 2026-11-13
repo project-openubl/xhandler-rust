@@ -5,7 +5,7 @@ use clap::Args;
 use crate::commands::create::create_xml;
 use xhandler::prelude::{UblFile, XSigner};
 
-use crate::commands::send::SendArgs;
+use crate::commands::send::{CredentialArgs, SendArgs};
 use crate::commands::sign::KeyArgs;
 
 #[derive(Args)]
@@ -32,13 +32,8 @@ pub struct ApplyArgs {
     #[command(flatten)]
     pub keys: KeyArgs,
 
-    /// Usuario SOL de SUNAT (con --beta se usan credenciales de prueba)
-    #[arg(long, env = "OPENUBL_USERNAME")]
-    pub username: Option<String>,
-
-    /// Clave SOL de SUNAT (con --beta se usan credenciales de prueba)
-    #[arg(long, env = "OPENUBL_PASSWORD")]
-    pub password: Option<String>,
+    #[command(flatten)]
+    pub credentials: CredentialArgs,
 
     /// Usar URLs de prueba, credenciales y certificados de prueba de SUNAT beta
     #[arg(long)]
@@ -111,8 +106,7 @@ impl ApplyArgs {
         let send_args = SendArgs {
             input_file: String::new(),
             output_file: self.output_file.clone(),
-            username: self.username.clone(),
-            password: self.password.clone(),
+            credentials: self.credentials.clone(),
             url_invoice: None,
             url_perception_retention: None,
             url_despatch: None,

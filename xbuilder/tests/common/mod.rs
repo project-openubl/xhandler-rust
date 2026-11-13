@@ -37,6 +37,7 @@ lazy_static::lazy_static! {
         credentials: Credentials {
             username: "12345678959MODDATOS".to_string(),
             password: "MODDATOS".to_string(),
+            ..Default::default()
         },
     };
 }

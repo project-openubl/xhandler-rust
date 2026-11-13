@@ -5,6 +5,7 @@ mod encoding;
 mod file_sender;
 mod models;
 pub mod prelude;
+mod rest;
 mod soap;
 mod ubl_file;
 mod xml_utils;

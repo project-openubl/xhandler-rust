@@ -1,6 +1,6 @@
 use std::process::Command;
 
-use openubl_cli::commands::send::SendArgs;
+use openubl_cli::commands::send::{CredentialArgs, SendArgs};
 
 const BINARY: &str = env!("CARGO_BIN_EXE_openubl");
 const E2E_RESOURCES: &str = "../xsender/tests/resources/e2e";
@@ -183,8 +183,7 @@ fn make_send_args(beta: bool) -> SendArgs {
     SendArgs {
         input_file: String::new(),
         output_file: None,
-        username: None,
-        password: None,
+        credentials: CredentialArgs::default(),
         url_invoice: None,
         url_perception_retention: None,
         url_despatch: None,
@@ -271,7 +270,7 @@ fn resolve_urls_custom_overrides_beta() {
 #[test]
 fn resolve_credentials_beta_defaults() {
     let args = make_send_args(true);
-    let creds = args.resolve_credentials().unwrap();
+    let creds = args.credentials.resolve(args.beta).unwrap();
 
     assert_eq!(creds.username, "12345678959MODDATOS");
     assert_eq!(creds.password, "MODDATOS");
@@ -280,11 +279,14 @@ fn resolve_credentials_beta_defaults() {
 #[test]
 fn resolve_credentials_beta_with_override() {
     let args = SendArgs {
-        username: Some("custom_user".to_string()),
-        password: Some("custom_pass".to_string()),
+        credentials: CredentialArgs {
+            username: Some("custom_user".to_string()),
+            password: Some("custom_pass".to_string()),
+            ..Default::default()
+        },
         ..make_send_args(true)
     };
-    let creds = args.resolve_credentials().unwrap();
+    let creds = args.credentials.resolve(args.beta).unwrap();
 
     assert_eq!(creds.username, "custom_user");
     assert_eq!(creds.password, "custom_pass");
@@ -293,18 +295,37 @@ fn resolve_credentials_beta_with_override() {
 #[test]
 fn resolve_credentials_prod_missing_fails() {
     let args = make_send_args(false);
-    assert!(args.resolve_credentials().is_err());
+    assert!(args.credentials.resolve(args.beta).is_err());
 }
 
 #[test]
 fn resolve_credentials_prod_with_values() {
     let args = SendArgs {
-        username: Some("my_user".to_string()),
-        password: Some("my_pass".to_string()),
+        credentials: CredentialArgs {
+            username: Some("my_user".to_string()),
+            password: Some("my_pass".to_string()),
+            ..Default::default()
+        },
         ..make_send_args(false)
     };
-    let creds = args.resolve_credentials().unwrap();
+    let creds = args.credentials.resolve(args.beta).unwrap();
 
     assert_eq!(creds.username, "my_user");
     assert_eq!(creds.password, "my_pass");
+}
+
+#[test]
+fn resolve_credentials_with_rest_client() {
+    let args = SendArgs {
+        credentials: CredentialArgs {
+            client_id: Some("my-client-id".to_string()),
+            client_secret: Some("my-secret".to_string()),
+            ..Default::default()
+        },
+        ..make_send_args(true)
+    };
+    let credentials = args.credentials.resolve(args.beta).unwrap();
+
+    assert_eq!(credentials.client_id.as_deref(), Some("my-client-id"));
+    assert_eq!(credentials.client_secret.as_deref(), Some("my-secret"));
 }
