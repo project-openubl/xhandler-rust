@@ -152,39 +152,42 @@ GO_SCALARS = {
     "string": "string",
     "bool": "bool",
     "uint32": "uint32",
-    "decimal": "decimal.Decimal",
+    "decimal": "Decimal",
     "date": "Date",
     "time": "Time",
 }
 
 
-def go_type(t: Type) -> str:
+def go_type(t: Type, pointer: bool = False) -> str:
     if t.kind == "array":
         return "[]" + go_type(item(t))
     if t.kind == "map":
         return "map[string]string"
     base = ref(t) if t.kind == "ref" else GO_SCALARS[t.kind]
-    # A null string is the same as an empty one for xbuilder; other optional
-    # values need a pointer to tell "unset" from the zero value.
-    pointer = t.nullable and t.kind not in ("string",)
     return ("*" if pointer else "") + base
 
 
-def go_tag(p: Prop) -> str:
+def go_field(p: Prop) -> str:
+    """`Name Type `json:"..."``: unset values are left out so Rust fills its defaults."""
     t = p.type
-    if p.required and not t.nullable:
+    pointer, option = False, ",omitempty"
+    if t.nullable:
+        # xbuilder treats a null string as an empty one; other optional values
+        # need a pointer to tell "unset" from the zero value.
+        pointer = t.kind not in ("string", "array", "map")
+    elif p.required:
         option = ""
-    elif t.kind in ("date", "time") and not t.nullable:
+    elif t.kind == "decimal" and p.default not in (None, "0"):
+        pointer = True  # e.g. Defaults.igv_tasa: unset means the Rust default
+    elif t.kind in ("date", "time"):
         option = ",omitzero"
-    elif t.kind == "ref" and not t.nullable or t.kind == "decimal" and not t.nullable:
-        option = ""  # struct values are always sent; their zero value is the default
-    else:
-        option = ",omitempty"
-    return f'`json:"{p.name}{option}"`'
+    elif t.kind in ("ref", "decimal"):
+        option = ""  # always sent; the zero value equals the Rust default
+    return f'{pascal(p.name)} {go_type(t, pointer)} `json:"{p.name}{option}"`'
 
 
 def gen_go(models: list[Model], kinds: list[str]) -> str:
-    out = [f"// {HEADER}", "", "package xbuilder", "", 'import "github.com/shopspring/decimal"', ""]
+    out = [f"// {HEADER}", "", "package xbuilder", ""]
     for m in models:
         out += comment(m.description, "// ")
         if m.enum:
@@ -195,7 +198,7 @@ def gen_go(models: list[Model], kinds: list[str]) -> str:
         out.append(f"type {m.name} struct {{")
         for p in m.props:
             out += comment(p.description, "\t// ")
-            out.append(f"\t{pascal(p.name)} {go_type(p.type)} {go_tag(p)}")
+            out.append(f"\t{go_field(p)}")
         out += ["}", ""]
     for kind in kinds:
         out += [f'func ({kind}) Kind() string {{ return "{kind}" }}', ""]
