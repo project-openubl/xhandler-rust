@@ -12,7 +12,8 @@ pub const BETA_CERTIFICATE: &str = include_str!("../../../xsigner/resources/test
 #[derive(Args)]
 #[command(after_help = "\x1b[1mEjemplos:\x1b[0m
   openubl sign -f factura.xml --beta
-  openubl sign -f factura.xml --private-key llave.pem --certificate cert.pem -o firmado.xml")]
+  openubl sign -f factura.xml --private-key llave.pem --certificate cert.pem -o firmado.xml
+  openubl sign -f factura.xml --pfx certificado.pfx --pfx-password clave -o firmado.xml")]
 pub struct SignArgs {
     /// Archivo XML sin firmar. Usar "-" para leer desde stdin
     #[arg(short = 'f', long = "file")]
@@ -22,13 +23,21 @@ pub struct SignArgs {
     #[arg(short = 'o', long = "output")]
     pub output_file: Option<String>,
 
-    /// Ruta al archivo de llave privada PKCS#1 PEM (con --beta se usan certificados de prueba)
+    /// Ruta al archivo de llave privada PEM, PKCS#1 o PKCS#8 (con --beta se usan certificados de prueba)
     #[arg(long = "private-key", env = "OPENUBL_PRIVATE_KEY")]
     pub private_key: Option<String>,
 
     /// Ruta al archivo de certificado X.509 PEM (con --beta se usan certificados de prueba)
     #[arg(long = "certificate", env = "OPENUBL_CERTIFICATE")]
     pub certificate: Option<String>,
+
+    /// Ruta al certificado PKCS#12 (.pfx/.p12), en lugar de --private-key y --certificate
+    #[arg(long = "pfx", env = "OPENUBL_PFX", conflicts_with_all = ["private_key", "certificate"])]
+    pub pfx: Option<String>,
+
+    /// Clave del certificado PKCS#12
+    #[arg(long = "pfx-password", env = "OPENUBL_PFX_PASSWORD", requires = "pfx")]
+    pub pfx_password: Option<String>,
 
     /// Usar certificados de prueba de SUNAT beta
     #[arg(long)]
@@ -42,8 +51,10 @@ impl SignArgs {
             std::io::stdin().read_to_string(&mut buf)?;
             buf
         } else {
-            std::fs::read_to_string(&self.input_file)
+            // Accepts UTF-8 and ISO-8859-1 files
+            XSigner::from_file(&self.input_file)
                 .with_context(|| format!("no se puede leer el archivo XML: {}", self.input_file))?
+                .xml_document
         };
 
         let key_pair = self.resolve_key_pair()?;
@@ -61,6 +72,14 @@ impl SignArgs {
     }
 
     pub fn resolve_key_pair(&self) -> anyhow::Result<RsaKeyPair> {
+        if let Some(path) = &self.pfx {
+            let pfx = std::fs::read(path)
+                .with_context(|| format!("no se puede leer el certificado PKCS#12: {path}"))?;
+            let password = self.pfx_password.as_deref().unwrap_or_default();
+            return RsaKeyPair::from_pkcs12(&pfx, password)
+                .with_context(|| format!("error al leer el certificado PKCS#12: {path}"));
+        }
+
         let private_key_pem = match &self.private_key {
             Some(path) => std::fs::read_to_string(path)
                 .with_context(|| format!("no se puede leer la llave privada: {path}"))?,
@@ -81,13 +100,11 @@ impl SignArgs {
                 )
             }
         };
-        RsaKeyPair::from_pkcs1_pem_and_certificate(&private_key_pem, &certificate_pem).map_err(
-            |e| {
-                anyhow::anyhow!(
-                    "error al leer certificados: {e}\n  Verificar que --private-key sea PKCS#1 PEM y --certificate sea X.509 PEM"
-                )
-            },
-        )
+        RsaKeyPair::from_pem(&private_key_pem, &certificate_pem).map_err(|e| {
+            anyhow::anyhow!(
+                "error al leer certificados: {e}\n  Verificar que --private-key sea PEM (PKCS#1 o PKCS#8) y --certificate sea X.509 PEM"
+            )
+        })
     }
 
     pub fn sign_xml(&self, xml_content: &str, key_pair: &RsaKeyPair) -> anyhow::Result<Vec<u8>> {

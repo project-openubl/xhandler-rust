@@ -32,13 +32,10 @@ thiserror = "2.0"
 anyhow = "1.0"
 sha2 = "0.10"
 encoding_rs = "0.8"
-rsa = "0.9"
 serial_test = "3.4"
 tokio = "1.49"
 libxml = "0.3"
 quick-xml = "0.39"
-x509-cert = "0.2"
-der = { version = "0.7" }
 openssl = "0.10"
 xml_c14n = "0.3"
 
