@@ -15,7 +15,7 @@ jobs:
   cargo-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: Swatinem/rust-cache@v2
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
@@ -28,7 +28,7 @@ jobs:
   cargo-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: Swatinem/rust-cache@v2
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
