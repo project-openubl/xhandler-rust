@@ -21,20 +21,19 @@ use xml_c14n::{
 /// xbuilder templates (`#PROJECT-OPENUBL-SIGN`).
 pub const SIGNATURE_ID: &str = "PROJECT-OPENUBL-SIGN";
 
-const EXT_NS: &[u8] = b"urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2";
+const DS_NS: &str = "http://www.w3.org/2000/09/xmldsig#";
+const EXT_NS: &str = "urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2";
 
 #[derive(Debug, thiserror::Error)]
 pub enum SignErr {
     #[error(transparent)]
-    Key(#[from] ErrorStack),
-    #[error(transparent)]
-    IO(#[from] io::Error),
+    OpenSsl(#[from] ErrorStack),
     #[error(transparent)]
     Canonicalization(#[from] CanonicalizationErrorCode),
     #[error(transparent)]
     QuickXml(#[from] quick_xml::Error),
     #[error("{0}")]
-    Document(String),
+    Invalid(String),
 }
 
 /// Private key and X.509 certificate used to sign
@@ -46,7 +45,7 @@ pub struct RsaKeyPair {
 impl RsaKeyPair {
     /// Private key in PEM (PKCS#1 `RSA PRIVATE KEY` or PKCS#8 `PRIVATE KEY`)
     /// and X.509 certificate in PEM.
-    pub fn from_pem(private_key: &str, certificate: &str) -> Result<Self, ErrorStack> {
+    pub fn from_pem(private_key: &str, certificate: &str) -> Result<Self, SignErr> {
         Ok(Self {
             private_key: PKey::private_key_from_pem(private_key.as_bytes())?,
             certificate: X509::from_pem(certificate.as_bytes())?,
@@ -73,7 +72,7 @@ impl RsaKeyPair {
                 private_key,
                 certificate,
             }),
-            _ => Err(SignErr::Document(
+            _ => Err(SignErr::Invalid(
                 "The PKCS#12 keystore must contain a private key and its certificate".into(),
             )),
         }
@@ -90,9 +89,8 @@ pub struct XSigner {
 }
 
 impl XSigner {
-    /// Reads a UTF-8 or ISO-8859-1 XML file.
-    pub fn from_file(filename: &str) -> Result<Self, io::Error> {
-        let bytes = fs::read(filename)?;
+    /// Reads UTF-8 or ISO-8859-1 XML.
+    pub fn from_bytes(bytes: Vec<u8>) -> Result<Self, io::Error> {
         let xml_document = match String::from_utf8(bytes) {
             Ok(text) => text,
             Err(error) if declares_iso_8859_1(error.as_bytes()) => {
@@ -101,6 +99,11 @@ impl XSigner {
             Err(error) => return Err(io::Error::new(io::ErrorKind::InvalidData, error)),
         };
         Ok(Self { xml_document })
+    }
+
+    /// Reads a UTF-8 or ISO-8859-1 XML file.
+    pub fn from_file(filename: &str) -> Result<Self, io::Error> {
+        Self::from_bytes(fs::read(filename)?)
     }
 
     /// Signs the document with an enveloped RSA-SHA256 signature placed in the
@@ -112,31 +115,16 @@ impl XSigner {
         // Without its declaration the text is parsed as what it is: UTF-8.
         // Keeping e.g. encoding="ISO-8859-1" would make libxml2 re-decode it.
         let mut document = strip_xml_declaration(&self.xml_document).to_string();
-
-        let slot = match find_signature_slot(&document)? {
-            Some(slot) => slot,
-            None => {
-                add_extension_content(&mut document)?;
-                find_signature_slot(&document)?
-                    .ok_or_else(|| SignErr::Document("Could not add ext:UBLExtensions".into()))?
-            }
-        };
+        let position = prepare_signature_slot(&mut document)?;
 
         // Reference URI="" + enveloped transform: the digest is the inclusive
         // C14N 1.0 (without comments) of the document without the signature.
-        let canonical_document = canonicalize_xml(
-            &document,
-            CanonicalizationOptions {
-                mode: CanonicalizationMode::Canonical1_0,
-                keep_comments: false,
-                inclusive_ns_prefixes: vec![],
-            },
-        )?;
+        let canonical_document = canonicalize(&document, CanonicalizationMode::Canonical1_0)?;
         let digest = hash(MessageDigest::sha256(), canonical_document.as_bytes())?;
         let digest_base64 = general_purpose::STANDARD.encode(digest);
 
         let signed_info = format!(
-            "<ds:SignedInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\">\
+            "<ds:SignedInfo xmlns:ds=\"{DS_NS}\">\
 <ds:CanonicalizationMethod Algorithm=\"http://www.w3.org/2001/10/xml-exc-c14n#\"/>\
 <ds:SignatureMethod Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256\"/>\
 <ds:Reference URI=\"\">\
@@ -148,14 +136,8 @@ impl XSigner {
         );
         // Exclusive C14N, as declared: SignedInfo only uses the ds namespace,
         // so its canonical form doesn't depend on where it is inserted.
-        let canonical_signed_info = canonicalize_xml(
-            &signed_info,
-            CanonicalizationOptions {
-                mode: CanonicalizationMode::ExclusiveCanonical1_0,
-                keep_comments: false,
-                inclusive_ns_prefixes: vec![],
-            },
-        )?;
+        let canonical_signed_info =
+            canonicalize(&signed_info, CanonicalizationMode::ExclusiveCanonical1_0)?;
 
         let mut signer = Signer::new(MessageDigest::sha256(), &key_pair.private_key)?;
         signer.update(canonical_signed_info.as_bytes())?;
@@ -163,44 +145,72 @@ impl XSigner {
         let certificate = general_purpose::STANDARD.encode(key_pair.certificate.to_der()?);
 
         let signature = format!(
-            "<ds:Signature xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"{SIGNATURE_ID}\">\
+            "<ds:Signature xmlns:ds=\"{DS_NS}\" Id=\"{SIGNATURE_ID}\">\
 {signed_info}\
 <ds:SignatureValue>{signature_value}</ds:SignatureValue>\
 <ds:KeyInfo><ds:X509Data><ds:X509Certificate>{certificate}</ds:X509Certificate></ds:X509Data></ds:KeyInfo>\
 </ds:Signature>"
         );
-
-        match slot {
-            Slot::Inside(position) => document.insert_str(position, &signature),
-            Slot::SelfClosing { start, end } => {
-                // <ext:ExtensionContent/> becomes <ext:ExtensionContent>SIG</ext:ExtensionContent>
-                let tag = document[start..end].trim_end_matches("/>").trim_end();
-                let name = tag[1..].split_whitespace().next().unwrap_or_default();
-                let replacement = format!("{tag}>{signature}</{name}>");
-                document.replace_range(start..end, &replacement);
-            }
-        }
+        document.insert_str(position, &signature);
 
         Ok(format!("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n{document}").into_bytes())
     }
 }
 
-/// Where the signature goes, as byte offsets into the document text
+/// C14N without comments
+fn canonicalize(
+    xml: &str,
+    mode: CanonicalizationMode,
+) -> Result<String, CanonicalizationErrorCode> {
+    canonicalize_xml(
+        xml,
+        CanonicalizationOptions {
+            mode,
+            keep_comments: false,
+            inclusive_ns_prefixes: vec![],
+        },
+    )
+}
+
+/// Returns the byte offset where the signature goes: inside the first
+/// `ext:ExtensionContent` without child elements. A self-closing
+/// `<ext:ExtensionContent/>` is expanded first, and `ext:UBLExtensions` is added
+/// when the document has none; neither changes the document's C14N form.
+fn prepare_signature_slot(document: &mut String) -> Result<usize, SignErr> {
+    match find_empty_extension_content(document)? {
+        Some(Slot::Inside(position)) => Ok(position),
+        Some(Slot::SelfClosing { start, end, name }) => {
+            let start_tag = format!(
+                "{}>",
+                document[start..end].trim_end_matches("/>").trim_end()
+            );
+            document.replace_range(start..end, &format!("{start_tag}</{name}>"));
+            Ok(start + start_tag.len())
+        }
+        None => add_ubl_extensions(document),
+    }
+}
+
+/// An empty `ext:ExtensionContent`, as byte offsets into the document text
 enum Slot {
     /// Right after an `<ext:ExtensionContent>` start tag with no child elements
     Inside(usize),
     /// A self-closing `<ext:ExtensionContent/>` tag
-    SelfClosing { start: usize, end: usize },
+    SelfClosing {
+        start: usize,
+        end: usize,
+        name: String,
+    },
 }
 
 fn is_extension_content(namespace: &ResolveResult, local_name: &[u8]) -> bool {
-    matches!(namespace, ResolveResult::Bound(ns) if ns.as_ref() == EXT_NS)
+    matches!(namespace, ResolveResult::Bound(ns) if ns.as_ref() == EXT_NS.as_bytes())
         && local_name == b"ExtensionContent"
 }
 
 /// Finds the first `ext:ExtensionContent` without child elements. Returns
 /// `None` when the document has no `ext:ExtensionContent` at all.
-fn find_signature_slot(document: &str) -> Result<Option<Slot>, SignErr> {
+fn find_empty_extension_content(document: &str) -> Result<Option<Slot>, SignErr> {
     let mut reader = NsReader::from_str(document);
     // Byte offset right after an open ExtensionContent that has no children yet
     let mut open_content: Option<usize> = None;
@@ -211,8 +221,11 @@ fn find_signature_slot(document: &str) -> Result<Option<Slot>, SignErr> {
         let (namespace, event) = reader.read_resolved_event()?;
         match event {
             Event::Empty(e) if is_extension_content(&namespace, e.local_name().as_ref()) => {
-                let end = reader.buffer_position() as usize;
-                return Ok(Some(Slot::SelfClosing { start, end }));
+                return Ok(Some(Slot::SelfClosing {
+                    start,
+                    end: reader.buffer_position() as usize,
+                    name: String::from_utf8_lossy(e.name().as_ref()).into_owned(),
+                }));
             }
             Event::Start(e) if is_extension_content(&namespace, e.local_name().as_ref()) => {
                 has_extension_content = true;
@@ -226,7 +239,7 @@ fn find_signature_slot(document: &str) -> Result<Option<Slot>, SignErr> {
             // Any child element means this ExtensionContent is already in use
             Event::Start(_) | Event::Empty(_) => open_content = None,
             Event::Eof if has_extension_content => {
-                return Err(SignErr::Document(
+                return Err(SignErr::Invalid(
                     "Every ext:ExtensionContent already has content; add an empty one for the signature".into(),
                 ))
             }
@@ -236,14 +249,15 @@ fn find_signature_slot(document: &str) -> Result<Option<Slot>, SignErr> {
     }
 }
 
-/// Inserts an empty `ext:UBLExtensions` block as the first child of the root.
-fn add_extension_content(document: &mut String) -> Result<(), SignErr> {
+/// Inserts an empty `ext:UBLExtensions` block as the first child of the root
+/// and returns the offset inside its `ext:ExtensionContent`.
+fn add_ubl_extensions(document: &mut String) -> Result<usize, SignErr> {
     let mut reader = NsReader::from_str(document);
     loop {
         match reader.read_event()? {
             Event::Start(_) => break,
             Event::Eof | Event::Empty(_) => {
-                return Err(SignErr::Document("The XML has no root element".into()))
+                return Err(SignErr::Invalid("The XML has no root element".into()))
             }
             _ => {}
         }
@@ -251,11 +265,13 @@ fn add_extension_content(document: &mut String) -> Result<(), SignErr> {
 
     let position = reader.buffer_position() as usize;
     let extensions = format!(
-        "<ext:UBLExtensions xmlns:ext=\"{}\"><ext:UBLExtension><ext:ExtensionContent></ext:ExtensionContent></ext:UBLExtension></ext:UBLExtensions>",
-        String::from_utf8_lossy(EXT_NS)
+        "<ext:UBLExtensions xmlns:ext=\"{EXT_NS}\"><ext:UBLExtension><ext:ExtensionContent></ext:ExtensionContent></ext:UBLExtension></ext:UBLExtensions>"
     );
+    let content_offset = extensions
+        .find("</ext:ExtensionContent>")
+        .unwrap_or_default();
     document.insert_str(position, &extensions);
-    Ok(())
+    Ok(position + content_offset)
 }
 
 /// Loads OpenSSL's legacy provider once for the whole process (keeping the
@@ -292,9 +308,9 @@ mod tests {
     use openssl::hash::{hash, MessageDigest};
     use openssl::sign::Verifier;
     use openssl::x509::X509;
-    use xml_c14n::{canonicalize_xml, CanonicalizationMode, CanonicalizationOptions};
+    use xml_c14n::CanonicalizationMode;
 
-    use crate::{RsaKeyPair, SignErr, XSigner, SIGNATURE_ID};
+    use crate::{canonicalize, RsaKeyPair, SignErr, XSigner, DS_NS, SIGNATURE_ID};
 
     const RESOURCES: &str = "resources/test";
     const HEAD: &str = r#"<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">"#;
@@ -322,64 +338,37 @@ mod tests {
     /// Verifies the signature the way a validator (e.g. SUNAT) does: digest of
     /// the document without the ds:Signature, and RSA-SHA256 over SignedInfo.
     fn assert_valid_signature(signed: &str) {
+        let base64 = |start, end| {
+            general_purpose::STANDARD
+                .decode(between(signed, start, end))
+                .unwrap()
+        };
+
         let signature_start = signed.find("<ds:Signature ").unwrap();
         let signature_end = signed.find("</ds:Signature>").unwrap() + "</ds:Signature>".len();
         let unsigned = format!("{}{}", &signed[..signature_start], &signed[signature_end..]);
         let unsigned = unsigned.split_once("?>").unwrap().1;
-
-        let canonical = canonicalize_xml(
-            unsigned,
-            CanonicalizationOptions {
-                mode: CanonicalizationMode::Canonical1_0,
-                keep_comments: false,
-                inclusive_ns_prefixes: vec![],
-            },
-        )
-        .unwrap();
-        let digest = general_purpose::STANDARD
-            .encode(hash(MessageDigest::sha256(), canonical.as_bytes()).unwrap());
+        let canonical = canonicalize(unsigned, CanonicalizationMode::Canonical1_0).unwrap();
+        let digest = hash(MessageDigest::sha256(), canonical.as_bytes()).unwrap();
         assert_eq!(
-            digest,
-            between(signed, "<ds:DigestValue>", "</ds:DigestValue>")
+            digest.to_vec(),
+            base64("<ds:DigestValue>", "</ds:DigestValue>")
         );
 
+        let signed_info_start = format!("<ds:SignedInfo xmlns:ds=\"{DS_NS}\">");
         let signed_info = format!(
-            "<ds:SignedInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\">{}</ds:SignedInfo>",
-            between(
-                signed,
-                "<ds:SignedInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\">",
-                "</ds:SignedInfo>"
-            )
+            "{signed_info_start}{}</ds:SignedInfo>",
+            between(signed, &signed_info_start, "</ds:SignedInfo>")
         );
-        let canonical_signed_info = canonicalize_xml(
-            &signed_info,
-            CanonicalizationOptions {
-                mode: CanonicalizationMode::ExclusiveCanonical1_0,
-                keep_comments: false,
-                inclusive_ns_prefixes: vec![],
-            },
-        )
-        .unwrap();
-        let certificate = X509::from_der(
-            &general_purpose::STANDARD
-                .decode(between(
-                    signed,
-                    "<ds:X509Certificate>",
-                    "</ds:X509Certificate>",
-                ))
-                .unwrap(),
-        )
-        .unwrap();
+        let canonical_signed_info =
+            canonicalize(&signed_info, CanonicalizationMode::ExclusiveCanonical1_0).unwrap();
+
+        let certificate =
+            X509::from_der(&base64("<ds:X509Certificate>", "</ds:X509Certificate>")).unwrap();
         let public_key = certificate.public_key().unwrap();
         let mut verifier = Verifier::new(MessageDigest::sha256(), &public_key).unwrap();
         verifier.update(canonical_signed_info.as_bytes()).unwrap();
-        let signature_value = general_purpose::STANDARD
-            .decode(between(
-                signed,
-                "<ds:SignatureValue>",
-                "</ds:SignatureValue>",
-            ))
-            .unwrap();
+        let signature_value = base64("<ds:SignatureValue>", "</ds:SignatureValue>");
         assert!(
             verifier.verify(&signature_value).unwrap(),
             "Invalid SignatureValue"
@@ -459,6 +448,6 @@ mod tests {
         let xml = format!(
             "{HEAD}<ext:UBLExtensions><ext:UBLExtension><ext:ExtensionContent><cbc:Note>info</cbc:Note></ext:ExtensionContent></ext:UBLExtension></ext:UBLExtensions></Invoice>"
         );
-        assert!(matches!(sign(&xml), Err(SignErr::Document(_))));
+        assert!(matches!(sign(&xml), Err(SignErr::Invalid(_))));
     }
 }
