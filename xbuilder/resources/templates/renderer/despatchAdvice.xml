@@ -197,17 +197,17 @@
                     <cbc:RegistrationNationalityID>{{envio.vehiculo.numero_circulacion}}</cbc:RegistrationNationalityID>
                 </cac:ApplicableTransportMeans>
                 {%- endif %}
-                {%- for it in envio.vehiculo.secundarios %}
+                {%- for secundario in envio.vehiculo.secundarios %}
                 <cac:AttachedTransportEquipment>
-                    <cbc:ID>{{it.placa}}</cbc:ID>
-                    {%- if it.numero_circulacion %}
+                    <cbc:ID>{{secundario.placa}}</cbc:ID>
+                    {%- if secundario.numero_circulacion %}
                     <cac:ApplicableTransportMeans>
-                        <cbc:RegistrationNationalityID>{{it.numero_circulacion}}</cbc:RegistrationNationalityID>
+                        <cbc:RegistrationNationalityID>{{secundario.numero_circulacion}}</cbc:RegistrationNationalityID>
                     </cac:ApplicableTransportMeans>
                     {%- endif %}
-                    {%- if it.numero_autorizacion %}
+                    {%- if secundario.numero_autorizacion %}
                     <cac:ShipmentDocumentReference>
-                        <cbc:ID schemeID="{{it.codigo_emisor}}" schemeName="Entidad Autorizadora" schemeAgencyName="PE:SUNAT">{{it.numero_autorizacion}}</cbc:ID>
+                        <cbc:ID schemeID="{{secundario.codigo_emisor}}" schemeName="Entidad Autorizadora" schemeAgencyName="PE:SUNAT">{{secundario.numero_autorizacion}}</cbc:ID>
                     </cac:ShipmentDocumentReference>
                     {%- endif %}
                 </cac:AttachedTransportEquipment>
@@ -237,7 +237,7 @@
     {%- for it in detalles %}
     <cac:DespatchLine>
         <cbc:ID>{{loop.index}}</cbc:ID>
-        <cbc:DeliveredQuantity unitCode="{{it.unidad_medida}}">{{it.cantidad | round_decimal(dp=2)}}</cbc:DeliveredQuantity>
+        <cbc:DeliveredQuantity unitCode="{{it.unidad_medida}}">{{it.cantidad | round_decimal}}</cbc:DeliveredQuantity>
         <cac:OrderLineReference>
             <cbc:LineID>{{loop.index}}</cbc:LineID>
         </cac:OrderLineReference>
@@ -253,12 +253,12 @@
                 <cbc:ItemClassificationCode listID="UNSPSC" listAgencyName="GS1 US" listName="Item Classification">{{it.codigo_sunat}}</cbc:ItemClassificationCode>
             </cac:CommodityClassification>
             {%- endif %}
-            {%- for it in it.atributos %}
+            {%- for atributo in it.atributos %}
             <cac:AdditionalItemProperty>
-                <cbc:Name>{{it.name}}</cbc:Name>
-                <cbc:NameCode>{{it.code}}</cbc:NameCode>
-                {%- if it.value %}
-                <cbc:Value>{{it.value}}</cbc:Value>
+                <cbc:Name>{{atributo.nombre}}</cbc:Name>
+                <cbc:NameCode>{{atributo.codigo}}</cbc:NameCode>
+                {%- if atributo.valor %}
+                <cbc:Value>{{atributo.valor}}</cbc:Value>
                 {%- endif %}
             </cac:AdditionalItemProperty>
             {%- endfor %}

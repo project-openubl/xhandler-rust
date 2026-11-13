@@ -49,7 +49,7 @@ async fn despatch_advice_min_data() {
         detalles: vec![DespatchAdviceItem {
             cantidad: dec!(0.5),
             unidad_medida: "KG".into(),
-            codigo: Some("123456".into()),
+            codigo: "123456".into(),
             ..Default::default()
         }],
         ..Default::default()
@@ -116,7 +116,7 @@ async fn despatch_advice_carrier_data() {
         detalles: vec![DespatchAdviceItem {
             cantidad: dec!(10.00),
             unidad_medida: "NIU".into(),
-            codigo: Some("PROD-99".into()),
+            codigo: "PROD-99".into(),
             descripcion: Some("Mercaderia variada".into()),
             ..Default::default()
         }],
@@ -216,18 +216,18 @@ async fn despatch_advice_complex_data() {
         detalles: vec![DespatchAdviceItem {
             cantidad: dec!(5.00),
             unidad_medida: "NIU".into(),
-            codigo: Some("ITEM-01".into()),
+            codigo: "ITEM-01".into(),
             descripcion: Some("Caja de herramientas".into()),
             atributos: vec![
-                DespatchAdviceItemAtributo {
-                    name: "Color".into(),
-                    code: "1001".into(),
-                    value: Some("Rojo".into()),
+                DespatchAdviceAtributo {
+                    nombre: "Color".into(),
+                    codigo: "1001".into(),
+                    valor: Some("Rojo".into()),
                 },
-                DespatchAdviceItemAtributo {
-                    name: "Marca".into(),
-                    code: "1002".into(),
-                    value: Some("ToolMaster".into()),
+                DespatchAdviceAtributo {
+                    nombre: "Marca".into(),
+                    codigo: "1002".into(),
+                    valor: Some("ToolMaster".into()),
                 },
             ],
             ..Default::default()

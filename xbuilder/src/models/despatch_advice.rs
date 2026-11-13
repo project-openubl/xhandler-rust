@@ -41,7 +41,8 @@ pub struct Remitente {
     pub numero_registro_mtc: Option<String>,
 }
 
-/// Destinatario (receptor de la mercancia)
+/// Persona identificada por su documento y nombre: el destinatario de la
+/// mercancia, y tambien el comprador y el tercero
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(default)]
 pub struct Destinatario {
@@ -114,7 +115,7 @@ pub struct Transportista {
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(default)]
 pub struct Chofer {
-    /// e.g. "Principal", "Secundario" (JobTitle)
+    /// Free text rendered as JobTitle, e.g. "CONDUCTOR_PRINCIPAL", "COPILOTO"
     pub tipo: Option<String>,
     /// Catalog6
     pub tipo_documento_identidad: String,
@@ -166,18 +167,18 @@ pub struct DespatchAdviceItem {
     pub unidad_medida: String,
     pub cantidad: Decimal,
     pub descripcion: Option<String>,
-    pub codigo: Option<String>,
+    pub codigo: String,
     pub codigo_sunat: Option<String>,
-    pub atributos: Vec<DespatchAdviceItemAtributo>,
+    pub atributos: Vec<DespatchAdviceAtributo>,
 }
 
 /// Propiedad adicional de un item (AdditionalItemProperty)
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(default)]
-pub struct DespatchAdviceItemAtributo {
-    pub code: String,
-    pub name: String,
-    pub value: Option<String>,
+pub struct DespatchAdviceAtributo {
+    pub codigo: String,
+    pub nombre: String,
+    pub valor: Option<String>,
 }
 
 /// Documento de baja asociado
