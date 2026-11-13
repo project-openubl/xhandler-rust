@@ -10,7 +10,7 @@ use xhandler::prelude::*;
   openubl send -f firmado.xml --beta
   openubl send -f firmado.xml --username 20123456789MODDATOS --password clave
 
-La salida es JSON en stdout. Codigo de salida: 0=exito, 2=error SUNAT.")]
+La salida es JSON en stdout. Codigo de salida: 0=aceptado/ticket, 2=rechazado o error SUNAT.")]
 pub struct SendArgs {
     /// Archivo XML firmado a enviar
     #[arg(short = 'f', long = "file")]
@@ -71,6 +71,7 @@ pub enum SendResult {
     Cdr {
         cdr_path: String,
         response_code: String,
+        status: Status,
         description: String,
         notes: Vec<String>,
     },
@@ -80,8 +81,13 @@ pub enum SendResult {
         ticket: String,
         verify_result: Option<serde_json::Value>,
     },
-    /// SUNAT returned an error.
-    Error { code: String, message: String },
+    /// SUNAT returned a SOAP fault.
+    Error {
+        code: String,
+        sunat_code: Option<u32>,
+        status: Status,
+        message: String,
+    },
 }
 
 impl SendArgs {
@@ -99,17 +105,19 @@ impl SendArgs {
             SendResult::Cdr {
                 cdr_path,
                 response_code,
+                status,
                 description,
                 notes,
             } => {
                 let output = serde_json::json!({
                     "cdr": cdr_path,
                     "response_code": response_code,
+                    "status": status.to_string(),
                     "description": description,
                     "notes": notes,
                 });
                 println!("{}", serde_json::to_string_pretty(&output)?);
-                Ok(ExitCode::SUCCESS)
+                Ok(super::exit_code_for(status))
             }
             SendResult::Ticket {
                 ticket,
@@ -122,9 +130,16 @@ impl SendArgs {
                 }
                 Ok(ExitCode::SUCCESS)
             }
-            SendResult::Error { code, message } => {
+            SendResult::Error {
+                code,
+                sunat_code,
+                status,
+                message,
+            } => {
                 let output = serde_json::json!({
                     "code": code,
+                    "sunat_code": sunat_code,
+                    "status": status.to_string(),
                     "message": message,
                 });
                 eprintln!("{}", serde_json::to_string_pretty(&output)?);
@@ -161,6 +176,7 @@ impl SendArgs {
 
                 Ok(SendResult::Cdr {
                     cdr_path,
+                    status: metadata.status(),
                     response_code: metadata.response_code,
                     description: metadata.description,
                     notes: metadata.notes,
@@ -170,8 +186,11 @@ impl SendArgs {
                 let verify_result = if self.no_interactive {
                     None
                 } else {
-                    super::prompt_verify_ticket(&ticket, &sender, self.beta, default_cdr_path)
-                        .await?
+                    // Fall back to the invoice service, which handles most tickets
+                    let target = result
+                        .verify_ticket_target
+                        .unwrap_or_else(|| VerifyTicketTarget::Soap(sender.urls.invoice.clone()));
+                    super::prompt_verify_ticket(&ticket, &sender, &target, default_cdr_path).await?
                 };
 
                 Ok(SendResult::Ticket {
@@ -180,6 +199,8 @@ impl SendArgs {
                 })
             }
             SendFileAggregatedResponse::Error(error) => Ok(SendResult::Error {
+                sunat_code: error.sunat_code(),
+                status: error.status(),
                 code: error.code,
                 message: error.message,
             }),

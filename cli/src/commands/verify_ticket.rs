@@ -10,7 +10,7 @@ use crate::commands::send::SendArgs;
 #[command(after_help = "\x1b[1mEjemplos:\x1b[0m
   openubl verify-ticket --ticket 1703154974517 -o respuesta.zip --beta
 
-La salida es JSON en stdout. Codigo de salida: 0=exito, 2=error SUNAT.")]
+La salida es JSON en stdout. Codigo de salida: 0=aceptado o en proceso, 2=rechazado o error SUNAT.")]
 pub struct VerifyTicketArgs {
     /// Numero de ticket obtenido de un envio anterior
     #[arg(long)]
@@ -64,32 +64,14 @@ impl VerifyTicketArgs {
         }));
 
         let result = sender.verify_ticket(&target, &self.ticket).await?;
+        let is_fault = matches!(result.response, VerifyTicketAggregatedResponse::Error(_));
+        let (output, status) = super::verify_ticket_output(result.response, &self.output_file)?;
 
-        match result.response {
-            VerifyTicketAggregatedResponse::Cdr(status, metadata) => {
-                use base64::Engine;
-                let cdr_bytes =
-                    base64::engine::general_purpose::STANDARD.decode(&status.cdr_base64)?;
-                std::fs::write(&self.output_file, cdr_bytes)?;
-
-                let output = serde_json::json!({
-                    "cdr": super::absolute_path(&self.output_file),
-                    "status_code": status.status_code,
-                    "response_code": metadata.response_code,
-                    "description": metadata.description,
-                    "notes": metadata.notes,
-                });
-                println!("{}", serde_json::to_string_pretty(&output)?);
-                Ok(ExitCode::SUCCESS)
-            }
-            VerifyTicketAggregatedResponse::Error(error) => {
-                let output = serde_json::json!({
-                    "code": error.code,
-                    "message": error.message,
-                });
-                eprintln!("{}", serde_json::to_string_pretty(&output)?);
-                Ok(ExitCode::from(2))
-            }
+        if is_fault {
+            eprintln!("{}", serde_json::to_string_pretty(&output)?);
+        } else {
+            println!("{}", serde_json::to_string_pretty(&output)?);
         }
+        Ok(super::exit_code_for(status))
     }
 }

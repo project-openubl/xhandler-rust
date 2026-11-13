@@ -1,13 +1,10 @@
 use std::fs;
 use std::path::Path;
 
+use crate::constants::{CAC_NS, CBC_NS, DS, SAC_NS};
+use crate::xml_utils::walk_xml;
 use anyhow::anyhow;
 use sha2::{Digest, Sha256};
-use xml::name::OwnedName;
-use xml::reader::XmlEvent;
-use xml::EventReader;
-
-use crate::constants::{CAC_NS, CBC_NS, DS, SAC_NS};
 
 pub struct UblFile {
     pub file_content: String,
@@ -34,136 +31,66 @@ pub struct UblMetadata {
 }
 
 impl UblFile {
+    /// Reads the data needed to name, route and track the document.
+    /// Elements are matched by namespace URI, so any prefix is accepted.
     pub fn metadata(&self) -> anyhow::Result<UblMetadata> {
-        let event_reader = EventReader::from_str(&self.file_content);
-
-        enum Wrapper {
-            Signature,
-            AccountingSupplierParty,
-            VoidedDocumentsLine,
-        }
-
-        let mut current_wrapper: Option<Wrapper> = None;
-        let mut current_text: String = String::new();
-
         let mut document_type: Option<String> = None;
         let mut document_id: Option<String> = None;
         let mut ruc: Option<String> = None;
         let mut voided_line_document_type_code: Option<String> = None;
         let mut digest_value: Option<String> = None;
 
-        fn set_wrapper(
-            is_start: bool,
-            name: &OwnedName,
-            mut current_wrapper: Option<Wrapper>,
-        ) -> Option<Wrapper> {
-            let namespace = name.namespace.as_deref();
-            let prefix = name.prefix.as_deref();
-            let local_name = name.local_name.as_str();
+        walk_xml(&self.file_content, |path, text| {
+            let Some(element) = path.last() else {
+                return;
+            };
+            let text = text.trim();
 
-            match (namespace, prefix, local_name) {
-                (Some(DS), Some("ds"), "Signature") | (Some(CAC_NS), Some("cac"), "Signature") => {
-                    current_wrapper = if is_start {
-                        Some(Wrapper::Signature)
-                    } else {
-                        None
-                    }
-                }
-                (Some(CAC_NS), Some("cac"), "AccountingSupplierParty")
-                | (Some(CAC_NS), Some("cac"), "AgentParty")
-                | (Some(CAC_NS), Some("cac"), "DespatchSupplierParty") => {
-                    current_wrapper = if is_start {
-                        Some(Wrapper::AccountingSupplierParty)
-                    } else {
-                        None
-                    }
-                }
-                (Some(SAC_NS), Some("sac"), "VoidedDocumentsLine") => {
-                    current_wrapper = if is_start {
-                        Some(Wrapper::VoidedDocumentsLine)
-                    } else {
-                        None
-                    }
-                }
-                _ => {}
+            if path.len() == 1 {
+                document_type = Some(element.local_name.clone());
+                return;
+            }
+
+            // The document ID is the root's own cbc:ID, never one nested in
+            // ext:UBLExtensions, cac:Signature or any other aggregate.
+            if path.len() == 2 && element.is(CBC_NS, "ID") {
+                document_id.get_or_insert_with(|| text.to_string());
+                return;
+            }
+
+            let inside = |namespace: &str, local_name: &str| {
+                path.iter().any(|e| e.is(namespace, local_name))
             };
 
-            current_wrapper
-        }
-
-        for event in event_reader {
-            match event {
-                Ok(XmlEvent::StartElement { name, .. }) => {
-                    // Document Type
-                    if document_type.is_none() {
-                        document_type = Some(name.local_name.clone());
-                    }
-
-                    current_wrapper = set_wrapper(true, &name, current_wrapper);
+            if inside(DS, "Signature") {
+                if element.is(DS, "DigestValue") {
+                    digest_value.get_or_insert_with(|| text.to_string());
                 }
-                Ok(XmlEvent::EndElement { name }) => {
-                    let namespace = name.namespace.as_deref();
-                    let prefix = name.prefix.as_deref();
-                    let local_name = name.local_name.as_str();
-
-                    match (&current_wrapper, &namespace, &prefix, local_name) {
-                        (None, Some(CBC_NS), Some("cbc"), "ID") => {
-                            if document_id.is_none() {
-                                document_id = Some(current_text.clone());
-                            }
-                        }
-                        (Some(Wrapper::Signature), Some(DS), Some("ds"), "DigestValue") => {
-                            if digest_value.is_none() {
-                                digest_value = Some(current_text.clone());
-                            }
-                        }
-                        (
-                            Some(Wrapper::AccountingSupplierParty),
-                            Some(CBC_NS),
-                            Some("cbc"),
-                            "ID",
-                        )
-                        | (
-                            Some(Wrapper::AccountingSupplierParty),
-                            Some(CBC_NS),
-                            Some("cbc"),
-                            "CustomerAssignedAccountID",
-                        ) => {
-                            if ruc.is_none() {
-                                ruc = Some(current_text.clone())
-                            }
-                        }
-                        (
-                            Some(Wrapper::VoidedDocumentsLine),
-                            Some(CBC_NS),
-                            Some("cbc"),
-                            "DocumentTypeCode",
-                        ) if voided_line_document_type_code.is_none() => {
-                            voided_line_document_type_code = Some(current_text.clone());
-                        }
-                        _ => {}
-                    };
-
-                    current_wrapper = set_wrapper(false, &name, current_wrapper);
-                }
-                Ok(XmlEvent::Characters(characters)) => {
-                    current_text = characters;
-                }
-                Err(_) => {
-                    break;
-                }
-                _ => {}
+                return;
             }
-        }
+
+            let in_supplier = inside(CAC_NS, "AccountingSupplierParty")
+                || inside(CAC_NS, "AgentParty")
+                || inside(CAC_NS, "DespatchSupplierParty");
+            if in_supplier
+                && (element.is(CBC_NS, "ID") || element.is(CBC_NS, "CustomerAssignedAccountID"))
+            {
+                ruc.get_or_insert_with(|| text.to_string());
+                return;
+            }
+
+            if inside(SAC_NS, "VoidedDocumentsLine") && element.is(CBC_NS, "DocumentTypeCode") {
+                voided_line_document_type_code.get_or_insert_with(|| text.to_string());
+            }
+        })?;
 
         match (document_type, document_id, ruc) {
             (Some(document_type), Some(document_id), Some(ruc)) => Ok(UblMetadata {
-                document_type: document_type.trim().to_string(),
-                document_id: document_id.trim().to_string(),
-                ruc: ruc.trim().to_string(),
-                voided_line_document_type_code: voided_line_document_type_code
-                    .map(|e| e.trim().to_string()),
-                digest_value: digest_value.map(|e| e.trim().to_string()),
+                document_type,
+                document_id,
+                ruc,
+                voided_line_document_type_code,
+                digest_value,
             }),
             _ => Err(anyhow!(
                 "document_type, document_id, and ruc were not found"
@@ -253,5 +180,25 @@ mod tests {
         assert_eq!(metadata_v.document_type, "DespatchAdvice");
         assert_eq!(metadata_v.document_id, "VVV1-1");
         assert_eq!(metadata_v.ruc, "20000000001");
+    }
+
+    #[test]
+    fn metadata_is_prefix_independent_and_ignores_extension_ids() {
+        let file = UblFile::from_path(Path::new(&format!(
+            "{RESOURCES}/invoice_custom_prefixes.xml"
+        )));
+        let metadata = file.unwrap().metadata().unwrap();
+        assert_eq!(metadata.document_type, "Invoice");
+        assert_eq!(metadata.document_id, "F001-00000042");
+        assert_eq!(metadata.ruc, "20123456789");
+        assert_eq!(metadata.digest_value.as_deref(), Some("abc123="));
+    }
+
+    #[test]
+    fn metadata_fails_on_invalid_xml() {
+        let file = UblFile {
+            file_content: "<Invoice><cbc:ID>F001-1</Invoice>".to_string(),
+        };
+        assert!(file.metadata().is_err());
     }
 }

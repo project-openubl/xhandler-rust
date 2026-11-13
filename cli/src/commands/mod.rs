@@ -39,12 +39,22 @@ pub fn absolute_path(path: &str) -> String {
     }
 }
 
+/// Exit code for a SUNAT outcome: 0 when the document was accepted (with or
+/// without observations) or is still being processed, 2 otherwise.
+pub fn exit_code_for(status: xhandler::prelude::Status) -> ExitCode {
+    use xhandler::prelude::Status;
+    match status {
+        Status::Aceptado | Status::EnProceso => ExitCode::SUCCESS,
+        Status::Rechazado | Status::Excepcion | Status::Unknown => ExitCode::from(2),
+    }
+}
+
 /// Prompts the user to verify a ticket and runs verification if accepted.
 /// Returns the JSON output from verification, or None if the user declined.
 pub async fn prompt_verify_ticket(
     ticket: &str,
     sender: &xhandler::prelude::FileSender,
-    beta: bool,
+    target: &xhandler::prelude::VerifyTicketTarget,
     default_cdr_path: &str,
 ) -> anyhow::Result<Option<serde_json::Value>> {
     use std::io::Write;
@@ -71,33 +81,58 @@ pub async fn prompt_verify_ticket(
         cdr_input.trim().to_string()
     };
 
-    let target = xhandler::prelude::VerifyTicketTarget::Soap(if beta {
-        "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService".to_string()
-    } else {
-        "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService".to_string()
-    });
+    let result = sender.verify_ticket(target, ticket).await?;
+    let (output, _status) = verify_ticket_output(result.response, &cdr_output)?;
+    Ok(Some(output))
+}
 
-    let result = sender.verify_ticket(&target, ticket).await?;
+/// Saves the CDR (if any) and builds the JSON output of a ticket verification.
+pub fn verify_ticket_output(
+    response: xhandler::prelude::VerifyTicketAggregatedResponse,
+    cdr_output: &str,
+) -> anyhow::Result<(serde_json::Value, xhandler::prelude::Status)> {
+    use xhandler::prelude::{Status, VerifyTicketAggregatedResponse};
 
-    match result.response {
-        xhandler::prelude::VerifyTicketAggregatedResponse::Cdr(status, metadata) => {
+    match response {
+        VerifyTicketAggregatedResponse::Cdr(status, metadata) => {
             use base64::Engine;
             let cdr_bytes = base64::engine::general_purpose::STANDARD.decode(&status.cdr_base64)?;
-            std::fs::write(&cdr_output, cdr_bytes)?;
+            std::fs::write(cdr_output, cdr_bytes)?;
 
-            Ok(Some(serde_json::json!({
-                "cdr": absolute_path(&cdr_output),
-                "status_code": status.status_code,
-                "response_code": metadata.response_code,
-                "description": metadata.description,
-                "notes": metadata.notes,
-            })))
+            let cdr_status = metadata.status();
+            Ok((
+                serde_json::json!({
+                    "cdr": absolute_path(cdr_output),
+                    "status_code": status.status_code,
+                    "response_code": metadata.response_code,
+                    "status": cdr_status.to_string(),
+                    "description": metadata.description,
+                    "notes": metadata.notes,
+                }),
+                cdr_status,
+            ))
         }
-        xhandler::prelude::VerifyTicketAggregatedResponse::Error(error) => {
-            Ok(Some(serde_json::json!({
-                "code": error.code,
-                "message": error.message,
-            })))
+        VerifyTicketAggregatedResponse::NoCdr { status_code } => {
+            let status = Status::from_code_str(&status_code);
+            Ok((
+                serde_json::json!({
+                    "status_code": status_code,
+                    "status": status.to_string(),
+                }),
+                status,
+            ))
+        }
+        VerifyTicketAggregatedResponse::Error(error) => {
+            let status = error.status();
+            Ok((
+                serde_json::json!({
+                    "code": error.code,
+                    "sunat_code": error.sunat_code(),
+                    "status": status.to_string(),
+                    "message": error.message,
+                }),
+                status,
+            ))
         }
     }
 }
