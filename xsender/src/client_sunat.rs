@@ -4,13 +4,10 @@ use anyhow::anyhow;
 use reqwest::StatusCode;
 
 use crate::constants::HTTP_CLIENT;
-use crate::models::{
-    Credentials, SendFileTarget, SoapFileTargetAction, Status, VerifyTicketTarget,
-};
+use crate::models::{Credentials, SendFileTarget, SoapFileTargetAction, VerifyTicketTarget};
 use crate::soap::envelope::{BodyData, EnvelopeData, FileData, ToStringXml};
 use crate::soap::send_file_response::SendFileXmlResponse;
 use crate::soap::verify_ticket_response::VerifyTicketXmlResponse;
-use crate::soap::{sunat_fault_code, sunat_fault_status};
 
 #[derive(Default)]
 pub struct ClientSUNAT {}
@@ -65,24 +62,7 @@ pub struct VerifyTicketStatus {
 }
 
 /// SOAP fault returned by SUNAT
-pub struct ErrorResponse {
-    /// Raw `faultcode`, e.g. `soap-env:Client.0111`
-    pub code: String,
-    /// `faultstring`
-    pub message: String,
-}
-
-impl ErrorResponse {
-    /// Numeric SUNAT code, e.g. 111 for `soap-env:Client.0111`
-    pub fn sunat_code(&self) -> Option<u32> {
-        sunat_fault_code(&self.code, &self.message)
-    }
-
-    /// RECHAZADO for 2000-3999, EXCEPCION for 100-1999...
-    pub fn status(&self) -> Status {
-        sunat_fault_status(&self.code, &self.message)
-    }
-}
+pub use crate::soap::SoapFault as ErrorResponse;
 
 impl ClientSUNAT {
     pub async fn send_file(
@@ -93,30 +73,27 @@ impl ClientSUNAT {
     ) -> Result<SendFileResponse, ClientSunatErr> {
         match &target {
             SendFileTarget::Soap(url, action) => {
-                let file_data = FileData {
-                    filename: file.name.clone(),
-                    file_content: file.base_64.clone(),
-                };
-                let envelope_body = match action {
-                    SoapFileTargetAction::Bill => BodyData::SendBill(file_data),
-                    SoapFileTargetAction::Summary => BodyData::SendSummary(file_data),
-                    SoapFileTargetAction::Pack => BodyData::SendPack(file_data),
+                let operation = match action {
+                    SoapFileTargetAction::Bill => "sendBill",
+                    SoapFileTargetAction::Summary => "sendSummary",
+                    SoapFileTargetAction::Pack => "sendPack",
                 };
 
                 let envelope = EnvelopeData {
                     username: credentials.username.clone(),
                     password: credentials.password.clone(),
-                    body: envelope_body,
-                };
-
-                let soap_action = match action {
-                    SoapFileTargetAction::Bill => "urn:sendBill",
-                    SoapFileTargetAction::Summary => "urn:sendSummary",
-                    SoapFileTargetAction::Pack => "urn:sendPack",
+                    body: BodyData::SendFile {
+                        operation,
+                        file: FileData {
+                            filename: file.name.clone(),
+                            file_content: file.base_64.clone(),
+                        },
+                    },
                 };
 
                 let body = envelope.to_string_xml()?;
-                let (status, response_body) = post_soap(url, body, soap_action).await?;
+                let soap_action = format!("urn:{operation}");
+                let (status, response_body) = post_soap(url, body, &soap_action).await?;
                 parse_soap_response::<SendFileXmlResponse>(status, &response_body).map(Into::into)
             }
             SendFileTarget::Rest(_, _) => Err(ClientSunatErr::Any(anyhow!("Not implemented"))),
@@ -152,10 +129,7 @@ impl From<SendFileXmlResponse> for SendFileResponse {
         match value {
             SendFileXmlResponse::Cdr(cdr) => Self::Cdr(cdr),
             SendFileXmlResponse::Ticket(ticket) => Self::Ticket(ticket),
-            SendFileXmlResponse::Fault(error) => Self::Error(ErrorResponse {
-                code: error.code,
-                message: error.message,
-            }),
+            SendFileXmlResponse::Fault(fault) => Self::Error(fault),
         }
     }
 }
@@ -172,10 +146,7 @@ impl From<VerifyTicketXmlResponse> for VerifyTicketResponse {
                     status_code: status.status_code,
                 },
             },
-            VerifyTicketXmlResponse::Fault(error) => Self::Error(ErrorResponse {
-                code: error.code,
-                message: error.message,
-            }),
+            VerifyTicketXmlResponse::Fault(fault) => Self::Error(fault),
         }
     }
 }

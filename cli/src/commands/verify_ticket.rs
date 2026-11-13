@@ -55,13 +55,7 @@ impl VerifyTicketArgs {
         let credentials = send_args.resolve_credentials()?;
 
         let sender = FileSender { urls, credentials };
-        let target = VerifyTicketTarget::Soap(self.url_invoice.clone().unwrap_or_else(|| {
-            if self.beta {
-                "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService".to_string()
-            } else {
-                "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService".to_string()
-            }
-        }));
+        let target = VerifyTicketTarget::Soap(sender.urls.invoice.clone());
 
         let result = sender.verify_ticket(&target, &self.ticket).await?;
         let is_fault = matches!(result.response, VerifyTicketAggregatedResponse::Error(_));

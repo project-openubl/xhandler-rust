@@ -6,7 +6,7 @@ use encoding_rs::{Encoding, UTF_8};
 ///
 /// `ISO-8859-1` resolves to windows-1252, its WHATWG superset; both are the
 /// same for every printable Latin-1 character.
-pub fn declared_encoding(bytes: &[u8]) -> &'static Encoding {
+fn declared_encoding(bytes: &[u8]) -> &'static Encoding {
     if let Some((encoding, _)) = Encoding::for_bom(bytes) {
         return encoding;
     }
@@ -49,11 +49,8 @@ pub fn decode_xml(bytes: &[u8]) -> anyhow::Result<String> {
 /// Encodes XML text back into the encoding its declaration names, so the
 /// bytes sent to SUNAT agree with the `<?xml encoding?>` they carry.
 pub fn encode_xml(text: &str) -> Vec<u8> {
-    let encoding = declared_encoding(text.as_bytes());
-    if encoding == UTF_8 {
-        return text.as_bytes().to_vec();
-    }
-    let (bytes, _, _) = encoding.encode(text);
+    // UTF-8 documents come back unchanged
+    let (bytes, _, _) = declared_encoding(text.as_bytes()).encode(text);
     bytes.into_owned()
 }
 

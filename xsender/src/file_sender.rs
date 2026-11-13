@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use std::str::FromStr;
 
 use base64::engine::general_purpose;
@@ -15,7 +14,7 @@ use crate::models::{Credentials, SendFileTarget, Urls, VerifyTicketTarget};
 use crate::prelude::VerifyTicketStatus;
 use crate::soap::cdr::CdrMetadata;
 use crate::ubl_file::UblFile;
-use crate::zip_manager::{create_zip, decode_base64_zip_and_extract_first_file};
+use crate::zip_manager::{create_zip, read_cdr_from_base64_zip};
 
 pub struct FileSender {
     pub urls: Urls,
@@ -108,9 +107,7 @@ impl FileSender {
 
         let response = match result {
             SendFileResponse::Cdr(cdr_base64) => {
-                let cdr_xml = decode_base64_zip_and_extract_first_file(&cdr_base64)?.ok_or(
-                    FileSenderErr::Any(anyhow!("Could not extract the first file from zip")),
-                )?;
+                let cdr_xml = read_cdr_from_base64_zip(&cdr_base64)?;
                 let cdr_metadata = CdrMetadata::from_str(&cdr_xml)?;
                 SendFileAggregatedResponse::Cdr(cdr_base64, cdr_metadata)
             }
@@ -137,9 +134,7 @@ impl FileSender {
 
         let response = match result {
             VerifyTicketResponse::Cdr(status) => {
-                let cdr_xml = decode_base64_zip_and_extract_first_file(&status.cdr_base64)?.ok_or(
-                    FileSenderErr::Any(anyhow!("Could not extract the first file from zip")),
-                )?;
+                let cdr_xml = read_cdr_from_base64_zip(&status.cdr_base64)?;
                 let cdr_metadata = CdrMetadata::from_str(&cdr_xml)?;
                 VerifyTicketAggregatedResponse::Cdr(status, cdr_metadata)
             }

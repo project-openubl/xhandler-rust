@@ -131,9 +131,6 @@ mod tests {
         assert!(fault
             .message
             .starts_with("El documento electrónico ingresado ha sido alterado - Detalle: xxx"));
-        assert_eq!(
-            crate::soap::sunat_fault_status(&fault.code, &fault.message),
-            crate::models::Status::Rechazado
-        );
+        assert_eq!(fault.status(), crate::models::Status::Rechazado);
     }
 }

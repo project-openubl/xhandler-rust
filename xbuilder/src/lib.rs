@@ -5,5 +5,5 @@ pub mod prelude;
 pub mod renderer;
 pub mod serde_date;
 
-pub const FACTURA_SERIE_REGEX: &str = "^[F|f].*$";
-pub const BOLETA_SERIE_REGEX: &str = "^[B|b].*$";
+pub const FACTURA_SERIE_REGEX: &str = "^[Ff].*$";
+pub const BOLETA_SERIE_REGEX: &str = "^[Bb].*$";

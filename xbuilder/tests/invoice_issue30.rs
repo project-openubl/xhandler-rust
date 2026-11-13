@@ -35,7 +35,6 @@ async fn invoice_issue30() {
 async fn invoice_issue30_precio_con_igv() {
     let mut invoice = Invoice {
         proveedor: Proveedor {
-            ruc: "12345678912".into(),
             razon_social: "Project OpenUBL S.A.C.".into(),
             ..proveedor_base()
         },
@@ -60,7 +59,6 @@ async fn invoice_issue30_precio_con_igv() {
 async fn invoice_issue30_precio_unitario_and_icb() {
     let mut invoice = Invoice {
         proveedor: Proveedor {
-            ruc: "12345678912".into(),
             razon_social: "Project OpenUBL S.A.C.".into(),
             ..proveedor_base()
         },
@@ -82,7 +80,6 @@ async fn invoice_issue30_precio_unitario_and_icb() {
 async fn invoice_issue30_precio_con_igv_and_icb() {
     let mut invoice = Invoice {
         proveedor: Proveedor {
-            ruc: "12345678912".into(),
             razon_social: "Project OpenUBL S.A.C.".into(),
             ..proveedor_base()
         },

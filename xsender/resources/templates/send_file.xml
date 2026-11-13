@@ -8,9 +8,9 @@
         </wsse:Security>
     </soap:Header>
     <soap:Body>
-        <ns2:sendPack xmlns:ns2="http://service.sunat.gob.pe">
+        <ns2:{{operation}} xmlns:ns2="http://service.sunat.gob.pe">
             <fileName>{{body.filename}}</fileName>
             <contentFile>{{body.file_content}}</contentFile>
-        </ns2:sendPack>
+        </ns2:{{operation}}>
     </soap:Body>
 </soap:Envelope>

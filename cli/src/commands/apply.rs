@@ -3,7 +3,9 @@ use std::process::ExitCode;
 use clap::Args;
 
 use crate::commands::create::create_xml;
-use crate::commands::send::{SendArgs, SendResult};
+use xhandler::prelude::UblFile;
+
+use crate::commands::send::SendArgs;
 use crate::commands::sign::SignArgs;
 
 #[derive(Args)]
@@ -12,7 +14,7 @@ use crate::commands::sign::SignArgs;
   openubl apply -f factura.yaml --beta --save-xml --dry-run
   openubl apply -f factura.yaml --private-key llave.pem --certificate cert.pem --username user --password clave
 
-La salida es JSON en stdout. Codigo de salida: 0=exito, 2=error SUNAT.")]
+La salida es JSON en stdout. Codigo de salida: 0=aceptado/ticket, 2=rechazado o error SUNAT.")]
 pub struct ApplyArgs {
     /// Archivo de entrada JSON/YAML con la definicion del documento
     #[arg(short = 'f', long = "file")]
@@ -112,7 +114,7 @@ impl ApplyArgs {
         }
 
         // Step 3: Send
-        let signed_xml_str = String::from_utf8(signed_xml)?;
+        let ubl_file = UblFile::from_bytes(signed_xml)?;
         let default_cdr = self
             .output_file
             .clone()
@@ -130,62 +132,12 @@ impl ApplyArgs {
             no_interactive: self.no_interactive,
         };
 
-        let result = send_args
-            .send_xml_content(&signed_xml_str, &default_cdr)
-            .await?;
-
-        match result {
-            SendResult::Cdr {
-                cdr_path,
-                response_code,
-                status,
-                description,
-                notes,
-            } => {
-                let output = serde_json::json!({
-                    "unsigned_xml": unsigned_path,
-                    "signed_xml": signed_path,
-                    "cdr": cdr_path,
-                    "response_code": response_code,
-                    "status": status.to_string(),
-                    "description": description,
-                    "notes": notes,
-                });
-                println!("{}", serde_json::to_string_pretty(&output)?);
-                Ok(super::exit_code_for(status))
-            }
-            SendResult::Ticket {
-                ticket,
-                verify_result,
-            } => {
-                let output = serde_json::json!({
-                    "unsigned_xml": unsigned_path,
-                    "signed_xml": signed_path,
-                    "ticket": ticket,
-                });
-                println!("{}", serde_json::to_string_pretty(&output)?);
-                if let Some(verify_output) = verify_result {
-                    println!("{}", serde_json::to_string_pretty(&verify_output)?);
-                }
-                Ok(ExitCode::SUCCESS)
-            }
-            SendResult::Error {
-                code,
-                sunat_code,
-                status,
-                message,
-            } => {
-                let output = serde_json::json!({
-                    "unsigned_xml": unsigned_path,
-                    "signed_xml": signed_path,
-                    "code": code,
-                    "sunat_code": sunat_code,
-                    "status": status.to_string(),
-                    "message": message,
-                });
-                eprintln!("{}", serde_json::to_string_pretty(&output)?);
-                Ok(ExitCode::from(2))
-            }
-        }
+        send_args
+            .send_ubl_file(&ubl_file, &default_cdr)
+            .await?
+            .print(&[
+                ("unsigned_xml", serde_json::json!(unsigned_path)),
+                ("signed_xml", serde_json::json!(signed_path)),
+            ])
     }
 }
