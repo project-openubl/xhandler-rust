@@ -27,12 +27,12 @@ pub struct DebitNote {
     pub igv_tasa: Option<Decimal>,
     pub ivap_tasa: Option<Decimal>,
 
-    // Catalog10
+    /// Catalog10
     pub tipo_nota: Option<String>,
     pub comprobante_afectado_serie_numero: String,
-    // Catalog1
+    /// Catalog1
     pub comprobante_afectado_tipo: Option<String>,
-    pub sustento_descripcion: String,
+    pub descripcion_sustento: String,
 
     pub detalles: Vec<Detalle>,
 
@@ -42,5 +42,5 @@ pub struct DebitNote {
     pub guias: Vec<Guia>,
     pub documentos_relacionados: Vec<DocumentoRelacionado>,
 
-    pub orden_de_compra: Option<String>,
+    pub orden_compra: Option<String>,
 }

@@ -52,15 +52,15 @@ async fn invoice_forma_pago_credito() {
                 ..Default::default()
             },
         ],
-        forma_de_pago: Some(FormaDePago {
+        forma_pago: Some(FormaPago {
             tipo: None,
             total: None,
             cuotas: vec![
-                CuotaDePago {
+                CuotaPago {
                     importe: dec!(10),
                     fecha_pago: NaiveDate::from_ymd_opt(2022, 1, 20).unwrap(),
                 },
-                CuotaDePago {
+                CuotaPago {
                     importe: dec!(20),
                     fecha_pago: NaiveDate::from_ymd_opt(2022, 2, 20).unwrap(),
                 },

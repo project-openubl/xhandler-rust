@@ -52,6 +52,7 @@
     </cac:ReceiverParty>
     <sac:SUNATPerceptionSystemCode>01</sac:SUNATPerceptionSystemCode>
     <sac:SUNATPerceptionPercent>2</sac:SUNATPerceptionPercent>
+    <cbc:Note><![CDATA[Percepcion de prueba]]></cbc:Note>
     <cbc:TotalInvoiceAmount currencyID="PEN">10</cbc:TotalInvoiceAmount>
     <sac:SUNATTotalCashed currencyID="PEN">210</sac:SUNATTotalCashed>
     <sac:SUNATPerceptionDocumentReference>

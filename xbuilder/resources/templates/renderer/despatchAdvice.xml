@@ -14,7 +14,7 @@
     {%- if documento_baja %}
     <cac:OrderReference>
         <cbc:ID>{{documento_baja.serie_numero}}</cbc:ID>
-        <cbc:OrderTypeCode listAgencyName="PE:SUNAT" listName="SUNAT:Identificador de Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">{{documento_baja.tipo_documento}}</cbc:OrderTypeCode>
+        <cbc:OrderTypeCode listAgencyName="PE:SUNAT" listName="SUNAT:Identificador de Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">{{documento_baja.tipo_comprobante}}</cbc:OrderTypeCode>
     </cac:OrderReference>
     {%- endif %}
     {%- if documento_relacionado %}
@@ -110,8 +110,8 @@
         {%- if envio.peso_items %}
         <cbc:NetWeightMeasure unitCode="KGM">{{envio.peso_items | round_decimal(dp=3)}}</cbc:NetWeightMeasure>
         {%- endif %}
-        {%- if envio.numero_de_bultos %}
-        <cbc:TotalTransportHandlingUnitQuantity>{{envio.numero_de_bultos}}</cbc:TotalTransportHandlingUnitQuantity>
+        {%- if envio.numero_bultos %}
+        <cbc:TotalTransportHandlingUnitQuantity>{{envio.numero_bultos}}</cbc:TotalTransportHandlingUnitQuantity>
         {%- endif %}
         {%- for it in envio.indicadores %}
         <cbc:SpecialInstructions>{{it}}</cbc:SpecialInstructions>

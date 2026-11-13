@@ -24,11 +24,12 @@ fn perception_simple() -> Perception {
         tipo_regimen_porcentaje: dec!(2),
         importe_total_percibido: dec!(10),
         importe_total_cobrado: dec!(210),
+        observaciones: Some("Percepcion de prueba".into()),
         operacion: Some(PercepcionRetencionOperacion {
             numero_operacion: 1,
             fecha_operacion: NaiveDate::from_ymd_opt(2022, 1, 31).unwrap(),
             importe_operacion: dec!(100),
-            comprobante: PercepcionRetencionComprobanteAfectado {
+            comprobante_afectado: PercepcionRetencionComprobanteAfectado {
                 tipo_comprobante: "01".into(),
                 serie_numero: "F001-1".into(),
                 fecha_emision: NaiveDate::from_ymd_opt(2022, 1, 31).unwrap(),

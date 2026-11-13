@@ -2,11 +2,11 @@
     <cac:DiscrepancyResponse>
         <cbc:ReferenceID>{{comprobante_afectado_serie_numero}}</cbc:ReferenceID>
         <cbc:ResponseCode>{{tipo_nota}}</cbc:ResponseCode>
-        <cbc:Description><![CDATA[{{sustento_descripcion | cdata | safe}}]]></cbc:Description>
+        <cbc:Description><![CDATA[{{descripcion_sustento | cdata | safe}}]]></cbc:Description>
     </cac:DiscrepancyResponse>
-    {%- if orden_de_compra %}
+    {%- if orden_compra %}
     <cac:OrderReference>
-        <cbc:ID>{{orden_de_compra}}</cbc:ID>
+        <cbc:ID>{{orden_compra}}</cbc:ID>
     </cac:OrderReference>
     {%- endif %}
     <cac:BillingReference>

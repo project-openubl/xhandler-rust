@@ -28,7 +28,7 @@ async fn invoice_guia_serie_t() {
             },
         ],
         guias: vec![Guia {
-            tipo_documento: Catalog1::GuiaRemisionRemitente.code().into(),
+            tipo_comprobante: Catalog1::GuiaRemisionRemitente.code().into(),
             serie_numero: "T001-1".into(),
         }],
         ..invoice_base()

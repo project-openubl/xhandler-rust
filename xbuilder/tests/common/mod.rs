@@ -44,7 +44,7 @@ lazy_static::lazy_static! {
 
 pub fn defaults_base() -> Defaults {
     Defaults {
-        date: NaiveDate::from_ymd_opt(2019, 12, 24).unwrap(),
+        fecha_emision: NaiveDate::from_ymd_opt(2019, 12, 24).unwrap(),
         icb_tasa: dec!(0.2),
         igv_tasa: dec!(0.18),
         ivap_tasa: dec!(0.04),
@@ -66,7 +66,7 @@ pub fn credit_note_base() -> CreditNote {
     CreditNote {
         serie_numero: "FC01-1".into(),
         comprobante_afectado_serie_numero: "F001-1".into(),
-        sustento_descripcion: "mi sustento".into(),
+        descripcion_sustento: "mi sustento".into(),
         proveedor: proveedor_base(),
         cliente: cliente_base(),
         ..Default::default()
@@ -78,7 +78,7 @@ pub fn debit_note_base() -> DebitNote {
     DebitNote {
         serie_numero: "FD01-1".into(),
         comprobante_afectado_serie_numero: "F001-1".into(),
-        sustento_descripcion: "mi sustento".into(),
+        descripcion_sustento: "mi sustento".into(),
         proveedor: proveedor_base(),
         cliente: cliente_base(),
         ..Default::default()

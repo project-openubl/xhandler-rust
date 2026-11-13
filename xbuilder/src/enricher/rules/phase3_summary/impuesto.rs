@@ -7,9 +7,9 @@ pub struct Impuesto {
     pub base_imponible: Decimal,
 
     pub importe: Decimal,
-    pub importe_igv: Decimal,
-    pub importe_isc: Decimal,
-    pub importe_icb: Decimal,
+    pub igv_importe: Decimal,
+    pub isc_importe: Decimal,
+    pub icb_importe: Decimal,
 }
 
 pub fn compute_impuesto_by_tipo(detalles: &[Detalle], categoria: Catalog5) -> Impuesto {
@@ -34,15 +34,15 @@ pub fn compute_impuesto_by_tipo(detalles: &[Detalle], categoria: Catalog5) -> Im
         .filter_map(|e| e.total_impuestos)
         .fold(Decimal::ZERO, |a, b| a + b);
 
-    let importe_isc = stream
+    let isc_importe = stream
         .iter()
         .filter_map(|e| e.isc)
         .fold(Decimal::ZERO, |a, b| a + b);
-    let importe_igv = stream
+    let igv_importe = stream
         .iter()
         .filter_map(|e| e.igv)
         .fold(Decimal::ZERO, |a, b| a + b);
-    let importe_icb = stream
+    let icb_importe = stream
         .iter()
         .filter_map(|e| e.icb)
         .fold(Decimal::ZERO, |a, b| a + b);
@@ -50,9 +50,9 @@ pub fn compute_impuesto_by_tipo(detalles: &[Detalle], categoria: Catalog5) -> Im
     Impuesto {
         base_imponible,
         importe,
-        importe_igv,
-        importe_isc,
-        importe_icb,
+        igv_importe,
+        isc_importe,
+        icb_importe,
     }
 }
 

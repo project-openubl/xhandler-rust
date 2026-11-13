@@ -154,7 +154,7 @@ mod inafecto {
         let mut credit_note = CreditNote {
             serie_numero: "FF12-1".into(),
             comprobante_afectado_serie_numero: "FF12-1".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_inafecto(1),
             ..credit_note_base()
         };
@@ -171,7 +171,7 @@ mod inafecto {
         let mut credit_note = CreditNote {
             serie_numero: "FF12-2".into(),
             comprobante_afectado_serie_numero: "FF12-3".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_inafecto(7),
             ..credit_note_base()
         };
@@ -188,7 +188,7 @@ mod inafecto {
         let mut credit_note = CreditNote {
             serie_numero: "FF12-3".into(),
             comprobante_afectado_serie_numero: "FF12-5".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_inafecto(5),
             ..credit_note_base()
         };
@@ -207,7 +207,7 @@ mod inafecto {
         let mut debit_note = DebitNote {
             serie_numero: "FF12-1".into(),
             comprobante_afectado_serie_numero: "FF12-1".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_inafecto(1),
             ..debit_note_base()
         };
@@ -224,7 +224,7 @@ mod inafecto {
         let mut debit_note = DebitNote {
             serie_numero: "FF12-2".into(),
             comprobante_afectado_serie_numero: "FF12-3".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_inafecto(7),
             ..debit_note_base()
         };
@@ -241,7 +241,7 @@ mod inafecto {
         let mut debit_note = DebitNote {
             serie_numero: "FF12-3".into(),
             comprobante_afectado_serie_numero: "FF12-5".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_inafecto(6),
             ..debit_note_base()
         };
@@ -346,7 +346,7 @@ mod exonerado {
         let mut credit_note = CreditNote {
             serie_numero: "FF12-1".into(),
             comprobante_afectado_serie_numero: "FF12-1".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_exonerado(1),
             ..credit_note_base()
         };
@@ -363,7 +363,7 @@ mod exonerado {
         let mut credit_note = CreditNote {
             serie_numero: "FF12-2".into(),
             comprobante_afectado_serie_numero: "FF12-3".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_exonerado(7),
             ..credit_note_base()
         };
@@ -380,7 +380,7 @@ mod exonerado {
         let mut credit_note = CreditNote {
             serie_numero: "FF12-3".into(),
             comprobante_afectado_serie_numero: "FF12-5".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_exonerado(5),
             ..credit_note_base()
         };
@@ -399,7 +399,7 @@ mod exonerado {
         let mut debit_note = DebitNote {
             serie_numero: "FF12-1".into(),
             comprobante_afectado_serie_numero: "FF12-1".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_exonerado(1),
             ..debit_note_base()
         };
@@ -416,7 +416,7 @@ mod exonerado {
         let mut debit_note = DebitNote {
             serie_numero: "FF12-2".into(),
             comprobante_afectado_serie_numero: "FF12-3".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_exonerado(7),
             ..debit_note_base()
         };
@@ -433,7 +433,7 @@ mod exonerado {
         let mut debit_note = DebitNote {
             serie_numero: "FF12-3".into(),
             comprobante_afectado_serie_numero: "FF12-5".into(),
-            sustento_descripcion: "Homologacion".into(),
+            descripcion_sustento: "Homologacion".into(),
             detalles: items_exonerado(6),
             ..debit_note_base()
         };

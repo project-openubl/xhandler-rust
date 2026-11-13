@@ -15,7 +15,7 @@ where
         match &self.fecha_emision() {
             Some(..) => Ok(false),
             None => {
-                self.set_fecha_emision(defaults.date);
+                self.set_fecha_emision(defaults.fecha_emision);
                 Ok(true)
             }
         }

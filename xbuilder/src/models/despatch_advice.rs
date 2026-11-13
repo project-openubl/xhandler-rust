@@ -81,7 +81,7 @@ pub struct Envio {
     pub peso_total_unidad_medida: String,
     /// Peso neto de los items, en KGM
     pub peso_items: Option<Decimal>,
-    pub numero_de_bultos: Option<u32>,
+    pub numero_bultos: Option<u32>,
     /// Indicadores especiales (SpecialInstructions)
     pub indicadores: Vec<String>,
     /// Catalog18: modalidad de traslado (01=publico, 02=privado)
@@ -184,7 +184,8 @@ pub struct DespatchAdviceAtributo {
 /// Documento de baja asociado
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct DespatchAdviceDocumentoBaja {
-    pub tipo_documento: String,
+    /// Catalog1
+    pub tipo_comprobante: String,
     pub serie_numero: String,
 }
 

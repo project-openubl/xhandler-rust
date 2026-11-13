@@ -52,6 +52,7 @@
     </cac:ReceiverParty>
     <sac:SUNATRetentionSystemCode>01</sac:SUNATRetentionSystemCode>
     <sac:SUNATRetentionPercent>3</sac:SUNATRetentionPercent>
+    <cbc:Note><![CDATA[Retencion de prueba]]></cbc:Note>
     <cbc:TotalInvoiceAmount currencyID="PEN">10</cbc:TotalInvoiceAmount>
     <sac:SUNATTotalPaid currencyID="PEN">200</sac:SUNATTotalPaid>
     <sac:SUNATRetentionDocumentReference>

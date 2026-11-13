@@ -20,7 +20,7 @@ async fn invoice_detraccion() {
             ..Default::default()
         }],
         detraccion: Some(Detraccion {
-            medio_de_pago: Catalog59::DepositoEnCuenta.code().into(),
+            medio_pago: Catalog59::DepositoEnCuenta.code().into(),
             cuenta_bancaria: "0004-3342343243".into(),
             tipo_bien_detraido: "014".into(),
             porcentaje: dec!(0.04),

@@ -47,7 +47,7 @@ async fn caso97_nota_credito_boleta1() {
     let mut credit_note = CreditNote {
         serie_numero: "BB50-1".into(),
         comprobante_afectado_serie_numero: "BB50-1".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         moneda: Some("USD".into()),
         detalles: items(3),
         ..credit_note_base()
@@ -67,7 +67,7 @@ async fn caso98_nota_debito_boleta1() {
     let mut debit_note = DebitNote {
         serie_numero: "BB50-1".into(),
         comprobante_afectado_serie_numero: "BB50-1".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         moneda: Some("USD".into()),
         detalles: items(3),
         ..debit_note_base()

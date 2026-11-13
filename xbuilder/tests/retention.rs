@@ -24,11 +24,12 @@ fn retention_simple() -> Retention {
         tipo_regimen_porcentaje: dec!(3),
         importe_total_retenido: dec!(10),
         importe_total_pagado: dec!(200),
+        observaciones: Some("Retencion de prueba".into()),
         operacion: Some(PercepcionRetencionOperacion {
             numero_operacion: 1,
             fecha_operacion: NaiveDate::from_ymd_opt(2022, 1, 31).unwrap(),
             importe_operacion: dec!(100),
-            comprobante: PercepcionRetencionComprobanteAfectado {
+            comprobante_afectado: PercepcionRetencionComprobanteAfectado {
                 tipo_comprobante: "01".into(),
                 serie_numero: "F001-1".into(),
                 fecha_emision: NaiveDate::from_ymd_opt(2022, 1, 31).unwrap(),

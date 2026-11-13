@@ -18,7 +18,7 @@ spec:
     numero_operacion: 1
     fecha_operacion: "31-01-2024"
     importe_operacion: 100
-    comprobante:
+    comprobante_afectado:
       tipo_comprobante: "01"
       serie_numero: "F001-1"
       fecha_emision: "15-01-2024"

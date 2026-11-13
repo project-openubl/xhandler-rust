@@ -25,7 +25,7 @@ async fn invoice_special_characters() {
             ..cliente_base()
         },
         observaciones: Some("Entrega 50% & saldo; ver \"]]>\" en anexo".into()),
-        orden_de_compra: Some("OC-1&2".into()),
+        orden_compra: Some("OC-1&2".into()),
         detalles: vec![Detalle {
             descripcion: "Café 'premium' & azúcar 1/2 kg".into(),
             cantidad: Decimal::ONE,

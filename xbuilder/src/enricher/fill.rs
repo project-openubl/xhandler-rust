@@ -9,8 +9,8 @@ use crate::enricher::rules::phase1_fill::igv_tasa::IgvTasaFillRule;
 use crate::enricher::rules::phase1_fill::invoice::anticipos::InvoiceAnticiposFillRule;
 use crate::enricher::rules::phase1_fill::invoice::cargos::InvoiceCargosFillRule;
 use crate::enricher::rules::phase1_fill::invoice::descuentos::InvoiceDescuentosFillRule;
-use crate::enricher::rules::phase1_fill::invoice::forma_de_pago::{
-    InvoiceFormaDePagoFillRule, InvoiceFormaDePagoTipoFillRule, InvoiceFormaDePagoTotalFillRule,
+use crate::enricher::rules::phase1_fill::invoice::forma_pago::{
+    InvoiceFormaPagoFillRule, InvoiceFormaPagoTipoFillRule, InvoiceFormaPagoTotalFillRule,
 };
 use crate::enricher::rules::phase1_fill::invoice::leyenda::{
     InvoiceLeyendaDetraccionFillRule, InvoiceLeyendaDireccionEntregaFillRule,
@@ -170,9 +170,9 @@ where
     T: InvoiceAnticiposFillRule
         + InvoiceCargosFillRule
         + InvoiceDescuentosFillRule
-        + InvoiceFormaDePagoFillRule
-        + InvoiceFormaDePagoTotalFillRule
-        + InvoiceFormaDePagoTipoFillRule
+        + InvoiceFormaPagoFillRule
+        + InvoiceFormaPagoTotalFillRule
+        + InvoiceFormaPagoTipoFillRule
         + InvoiceLeyendaDetraccionFillRule
         + InvoiceLeyendaDireccionEntregaFillRule
         + InvoiceLeyendaPercepcionFillRule
@@ -187,9 +187,9 @@ where
                 InvoiceAnticiposFillRule::fill(self).unwrap_or_default(),
                 InvoiceCargosFillRule::fill(self).unwrap_or_default(),
                 InvoiceDescuentosFillRule::fill(self).unwrap_or_default(),
-                InvoiceFormaDePagoFillRule::fill(self).unwrap_or_default(),
-                InvoiceFormaDePagoTotalFillRule::fill(self).unwrap_or_default(),
-                InvoiceFormaDePagoTipoFillRule::fill(self).unwrap_or_default(),
+                InvoiceFormaPagoFillRule::fill(self).unwrap_or_default(),
+                InvoiceFormaPagoTotalFillRule::fill(self).unwrap_or_default(),
+                InvoiceFormaPagoTipoFillRule::fill(self).unwrap_or_default(),
                 InvoiceLeyendaDetraccionFillRule::fill(self).unwrap_or_default(),
                 InvoiceLeyendaDireccionEntregaFillRule::fill(self).unwrap_or_default(),
                 InvoiceLeyendaPercepcionFillRule::fill(self).unwrap_or_default(),

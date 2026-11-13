@@ -61,7 +61,7 @@ pub struct Contacto {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Detraccion {
     /// Catalog59
-    pub medio_de_pago: String,
+    pub medio_pago: String,
     pub cuenta_bancaria: String,
 
     /// Catalog54
@@ -72,22 +72,22 @@ pub struct Detraccion {
 
 /// Tipo de forma de pago
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub enum TipoFormaDePago {
+pub enum TipoFormaPago {
     Credito,
     Contado,
 }
 
 /// Forma de pago
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct FormaDePago {
-    pub tipo: Option<TipoFormaDePago>,
-    pub cuotas: Vec<CuotaDePago>,
+pub struct FormaPago {
+    pub tipo: Option<TipoFormaPago>,
+    pub cuotas: Vec<CuotaPago>,
     pub total: Option<Decimal>,
 }
 
 /// Cuota de pago
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct CuotaDePago {
+pub struct CuotaPago {
     pub importe: Decimal,
     #[serde(deserialize_with = "crate::serde_date::deserialize")]
     pub fecha_pago: NaiveDate,
@@ -154,7 +154,7 @@ impl Cargo {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Guia {
     /// Catalog1. Valores válidos: "09", "31"
-    pub tipo_documento: String,
+    pub tipo_comprobante: String,
     pub serie_numero: String,
 }
 

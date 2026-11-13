@@ -11,9 +11,9 @@ const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceOrdenDeCompraTes
 
 #[serial_test::serial]
 #[tokio::test]
-async fn invoice_orden_de_compra() {
+async fn invoice_orden_compra() {
     let mut invoice = Invoice {
-        orden_de_compra: Some("123456".into()),
+        orden_compra: Some("123456".into()),
         detalles: vec![
             Detalle {
                 descripcion: "Item1".into(),

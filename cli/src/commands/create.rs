@@ -37,7 +37,7 @@ pub fn create_xml(input_file: &str, format: Option<&str>) -> anyhow::Result<Stri
         icb_tasa: rust_decimal_macros::dec!(0.2),
         igv_tasa: rust_decimal_macros::dec!(0.18),
         ivap_tasa: rust_decimal_macros::dec!(0.04),
-        date: chrono::Local::now().date_naive(),
+        fecha_emision: chrono::Local::now().date_naive(),
     };
 
     let xml = match doc {
@@ -91,7 +91,7 @@ impl CreateArgs {
                 icb_tasa: rust_decimal_macros::dec!(0.2),
                 igv_tasa: rust_decimal_macros::dec!(0.18),
                 ivap_tasa: rust_decimal_macros::dec!(0.04),
-                date: chrono::Local::now().date_naive(),
+                fecha_emision: chrono::Local::now().date_naive(),
             };
 
             return match doc {

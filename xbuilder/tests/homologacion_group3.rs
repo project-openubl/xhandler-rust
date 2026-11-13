@@ -103,7 +103,7 @@ async fn caso28_nota_credito_factura2() {
     let mut credit_note = CreditNote {
         serie_numero: "FF13-1".into(),
         comprobante_afectado_serie_numero: "FF13-2".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(2),
         ..credit_note_base()
     };
@@ -120,7 +120,7 @@ async fn caso29_nota_credito_factura3() {
     let mut credit_note = CreditNote {
         serie_numero: "FF13-2".into(),
         comprobante_afectado_serie_numero: "FF13-3".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(5),
         ..credit_note_base()
     };
@@ -139,7 +139,7 @@ async fn caso30_nota_debito_factura2() {
     let mut debit_note = DebitNote {
         serie_numero: "FF13-1".into(),
         comprobante_afectado_serie_numero: "FF13-2".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(2),
         ..debit_note_base()
     };
@@ -156,7 +156,7 @@ async fn caso31_nota_debito_factura3() {
     let mut debit_note = DebitNote {
         serie_numero: "FF13-2".into(),
         comprobante_afectado_serie_numero: "FF13-3".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(5),
         ..debit_note_base()
     };

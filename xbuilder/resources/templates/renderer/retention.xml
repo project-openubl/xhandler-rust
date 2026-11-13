@@ -23,19 +23,19 @@
     {%- include "ubl/sunat/include/receiver-party.xml" %}
     <sac:SUNATRetentionSystemCode>{{tipo_regimen}}</sac:SUNATRetentionSystemCode>
     <sac:SUNATRetentionPercent>{{tipo_regimen_porcentaje}}</sac:SUNATRetentionPercent>
-    {%- if observacion %}
-    <cbc:Note><![CDATA[{{observacion | cdata | safe}}]]></cbc:Note>
+    {%- if observaciones %}
+    <cbc:Note><![CDATA[{{observaciones | cdata | safe}}]]></cbc:Note>
     {%- endif %}
     <cbc:TotalInvoiceAmount currencyID="{{moneda}}">{{importe_total_retenido}}</cbc:TotalInvoiceAmount>
     <sac:SUNATTotalPaid currencyID="{{moneda}}">{{importe_total_pagado}}</sac:SUNATTotalPaid>
     {%- if operacion %}
     <sac:SUNATRetentionDocumentReference>
-        <cbc:ID schemeID="{{operacion.comprobante.tipo_comprobante}}">{{operacion.comprobante.serie_numero}}</cbc:ID>
-        <cbc:IssueDate>{{operacion.comprobante.fecha_emision}}</cbc:IssueDate>
-        <cbc:TotalInvoiceAmount currencyID="{{operacion.comprobante.moneda}}">{{operacion.comprobante.importe_total}}</cbc:TotalInvoiceAmount>
+        <cbc:ID schemeID="{{operacion.comprobante_afectado.tipo_comprobante}}">{{operacion.comprobante_afectado.serie_numero}}</cbc:ID>
+        <cbc:IssueDate>{{operacion.comprobante_afectado.fecha_emision}}</cbc:IssueDate>
+        <cbc:TotalInvoiceAmount currencyID="{{operacion.comprobante_afectado.moneda}}">{{operacion.comprobante_afectado.importe_total}}</cbc:TotalInvoiceAmount>
         <cac:Payment>
             <cbc:ID>{{operacion.numero_operacion}}</cbc:ID>
-            <cbc:PaidAmount currencyID="{{operacion.comprobante.moneda}}">{{operacion.importe_operacion}}</cbc:PaidAmount>
+            <cbc:PaidAmount currencyID="{{operacion.comprobante_afectado.moneda}}">{{operacion.importe_operacion}}</cbc:PaidAmount>
             <cbc:PaidDate>{{operacion.fecha_operacion}}</cbc:PaidDate>
         </cac:Payment>
         <sac:SUNATRetentionInformation>
@@ -45,7 +45,7 @@
             {%- if operacion.tipo_cambio %}
             <cac:ExchangeRate>
                 <cbc:SourceCurrencyCode>{{moneda}}</cbc:SourceCurrencyCode>
-                <cbc:TargetCurrencyCode>{{operacion.comprobante.moneda}}</cbc:TargetCurrencyCode>
+                <cbc:TargetCurrencyCode>{{operacion.comprobante_afectado.moneda}}</cbc:TargetCurrencyCode>
                 <cbc:CalculationRate>{{operacion.tipo_cambio.valor}}</cbc:CalculationRate>
                 <cbc:Date>{{operacion.tipo_cambio.fecha}}</cbc:Date>
             </cac:ExchangeRate>

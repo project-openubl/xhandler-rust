@@ -162,7 +162,7 @@ async fn despatch_advice_complex_data() {
             peso_total_unidad_medida: "KGM".into(),
             peso_items: Some(dec!(90.00)),
             sustento_peso: Some("Empaque madera".into()),
-            numero_de_bultos: Some(10),
+            numero_bultos: Some(10),
             tipo_modalidad_traslado: "01".into(),
             fecha_traslado: fecha(),
             choferes: vec![

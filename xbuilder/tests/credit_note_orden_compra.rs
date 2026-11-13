@@ -11,9 +11,9 @@ const BASE: &str = "tests/resources/e2e/renderer/creditnote/CreditNoteOrdenDeCom
 
 #[serial_test::serial]
 #[tokio::test]
-async fn credit_note_orden_de_compra() {
+async fn credit_note_orden_compra() {
     let mut credit_note = CreditNote {
-        orden_de_compra: Some("123456".into()),
+        orden_compra: Some("123456".into()),
         detalles: vec![
             Detalle {
                 descripcion: "Item1".into(),

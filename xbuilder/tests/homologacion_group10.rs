@@ -99,7 +99,7 @@ async fn caso79_nota_credito_boleta1() {
     let mut credit_note = CreditNote {
         serie_numero: "BB13-1".into(),
         comprobante_afectado_serie_numero: "BB13-1".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(7),
         ..credit_note_base()
     };
@@ -116,7 +116,7 @@ async fn caso80_nota_credito_boleta2() {
     let mut credit_note = CreditNote {
         serie_numero: "BB13-2".into(),
         comprobante_afectado_serie_numero: "BB13-2".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(2),
         ..credit_note_base()
     };
@@ -133,7 +133,7 @@ async fn caso81_nota_credito_boleta4() {
     let mut credit_note = CreditNote {
         serie_numero: "BB13-3".into(),
         comprobante_afectado_serie_numero: "BB13-4".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(4),
         ..credit_note_base()
     };
@@ -152,7 +152,7 @@ async fn caso82_nota_debito_boleta1() {
     let mut debit_note = DebitNote {
         serie_numero: "BB13-1".into(),
         comprobante_afectado_serie_numero: "BB13-1".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(7),
         ..debit_note_base()
     };
@@ -169,7 +169,7 @@ async fn caso83_nota_debito_boleta2() {
     let mut debit_note = DebitNote {
         serie_numero: "BB13-2".into(),
         comprobante_afectado_serie_numero: "BB13-2".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(2),
         ..debit_note_base()
     };
@@ -186,7 +186,7 @@ async fn caso84_nota_debito_boleta4() {
     let mut debit_note = DebitNote {
         serie_numero: "BB13-3".into(),
         comprobante_afectado_serie_numero: "BB13-4".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(4),
         ..debit_note_base()
     };

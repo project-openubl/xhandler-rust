@@ -28,24 +28,24 @@ where
 
                 // ICB
                 let icb_importe = [
-                    ivap.importe_icb,
-                    exportacion.importe_icb,
-                    gravado.importe_icb,
-                    inafecto.importe_icb,
-                    exonerado.importe_icb,
-                    gratuito.importe_icb,
+                    ivap.icb_importe,
+                    exportacion.icb_importe,
+                    gravado.icb_importe,
+                    inafecto.icb_importe,
+                    exonerado.icb_importe,
+                    gratuito.icb_importe,
                 ]
                 .iter()
                 .fold(Decimal::ZERO, |a, b| a + b);
 
                 // ISC
                 let isc_importe = [
-                    ivap.importe_isc,
-                    exportacion.importe_isc,
-                    gravado.importe_isc,
-                    inafecto.importe_isc,
-                    exonerado.importe_isc,
-                    gratuito.importe_isc,
+                    ivap.isc_importe,
+                    exportacion.isc_importe,
+                    gravado.isc_importe,
+                    inafecto.isc_importe,
+                    exonerado.isc_importe,
+                    gratuito.isc_importe,
                 ]
                 .iter()
                 .fold(Decimal::ZERO, |a, b| a + b);
@@ -66,22 +66,22 @@ where
                 let total = gravado.importe + ivap.importe + exportacion.importe;
 
                 let total_impuestos = TotalImpuestos {
-                    ivap_importe: ivap.importe_igv,
+                    ivap_importe: ivap.igv_importe,
                     ivap_base_imponible: ivap.base_imponible,
 
-                    exportacion_importe: exportacion.importe_igv,
+                    exportacion_importe: exportacion.igv_importe,
                     exportacion_base_imponible: exportacion.base_imponible,
 
                     isc_importe,
                     isc_base_imponible: *isc_base_imponible,
-                    gravado_importe: gravado.importe_igv,
+                    gravado_importe: gravado.igv_importe,
                     gravado_base_imponible: gravado.base_imponible,
 
-                    inafecto_importe: inafecto.importe_igv,
+                    inafecto_importe: inafecto.igv_importe,
                     inafecto_base_imponible: inafecto.base_imponible,
-                    exonerado_importe: exonerado.importe_igv,
+                    exonerado_importe: exonerado.igv_importe,
                     exonerado_base_imponible: exonerado.base_imponible,
-                    gratuito_importe: gratuito.importe_igv,
+                    gratuito_importe: gratuito.igv_importe,
                     gratuito_base_imponible: gratuito.base_imponible,
 
                     icb_importe,

@@ -120,7 +120,7 @@ async fn caso37_nota_credito_factura2() {
     let mut credit_note = CreditNote {
         serie_numero: "FF14-1".into(),
         comprobante_afectado_serie_numero: "FF14-2".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(2),
         ..credit_note_base()
     };
@@ -137,7 +137,7 @@ async fn caso38_nota_credito_factura3() {
     let mut credit_note = CreditNote {
         serie_numero: "FF14-1".into(),
         comprobante_afectado_serie_numero: "FF14-3".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(3),
         ..credit_note_base()
     };
@@ -154,7 +154,7 @@ async fn caso39_nota_credito_factura5() {
     let mut credit_note = CreditNote {
         serie_numero: "FF14-1".into(),
         comprobante_afectado_serie_numero: "FF14-5".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(5),
         ..credit_note_base()
     };
@@ -173,7 +173,7 @@ async fn caso40_nota_debito_factura2() {
     let mut debit_note = DebitNote {
         serie_numero: "FF14-1".into(),
         comprobante_afectado_serie_numero: "FF14-2".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(2),
         ..debit_note_base()
     };
@@ -190,7 +190,7 @@ async fn caso41_nota_debito_factura3() {
     let mut debit_note = DebitNote {
         serie_numero: "FF14-1".into(),
         comprobante_afectado_serie_numero: "FF14-3".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(3),
         ..debit_note_base()
     };
@@ -207,7 +207,7 @@ async fn caso42_nota_debito_factura5() {
     let mut debit_note = DebitNote {
         serie_numero: "FF14-1".into(),
         comprobante_afectado_serie_numero: "FF14-5".into(),
-        sustento_descripcion: "Homologacion".into(),
+        descripcion_sustento: "Homologacion".into(),
         detalles: items(5),
         ..debit_note_base()
     };

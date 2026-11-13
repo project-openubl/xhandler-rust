@@ -132,7 +132,7 @@ async fn summary_documents_percepcion_and_other_taxes() {
                 },
                 percepcion: Some(SummaryDocumentsPercepcion {
                     tipo_regimen: Catalog22::VentaInterna.code().into(),
-                    tasa: dec!(2),
+                    porcentaje: dec!(2),
                     monto_base: dec!(130),
                     monto: dec!(2.6),
                     monto_total: dec!(132.6),

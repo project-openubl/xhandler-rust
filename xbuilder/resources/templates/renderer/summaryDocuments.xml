@@ -59,7 +59,7 @@
         {%- if it.comprobante.percepcion %}
         <sac:SUNATPerceptionSummaryDocumentReference>
             <sac:SUNATPerceptionSystemCode>{{it.comprobante.percepcion.tipo_regimen}}</sac:SUNATPerceptionSystemCode>
-            <sac:SUNATPerceptionPercent>{{it.comprobante.percepcion.tasa | round_decimal}}</sac:SUNATPerceptionPercent>
+            <sac:SUNATPerceptionPercent>{{it.comprobante.percepcion.porcentaje | round_decimal}}</sac:SUNATPerceptionPercent>
             <cbc:TotalInvoiceAmount currencyID="PEN">{{it.comprobante.percepcion.monto | round_decimal}}</cbc:TotalInvoiceAmount>
             <sac:SUNATTotalCashed currencyID="PEN">{{it.comprobante.percepcion.monto_total | round_decimal}}</sac:SUNATTotalCashed>
             <cbc:TaxableAmount currencyID="PEN">{{it.comprobante.percepcion.monto_base | round_decimal}}</cbc:TaxableAmount>
