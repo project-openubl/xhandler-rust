@@ -73,6 +73,10 @@ pub fn create_xml(input_file: &str, format: Option<&str>) -> anyhow::Result<Stri
             spec.enrich(&defaults);
             spec.render()?
         }
+        DocumentInput::Reversion { mut spec } => {
+            spec.enrich(&defaults);
+            spec.render()?
+        }
     };
 
     Ok(xml)
@@ -120,6 +124,10 @@ impl CreateArgs {
                     self.print_dry_run(&spec)
                 }
                 DocumentInput::VoidedDocuments { mut spec } => {
+                    spec.enrich(&defaults);
+                    self.print_dry_run(&spec)
+                }
+                DocumentInput::Reversion { mut spec } => {
                     spec.enrich(&defaults);
                     self.print_dry_run(&spec)
                 }
