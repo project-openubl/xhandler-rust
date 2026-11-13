@@ -1,6 +1,6 @@
 {%- import "ubl/standard/include/document-line.xml" as macros_document_line -%}
 {%- import "ubl/standard/include/address.xml" as macros_address -%}
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <DebitNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:DebitNote-2"
     {%- include "ubl/standard/include/namespaces.xml" -%}
 >

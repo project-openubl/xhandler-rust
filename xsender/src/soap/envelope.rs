@@ -13,6 +13,7 @@ pub struct EnvelopeData {
 pub enum BodyData {
     SendBill(FileData),
     SendSummary(FileData),
+    SendPack(FileData),
     VerifyTicket(String),
     GetStatusCrd(DocumentData),
     ValidateCdpCriterios(DocumentCdpData),
@@ -64,6 +65,10 @@ impl ToStringXml for EnvelopeData {
                 context.insert("body", &file_data);
                 TEMPLATES.render("send_summary.xml", &context)
             }
+            BodyData::SendPack(file_data) => {
+                context.insert("body", &file_data);
+                TEMPLATES.render("send_pack.xml", &context)
+            }
             BodyData::VerifyTicket(ticket) => {
                 context.insert("ticket", ticket);
                 TEMPLATES.render("verify_ticket.xml", &context)
@@ -87,7 +92,8 @@ impl ToStringXml for EnvelopeData {
 #[cfg(test)]
 mod tests {
     use crate::soap::envelope::BodyData::{
-        GetStatusCrd, SendBill, SendSummary, ValidateCdpCriterios, ValidateFile, VerifyTicket,
+        GetStatusCrd, SendBill, SendPack, SendSummary, ValidateCdpCriterios, ValidateFile,
+        VerifyTicket,
     };
     use crate::soap::envelope::*;
 
@@ -117,6 +123,23 @@ mod tests {
         };
 
         assert!(message.to_string_xml().unwrap().len() > 1);
+    }
+
+    #[test]
+    fn send_pack() {
+        let message = EnvelopeData {
+            username: String::from("my_username"),
+            password: String::from("my_password"),
+            body: SendPack(FileData {
+                filename: String::from("my_filename.zip"),
+                file_content: String::from("my_file_content"),
+            }),
+        };
+
+        let xml = message.to_string_xml().unwrap();
+        assert!(xml.contains("<ns2:sendPack xmlns:ns2=\"http://service.sunat.gob.pe\">"));
+        assert!(xml.contains("<fileName>my_filename.zip</fileName>"));
+        assert!(!xml.contains("sendBill"));
     }
 
     #[test]

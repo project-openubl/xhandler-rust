@@ -15,7 +15,7 @@ use crate::models::{Credentials, SendFileTarget, Urls, VerifyTicketTarget};
 use crate::prelude::VerifyTicketStatus;
 use crate::soap::cdr::CdrMetadata;
 use crate::ubl_file::UblFile;
-use crate::zip_manager::{create_zip_from_str, decode_base64_zip_and_extract_first_file};
+use crate::zip_manager::{create_zip, decode_base64_zip_and_extract_first_file};
 
 pub struct FileSender {
     pub urls: Urls,
@@ -93,7 +93,7 @@ impl FileSender {
         let zip_file_name = format!("{filename_without_extension}.zip");
         let file_name_inside_zip = format!("{filename_without_extension}.xml");
 
-        let zip = create_zip_from_str(&(xml.file_content), &file_name_inside_zip)?;
+        let zip = create_zip(xml.bytes(), &file_name_inside_zip)?;
         let zip_base64 = general_purpose::STANDARD.encode(zip);
 
         let file_to_be_sent = File {

@@ -93,17 +93,14 @@ impl ClientSUNAT {
     ) -> Result<SendFileResponse, ClientSunatErr> {
         match &target {
             SendFileTarget::Soap(url, action) => {
+                let file_data = FileData {
+                    filename: file.name.clone(),
+                    file_content: file.base_64.clone(),
+                };
                 let envelope_body = match action {
-                    SoapFileTargetAction::Bill | SoapFileTargetAction::Pack => {
-                        BodyData::SendBill(FileData {
-                            filename: file.name.clone(),
-                            file_content: file.base_64.clone(),
-                        })
-                    }
-                    SoapFileTargetAction::Summary => BodyData::SendSummary(FileData {
-                        filename: file.name.clone(),
-                        file_content: file.base_64.clone(),
-                    }),
+                    SoapFileTargetAction::Bill => BodyData::SendBill(file_data),
+                    SoapFileTargetAction::Summary => BodyData::SendSummary(file_data),
+                    SoapFileTargetAction::Pack => BodyData::SendPack(file_data),
                 };
 
                 let envelope = EnvelopeData {
