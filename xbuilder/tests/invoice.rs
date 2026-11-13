@@ -307,5 +307,8 @@ fn invoice_issue_time_without_fractional_seconds() {
     invoice.enrich(&common::defaults_base());
     let xml = invoice.render().expect("Could not render invoice");
 
-    assert!(xml.contains("<cbc:IssueTime>10:11:12</cbc:IssueTime>"));
+    assert!(
+        xml.contains("<cbc:IssueTime>10:11:12</cbc:IssueTime>"),
+        "{xml}"
+    );
 }

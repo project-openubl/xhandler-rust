@@ -19,10 +19,10 @@ pub trait Label {
 /// Declares a SUNAT catalog: the enum, its codes, and a `from_code` that
 /// accepts either the code (`"1"`) or the variant name, ignoring case and
 /// underscores, as xhandler-java does (`"DNI"`, `"GRAVADO_OPERACION_ONEROSA"`).
-/// `Variant = "code" | "ALIAS",` also accepts a Java name that differs from
-/// the variant name.
+/// `Variant | Alias = "code",` also accepts a Java name that differs from the
+/// variant name.
 macro_rules! catalog {
-    ($(#[$meta:meta])* $name:ident { $($variant:ident = $code:literal $(| $alias:literal)?,)* }) => {
+    ($(#[$meta:meta])* $name:ident { $($variant:ident $(| $alias:ident)? = $code:literal,)* }) => {
         $(#[$meta])*
         #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
         pub enum $name {
@@ -42,7 +42,7 @@ macro_rules! catalog {
                 let name = value.replace('_', "");
                 $(if value == $code
                     || name.eq_ignore_ascii_case(stringify!($variant))
-                    $(|| value.eq_ignore_ascii_case($alias))?
+                    $(|| name.eq_ignore_ascii_case(stringify!($alias)))?
                 {
                     return Ok(Self::$variant);
                 })*
@@ -133,7 +133,7 @@ catalog! {
         RUC = "6",
         Pasaporte = "7",
         DecDiplomatica = "A",
-        DocIdentPaisResidenciaNoDomiciliado = "B" | "DOC_IDENT_PAIS_RESIDENCIA_NO_D",
+        DocIdentPaisResidenciaNoDomiciliado | DocIdentPaisResidenciaNoD = "B",
         TaxIdentificationNumberTinDocTribPpNn = "C",
         IdentificationNumberInDocTribPpJj = "D",
         TamTarjetaAndinaDeMigracion = "E",

@@ -4,6 +4,7 @@ use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::str::{from_utf8, FromStr};
 
+use chrono::NaiveTime;
 use rust_decimal::Decimal;
 use static_files::Resource;
 use tera::helpers::tests::{number_args_allowed, value_defined};
@@ -95,8 +96,8 @@ pub fn cdata(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Error> 
 pub fn format_time(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Error> {
     let time = value
         .as_str()
-        .and_then(|text| chrono::NaiveTime::from_str(text).ok())
-        .ok_or_else(|| Error::msg("format_time needs a time"))?;
+        .and_then(|text| NaiveTime::from_str(text).ok())
+        .ok_or_else(|| Error::msg(format!("format_time: {value} is not a time")))?;
     Ok(to_value(time.format("%H:%M:%S").to_string())?)
 }
 

@@ -140,11 +140,9 @@ fn verify_ticket_from_voided_documents() {
 
         let _ = std::fs::remove_file(&cdr_path);
     } else {
-        // SUNAT beta may return an error for ticket verification (known issue).
-        // Verify the error output is structured JSON.
-        assert!(
-            stderr.contains("\"status\"") && stderr.contains("\"code\""),
-            "error output should be structured JSON, stderr: {stderr}"
-        );
+        // SUNAT beta may return an error for ticket verification (known issue)
+        let json: serde_json::Value = serde_json::from_str(&stderr)
+            .unwrap_or_else(|_| panic!("error output should be JSON, stderr: {stderr}"));
+        assert!(json.get("status").is_some() && json.get("code").is_some());
     }
 }
