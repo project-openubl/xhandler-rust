@@ -14,7 +14,8 @@ updates:
     cooldown:
       default-days: 7
     commit-message:
-      prefix: ":ghost: "
+      prefix: "chore"
+      include: "scope"
     groups:
       github-actions:
         update-types: ["minor", "patch"]
@@ -28,7 +29,8 @@ updates:
       default-days: 7
       semver-major-days: 14
     commit-message:
-      prefix: ":ghost: "
+      prefix: "chore"
+      include: "scope"
     groups:
       cargo:
         update-types: ["minor", "patch"]
@@ -42,7 +44,8 @@ updates:
       default-days: 7
       semver-major-days: 14
     commit-message:
-      prefix: ":ghost: "
+      prefix: "chore"
+      include: "scope"
     allow:
       - dependency-name: "@patternfly/*"
         dependency-type: "direct"
