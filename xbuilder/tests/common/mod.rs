@@ -188,7 +188,8 @@ pub async fn assert_debit_note(debit_note: &mut DebitNote, snapshot_filename: &s
 }
 
 #[allow(dead_code)]
-pub async fn assert_voided_documents(doc: &mut VoidedDocuments, snapshot_filename: &str) {
+/// Also used for [`Reversion`], which shares the VoidedDocuments template and XSD
+pub async fn assert_voided_documents(doc: &mut (impl Enrich + Renderer), snapshot_filename: &str) {
     let defaults = defaults_base();
     doc.enrich(&defaults);
 

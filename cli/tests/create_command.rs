@@ -259,3 +259,18 @@ fn create_missing_file_arg_fails() {
 
     assert!(!output.status.success(), "should fail without -f");
 }
+
+#[test]
+fn create_reversion_from_yaml() {
+    let output = Command::new(BINARY)
+        .args(["create", "-f", &format!("{RESOURCES}/reversion.yaml")])
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        .output()
+        .expect("failed to execute openubl");
+
+    assert!(output.status.success(), "exit code: {:?}", output.status);
+
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("<cbc:ID>RR-20240115-1</cbc:ID>"));
+    assert!(stdout.contains("<cbc:DocumentTypeCode>40</cbc:DocumentTypeCode>"));
+}

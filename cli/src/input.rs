@@ -17,7 +17,10 @@ pub enum DocumentInput {
     Retention { spec: Box<Retention> },
     SummaryDocuments { spec: Box<SummaryDocuments> },
     VoidedDocuments { spec: Box<VoidedDocuments> },
+    Reversion { spec: Box<Reversion> },
 }
+
+const KINDS: &str = "Invoice, CreditNote, DebitNote, DespatchAdvice, Perception, Retention, SummaryDocuments, VoidedDocuments, Reversion";
 
 #[derive(Clone, Copy)]
 pub enum InputFormat {
@@ -45,12 +48,12 @@ impl InputFormat {
         match self {
             InputFormat::Json => serde_json::from_str(content).map_err(|e| {
                 anyhow::anyhow!(
-                    "Error en el archivo JSON:\n  {e}\n  Valores validos de 'kind': Invoice, CreditNote, DebitNote, DespatchAdvice, Perception, Retention, SummaryDocuments, VoidedDocuments"
+                    "Error en el archivo JSON:\n  {e}\n  Valores validos de 'kind': {KINDS}"
                 )
             }),
             InputFormat::Yaml => serde_yaml::from_str(content).map_err(|e| {
                 anyhow::anyhow!(
-                    "Error en el archivo YAML:\n  {e}\n  Valores validos de 'kind': Invoice, CreditNote, DebitNote, DespatchAdvice, Perception, Retention, SummaryDocuments, VoidedDocuments"
+                    "Error en el archivo YAML:\n  {e}\n  Valores validos de 'kind': {KINDS}"
                 )
             }),
         }

@@ -19,6 +19,13 @@ pub struct VoidedDocuments {
     pub documento_id: Option<String>,
 }
 
+/// Comunicacion de reversion: same content as a [`VoidedDocuments`] (and
+/// rendered with its template), used to revert perception (P) and retention
+/// (R) documents. Its ID is "RR-YYYYMMDD-{numero}".
+#[derive(Debug, Deserialize, Serialize, Default)]
+#[serde(transparent)]
+pub struct Reversion(pub VoidedDocuments);
+
 /// Detalle de un comprobante dado de baja
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(default)]

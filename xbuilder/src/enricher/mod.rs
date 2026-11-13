@@ -10,7 +10,7 @@ use crate::models::despatch_advice::DespatchAdvice;
 use crate::models::invoice::Invoice;
 use crate::models::perception_retention::{Perception, Retention};
 use crate::models::summary_documents::SummaryDocuments;
-use crate::models::voided_documents::VoidedDocuments;
+use crate::models::voided_documents::{Reversion, VoidedDocuments};
 
 mod bounds;
 mod fill;
@@ -58,6 +58,21 @@ impl Enrich for VoidedDocuments {
         Fill::fill(self, defaults);
         Process::process(self);
         Summary::summary(self);
+    }
+}
+
+impl Enrich for Reversion {
+    fn enrich(&mut self, defaults: &Defaults) {
+        if self.0.documento_id.is_some() {
+            return self.0.enrich(defaults);
+        }
+
+        self.0.enrich(defaults);
+        if let Some(id) = self.0.documento_id.as_mut() {
+            if let Some(rest) = id.strip_prefix("RA") {
+                *id = format!("RR{rest}");
+            }
+        }
     }
 }
 

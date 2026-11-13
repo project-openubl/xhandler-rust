@@ -204,6 +204,12 @@ impl Renderer for DebitNote {
     }
 }
 
+impl Renderer for Reversion {
+    fn render(&self) -> tera::Result<String> {
+        self.0.render()
+    }
+}
+
 impl Renderer for VoidedDocuments {
     fn render(&self) -> tera::Result<String> {
         TEMPLATES.render(
