@@ -1,6 +1,5 @@
 use crate::enricher::rules::phase1fill::cliente::ClienteTipoDocumentoIdentidadFillRule;
 use crate::enricher::rules::phase1fill::despatch_advice::firmante::DespatchAdviceFirmanteFillRule;
-use crate::enricher::rules::phase1fill::despatch_advice::peso_total::DespatchAdvicePesoTotalFillRule;
 use crate::enricher::rules::phase1fill::despatch_advice::tipo_comprobante::DespatchAdviceTipoComprobanteFillRule;
 use crate::enricher::rules::phase1fill::detalle::detalles::DetallesFillRule;
 use crate::enricher::rules::phase1fill::fecha_emision::FechaEmisionFillRule;
@@ -338,8 +337,7 @@ impl<T> FillDespatchAdvice for T
 where
     T: FechaEmisionFillRule
         + DespatchAdviceFirmanteFillRule
-        + DespatchAdviceTipoComprobanteFillRule
-        + DespatchAdvicePesoTotalFillRule,
+        + DespatchAdviceTipoComprobanteFillRule,
 {
     fn fill_despatch_advice(&mut self, defaults: &Defaults) {
         let mut changed = true;
@@ -349,7 +347,6 @@ where
                 FechaEmisionFillRule::fill(self, defaults).unwrap_or_default(),
                 DespatchAdviceFirmanteFillRule::fill(self).unwrap_or_default(),
                 DespatchAdviceTipoComprobanteFillRule::fill(self).unwrap_or_default(),
-                DespatchAdvicePesoTotalFillRule::fill(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);
