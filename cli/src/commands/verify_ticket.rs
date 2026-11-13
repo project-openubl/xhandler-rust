@@ -18,18 +18,18 @@ pub struct VerifyTicketArgs {
     pub ticket: String,
 
     /// Ruta del archivo CDR zip de respuesta
-    #[arg(short = 'o', long = "output")]
-    pub output_file: String,
+    #[arg(short = 'o', long)]
+    pub output: String,
 
     #[command(flatten)]
     pub credentials: CredentialArgs,
 
     /// Endpoint SOAP de facturas SUNAT (usado para verificar tickets)
-    #[arg(long = "url-invoice", env = "OPENUBL_URL_INVOICE")]
+    #[arg(long, env = "OPENUBL_URL_INVOICE")]
     pub url_invoice: Option<String>,
 
     /// Endpoint REST de guias de remision SUNAT (con --despatch)
-    #[arg(long = "url-despatch", env = "OPENUBL_URL_DESPATCH")]
+    #[arg(long, env = "OPENUBL_URL_DESPATCH")]
     pub url_despatch: Option<String>,
 
     /// El ticket es de una guia de remision (API REST, requiere --client-id y --client-secret)
@@ -44,8 +44,8 @@ pub struct VerifyTicketArgs {
 impl VerifyTicketArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
         let send_args = SendArgs {
-            input_file: String::new(),
-            output_file: Some(self.output_file.clone()),
+            file: String::new(),
+            output: Some(self.output.clone()),
             credentials: self.credentials.clone(),
             url_invoice: self.url_invoice.clone(),
             url_perception_retention: None,
@@ -68,8 +68,8 @@ impl VerifyTicketArgs {
         };
 
         let result = sender.verify_ticket(&target, &self.ticket).await?;
-        let is_fault = matches!(result.response, VerifyTicketAggregatedResponse::Error(_));
-        let (output, status) = super::verify_ticket_output(result.response, &self.output_file)?;
+        let is_fault = matches!(result.response, VerifyTicketAggregatedResponse::Fault(_));
+        let (output, status) = super::verify_ticket_output(result.response, &self.output)?;
 
         if is_fault {
             eprintln!("{}", serde_json::to_string_pretty(&output)?);

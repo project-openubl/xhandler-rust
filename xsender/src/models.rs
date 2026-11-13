@@ -115,13 +115,13 @@ impl Catalog1 {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Status {
     /// 0, or 4000+ (accepted with observations)
-    Aceptado,
+    Accepted,
     /// 2000-3999
-    Rechazado,
+    Rejected,
     /// 99 and 100-1999: the document was not processed and can be sent again
-    Excepcion,
+    Exception,
     /// 98: ticket still being processed
-    EnProceso,
+    InProgress,
     /// Any other code
     Unknown,
 }
@@ -129,11 +129,11 @@ pub enum Status {
 impl Status {
     pub fn from_code(code: u32) -> Self {
         match code {
-            0 => Self::Aceptado,
-            98 => Self::EnProceso,
-            99..=1999 => Self::Excepcion,
-            2000..=3999 => Self::Rechazado,
-            4000.. => Self::Aceptado,
+            0 => Self::Accepted,
+            98 => Self::InProgress,
+            99..=1999 => Self::Exception,
+            2000..=3999 => Self::Rejected,
+            4000.. => Self::Accepted,
             _ => Self::Unknown,
         }
     }
@@ -150,10 +150,10 @@ impl Status {
 impl std::fmt::Display for Status {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let value = match self {
-            Self::Aceptado => "ACEPTADO",
-            Self::Rechazado => "RECHAZADO",
-            Self::Excepcion => "EXCEPCION",
-            Self::EnProceso => "EN_PROCESO",
+            Self::Accepted => "ACEPTADO",
+            Self::Rejected => "RECHAZADO",
+            Self::Exception => "EXCEPCION",
+            Self::InProgress => "EN_PROCESO",
             Self::Unknown => "UNKNOWN",
         };
         write!(f, "{value}")
@@ -166,19 +166,19 @@ mod tests {
 
     #[test]
     fn status_from_code() {
-        assert_eq!(Status::from_code(0), Status::Aceptado);
+        assert_eq!(Status::from_code(0), Status::Accepted);
         assert_eq!(Status::from_code(1), Status::Unknown);
         assert_eq!(Status::from_code(97), Status::Unknown);
-        assert_eq!(Status::from_code(98), Status::EnProceso);
-        assert_eq!(Status::from_code(99), Status::Excepcion);
-        assert_eq!(Status::from_code(100), Status::Excepcion);
-        assert_eq!(Status::from_code(1999), Status::Excepcion);
-        assert_eq!(Status::from_code(2000), Status::Rechazado);
-        assert_eq!(Status::from_code(2335), Status::Rechazado);
-        assert_eq!(Status::from_code(3999), Status::Rechazado);
-        assert_eq!(Status::from_code(4000), Status::Aceptado);
-        assert_eq!(Status::from_code(4252), Status::Aceptado);
-        assert_eq!(Status::from_code_str(" 0111 "), Status::Excepcion);
+        assert_eq!(Status::from_code(98), Status::InProgress);
+        assert_eq!(Status::from_code(99), Status::Exception);
+        assert_eq!(Status::from_code(100), Status::Exception);
+        assert_eq!(Status::from_code(1999), Status::Exception);
+        assert_eq!(Status::from_code(2000), Status::Rejected);
+        assert_eq!(Status::from_code(2335), Status::Rejected);
+        assert_eq!(Status::from_code(3999), Status::Rejected);
+        assert_eq!(Status::from_code(4000), Status::Accepted);
+        assert_eq!(Status::from_code(4252), Status::Accepted);
+        assert_eq!(Status::from_code_str(" 0111 "), Status::Exception);
         assert_eq!(Status::from_code_str("abc"), Status::Unknown);
     }
 }

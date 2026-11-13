@@ -10,7 +10,7 @@
     <soap:Body>
         <ns2:{{operation}} xmlns:ns2="http://service.sunat.gob.pe">
             <fileName>{{body.filename}}</fileName>
-            <contentFile>{{body.file_content}}</contentFile>
+            <contentFile>{{body.zip_base64}}</contentFile>
         </ns2:{{operation}}>
     </soap:Body>
 </soap:Envelope>

@@ -330,8 +330,8 @@ async fn assert_sunat(xml: &[u8]) {
             let result = match &result.response {
                 SendFileAggregatedResponse::Cdr(_, _) => false,
                 SendFileAggregatedResponse::Ticket(_) => true,
-                SendFileAggregatedResponse::Error(e) => {
-                    println!("SUNAT Error: code={} message={}", e.code, e.message);
+                SendFileAggregatedResponse::Fault(fault) => {
+                    println!("SUNAT fault: code={} message={}", fault.code, fault.message);
                     false
                 }
             };
@@ -345,7 +345,7 @@ async fn assert_sunat(xml: &[u8]) {
                     true
                 }
                 SendFileAggregatedResponse::Ticket(_) => false,
-                SendFileAggregatedResponse::Error(_) => false,
+                SendFileAggregatedResponse::Fault(_) => false,
             };
             assert!(result)
         }

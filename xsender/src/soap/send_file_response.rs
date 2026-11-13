@@ -1,7 +1,8 @@
 use anyhow::anyhow;
 use std::str::FromStr;
 
-use crate::soap::{SoapFault, SOAP_ENV_NS};
+use crate::fault::SunatFault;
+use crate::soap::SOAP_ENV_NS;
 use crate::xml_walker::walk_xml;
 
 /// Response from the SUNAT while sending a file through SOAP
@@ -10,8 +11,8 @@ pub enum SendFileXmlResponse {
     Cdr(String),
     /// String contains the ticket code
     Ticket(String),
-    /// Error
-    Fault(SoapFault),
+    /// SUNAT fault
+    Fault(SunatFault),
 }
 
 impl FromStr for SendFileXmlResponse {
@@ -46,7 +47,7 @@ impl FromStr for SendFileXmlResponse {
         match (cdr_base64, ticket, fault_code) {
             (Some(cdr_base64), _, _) => Ok(Self::Cdr(cdr_base64)),
             (_, Some(ticket), _) => Ok(Self::Ticket(ticket)),
-            (_, _, Some(code)) => Ok(Self::Fault(SoapFault {
+            (_, _, Some(code)) => Ok(Self::Fault(SunatFault {
                 code,
                 message: fault_message.unwrap_or_default(),
             })),
@@ -92,7 +93,7 @@ mod tests {
         let fault = match response {
             SendFileXmlResponse::Cdr(_) => ("".to_string(), "".to_string()),
             SendFileXmlResponse::Ticket(_) => ("".to_string(), "".to_string()),
-            SendFileXmlResponse::Fault(error) => (error.code, error.message),
+            SendFileXmlResponse::Fault(fault) => (fault.code, fault.message),
         };
 
         assert_eq!("soap-env:Client.0111", fault.0);
@@ -131,6 +132,6 @@ mod tests {
         assert!(fault
             .message
             .starts_with("El documento electrónico ingresado ha sido alterado - Detalle: xxx"));
-        assert_eq!(fault.status(), crate::models::Status::Rechazado);
+        assert_eq!(fault.status(), crate::models::Status::Rejected);
     }
 }

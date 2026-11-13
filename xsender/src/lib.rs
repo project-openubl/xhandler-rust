@@ -1,6 +1,7 @@
 mod analyzer;
 mod constants;
 mod encoding;
+mod fault;
 mod file_sender;
 mod models;
 pub mod prelude;

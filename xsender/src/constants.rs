@@ -6,7 +6,7 @@ use std::str::from_utf8;
 use std::time::Duration;
 use tera::Tera;
 
-pub const DS: &str = "http://www.w3.org/2000/09/xmldsig#";
+pub const DS_NS: &str = "http://www.w3.org/2000/09/xmldsig#";
 pub const CBC_NS: &str = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2";
 pub const CAC_NS: &str = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2";
 pub const SAC_NS: &str =

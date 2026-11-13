@@ -18,15 +18,15 @@ use crate::commands::sign::KeyArgs;
 La salida es JSON en stdout. Codigo de salida: 0=aceptado/ticket, 2=rechazado o error SUNAT.")]
 pub struct ApplyArgs {
     /// Archivo de entrada JSON/YAML con la definicion del documento
-    #[arg(short = 'f', long = "file")]
-    pub input_file: String,
+    #[arg(short = 'f', long)]
+    pub file: String,
 
     /// Ruta del archivo CDR zip de respuesta. Por defecto: <archivo_entrada>.cdr.zip
-    #[arg(short = 'o', long = "output")]
-    pub output_file: Option<String>,
+    #[arg(short = 'o', long)]
+    pub output: Option<String>,
 
     /// Formato de entrada cuando se lee desde stdin: json, yaml
-    #[arg(long = "format")]
+    #[arg(long)]
     pub format: Option<String>,
 
     #[command(flatten)]
@@ -40,11 +40,11 @@ pub struct ApplyArgs {
     pub beta: bool,
 
     /// Guardar XML sin firmar. Por defecto: <archivo_entrada>.unsigned.xml
-    #[arg(long = "save-xml", num_args = 0..=1, default_missing_value = "")]
+    #[arg(long, num_args = 0..=1, default_missing_value = "")]
     pub save_xml: Option<String>,
 
     /// Ruta del XML firmado. Por defecto: <archivo_entrada>.signed.xml
-    #[arg(long = "save-signed-xml")]
+    #[arg(long)]
     pub save_signed_xml: Option<String>,
 
     /// Ejecutar crear + firmar sin enviar a SUNAT
@@ -61,7 +61,7 @@ impl ApplyArgs {
         // Resolve output paths to absolute
         let unsigned_path = self.save_xml.as_ref().map(|p| {
             let path = if p.is_empty() {
-                format!("{}.unsigned.xml", self.input_file)
+                format!("{}.unsigned.xml", self.file)
             } else {
                 p.clone()
             };
@@ -71,11 +71,11 @@ impl ApplyArgs {
             &self
                 .save_signed_xml
                 .clone()
-                .unwrap_or_else(|| format!("{}.signed.xml", self.input_file)),
+                .unwrap_or_else(|| format!("{}.signed.xml", self.file)),
         );
 
         // Step 1: Create XML
-        let xml = create_xml(&self.input_file, self.format.as_deref())?;
+        let xml = create_xml(&self.file, self.format.as_deref())?;
 
         if let Some(path) = &unsigned_path {
             std::fs::write(path, &xml)?;
@@ -99,13 +99,13 @@ impl ApplyArgs {
         // Step 3: Send
         let ubl_file = UblFile::from_bytes(signed_xml)?;
         let default_cdr = self
-            .output_file
+            .output
             .clone()
-            .unwrap_or_else(|| format!("{}.cdr.zip", self.input_file));
+            .unwrap_or_else(|| format!("{}.cdr.zip", self.file));
 
         let send_args = SendArgs {
-            input_file: String::new(),
-            output_file: self.output_file.clone(),
+            file: String::new(),
+            output: self.output.clone(),
             credentials: self.credentials.clone(),
             url_invoice: None,
             url_perception_retention: None,

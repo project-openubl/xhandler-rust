@@ -13,9 +13,10 @@ use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 
 use crate::constants::HTTP_CLIENT;
+use crate::fault::SunatFault;
 use crate::models::Credentials;
 use crate::sunat_client::{
-    send_request, ClientSunatErr, ErrorResponse, File, SendFileResponse, VerifyTicketResponse,
+    send_request, File, SendFileResponse, SunatClientError, VerifyTicketResponse,
     VerifyTicketStatus,
 };
 
@@ -27,14 +28,14 @@ pub async fn send_document(
     url: &str,
     file: &File,
     credentials: &Credentials,
-) -> Result<SendFileResponse, ClientSunatErr> {
+) -> Result<SendFileResponse, SunatClientError> {
     let token = fetch_token(credentials).await?;
-    let name = file.name.strip_suffix(".zip").unwrap_or(&file.name);
+    let name = file.filename.strip_suffix(".zip").unwrap_or(&file.filename);
     let payload = json!({
         "archivo": {
-            "nomArchivo": file.name,
-            "arcGreZip": file.base_64,
-            "hashZip": hash_zip(&file.base_64)?,
+            "nomArchivo": file.filename,
+            "arcGreZip": file.zip_base64,
+            "hashZip": hash_zip(&file.zip_base64)?,
         }
     })
     .to_string();
@@ -56,7 +57,7 @@ pub async fn verify_ticket(
     url: &str,
     ticket: &str,
     credentials: &Credentials,
-) -> Result<VerifyTicketResponse, ClientSunatErr> {
+) -> Result<VerifyTicketResponse, SunatClientError> {
     let token = fetch_token(credentials).await?;
     let (status, body) = send_request(|| {
         HTTP_CLIENT
@@ -75,7 +76,7 @@ static TOKENS: LazyLock<Mutex<HashMap<String, (String, Instant)>>> =
 /// Requests an access token with the SOL user and the API client id/secret,
 /// reusing the previous one until a minute before it expires (or until SUNAT
 /// rejects it).
-async fn fetch_token(credentials: &Credentials) -> Result<String, ClientSunatErr> {
+async fn fetch_token(credentials: &Credentials) -> Result<String, SunatClientError> {
     let (Some(client_id), Some(client_secret)) =
         (&credentials.client_id, &credentials.client_secret)
     else {
@@ -104,7 +105,7 @@ async fn fetch_token(credentials: &Credentials) -> Result<String, ClientSunatErr
     .await?;
 
     let Some(json) = parse_json(&body) else {
-        return Err(ClientSunatErr::Response(status));
+        return Err(SunatClientError::Response(status));
     };
     let token = text(&json["access_token"])
         .ok_or_else(|| anyhow!("Could not get a SUNAT access token ({status}): {json}"))?;
@@ -141,31 +142,34 @@ fn store_token(key: String, token: &str, expires_in: u64) {
 }
 
 /// Hex SHA-256 of the zip, as SUNAT expects in `hashZip`
-fn hash_zip(zip_base64: &str) -> Result<String, ClientSunatErr> {
+fn hash_zip(zip_base64: &str) -> Result<String, SunatClientError> {
     let zip = general_purpose::STANDARD
         .decode(zip_base64)
         .map_err(|e| anyhow!("Invalid zip: {e}"))?;
     Ok(format!("{:x}", Sha256::digest(zip)))
 }
 
-fn parse_send_response(status: StatusCode, body: &str) -> Result<SendFileResponse, ClientSunatErr> {
+fn parse_send_response(
+    status: StatusCode,
+    body: &str,
+) -> Result<SendFileResponse, SunatClientError> {
     let Some(json) = parse_json(body) else {
-        return Err(ClientSunatErr::Response(status));
+        return Err(SunatClientError::Response(status));
     };
     if let Some(ticket) = text(&json["numTicket"]) {
         return Ok(SendFileResponse::Ticket(ticket));
     }
     rest_error(&json)
-        .map(SendFileResponse::Error)
-        .ok_or(ClientSunatErr::Response(status))
+        .map(SendFileResponse::Fault)
+        .ok_or(SunatClientError::Response(status))
 }
 
 fn parse_ticket_response(
     status: StatusCode,
     body: &str,
-) -> Result<VerifyTicketResponse, ClientSunatErr> {
+) -> Result<VerifyTicketResponse, SunatClientError> {
     let Some(json) = parse_json(body) else {
-        return Err(ClientSunatErr::Response(status));
+        return Err(SunatClientError::Response(status));
     };
     if let Some(status_code) = text(&json["codRespuesta"]) {
         if let Some(cdr_base64) = text(&json["arcCdr"]) {
@@ -176,18 +180,18 @@ fn parse_ticket_response(
         }
         if let Some(code) = text(&json["error"]["numError"]) {
             let message = text(&json["error"]["desError"]).unwrap_or_default();
-            return Ok(VerifyTicketResponse::Error(ErrorResponse { code, message }));
+            return Ok(VerifyTicketResponse::Fault(SunatFault { code, message }));
         }
         return Ok(VerifyTicketResponse::NoCdr { status_code });
     }
     rest_error(&json)
-        .map(VerifyTicketResponse::Error)
-        .ok_or(ClientSunatErr::Response(status))
+        .map(VerifyTicketResponse::Fault)
+        .ok_or(SunatClientError::Response(status))
 }
 
 /// SUNAT's REST error body: `{cod|status, msg|message, errors: [{cod, msg}]}`.
 /// The detailed errors are appended to the message as "cod - msg".
-fn rest_error(json: &Value) -> Option<ErrorResponse> {
+fn rest_error(json: &Value) -> Option<SunatFault> {
     let code = text(&json["cod"]).or_else(|| text(&json["status"]))?;
     let mut parts: Vec<String> = text(&json["msg"])
         .or_else(|| text(&json["message"]))
@@ -206,7 +210,7 @@ fn rest_error(json: &Value) -> Option<ErrorResponse> {
                 )
             }),
     );
-    Some(ErrorResponse {
+    Some(SunatFault {
         code,
         message: parts.join("; "),
     })
@@ -257,12 +261,12 @@ mod tests {
     fn send_returns_sunat_errors() {
         let body = r#"{"cod":"422","msg":"Unprocessable Entity","errors":[{"cod":"1033","msg":"El comprobante fue registrado previamente"}]}"#;
         let response = parse_send_response(StatusCode::UNPROCESSABLE_ENTITY, body).unwrap();
-        let SendFileResponse::Error(error) = response else {
-            panic!("Expected an error");
+        let SendFileResponse::Fault(fault) = response else {
+            panic!("Expected a fault");
         };
-        assert_eq!(error.code, "422");
+        assert_eq!(fault.code, "422");
         assert_eq!(
-            error.message,
+            fault.message,
             "Unprocessable Entity; 1033 - El comprobante fue registrado previamente"
         );
     }
@@ -296,19 +300,19 @@ mod tests {
     fn ticket_with_error_and_no_cdr() {
         let body = r#"{"codRespuesta":"99","indCdrGenerado":"0","error":{"numError":"2223","desError":"El documento ya fue informado"}}"#;
         let response = parse_ticket_response(StatusCode::OK, body).unwrap();
-        let VerifyTicketResponse::Error(error) = response else {
-            panic!("Expected an error");
+        let VerifyTicketResponse::Fault(fault) = response else {
+            panic!("Expected a fault");
         };
-        assert_eq!(error.code, "2223");
-        assert_eq!(error.message, "El documento ya fue informado");
-        assert_eq!(error.status(), Status::Rechazado);
+        assert_eq!(fault.code, "2223");
+        assert_eq!(fault.message, "El documento ya fue informado");
+        assert_eq!(fault.status(), Status::Rejected);
     }
 
     #[test]
     fn ticket_not_found() {
         let body = r#"{"status":404,"message":"Ticket no encontrado"}"#;
         let response = parse_ticket_response(StatusCode::NOT_FOUND, body).unwrap();
-        assert!(matches!(response, VerifyTicketResponse::Error(error) if error.code == "404"));
+        assert!(matches!(response, VerifyTicketResponse::Fault(fault) if fault.code == "404"));
     }
 
     #[test]

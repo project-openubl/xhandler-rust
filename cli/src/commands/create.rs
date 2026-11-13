@@ -13,15 +13,15 @@ use crate::input::{self, DocumentInput};
   cat factura.json | openubl create -f - --format json")]
 pub struct CreateArgs {
     /// Archivo de entrada JSON/YAML. Usar "-" para leer desde stdin
-    #[arg(short = 'f', long = "file")]
-    pub input_file: String,
+    #[arg(short = 'f', long)]
+    pub file: String,
 
     /// Ruta del archivo XML de salida. Si se omite, se imprime en stdout
-    #[arg(short = 'o', long = "output")]
-    pub output_file: Option<String>,
+    #[arg(short = 'o', long)]
+    pub output: Option<String>,
 
     /// Formato de entrada cuando se lee desde stdin: json, yaml
-    #[arg(long = "format")]
+    #[arg(long)]
     pub format: Option<String>,
 
     /// Validar y enriquecer sin generar el XML
@@ -30,8 +30,8 @@ pub struct CreateArgs {
 }
 
 /// Creates UBL XML from an input file. Reads, enriches, and renders the document.
-pub fn create_xml(input_file: &str, format: Option<&str>) -> anyhow::Result<String> {
-    let doc = input::read_input(input_file, format)?;
+pub fn create_xml(file: &str, format: Option<&str>) -> anyhow::Result<String> {
+    let doc = input::read_input(file, format)?;
 
     let defaults = Defaults {
         icb_tasa: rust_decimal_macros::dec!(0.2),
@@ -85,7 +85,7 @@ pub fn create_xml(input_file: &str, format: Option<&str>) -> anyhow::Result<Stri
 impl CreateArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
         if self.dry_run {
-            let doc = input::read_input(&self.input_file, self.format.as_deref())?;
+            let doc = input::read_input(&self.file, self.format.as_deref())?;
 
             let defaults = Defaults {
                 icb_tasa: rust_decimal_macros::dec!(0.2),
@@ -134,13 +134,13 @@ impl CreateArgs {
             };
         }
 
-        let xml = create_xml(&self.input_file, self.format.as_deref())?;
+        let xml = create_xml(&self.file, self.format.as_deref())?;
         self.write_output(&xml)?;
         Ok(ExitCode::SUCCESS)
     }
 
     fn write_output(&self, xml: &str) -> anyhow::Result<()> {
-        match &self.output_file {
+        match &self.output {
             Some(path) => std::fs::write(path, xml)?,
             None => print!("{xml}"),
         }

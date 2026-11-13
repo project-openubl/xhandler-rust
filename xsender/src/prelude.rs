@@ -1,3 +1,4 @@
+pub use crate::fault::SunatFault;
 pub use crate::file_sender::*;
 pub use crate::models::*;
 pub use crate::soap::cdr::CdrMetadata;

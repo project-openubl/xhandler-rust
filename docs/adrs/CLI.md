@@ -649,7 +649,7 @@ done
 
 1. **Phase 1: CLI scaffold + `create`** — Set up `cli/` crate, clap command structure, `DocumentInput` enum with `kind`/`spec` deserialization, `create` subcommand calling xbuilder's enrichment pipeline and renderer.
 
-2. **Phase 2: `sign` + `send`** — Add `sign` subcommand wrapping xsigner's `RsaKeyPair` and `XSigner`, and `send` subcommand wrapping xsender's `FileSender`. Handle CDR/Ticket/Error response variants.
+2. **Phase 2: `sign` + `send`** — Add `sign` subcommand wrapping xsigner's `RsaKeyPair` and `XSigner`, and `send` subcommand wrapping xsender's `FileSender`. Handle CDR/Ticket/Fault response variants.
 
 3. **Phase 3: `apply` pipeline** — Combine create + sign + send into a single command with `--save-xml`, `--save-signed-xml`, and `--dry-run` support.
 

@@ -3,12 +3,13 @@ use std::str::FromStr;
 use reqwest::StatusCode;
 
 use crate::constants::HTTP_CLIENT;
+use crate::fault::SunatFault;
 use crate::models::{
     ConsultDocument, Credentials, SendFileTarget, SoapFileTargetAction, ValidateCdp,
     VerifyTicketTarget,
 };
 use crate::rest;
-use crate::soap::envelope::{BodyData, EnvelopeData, FileData, ToStringXml};
+use crate::soap::envelope::{BodyData, EnvelopeData, FileData, ToXmlString};
 use crate::soap::send_file_response::SendFileXmlResponse;
 use crate::soap::status_response::StatusXmlResponse;
 
@@ -16,12 +17,12 @@ use crate::soap::status_response::StatusXmlResponse;
 pub struct SunatClient {}
 
 pub struct File {
-    pub name: String,
-    pub base_64: String,
+    pub filename: String,
+    pub zip_base64: String,
 }
 
 #[derive(Debug, thiserror::Error)]
-pub enum ClientSunatErr {
+pub enum SunatClientError {
     #[error("Http client error")]
     HttpClient(reqwest::Error),
     #[error("Unexpected response from server")]
@@ -32,13 +33,13 @@ pub enum ClientSunatErr {
     Any(#[from] anyhow::Error),
 }
 
-impl From<reqwest::Error> for ClientSunatErr {
+impl From<reqwest::Error> for SunatClientError {
     fn from(e: reqwest::Error) -> Self {
         Self::HttpClient(e)
     }
 }
 
-impl From<tera::Error> for ClientSunatErr {
+impl From<tera::Error> for SunatClientError {
     fn from(e: tera::Error) -> Self {
         Self::Templating(e)
     }
@@ -47,7 +48,7 @@ impl From<tera::Error> for ClientSunatErr {
 pub enum SendFileResponse {
     Cdr(String),
     Ticket(String),
-    Error(ErrorResponse),
+    Fault(SunatFault),
 }
 
 pub enum VerifyTicketResponse {
@@ -56,13 +57,13 @@ pub enum VerifyTicketResponse {
     NoCdr {
         status_code: String,
     },
-    Error(ErrorResponse),
+    Fault(SunatFault),
 }
 
 /// Answer of the consult (BillConsultService) and validation (BillValidService) services
 pub enum ConsultResponse {
     Status(ConsultStatus),
-    Error(ErrorResponse),
+    Fault(SunatFault),
 }
 
 pub struct ConsultStatus {
@@ -78,16 +79,13 @@ pub struct VerifyTicketStatus {
     pub status_code: String,
 }
 
-/// Error returned by SUNAT (SOAP fault or REST error)
-pub use crate::soap::SoapFault as ErrorResponse;
-
 impl SunatClient {
     pub async fn send_file(
         &self,
         target: &SendFileTarget,
         file: &File,
         credentials: &Credentials,
-    ) -> Result<SendFileResponse, ClientSunatErr> {
+    ) -> Result<SendFileResponse, SunatClientError> {
         match &target {
             SendFileTarget::Soap(url, action) => {
                 let operation = match action {
@@ -102,13 +100,13 @@ impl SunatClient {
                     body: BodyData::SendFile {
                         operation,
                         file: FileData {
-                            filename: file.name.clone(),
-                            file_content: file.base_64.clone(),
+                            filename: file.filename.clone(),
+                            zip_base64: file.zip_base64.clone(),
                         },
                     },
                 };
 
-                let body = envelope.to_string_xml()?;
+                let body = envelope.to_xml_string()?;
                 let soap_action = format!("urn:{operation}");
                 let (status, response_body) = post_soap(url, body, &soap_action).await?;
                 parse_soap_response::<SendFileXmlResponse>(status, &response_body).map(Into::into)
@@ -122,7 +120,7 @@ impl SunatClient {
         target: &VerifyTicketTarget,
         ticket: &str,
         credentials: &Credentials,
-    ) -> Result<VerifyTicketResponse, ClientSunatErr> {
+    ) -> Result<VerifyTicketResponse, SunatClientError> {
         match &target {
             VerifyTicketTarget::Soap(url) => {
                 let envelope = EnvelopeData {
@@ -131,7 +129,7 @@ impl SunatClient {
                     body: BodyData::VerifyTicket(ticket.to_string()),
                 };
 
-                let body = envelope.to_string_xml()?;
+                let body = envelope.to_xml_string()?;
                 let (status, response_body) = post_soap(url, body, "urn:getStatus").await?;
                 parse_soap_response::<StatusXmlResponse>(status, &response_body).map(Into::into)
             }
@@ -145,7 +143,7 @@ impl SunatClient {
         url: &str,
         document: &ConsultDocument,
         credentials: &Credentials,
-    ) -> Result<ConsultResponse, ClientSunatErr> {
+    ) -> Result<ConsultResponse, SunatClientError> {
         let operation = "getStatus";
         let body = BodyData::ConsultDocument {
             operation,
@@ -160,7 +158,7 @@ impl SunatClient {
         url: &str,
         document: &ConsultDocument,
         credentials: &Credentials,
-    ) -> Result<ConsultResponse, ClientSunatErr> {
+    ) -> Result<ConsultResponse, SunatClientError> {
         let operation = "getStatusCdr";
         let body = BodyData::ConsultDocument {
             operation,
@@ -175,7 +173,7 @@ impl SunatClient {
         url: &str,
         cdp: &ValidateCdp,
         credentials: &Credentials,
-    ) -> Result<ConsultResponse, ClientSunatErr> {
+    ) -> Result<ConsultResponse, SunatClientError> {
         let body = BodyData::ValidateCdp(cdp.clone());
         consult(url, body, "validaCDPcriterios", credentials).await
     }
@@ -186,10 +184,10 @@ impl SunatClient {
         url: &str,
         file: &File,
         credentials: &Credentials,
-    ) -> Result<ConsultResponse, ClientSunatErr> {
+    ) -> Result<ConsultResponse, SunatClientError> {
         let body = BodyData::ValidateFile(FileData {
-            filename: file.name.clone(),
-            file_content: file.base_64.clone(),
+            filename: file.filename.clone(),
+            zip_base64: file.zip_base64.clone(),
         });
         consult(url, body, "verificaCPEarchivo", credentials).await
     }
@@ -200,14 +198,14 @@ async fn consult(
     body: BodyData,
     operation: &str,
     credentials: &Credentials,
-) -> Result<ConsultResponse, ClientSunatErr> {
+) -> Result<ConsultResponse, SunatClientError> {
     let envelope = EnvelopeData {
         username: credentials.username.clone(),
         password: credentials.password.clone(),
         body,
     };
     let (status, response_body) =
-        post_soap(url, envelope.to_string_xml()?, &format!("urn:{operation}")).await?;
+        post_soap(url, envelope.to_xml_string()?, &format!("urn:{operation}")).await?;
     parse_soap_response::<StatusXmlResponse>(status, &response_body).map(Into::into)
 }
 
@@ -219,7 +217,7 @@ impl From<StatusXmlResponse> for ConsultResponse {
                 status_message: status.status_message,
                 cdr_base64: status.cdr_base64,
             }),
-            StatusXmlResponse::Fault(fault) => Self::Error(fault),
+            StatusXmlResponse::Fault(fault) => Self::Fault(fault),
         }
     }
 }
@@ -229,7 +227,7 @@ impl From<SendFileXmlResponse> for SendFileResponse {
         match value {
             SendFileXmlResponse::Cdr(cdr) => Self::Cdr(cdr),
             SendFileXmlResponse::Ticket(ticket) => Self::Ticket(ticket),
-            SendFileXmlResponse::Fault(fault) => Self::Error(fault),
+            SendFileXmlResponse::Fault(fault) => Self::Fault(fault),
         }
     }
 }
@@ -246,7 +244,7 @@ impl From<StatusXmlResponse> for VerifyTicketResponse {
                     status_code: status.status_code,
                 },
             },
-            StatusXmlResponse::Fault(fault) => Self::Error(fault),
+            StatusXmlResponse::Fault(fault) => Self::Fault(fault),
         }
     }
 }
@@ -256,7 +254,7 @@ impl From<StatusXmlResponse> for VerifyTicketResponse {
 /// register the same document twice.
 pub(crate) async fn send_request(
     request: impl Fn() -> reqwest::RequestBuilder,
-) -> Result<(StatusCode, String), ClientSunatErr> {
+) -> Result<(StatusCode, String), SunatClientError> {
     let response = match request().send().await {
         Err(error) if error.is_connect() => request().send().await?,
         other => other?,
@@ -270,7 +268,7 @@ async fn post_soap(
     url: &str,
     body: String,
     soap_action: &str,
-) -> Result<(StatusCode, String), ClientSunatErr> {
+) -> Result<(StatusCode, String), SunatClientError> {
     send_request(|| {
         HTTP_CLIENT
             .post(url)
@@ -283,14 +281,14 @@ async fn post_soap(
 
 /// SUNAT reports rejections as SOAP faults with HTTP 500, so the body is
 /// parsed regardless of the status code. A non-2xx response whose body is not
-/// a SOAP response is returned as [`ClientSunatErr::Response`].
-fn parse_soap_response<T>(status: StatusCode, body: &str) -> Result<T, ClientSunatErr>
+/// a SOAP response is returned as [`SunatClientError::Response`].
+fn parse_soap_response<T>(status: StatusCode, body: &str) -> Result<T, SunatClientError>
 where
     T: FromStr<Err = anyhow::Error>,
 {
     match T::from_str(body) {
         Ok(response) => Ok(response),
-        Err(_) if !status.is_success() => Err(ClientSunatErr::Response(status)),
+        Err(_) if !status.is_success() => Err(SunatClientError::Response(status)),
         Err(error) => Err(error.into()),
     }
 }
@@ -301,7 +299,7 @@ mod tests {
 
     use reqwest::StatusCode;
 
-    use super::{parse_soap_response, ClientSunatErr, SendFileResponse};
+    use super::{parse_soap_response, SendFileResponse, SunatClientError};
     use crate::models::Status;
     use crate::soap::send_file_response::SendFileXmlResponse;
 
@@ -318,11 +316,11 @@ mod tests {
                 .map(Into::into)
                 .expect("A SOAP fault must be returned as a response");
 
-        let SendFileResponse::Error(error) = response else {
-            panic!("Expected an error response");
+        let SendFileResponse::Fault(fault) = response else {
+            panic!("Expected a fault");
         };
-        assert_eq!(error.sunat_code(), Some(2335));
-        assert_eq!(error.status(), Status::Rechazado);
+        assert_eq!(fault.sunat_code(), Some(2335));
+        assert_eq!(fault.status(), Status::Rejected);
     }
 
     #[test]
@@ -333,7 +331,7 @@ mod tests {
         );
         assert!(matches!(
             result,
-            Err(ClientSunatErr::Response(StatusCode::SERVICE_UNAVAILABLE))
+            Err(SunatClientError::Response(StatusCode::SERVICE_UNAVAILABLE))
         ));
     }
 }

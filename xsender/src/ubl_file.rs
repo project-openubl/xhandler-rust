@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-use crate::constants::{CAC_NS, CBC_NS, DS, SAC_NS};
+use crate::constants::{CAC_NS, CBC_NS, DS_NS, SAC_NS};
 use crate::encoding::{decode_xml, encode_xml};
 use crate::xml_walker::walk_xml;
 use anyhow::anyhow;
@@ -18,6 +18,13 @@ pub struct UblFile {
 }
 
 impl UblFile {
+    /// Reads the file from disk; see [`UblFile::from_bytes`].
+    pub fn from_path(path: impl AsRef<Path>) -> std::io::Result<Self> {
+        let bytes = fs::read(path)?;
+        Self::from_bytes(bytes)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e.to_string()))
+    }
+
     /// Builds the file from its raw bytes, decoding them with the encoding
     /// declared in the XML (BOM or `<?xml encoding?>`, UTF-8 by default).
     pub fn from_bytes(bytes: impl Into<Vec<u8>>) -> anyhow::Result<Self> {
@@ -56,18 +63,6 @@ impl From<String> for UblFile {
 impl From<&str> for UblFile {
     fn from(file_content: &str) -> Self {
         Self::from(file_content.to_string())
-    }
-}
-
-pub trait FromPath {
-    fn from_path(path: &Path) -> std::io::Result<UblFile>;
-}
-
-impl FromPath for UblFile {
-    fn from_path(path: &Path) -> std::io::Result<UblFile> {
-        let bytes = fs::read(path)?;
-        UblFile::from_bytes(bytes)
-            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e.to_string()))
     }
 }
 
@@ -112,8 +107,8 @@ impl UblFile {
                 path.iter().any(|e| e.is(namespace, local_name))
             };
 
-            if inside(DS, "Signature") {
-                if element.is(DS, "DigestValue") {
+            if inside(DS_NS, "Signature") {
+                if element.is(DS_NS, "DigestValue") {
                     digest_value.get_or_insert_with(|| text.to_string());
                 }
                 return;
@@ -159,13 +154,13 @@ impl UblFile {
 mod tests {
     use std::path::Path;
 
-    use crate::ubl_file::{FromPath, UblFile};
+    use crate::ubl_file::UblFile;
 
     const RESOURCES: &str = "resources/test";
 
     #[test]
     fn metadata() {
-        let file1 = UblFile::from_path(Path::new(&format!("{RESOURCES}/F001-1.xml")));
+        let file1 = UblFile::from_path(format!("{RESOURCES}/F001-1.xml"));
         let metadata1 = file1.unwrap().metadata().unwrap();
         assert_eq!(metadata1.document_type, "Invoice");
         assert_eq!(metadata1.document_id, "F001-1");
@@ -176,7 +171,7 @@ mod tests {
             Some("dUdjbsfAegqmI/hBripxnCim3XM=")
         );
 
-        let file2 = UblFile::from_path(Path::new(&format!("{RESOURCES}/RA-20200328-1.xml")));
+        let file2 = UblFile::from_path(format!("{RESOURCES}/RA-20200328-1.xml"));
         let metadata2 = file2.unwrap().metadata().unwrap();
         assert_eq!(metadata2.document_type, "VoidedDocuments");
         assert_eq!(metadata2.document_id, "RA-20200328-1");
@@ -190,7 +185,7 @@ mod tests {
             Some("JGeIFq43Y1Ajg3sJsOCD8faxoIM=")
         );
 
-        let file3 = UblFile::from_path(Path::new(&format!("{RESOURCES}/150101-F001-11.xml")));
+        let file3 = UblFile::from_path(format!("{RESOURCES}/150101-F001-11.xml"));
         let metadata3 = file3.unwrap().metadata().unwrap();
         assert_eq!(metadata3.document_type, "Invoice");
         assert_eq!(metadata3.document_id, "F001-11");
@@ -201,14 +196,14 @@ mod tests {
             Some("kLZdGqZX/X/f+g9+BerSzCT1aSU=")
         );
 
-        let file4 = UblFile::from_path(Path::new(&format!("{RESOURCES}/P001-1.xml")));
+        let file4 = UblFile::from_path(format!("{RESOURCES}/P001-1.xml"));
         let metadata4 = file4.unwrap().metadata().unwrap();
         assert_eq!(metadata4.document_type, "Perception");
         assert_eq!(metadata4.document_id, "P001-1");
         assert_eq!(metadata4.ruc, "12345678912");
         assert_eq!(metadata4.voided_line_document_type_code, None);
 
-        let file5 = UblFile::from_path(Path::new(&format!("{RESOURCES}/R001-1.xml")));
+        let file5 = UblFile::from_path(format!("{RESOURCES}/R001-1.xml"));
         let metadata5 = file5.unwrap().metadata().unwrap();
         assert_eq!(metadata5.document_type, "Retention");
         assert_eq!(metadata5.document_id, "R001-1");
@@ -218,14 +213,14 @@ mod tests {
 
     #[test]
     fn metadata_despatch_advice() {
-        let file_t = UblFile::from_path(Path::new(&format!("{RESOURCES}/despatch-advice-T.xml")));
+        let file_t = UblFile::from_path(format!("{RESOURCES}/despatch-advice-T.xml"));
         let metadata_t = file_t.unwrap().metadata().unwrap();
         assert_eq!(metadata_t.document_type, "DespatchAdvice");
         assert_eq!(metadata_t.document_id, "T001-123");
         assert_eq!(metadata_t.ruc, "20123456789");
         assert_eq!(metadata_t.voided_line_document_type_code, None);
 
-        let file_v = UblFile::from_path(Path::new(&format!("{RESOURCES}/despatch-advice-V.xml")));
+        let file_v = UblFile::from_path(format!("{RESOURCES}/despatch-advice-V.xml"));
         let metadata_v = file_v.unwrap().metadata().unwrap();
         assert_eq!(metadata_v.document_type, "DespatchAdvice");
         assert_eq!(metadata_v.document_id, "VVV1-1");

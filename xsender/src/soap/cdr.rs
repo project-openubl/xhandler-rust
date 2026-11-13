@@ -110,7 +110,7 @@ mod tests {
         assert_eq!(cdr.response_code, "2335");
         assert_eq!(cdr.description, "");
         assert_eq!(cdr.notes, vec!["4252 - Observacion".to_string()]);
-        assert_eq!(cdr.status(), crate::models::Status::Rechazado);
+        assert_eq!(cdr.status(), crate::models::Status::Rejected);
     }
 
     #[test]
@@ -119,6 +119,6 @@ mod tests {
             fs::read_to_string(format!("{RESOURCES}/R-20220557805-01-F001-22Openubl.xml"))
                 .expect("Could not read file");
         let cdr = CdrMetadata::from_str(&file_content).expect("Could not read Cdr");
-        assert_eq!(cdr.status(), crate::models::Status::Aceptado);
+        assert_eq!(cdr.status(), crate::models::Status::Accepted);
     }
 }
