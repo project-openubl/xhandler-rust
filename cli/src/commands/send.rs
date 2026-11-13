@@ -45,16 +45,6 @@ pub struct SendArgs {
     pub no_interactive: bool,
 }
 
-const BETA_URL_INVOICE: &str = "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService";
-const BETA_URL_PERCEPTION_RETENTION: &str =
-    "https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService";
-
-const PROD_URL_INVOICE: &str = "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService";
-const PROD_URL_PERCEPTION_RETENTION: &str =
-    "https://e-factura.sunat.gob.pe/ol-ti-itemision-otroscpe-gem/billService";
-/// SUNAT has no beta environment for guias de remision
-const URL_DESPATCH: &str = "https://api-cpe.sunat.gob.pe/v1/contribuyente/gem";
-
 const BETA_USERNAME: &str = "12345678959MODDATOS";
 const BETA_PASSWORD: &str = "MODDATOS";
 
@@ -261,25 +251,18 @@ impl SendArgs {
     }
 
     pub fn resolve_urls(&self) -> Urls {
-        let (default_invoice, default_pr) = if self.beta {
-            (BETA_URL_INVOICE, BETA_URL_PERCEPTION_RETENTION)
+        let defaults = if self.beta {
+            Urls::beta()
         } else {
-            (PROD_URL_INVOICE, PROD_URL_PERCEPTION_RETENTION)
+            Urls::production()
         };
-
         Urls {
-            invoice: self
-                .url_invoice
-                .clone()
-                .unwrap_or_else(|| default_invoice.to_string()),
+            invoice: self.url_invoice.clone().unwrap_or(defaults.invoice),
             perception_retention: self
                 .url_perception_retention
                 .clone()
-                .unwrap_or_else(|| default_pr.to_string()),
-            despatch: self
-                .url_despatch
-                .clone()
-                .unwrap_or_else(|| URL_DESPATCH.to_string()),
+                .unwrap_or(defaults.perception_retention),
+            despatch: self.url_despatch.clone().unwrap_or(defaults.despatch),
         }
     }
 }

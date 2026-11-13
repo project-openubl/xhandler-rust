@@ -1,4 +1,5 @@
 pub mod catalogs;
+pub mod document;
 pub mod enricher;
 pub mod models;
 pub mod prelude;

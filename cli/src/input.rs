@@ -2,25 +2,7 @@ use std::io::Read;
 use std::path::Path;
 
 use anyhow::Context;
-use serde::Deserialize;
-
 use xhandler::prelude::*;
-
-#[derive(Debug, Deserialize)]
-#[serde(tag = "kind")]
-pub enum DocumentInput {
-    Invoice { spec: Box<Invoice> },
-    CreditNote { spec: Box<CreditNote> },
-    DebitNote { spec: Box<DebitNote> },
-    DespatchAdvice { spec: Box<DespatchAdvice> },
-    Perception { spec: Box<Perception> },
-    Retention { spec: Box<Retention> },
-    SummaryDocuments { spec: Box<SummaryDocuments> },
-    VoidedDocuments { spec: Box<VoidedDocuments> },
-    Reversion { spec: Box<Reversion> },
-}
-
-const KINDS: &str = "Invoice, CreditNote, DebitNote, DespatchAdvice, Perception, Retention, SummaryDocuments, VoidedDocuments, Reversion";
 
 #[derive(Clone, Copy)]
 pub enum InputFormat {
@@ -44,23 +26,25 @@ impl InputFormat {
         }
     }
 
-    pub fn parse(&self, content: &str) -> anyhow::Result<DocumentInput> {
+    pub fn parse(&self, content: &str) -> anyhow::Result<Document> {
         match self {
             InputFormat::Json => serde_json::from_str(content).map_err(|e| {
                 anyhow::anyhow!(
-                    "Error en el archivo JSON:\n  {e}\n  Valores validos de 'kind': {KINDS}"
+                    "Error en el archivo JSON:\n  {e}\n  Valores validos de 'kind': {}",
+                    Document::KINDS
                 )
             }),
             InputFormat::Yaml => serde_yaml::from_str(content).map_err(|e| {
                 anyhow::anyhow!(
-                    "Error en el archivo YAML:\n  {e}\n  Valores validos de 'kind': {KINDS}"
+                    "Error en el archivo YAML:\n  {e}\n  Valores validos de 'kind': {}",
+                    Document::KINDS
                 )
             }),
         }
     }
 }
 
-pub fn read_input(file: &str, format: Option<&str>) -> anyhow::Result<DocumentInput> {
+pub fn read_input(file: &str, format: Option<&str>) -> anyhow::Result<Document> {
     let (content, fmt) = if file == "-" {
         let mut buf = String::new();
         std::io::stdin().read_to_string(&mut buf)?;

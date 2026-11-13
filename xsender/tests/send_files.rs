@@ -5,9 +5,8 @@ const BASE: &str = "tests/resources/e2e";
 lazy_static::lazy_static! {
     pub static ref CLIENT: FileSender = FileSender {
         urls: Urls {
-            invoice: "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService".to_string(),
-            perception_retention:"https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService".to_string(),
-            despatch: "https://api-cpe.sunat.gob.pe/v1/contribuyente/gem".to_string(),
+            despatch: Urls::production().despatch,
+            ..Urls::beta()
         },
         credentials: Credentials {
             username: "12345678959MODDATOS".to_string(),

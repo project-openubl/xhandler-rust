@@ -1,13 +1,14 @@
-use openubl_cli::input::{read_input, DocumentInput, InputFormat};
+use openubl_cli::input::{read_input, InputFormat};
+use xhandler::prelude::Document;
 
 const RESOURCES: &str = "tests/resources";
 
 #[test]
 fn parse_invoice_yaml() {
     let doc = read_input(&format!("{RESOURCES}/invoice.yaml"), None).unwrap();
-    assert!(matches!(doc, DocumentInput::Invoice { .. }));
+    assert!(matches!(doc, Document::Invoice(_)));
 
-    if let DocumentInput::Invoice { spec } = doc {
+    if let Document::Invoice(spec) = doc {
         assert_eq!(spec.serie_numero, "F001-1");
         assert_eq!(spec.proveedor.ruc, "12345678912");
         assert_eq!(spec.proveedor.razon_social, "Softgreen S.A.C.");
@@ -22,9 +23,9 @@ fn parse_invoice_yaml() {
 #[test]
 fn parse_invoice_json() {
     let doc = read_input(&format!("{RESOURCES}/invoice.json"), None).unwrap();
-    assert!(matches!(doc, DocumentInput::Invoice { .. }));
+    assert!(matches!(doc, Document::Invoice(_)));
 
-    if let DocumentInput::Invoice { spec } = doc {
+    if let Document::Invoice(spec) = doc {
         assert_eq!(spec.serie_numero, "F001-1");
         assert_eq!(spec.detalles.len(), 1);
     }
@@ -33,15 +34,15 @@ fn parse_invoice_json() {
 #[test]
 fn parse_invoice_yaml_with_explicit_format() {
     let doc = read_input(&format!("{RESOURCES}/invoice.yaml"), Some("yaml")).unwrap();
-    assert!(matches!(doc, DocumentInput::Invoice { .. }));
+    assert!(matches!(doc, Document::Invoice(_)));
 }
 
 #[test]
 fn parse_credit_note_yaml() {
     let doc = read_input(&format!("{RESOURCES}/credit_note.yaml"), None).unwrap();
-    assert!(matches!(doc, DocumentInput::CreditNote { .. }));
+    assert!(matches!(doc, Document::CreditNote(_)));
 
-    if let DocumentInput::CreditNote { spec } = doc {
+    if let Document::CreditNote(spec) = doc {
         assert_eq!(spec.serie_numero, "FC01-1");
         assert_eq!(spec.comprobante_afectado_serie_numero, "F001-1");
         assert_eq!(spec.descripcion_sustento, "Anulación de operación");
@@ -52,9 +53,9 @@ fn parse_credit_note_yaml() {
 #[test]
 fn parse_debit_note_yaml() {
     let doc = read_input(&format!("{RESOURCES}/debit_note.yaml"), None).unwrap();
-    assert!(matches!(doc, DocumentInput::DebitNote { .. }));
+    assert!(matches!(doc, Document::DebitNote(_)));
 
-    if let DocumentInput::DebitNote { spec } = doc {
+    if let Document::DebitNote(spec) = doc {
         assert_eq!(spec.serie_numero, "FD01-1");
         assert_eq!(spec.comprobante_afectado_serie_numero, "F001-1");
     }
@@ -63,9 +64,9 @@ fn parse_debit_note_yaml() {
 #[test]
 fn parse_despatch_advice_yaml() {
     let doc = read_input(&format!("{RESOURCES}/despatch_advice.yaml"), None).unwrap();
-    assert!(matches!(doc, DocumentInput::DespatchAdvice { .. }));
+    assert!(matches!(doc, Document::DespatchAdvice(_)));
 
-    if let DocumentInput::DespatchAdvice { spec } = doc {
+    if let Document::DespatchAdvice(spec) = doc {
         assert_eq!(spec.serie_numero, "T001-1");
         assert_eq!(spec.remitente.ruc, "12345678912");
         assert_eq!(spec.destinatario.nombre, "Juan Perez");
@@ -77,9 +78,9 @@ fn parse_despatch_advice_yaml() {
 #[test]
 fn parse_perception_yaml() {
     let doc = read_input(&format!("{RESOURCES}/perception.yaml"), None).unwrap();
-    assert!(matches!(doc, DocumentInput::Perception { .. }));
+    assert!(matches!(doc, Document::Perception(_)));
 
-    if let DocumentInput::Perception { spec } = doc {
+    if let Document::Perception(spec) = doc {
         assert_eq!(spec.serie, "P001");
         assert_eq!(spec.numero, 1);
         assert_eq!(spec.tipo_regimen, "01");
@@ -90,9 +91,9 @@ fn parse_perception_yaml() {
 #[test]
 fn parse_retention_yaml() {
     let doc = read_input(&format!("{RESOURCES}/retention.yaml"), None).unwrap();
-    assert!(matches!(doc, DocumentInput::Retention { .. }));
+    assert!(matches!(doc, Document::Retention(_)));
 
-    if let DocumentInput::Retention { spec } = doc {
+    if let Document::Retention(spec) = doc {
         assert_eq!(spec.serie, "R001");
         assert_eq!(spec.numero, 1);
         assert_eq!(spec.tipo_regimen, "01");
@@ -102,9 +103,9 @@ fn parse_retention_yaml() {
 #[test]
 fn parse_summary_documents_yaml() {
     let doc = read_input(&format!("{RESOURCES}/summary_documents.yaml"), None).unwrap();
-    assert!(matches!(doc, DocumentInput::SummaryDocuments { .. }));
+    assert!(matches!(doc, Document::SummaryDocuments(_)));
 
-    if let DocumentInput::SummaryDocuments { spec } = doc {
+    if let Document::SummaryDocuments(spec) = doc {
         assert_eq!(spec.numero, 1);
         assert_eq!(spec.comprobantes.len(), 1);
         assert_eq!(spec.comprobantes[0].tipo_operacion, "1");
@@ -114,9 +115,9 @@ fn parse_summary_documents_yaml() {
 #[test]
 fn parse_voided_documents_yaml() {
     let doc = read_input(&format!("{RESOURCES}/voided_documents.yaml"), None).unwrap();
-    assert!(matches!(doc, DocumentInput::VoidedDocuments { .. }));
+    assert!(matches!(doc, Document::VoidedDocuments(_)));
 
-    if let DocumentInput::VoidedDocuments { spec } = doc {
+    if let Document::VoidedDocuments(spec) = doc {
         assert_eq!(spec.numero, 1);
         assert_eq!(spec.comprobantes.len(), 1);
         assert_eq!(spec.comprobantes[0].serie, "F001");
@@ -169,7 +170,7 @@ fn parse_invalid_kind_fails() {
 
 #[test]
 fn parse_wrong_field_type_shows_friendly_error() {
-    let yaml = "kind: Invoice\nspec:\n  serie_numero: 123\n";
+    let yaml = "kind: Invoice\nspec:\n  serie_numero: [1, 2]\n";
     let result = InputFormat::Yaml.parse(yaml);
     assert!(result.is_err());
     let err = result.unwrap_err().to_string();

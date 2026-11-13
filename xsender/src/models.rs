@@ -6,6 +6,29 @@ pub struct Urls {
     pub despatch: String,
 }
 
+impl Urls {
+    /// SUNAT beta (testing) services. SUNAT has no beta for guias de
+    /// remision, so `despatch` is empty: set it to send them elsewhere.
+    pub fn beta() -> Self {
+        Self {
+            invoice: "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService".into(),
+            perception_retention:
+                "https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService".into(),
+            despatch: String::new(),
+        }
+    }
+
+    /// SUNAT production services
+    pub fn production() -> Self {
+        Self {
+            invoice: "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService".into(),
+            perception_retention:
+                "https://e-factura.sunat.gob.pe/ol-ti-itemision-otroscpe-gem/billService".into(),
+            despatch: "https://api-cpe.sunat.gob.pe/v1/contribuyente/gem".into(),
+        }
+    }
+}
+
 /// Credentials of the company for sending documents
 #[derive(Clone, Default)]
 pub struct Credentials {

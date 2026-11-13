@@ -1,4 +1,5 @@
 pub use crate::catalogs::*;
+pub use crate::document::Document;
 pub use crate::enricher::{Defaults, Enrich};
 pub use crate::models::common::*;
 pub use crate::models::credit_note::*;
