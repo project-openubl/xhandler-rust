@@ -28,13 +28,21 @@ pub struct ApplyArgs {
     #[arg(long = "format")]
     pub format: Option<String>,
 
-    /// Ruta al archivo de llave privada PKCS#1 PEM (con --beta se usan certificados de prueba)
+    /// Ruta al archivo de llave privada PEM, PKCS#1 o PKCS#8 (con --beta se usan certificados de prueba)
     #[arg(long = "private-key", env = "OPENUBL_PRIVATE_KEY")]
     pub private_key: Option<String>,
 
     /// Ruta al archivo de certificado X.509 PEM (con --beta se usan certificados de prueba)
     #[arg(long = "certificate", env = "OPENUBL_CERTIFICATE")]
     pub certificate: Option<String>,
+
+    /// Ruta al certificado PKCS#12 (.pfx/.p12), en lugar de --private-key y --certificate
+    #[arg(long = "pfx", env = "OPENUBL_PFX", conflicts_with_all = ["private_key", "certificate"])]
+    pub pfx: Option<String>,
+
+    /// Clave del certificado PKCS#12
+    #[arg(long = "pfx-password", env = "OPENUBL_PFX_PASSWORD", requires = "pfx")]
+    pub pfx_password: Option<String>,
 
     /// Usuario SOL de SUNAT (con --beta se usan credenciales de prueba)
     #[arg(long, env = "OPENUBL_USERNAME")]
@@ -96,6 +104,8 @@ impl ApplyArgs {
             output_file: None,
             private_key: self.private_key.clone(),
             certificate: self.certificate.clone(),
+            pfx: self.pfx.clone(),
+            pfx_password: self.pfx_password.clone(),
             beta: self.beta,
         };
 

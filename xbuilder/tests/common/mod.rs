@@ -107,9 +107,8 @@ fn sign_xml(xml: &str) -> Vec<u8> {
     let certificate_from_file = fs::read_to_string("tests/resources/certificates/public.cer")
         .expect("Could not read public.cer");
 
-    let rsa_key_pair =
-        RsaKeyPair::from_pkcs1_pem_and_certificate(&private_key_from_file, &certificate_from_file)
-            .expect("Could not initialize RsaKeyPair");
+    let rsa_key_pair = RsaKeyPair::from_pem(&private_key_from_file, &certificate_from_file)
+        .expect("Could not initialize RsaKeyPair");
 
     let signer = XSigner {
         xml_document: xml.to_string(),

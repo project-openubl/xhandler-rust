@@ -216,3 +216,30 @@ fn sign_missing_file_arg_fails() {
 
     assert!(!output.status.success(), "should fail without -f");
 }
+
+#[test]
+fn sign_xml_with_pfx() {
+    let temp_dir = std::env::temp_dir();
+    let unsigned_path = temp_dir.join("openubl_test_pfx_sign.xml");
+    std::fs::write(&unsigned_path, create_invoice_xml()).unwrap();
+
+    let output = Command::new(BINARY)
+        .args([
+            "sign",
+            "-f",
+            unsigned_path.to_str().unwrap(),
+            "--pfx",
+            &format!("{SIGNER_RESOURCES}/LLAMA-PE-CERTIFICADO-DEMO-10467793549.pfx"),
+            "--pfx-password",
+            "password",
+        ])
+        .env_remove("OPENUBL_PRIVATE_KEY")
+        .env_remove("OPENUBL_CERTIFICATE")
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        .output()
+        .expect("failed to execute openubl sign");
+
+    assert!(output.status.success(), "exit code: {:?}", output.status);
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(stdout.contains("<ds:Signature "));
+}

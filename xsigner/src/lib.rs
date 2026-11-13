@@ -1,67 +1,30 @@
+use std::sync::OnceLock;
+use std::{fs, io};
+
 use base64::engine::general_purpose;
 use base64::Engine;
-use der::{DecodePem, EncodePem};
 use openssl::error::ErrorStack;
 use openssl::hash::{hash, MessageDigest};
-use openssl::pkey::PKey;
-use openssl::rsa::Rsa;
+use openssl::pkcs12::Pkcs12;
+use openssl::pkey::{PKey, Private};
+use openssl::provider::Provider;
 use openssl::sign::Signer;
-use quick_xml::events::{BytesEnd, BytesStart, Event};
-use rsa::pkcs1::{DecodeRsaPrivateKey, EncodeRsaPrivateKey};
-use rsa::pkcs8::LineEnding;
-use rsa::RsaPrivateKey;
-use std::io::Cursor;
-use std::{fs, io};
-use x509_cert::Certificate;
+use openssl::x509::X509;
+use quick_xml::events::Event;
+use quick_xml::name::ResolveResult;
+use quick_xml::NsReader;
 use xml_c14n::{
     canonicalize_xml, CanonicalizationErrorCode, CanonicalizationMode, CanonicalizationOptions,
 };
 
-#[derive(Debug, thiserror::Error)]
-pub enum EncryptionError {
-    #[error(transparent)]
-    Rsa(#[from] rsa::Error),
+/// `Id` of the `ds:Signature`, referenced by the `cac:Signature` of the
+/// xbuilder templates (`#PROJECT-OPENUBL-SIGN`).
+pub const SIGNATURE_ID: &str = "PROJECT-OPENUBL-SIGN";
 
-    #[error(transparent)]
-    Any(#[from] anyhow::Error),
-}
-
-pub struct RsaKeyPair {
-    private_key: RsaPrivateKey,
-    certificate: Certificate,
-}
-
-impl RsaKeyPair {
-    pub fn from_pkcs1_pem_and_certificate(
-        private_key: &str,
-        certificate: &str,
-    ) -> Result<Self, rsa::pkcs8::spki::Error> {
-        let private_key = RsaPrivateKey::from_pkcs1_pem(private_key)?;
-        let certificate = Certificate::from_pem(certificate)?;
-
-        Ok(Self {
-            private_key,
-            certificate,
-        })
-    }
-
-    pub fn private_key_to_pem(&self) -> Result<String, rsa::pkcs1::Error> {
-        let line_ending = LineEnding::default();
-        let pem = self.private_key.to_pkcs1_pem(line_ending)?.to_string();
-        Ok(pem)
-    }
-
-    pub fn certificate_to_pem(&self) -> Result<String, rsa::pkcs1::Error> {
-        let line_ending = LineEnding::default();
-        let pem = self.certificate.to_pem(line_ending)?;
-        Ok(pem)
-    }
-}
+const EXT_NS: &[u8] = b"urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2";
 
 #[derive(Debug, thiserror::Error)]
 pub enum SignErr {
-    #[error(transparent)]
-    Pkcs1(#[from] rsa::pkcs1::Error),
     #[error(transparent)]
     Key(#[from] ErrorStack),
     #[error(transparent)]
@@ -70,6 +33,56 @@ pub enum SignErr {
     Canonicalization(#[from] CanonicalizationErrorCode),
     #[error(transparent)]
     QuickXml(#[from] quick_xml::Error),
+    #[error("{0}")]
+    Document(String),
+}
+
+/// Private key and X.509 certificate used to sign
+pub struct RsaKeyPair {
+    private_key: PKey<Private>,
+    certificate: X509,
+}
+
+impl RsaKeyPair {
+    /// Private key in PEM (PKCS#1 `RSA PRIVATE KEY` or PKCS#8 `PRIVATE KEY`)
+    /// and X.509 certificate in PEM.
+    pub fn from_pem(private_key: &str, certificate: &str) -> Result<Self, ErrorStack> {
+        Ok(Self {
+            private_key: PKey::private_key_from_pem(private_key.as_bytes())?,
+            certificate: X509::from_pem(certificate.as_bytes())?,
+        })
+    }
+
+    /// PKCS#12 keystore (`.pfx` / `.p12`), the format SUNAT certificates are
+    /// usually delivered in.
+    pub fn from_pkcs12(der: &[u8], password: &str) -> Result<Self, SignErr> {
+        let pkcs12 = Pkcs12::from_der(der)?;
+        let keystore = match pkcs12.parse2(password) {
+            Ok(keystore) => keystore,
+            Err(error) => {
+                // Older keystores (e.g. exported from Windows) use RC2/3DES,
+                // which OpenSSL 3 only offers through its legacy provider.
+                if !load_legacy_provider() {
+                    return Err(error.into());
+                }
+                pkcs12.parse2(password)?
+            }
+        };
+        match (keystore.pkey, keystore.cert) {
+            (Some(private_key), Some(certificate)) => Ok(Self {
+                private_key,
+                certificate,
+            }),
+            _ => Err(SignErr::Document(
+                "The PKCS#12 keystore must contain a private key and its certificate".into(),
+            )),
+        }
+    }
+
+    pub fn certificate_to_pem(&self) -> Result<String, ErrorStack> {
+        let pem = self.certificate.to_pem()?;
+        Ok(String::from_utf8_lossy(&pem).into_owned())
+    }
 }
 
 pub struct XSigner {
@@ -77,200 +90,375 @@ pub struct XSigner {
 }
 
 impl XSigner {
+    /// Reads a UTF-8 or ISO-8859-1 XML file.
     pub fn from_file(filename: &str) -> Result<Self, io::Error> {
-        let xml_document = fs::read_to_string(filename)?;
+        let bytes = fs::read(filename)?;
+        let xml_document = match String::from_utf8(bytes) {
+            Ok(text) => text,
+            Err(error) if declares_iso_8859_1(error.as_bytes()) => {
+                error.as_bytes().iter().map(|&byte| byte as char).collect()
+            }
+            Err(error) => return Err(io::Error::new(io::ErrorKind::InvalidData, error)),
+        };
         Ok(Self { xml_document })
     }
 
+    /// Signs the document with an enveloped RSA-SHA256 signature placed in the
+    /// first empty `ext:ExtensionContent` (created if the document has none).
+    ///
+    /// Returns the original document plus the signature, as UTF-8 with a UTF-8
+    /// XML declaration. The rest of the document is left untouched.
     pub fn sign(&self, key_pair: &RsaKeyPair) -> Result<Vec<u8>, SignErr> {
-        let canonicalize_options = CanonicalizationOptions {
-            mode: CanonicalizationMode::Canonical1_1,
-            keep_comments: true,
-            inclusive_ns_prefixes: vec![],
-        };
-        let xml_canonicalize = canonicalize_xml(&self.xml_document, canonicalize_options.clone())?;
+        // Without its declaration the text is parsed as what it is: UTF-8.
+        // Keeping e.g. encoding="ISO-8859-1" would make libxml2 re-decode it.
+        let mut document = strip_xml_declaration(&self.xml_document).to_string();
 
-        // Generate digest
-        let digest = hash(MessageDigest::sha256(), xml_canonicalize.as_bytes())?;
+        let slot = match find_signature_slot(&document)? {
+            Some(slot) => slot,
+            None => {
+                add_extension_content(&mut document)?;
+                find_signature_slot(&document)?
+                    .ok_or_else(|| SignErr::Document("Could not add ext:UBLExtensions".into()))?
+            }
+        };
+
+        // Reference URI="" + enveloped transform: the digest is the inclusive
+        // C14N 1.0 (without comments) of the document without the signature.
+        let canonical_document = canonicalize_xml(
+            &document,
+            CanonicalizationOptions {
+                mode: CanonicalizationMode::Canonical1_0,
+                keep_comments: false,
+                inclusive_ns_prefixes: vec![],
+            },
+        )?;
+        let digest = hash(MessageDigest::sha256(), canonical_document.as_bytes())?;
         let digest_base64 = general_purpose::STANDARD.encode(digest);
 
-        // Sign
-        let signed_info_string = format!(
-            "<ds:SignedInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\">
-                <ds:CanonicalizationMethod Algorithm=\"http://www.w3.org/2001/10/xml-exc-c14n#\"/>
-                <ds:SignatureMethod Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256\"/>
-                <ds:Reference URI=\"\">
-                    <ds:Transforms>
-                        <ds:Transform Algorithm=\"http://www.w3.org/2000/09/xmldsig#enveloped-signature\"/>
-                    </ds:Transforms>
-                    <ds:DigestMethod Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha256\"/>
-                    <ds:DigestValue>{digest_base64}</ds:DigestValue>
-                </ds:Reference>
-            </ds:SignedInfo>"
+        let signed_info = format!(
+            "<ds:SignedInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\">\
+<ds:CanonicalizationMethod Algorithm=\"http://www.w3.org/2001/10/xml-exc-c14n#\"/>\
+<ds:SignatureMethod Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256\"/>\
+<ds:Reference URI=\"\">\
+<ds:Transforms><ds:Transform Algorithm=\"http://www.w3.org/2000/09/xmldsig#enveloped-signature\"/></ds:Transforms>\
+<ds:DigestMethod Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha256\"/>\
+<ds:DigestValue>{digest_base64}</ds:DigestValue>\
+</ds:Reference>\
+</ds:SignedInfo>"
         );
-        let signed_info_canonicalize =
-            canonicalize_xml(&signed_info_string, canonicalize_options.clone())?;
+        // Exclusive C14N, as declared: SignedInfo only uses the ds namespace,
+        // so its canonical form doesn't depend on where it is inserted.
+        let canonical_signed_info = canonicalize_xml(
+            &signed_info,
+            CanonicalizationOptions {
+                mode: CanonicalizationMode::ExclusiveCanonical1_0,
+                keep_comments: false,
+                inclusive_ns_prefixes: vec![],
+            },
+        )?;
 
-        // Sign <ds:SignedInfo>
-        let pk_pem = key_pair.private_key_to_pem()?;
-        let rsa = Rsa::private_key_from_pem(pk_pem.as_bytes())?;
-        let pkey = PKey::from_rsa(rsa)?;
+        let mut signer = Signer::new(MessageDigest::sha256(), &key_pair.private_key)?;
+        signer.update(canonical_signed_info.as_bytes())?;
+        let signature_value = general_purpose::STANDARD.encode(signer.sign_to_vec()?);
+        let certificate = general_purpose::STANDARD.encode(key_pair.certificate.to_der()?);
 
-        let certificate_pem = key_pair.certificate_to_pem()?;
-        let pem_contents = certificate_pem
-            .lines()
-            .filter(|line| !line.starts_with("-----"))
-            .collect::<Vec<_>>()
-            .join("\n");
-
-        let mut signer = Signer::new(MessageDigest::sha256(), &pkey)?;
-        signer.update(signed_info_canonicalize.as_bytes())?;
-        let signature = signer.sign_to_vec()?;
-        let signature_base64 = general_purpose::STANDARD.encode(&signature);
-
-        // Signature
-        let signature_string = format!(
-            "<ds:Signature xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"PROJECT-OPENUBL\">
-                {signed_info_string}
-                <ds:SignatureValue>{signature_base64}</ds:SignatureValue>
-                <ds:KeyInfo>
-                    <ds:X509Data>
-                        <ds:X509Certificate>{pem_contents}</ds:X509Certificate>
-                    </ds:X509Data>
-                </ds:KeyInfo>
-            </ds:Signature>"
+        let signature = format!(
+            "<ds:Signature xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"{SIGNATURE_ID}\">\
+{signed_info}\
+<ds:SignatureValue>{signature_value}</ds:SignatureValue>\
+<ds:KeyInfo><ds:X509Data><ds:X509Certificate>{certificate}</ds:X509Certificate></ds:X509Data></ds:KeyInfo>\
+</ds:Signature>"
         );
 
-        let mut xml_reader = quick_xml::Reader::from_str(&xml_canonicalize);
-        let mut xml_writer = quick_xml::Writer::new(Cursor::new(Vec::new()));
-
-        let mut inside_target_element = false;
-        let mut requires_closing_extension_content_tag = false;
-
-        loop {
-            match xml_reader.read_event() {
-                Ok(Event::Empty(e)) => {
-                    if e.name().as_ref() == b"ext:ExtensionContent" {
-                        inside_target_element = true;
-                        requires_closing_extension_content_tag = true;
-
-                        xml_writer
-                            .write_event(Event::Start(BytesStart::new("ext:ExtensionContent")))?;
-                    } else {
-                        xml_writer.write_event(Event::Start(e))?;
-                    }
-                }
-                Ok(Event::Start(e)) => {
-                    if e.name().as_ref() == b"ext:ExtensionContent" {
-                        inside_target_element = true;
-                    }
-                    xml_writer.write_event(Event::Start(e))?;
-                }
-                Ok(Event::End(e)) => {
-                    if inside_target_element {
-                        inside_target_element = false;
-
-                        let mut xml_content_reader = quick_xml::Reader::from_str(&signature_string);
-                        loop {
-                            match xml_content_reader.read_event() {
-                                Ok(Event::Eof) => break,
-                                Ok(e) => xml_writer.write_event(e)?,
-                                Err(e) => return Err(SignErr::QuickXml(e)),
-                            }
-                        }
-
-                        if requires_closing_extension_content_tag {
-                            xml_writer
-                                .write_event(Event::End(BytesEnd::new("ext:ExtensionContent")))?;
-                        }
-                    }
-                    xml_writer.write_event(Event::End(e))?;
-                }
-                Ok(Event::Eof) => break,
-                Ok(e) => xml_writer.write_event(e)?,
-                Err(e) => return Err(SignErr::QuickXml(e)),
+        match slot {
+            Slot::Inside(position) => document.insert_str(position, &signature),
+            Slot::SelfClosing { start, end } => {
+                // <ext:ExtensionContent/> becomes <ext:ExtensionContent>SIG</ext:ExtensionContent>
+                let tag = document[start..end].trim_end_matches("/>").trim_end();
+                let name = tag[1..].split_whitespace().next().unwrap_or_default();
+                let replacement = format!("{tag}>{signature}</{name}>");
+                document.replace_range(start..end, &replacement);
             }
         }
 
-        let result = xml_writer.into_inner().into_inner();
-        Ok(result)
+        Ok(format!("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n{document}").into_bytes())
     }
+}
+
+/// Where the signature goes, as byte offsets into the document text
+enum Slot {
+    /// Right after an `<ext:ExtensionContent>` start tag with no child elements
+    Inside(usize),
+    /// A self-closing `<ext:ExtensionContent/>` tag
+    SelfClosing { start: usize, end: usize },
+}
+
+fn is_extension_content(namespace: &ResolveResult, local_name: &[u8]) -> bool {
+    matches!(namespace, ResolveResult::Bound(ns) if ns.as_ref() == EXT_NS)
+        && local_name == b"ExtensionContent"
+}
+
+/// Finds the first `ext:ExtensionContent` without child elements. Returns
+/// `None` when the document has no `ext:ExtensionContent` at all.
+fn find_signature_slot(document: &str) -> Result<Option<Slot>, SignErr> {
+    let mut reader = NsReader::from_str(document);
+    // Byte offset right after an open ExtensionContent that has no children yet
+    let mut open_content: Option<usize> = None;
+    let mut has_extension_content = false;
+
+    loop {
+        let start = reader.buffer_position() as usize;
+        let (namespace, event) = reader.read_resolved_event()?;
+        match event {
+            Event::Empty(e) if is_extension_content(&namespace, e.local_name().as_ref()) => {
+                let end = reader.buffer_position() as usize;
+                return Ok(Some(Slot::SelfClosing { start, end }));
+            }
+            Event::Start(e) if is_extension_content(&namespace, e.local_name().as_ref()) => {
+                has_extension_content = true;
+                open_content = Some(reader.buffer_position() as usize);
+            }
+            Event::End(e) if is_extension_content(&namespace, e.local_name().as_ref()) => {
+                if let Some(position) = open_content {
+                    return Ok(Some(Slot::Inside(position)));
+                }
+            }
+            // Any child element means this ExtensionContent is already in use
+            Event::Start(_) | Event::Empty(_) => open_content = None,
+            Event::Eof if has_extension_content => {
+                return Err(SignErr::Document(
+                    "Every ext:ExtensionContent already has content; add an empty one for the signature".into(),
+                ))
+            }
+            Event::Eof => return Ok(None),
+            _ => {}
+        }
+    }
+}
+
+/// Inserts an empty `ext:UBLExtensions` block as the first child of the root.
+fn add_extension_content(document: &mut String) -> Result<(), SignErr> {
+    let mut reader = NsReader::from_str(document);
+    loop {
+        match reader.read_event()? {
+            Event::Start(_) => break,
+            Event::Eof | Event::Empty(_) => {
+                return Err(SignErr::Document("The XML has no root element".into()))
+            }
+            _ => {}
+        }
+    }
+
+    let position = reader.buffer_position() as usize;
+    let extensions = format!(
+        "<ext:UBLExtensions xmlns:ext=\"{}\"><ext:UBLExtension><ext:ExtensionContent></ext:ExtensionContent></ext:UBLExtension></ext:UBLExtensions>",
+        String::from_utf8_lossy(EXT_NS)
+    );
+    document.insert_str(position, &extensions);
+    Ok(())
+}
+
+/// Loads OpenSSL's legacy provider once for the whole process (keeping the
+/// default provider). Returns whether it is available.
+fn load_legacy_provider() -> bool {
+    static LEGACY: OnceLock<Option<Provider>> = OnceLock::new();
+    LEGACY
+        .get_or_init(|| Provider::try_load(None, "legacy", true).ok())
+        .is_some()
+}
+
+fn strip_xml_declaration(xml: &str) -> &str {
+    let xml = xml.trim_start_matches('\u{feff}').trim_start();
+    match xml
+        .strip_prefix("<?xml")
+        .and_then(|rest| rest.find("?>").map(|end| (rest, end)))
+    {
+        Some((rest, end)) => rest[end + 2..].trim_start(),
+        None => xml,
+    }
+}
+
+fn declares_iso_8859_1(bytes: &[u8]) -> bool {
+    let head = String::from_utf8_lossy(&bytes[..bytes.len().min(100)]).to_lowercase();
+    head.starts_with("<?xml") && head.contains("iso-8859-1")
 }
 
 #[cfg(test)]
 mod tests {
     use std::fs;
 
-    use crate::RsaKeyPair;
-    use crate::XSigner;
+    use base64::engine::general_purpose;
+    use base64::Engine;
+    use openssl::hash::{hash, MessageDigest};
+    use openssl::sign::Verifier;
+    use openssl::x509::X509;
+    use xml_c14n::{canonicalize_xml, CanonicalizationMode, CanonicalizationOptions};
+
+    use crate::{RsaKeyPair, SignErr, XSigner, SIGNATURE_ID};
 
     const RESOURCES: &str = "resources/test";
+    const HEAD: &str = r#"<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">"#;
 
-    #[test]
-    fn read_from_file() {
-        let private_key_from_file =
-            fs::read_to_string(format!("{RESOURCES}/private.key")).expect("Could not read file");
-        let certificate_from_file =
-            fs::read_to_string(format!("{RESOURCES}/public.cer")).expect("Could not read file");
+    fn key_pair() -> RsaKeyPair {
+        let private_key = fs::read_to_string(format!("{RESOURCES}/private.key")).unwrap();
+        let certificate = fs::read_to_string(format!("{RESOURCES}/public.cer")).unwrap();
+        RsaKeyPair::from_pem(&private_key, &certificate).expect("Could not read certificates")
+    }
 
-        let keypair = RsaKeyPair::from_pkcs1_pem_and_certificate(
-            &private_key_from_file,
-            &certificate_from_file,
+    fn sign(xml: &str) -> Result<String, SignErr> {
+        let signer = XSigner {
+            xml_document: xml.to_string(),
+        };
+        signer
+            .sign(&key_pair())
+            .map(|signed| String::from_utf8(signed).unwrap())
+    }
+
+    fn between<'a>(text: &'a str, start: &str, end: &str) -> &'a str {
+        let from = text.find(start).unwrap() + start.len();
+        &text[from..from + text[from..].find(end).unwrap()]
+    }
+
+    /// Verifies the signature the way a validator (e.g. SUNAT) does: digest of
+    /// the document without the ds:Signature, and RSA-SHA256 over SignedInfo.
+    fn assert_valid_signature(signed: &str) {
+        let signature_start = signed.find("<ds:Signature ").unwrap();
+        let signature_end = signed.find("</ds:Signature>").unwrap() + "</ds:Signature>".len();
+        let unsigned = format!("{}{}", &signed[..signature_start], &signed[signature_end..]);
+        let unsigned = unsigned.split_once("?>").unwrap().1;
+
+        let canonical = canonicalize_xml(
+            unsigned,
+            CanonicalizationOptions {
+                mode: CanonicalizationMode::Canonical1_0,
+                keep_comments: false,
+                inclusive_ns_prefixes: vec![],
+            },
         )
         .unwrap();
-        let private = keypair.private_key_to_pem().unwrap();
-        let certificate = keypair.certificate_to_pem().unwrap();
+        let digest = general_purpose::STANDARD
+            .encode(hash(MessageDigest::sha256(), canonical.as_bytes()).unwrap());
+        assert_eq!(
+            digest,
+            between(signed, "<ds:DigestValue>", "</ds:DigestValue>")
+        );
 
-        assert_eq!(private_key_from_file, private);
-        assert_eq!(certificate_from_file, certificate);
+        let signed_info = format!(
+            "<ds:SignedInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\">{}</ds:SignedInfo>",
+            between(
+                signed,
+                "<ds:SignedInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\">",
+                "</ds:SignedInfo>"
+            )
+        );
+        let canonical_signed_info = canonicalize_xml(
+            &signed_info,
+            CanonicalizationOptions {
+                mode: CanonicalizationMode::ExclusiveCanonical1_0,
+                keep_comments: false,
+                inclusive_ns_prefixes: vec![],
+            },
+        )
+        .unwrap();
+        let certificate = X509::from_der(
+            &general_purpose::STANDARD
+                .decode(between(
+                    signed,
+                    "<ds:X509Certificate>",
+                    "</ds:X509Certificate>",
+                ))
+                .unwrap(),
+        )
+        .unwrap();
+        let public_key = certificate.public_key().unwrap();
+        let mut verifier = Verifier::new(MessageDigest::sha256(), &public_key).unwrap();
+        verifier.update(canonical_signed_info.as_bytes()).unwrap();
+        let signature_value = general_purpose::STANDARD
+            .decode(between(
+                signed,
+                "<ds:SignatureValue>",
+                "</ds:SignatureValue>",
+            ))
+            .unwrap();
+        assert!(
+            verifier.verify(&signature_value).unwrap(),
+            "Invalid SignatureValue"
+        );
+    }
+
+    #[test]
+    fn read_pem_keys() {
+        let certificate = fs::read_to_string(format!("{RESOURCES}/public.cer")).unwrap();
+        assert_eq!(key_pair().certificate_to_pem().unwrap(), certificate);
+
+        // PKCS#8 private keys are accepted too
+        let pkcs8 = key_pair().private_key.private_key_to_pem_pkcs8().unwrap();
+        let pkcs8 = String::from_utf8(pkcs8).unwrap();
+        assert!(pkcs8.starts_with("-----BEGIN PRIVATE KEY-----"));
+        assert!(RsaKeyPair::from_pem(&pkcs8, &certificate).is_ok());
+    }
+
+    #[test]
+    fn read_pkcs12_keystore() {
+        let pfx = fs::read(format!(
+            "{RESOURCES}/LLAMA-PE-CERTIFICADO-DEMO-10467793549.pfx"
+        ))
+        .unwrap();
+        let key_pair = RsaKeyPair::from_pkcs12(&pfx, "password").expect("Could not read pfx");
+        assert!(key_pair.certificate_to_pem().is_ok());
+        assert!(RsaKeyPair::from_pkcs12(&pfx, "wrong password").is_err());
     }
 
     #[test]
     fn sign_file() {
-        let private_key_from_file =
-            fs::read_to_string(format!("{RESOURCES}/private.key")).expect("Could not read file");
-        let certificate_from_file =
-            fs::read_to_string(format!("{RESOURCES}/public.cer")).expect("Could not read file");
+        let document = XSigner::from_file(&format!("{RESOURCES}/invoice_no_template.xml"))
+            .expect("Could read xml with no template");
+        let signed = String::from_utf8(document.sign(&key_pair()).unwrap()).unwrap();
 
-        let xml_no_template = format!("{RESOURCES}/invoice_no_template.xml");
-
-        let rsa_key_pair = RsaKeyPair::from_pkcs1_pem_and_certificate(
-            &private_key_from_file,
-            &certificate_from_file,
-        )
-        .expect("Could not read certificates");
-
-        let document1 =
-            XSigner::from_file(&xml_no_template).expect("Could read xml with no template");
-
-        document1
-            .sign(&rsa_key_pair)
-            .expect("Could not sign document with no template");
+        assert!(signed.starts_with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Invoice"));
+        assert!(signed.contains(&format!("<ext:ExtensionContent><ds:Signature xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"{SIGNATURE_ID}\">")));
+        assert_eq!(signed.matches("<ds:Signature ").count(), 1);
+        assert_valid_signature(&signed);
     }
 
     #[test]
-    fn sign_keeps_non_ascii_characters() {
-        let private_key_from_file =
-            fs::read_to_string(format!("{RESOURCES}/private.key")).expect("Could not read file");
-        let certificate_from_file =
-            fs::read_to_string(format!("{RESOURCES}/public.cer")).expect("Could not read file");
-        let rsa_key_pair = RsaKeyPair::from_pkcs1_pem_and_certificate(
-            &private_key_from_file,
-            &certificate_from_file,
-        )
-        .expect("Could not read certificates");
+    fn sign_keeps_document_text_and_comments() {
+        let xml = format!(
+            "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n{HEAD}\n    <ext:UBLExtensions><ext:UBLExtension><ext:ExtensionContent/></ext:UBLExtension></ext:UBLExtensions>\n    <!-- a comment -->\n    <cbc:Note><![CDATA[José Peña Ñandú]]></cbc:Note>\n    <cbc:Empty/>\n</Invoice>"
+        );
+        let signed = sign(&xml).unwrap();
 
-        let document = XSigner {
-            xml_document: r#"<?xml version="1.0" encoding="UTF-8"?>
-<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
-    <ext:UBLExtensions><ext:UBLExtension><ext:ExtensionContent/></ext:UBLExtension></ext:UBLExtensions>
-    <cbc:Note><![CDATA[José Peña Ñandú]]></cbc:Note>
-</Invoice>"#
-                .to_string(),
-        };
+        assert!(signed.contains("<!-- a comment -->"));
+        assert!(signed.contains("<![CDATA[José Peña Ñandú]]>"));
+        assert!(signed.contains("<cbc:Empty/>"));
+        assert_valid_signature(&signed);
+    }
 
-        let signed = document.sign(&rsa_key_pair).expect("Could not sign");
-        let signed = String::from_utf8(signed).expect("Signed XML must be UTF-8");
-        assert!(signed.contains("José Peña Ñandú"), "{signed}");
+    #[test]
+    fn sign_uses_first_empty_extension_content() {
+        let xml = format!(
+            "{HEAD}<ext:UBLExtensions><ext:UBLExtension><ext:ExtensionContent><cbc:Note>info</cbc:Note></ext:ExtensionContent></ext:UBLExtension><ext:UBLExtension><ext:ExtensionContent>\n</ext:ExtensionContent></ext:UBLExtension></ext:UBLExtensions></Invoice>"
+        );
+        let signed = sign(&xml).unwrap();
+
+        assert!(signed.contains("<cbc:Note>info</cbc:Note></ext:ExtensionContent>"));
+        assert!(signed.contains("<ext:UBLExtension><ext:ExtensionContent><ds:Signature "));
+        assert_valid_signature(&signed);
+    }
+
+    #[test]
+    fn sign_adds_ubl_extensions_when_missing() {
+        let signed = sign(&format!("{HEAD}<cbc:ID>F001-1</cbc:ID></Invoice>")).unwrap();
+
+        assert!(signed.contains(&format!("{HEAD}<ext:UBLExtensions ")));
+        assert_valid_signature(&signed);
+    }
+
+    #[test]
+    fn sign_fails_when_extension_contents_are_in_use() {
+        let xml = format!(
+            "{HEAD}<ext:UBLExtensions><ext:UBLExtension><ext:ExtensionContent><cbc:Note>info</cbc:Note></ext:ExtensionContent></ext:UBLExtension></ext:UBLExtensions></Invoice>"
+        );
+        assert!(matches!(sign(&xml), Err(SignErr::Document(_))));
     }
 }
