@@ -329,3 +329,16 @@ fn resolve_credentials_with_rest_client() {
     assert_eq!(credentials.client_id.as_deref(), Some("my-client-id"));
     assert_eq!(credentials.client_secret.as_deref(), Some("my-secret"));
 }
+
+#[test]
+fn beta_refuses_despatch_without_url() {
+    let args = make_send_args(true);
+    assert!(args.check_despatch_beta().is_err());
+
+    let args = SendArgs {
+        url_despatch: Some("https://my-gre-test.example.com".to_string()),
+        ..make_send_args(true)
+    };
+    assert!(args.check_despatch_beta().is_ok());
+    assert!(make_send_args(false).check_despatch_beta().is_ok());
+}

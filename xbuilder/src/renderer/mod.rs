@@ -91,6 +91,15 @@ pub fn cdata(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Error> 
     }
 }
 
+/// Formats a time as SUNAT expects, "HH:MM:SS", dropping fractional seconds.
+pub fn format_time(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Error> {
+    let time = value
+        .as_str()
+        .and_then(|text| chrono::NaiveTime::from_str(text).ok())
+        .ok_or_else(|| Error::msg("format_time needs a time"))?;
+    Ok(to_value(time.format("%H:%M:%S").to_string())?)
+}
+
 pub fn format03d(value: &Value, _: &HashMap<String, Value>) -> Result<Value, Error> {
     match value.as_u64() {
         Some(number) => {
@@ -177,6 +186,7 @@ lazy_static::lazy_static! {
         tera.register_filter("round_decimal", round_decimal);
         tera.register_filter("currency", currency);
         tera.register_filter("format03d", format03d);
+        tera.register_filter("format_time", format_time);
         tera.register_filter("cdata", cdata);
 
         tera.register_tester("gt0", gt0);

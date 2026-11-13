@@ -51,7 +51,6 @@ pub struct SendArgs {
 const BETA_URL_INVOICE: &str = "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService";
 const BETA_URL_PERCEPTION_RETENTION: &str =
     "https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService";
-const BETA_URL_DESPATCH: &str = "https://api-cpe.sunat.gob.pe/v1/contribuyente/gem";
 
 const PROD_URL_INVOICE: &str = "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService";
 const PROD_URL_PERCEPTION_RETENTION: &str =
@@ -208,6 +207,13 @@ impl SendArgs {
         ubl_file: &UblFile,
         default_cdr_path: &str,
     ) -> anyhow::Result<SendResult> {
+        let is_despatch = ubl_file
+            .metadata()
+            .is_ok_and(|metadata| metadata.document_type == DocumentType::DESPATCH_ADVICE);
+        if is_despatch {
+            self.check_despatch_beta()?;
+        }
+
         let urls = self.resolve_urls();
         let credentials = self.credentials.resolve(self.beta)?;
 
@@ -247,12 +253,24 @@ impl SendArgs {
         }
     }
 
+    /// SUNAT has no beta environment for guias de remision, so `--beta` would
+    /// send them to production. Require an explicit `--url-despatch` instead.
+    pub fn check_despatch_beta(&self) -> anyhow::Result<()> {
+        if self.beta && self.url_despatch.is_none() {
+            anyhow::bail!(
+                "SUNAT no tiene ambiente beta para guias de remision: --beta las enviaria a produccion. Usar --url-despatch para indicar el endpoint"
+            );
+        }
+        Ok(())
+    }
+
     pub fn resolve_urls(&self) -> Urls {
         let (default_invoice, default_pr, default_despatch) = if self.beta {
             (
                 BETA_URL_INVOICE,
                 BETA_URL_PERCEPTION_RETENTION,
-                BETA_URL_DESPATCH,
+                // SUNAT has no beta for guias; check_despatch_beta stops it from being used
+                PROD_URL_DESPATCH,
             )
         } else {
             (
