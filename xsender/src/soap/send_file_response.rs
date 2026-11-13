@@ -100,10 +100,8 @@ impl FromStr for SendFileXmlResponse {
                                 fault_code = Some(current_text.clone());
                             }
                         }
-                        (Some(Wrapper::Fault), "faultstring") => {
-                            if fault_message.is_none() {
-                                fault_message = Some(current_text.clone());
-                            }
+                        (Some(Wrapper::Fault), "faultstring") if fault_message.is_none() => {
+                            fault_message = Some(current_text.clone());
                         }
                         _ => {}
                     };
