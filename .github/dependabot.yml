@@ -1,4 +1,9 @@
 version: 2
+
+# Dependabot PRs are auto-approved and auto-merged once CI passes
+# (.github/workflows/auto-merge-dependabot.yaml), so the cooldown keeps freshly published
+# (possibly compromised) releases out; security updates skip it.
+# Groups take minor/patch only, so a breaking major arrives as its own PR.
 updates:
 
   # Maintain dependencies for GitHub Actions
@@ -6,22 +11,36 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: ":ghost: "
+    groups:
+      github-actions:
+        update-types: ["minor", "patch"]
 
   # Maintain dependencies for Cargo.toml
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
     commit-message:
       prefix: ":ghost: "
-  
+    groups:
+      cargo:
+        update-types: ["minor", "patch"]
+
   # Maintain dependencies for NPM
   - package-ecosystem: "npm"
     directory: "/server/ui"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
     commit-message:
       prefix: ":ghost: "
     allow:
