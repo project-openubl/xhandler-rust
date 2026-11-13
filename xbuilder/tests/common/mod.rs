@@ -149,7 +149,7 @@ pub fn assert_invoice_offline(invoice: &mut Invoice, snapshot_filename: &str) {
 
 fn render_and_check_invoice(invoice: &mut Invoice, snapshot_filename: &str) -> Vec<u8> {
     let defaults = defaults_base();
-    invoice.enrich(&defaults);
+    invoice.enrich(&defaults).expect("Could not enrich");
 
     let xml = invoice.render().expect("Could not render invoice");
 
@@ -163,7 +163,7 @@ fn render_and_check_invoice(invoice: &mut Invoice, snapshot_filename: &str) -> V
 #[allow(dead_code)]
 pub async fn assert_credit_note(credit_note: &mut CreditNote, snapshot_filename: &str) {
     let defaults = defaults_base();
-    credit_note.enrich(&defaults);
+    credit_note.enrich(&defaults).expect("Could not enrich");
 
     let xml = credit_note.render().expect("Could not render credit note");
 
@@ -177,7 +177,7 @@ pub async fn assert_credit_note(credit_note: &mut CreditNote, snapshot_filename:
 #[allow(dead_code)]
 pub async fn assert_debit_note(debit_note: &mut DebitNote, snapshot_filename: &str) {
     let defaults = defaults_base();
-    debit_note.enrich(&defaults);
+    debit_note.enrich(&defaults).expect("Could not enrich");
 
     let xml = debit_note.render().expect("Could not render debit note");
 
@@ -192,7 +192,7 @@ pub async fn assert_debit_note(debit_note: &mut DebitNote, snapshot_filename: &s
 /// Also used for [`Reversion`], which shares the VoidedDocuments template and XSD
 pub async fn assert_voided_documents(doc: &mut (impl Enrich + Renderer), snapshot_filename: &str) {
     let defaults = defaults_base();
-    doc.enrich(&defaults);
+    doc.enrich(&defaults).expect("Could not enrich");
 
     let xml = doc.render().expect("Could not render voided documents");
 
@@ -206,7 +206,7 @@ pub async fn assert_voided_documents(doc: &mut (impl Enrich + Renderer), snapsho
 #[allow(dead_code)]
 pub async fn assert_summary_documents(doc: &mut SummaryDocuments, snapshot_filename: &str) {
     let defaults = defaults_base();
-    doc.enrich(&defaults);
+    doc.enrich(&defaults).expect("Could not enrich");
 
     let xml = doc.render().expect("Could not render summary documents");
 
@@ -220,7 +220,7 @@ pub async fn assert_summary_documents(doc: &mut SummaryDocuments, snapshot_filen
 #[allow(dead_code)]
 pub async fn assert_perception(doc: &mut Perception, snapshot_filename: &str) {
     let defaults = defaults_base();
-    doc.enrich(&defaults);
+    doc.enrich(&defaults).expect("Could not enrich");
 
     let xml = doc.render().expect("Could not render perception");
 
@@ -234,7 +234,7 @@ pub async fn assert_perception(doc: &mut Perception, snapshot_filename: &str) {
 #[allow(dead_code)]
 pub async fn assert_retention(doc: &mut Retention, snapshot_filename: &str) {
     let defaults = defaults_base();
-    doc.enrich(&defaults);
+    doc.enrich(&defaults).expect("Could not enrich");
 
     let xml = doc.render().expect("Could not render retention");
 
@@ -248,7 +248,7 @@ pub async fn assert_retention(doc: &mut Retention, snapshot_filename: &str) {
 #[allow(dead_code)]
 pub async fn assert_despatch_advice(doc: &mut DespatchAdvice, snapshot_filename: &str) {
     let defaults = defaults_base();
-    doc.enrich(&defaults);
+    doc.enrich(&defaults).expect("Could not enrich");
 
     let xml = doc.render().expect("Could not render despatch advice");
 

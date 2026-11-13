@@ -285,7 +285,9 @@ fn invoice_with_cliente_contacto_email_only() {
         email: Some("carlos@gmail.com".into()),
         ..Default::default()
     });
-    invoice.enrich(&common::defaults_base());
+    invoice
+        .enrich(&common::defaults_base())
+        .expect("Could not enrich");
     let xml = invoice.render().expect("Could not render invoice");
 
     assert!(xml.contains("<cbc:ElectronicMail>carlos@gmail.com</cbc:ElectronicMail>"));
