@@ -247,4 +247,30 @@ mod tests {
             .sign(&rsa_key_pair)
             .expect("Could not sign document with no template");
     }
+
+    #[test]
+    fn sign_keeps_non_ascii_characters() {
+        let private_key_from_file =
+            fs::read_to_string(format!("{RESOURCES}/private.key")).expect("Could not read file");
+        let certificate_from_file =
+            fs::read_to_string(format!("{RESOURCES}/public.cer")).expect("Could not read file");
+        let rsa_key_pair = RsaKeyPair::from_pkcs1_pem_and_certificate(
+            &private_key_from_file,
+            &certificate_from_file,
+        )
+        .expect("Could not read certificates");
+
+        let document = XSigner {
+            xml_document: r#"<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+    <ext:UBLExtensions><ext:UBLExtension><ext:ExtensionContent/></ext:UBLExtension></ext:UBLExtensions>
+    <cbc:Note><![CDATA[José Peña Ñandú]]></cbc:Note>
+</Invoice>"#
+                .to_string(),
+        };
+
+        let signed = document.sign(&rsa_key_pair).expect("Could not sign");
+        let signed = String::from_utf8(signed).expect("Signed XML must be UTF-8");
+        assert!(signed.contains("José Peña Ñandú"), "{signed}");
+    }
 }

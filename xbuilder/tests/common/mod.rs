@@ -114,7 +114,23 @@ fn sign_xml(xml: &str) -> Vec<u8> {
     let signer = XSigner {
         xml_document: xml.to_string(),
     };
-    signer.sign(&rsa_key_pair).expect("Could not sign document")
+    let signed = signer.sign(&rsa_key_pair).expect("Could not sign document");
+    assert_text_preserved(xml, &signed);
+    signed
+}
+
+/// Signing must not alter the document's text (e.g. re-decode UTF-8 as Latin-1).
+fn assert_text_preserved(xml: &str, signed: &[u8]) {
+    let signed = std::str::from_utf8(signed).expect("Signed XML must be UTF-8");
+    for word in xml
+        .split(|c: char| c.is_ascii())
+        .filter(|word| !word.is_empty())
+    {
+        assert!(
+            signed.contains(word),
+            "Signed XML lost the non-ASCII text {word:?}"
+        );
+    }
 }
 
 #[allow(dead_code)]
@@ -306,8 +322,7 @@ async fn assert_sunat(xml: &[u8]) {
         return;
     }
 
-    let file_content = String::from_utf8_lossy(xml).to_string();
-    let xml_file = UblFile { file_content };
+    let xml_file = UblFile::from_bytes(xml).expect("Signed XML must be valid");
 
     let result = CLIENT
         .send_file(&xml_file)

@@ -18,6 +18,7 @@ base64 = { workspace = true }
 thiserror = { workspace = true }
 anyhow = { workspace = true }
 sha2 = { workspace = true }
+encoding_rs = { workspace = true }
 
 [dev-dependencies]
 serial_test = { workspace = true }

@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use xml::reader::XmlEvent;
-use xml::EventReader;
+use xml::{Encoding, ParserConfig};
 
 /// An element on the path from the document root to the current node.
 /// Matching is done on namespace URI + local name, never on the prefix,
@@ -29,7 +29,14 @@ pub fn walk_xml(xml: &str, mut on_end: impl FnMut(&[Element], &str)) -> anyhow::
     let mut path: Vec<Element> = Vec::new();
     let mut texts: Vec<String> = Vec::new();
 
-    for event in EventReader::from_str(xml) {
+    // `xml` is already decoded Rust text, so it is UTF-8 whatever its
+    // `<?xml encoding?>` declaration says (e.g. ISO-8859-1).
+    let reader = ParserConfig::new()
+        .override_encoding(Some(Encoding::Utf8))
+        .ignore_invalid_encoding_declarations(true)
+        .create_reader(xml.as_bytes());
+
+    for event in reader {
         match event.map_err(|e| anyhow!("Invalid XML: {e}"))? {
             XmlEvent::StartElement { name, .. } => {
                 path.push(Element {
@@ -91,6 +98,14 @@ mod tests {
                 ("a".to_string(), None, "".to_string()),
             ]
         );
+    }
+
+    #[test]
+    fn declared_encoding_does_not_re_decode_text() {
+        let xml = r#"<?xml version="1.0" encoding="ISO-8859-1"?><a>Peña</a>"#;
+        let mut text = String::new();
+        walk_xml(xml, |_, t| text = t.to_string()).unwrap();
+        assert_eq!(text, "Peña");
     }
 
     #[test]

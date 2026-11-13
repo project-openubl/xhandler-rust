@@ -2,12 +2,61 @@ use std::fs;
 use std::path::Path;
 
 use crate::constants::{CAC_NS, CBC_NS, DS, SAC_NS};
+use crate::encoding::{decode_xml, encode_xml};
 use crate::xml_utils::walk_xml;
 use anyhow::anyhow;
 use sha2::{Digest, Sha256};
 
+/// A UBL XML document ready to be analyzed and sent to SUNAT.
+///
+/// It keeps both the decoded text (for parsing) and the exact bytes that get
+/// zipped and sent. Documents declared as ISO-8859-1 are sent with their
+/// original bytes, so the signed content reaches SUNAT unchanged.
 pub struct UblFile {
-    pub file_content: String,
+    file_content: String,
+    file_bytes: Vec<u8>,
+}
+
+impl UblFile {
+    /// Builds the file from its raw bytes, decoding them with the encoding
+    /// declared in the XML (BOM or `<?xml encoding?>`, UTF-8 by default).
+    pub fn from_bytes(bytes: impl Into<Vec<u8>>) -> anyhow::Result<Self> {
+        let file_bytes = bytes.into();
+        let file_content = decode_xml(&file_bytes)?;
+        Ok(Self {
+            file_content,
+            file_bytes,
+        })
+    }
+
+    /// Decoded XML text
+    pub fn content(&self) -> &str {
+        &self.file_content
+    }
+
+    /// Bytes that are zipped and sent to SUNAT
+    pub fn bytes(&self) -> &[u8] {
+        &self.file_bytes
+    }
+}
+
+/// Builds the file from already decoded text. The bytes sent to SUNAT are
+/// encoded with the encoding the XML declares, so `encoding="ISO-8859-1"`
+/// documents are sent as ISO-8859-1.
+impl From<String> for UblFile {
+    fn from(file_content: String) -> Self {
+        let file_bytes = encode_xml(&file_content);
+        Self {
+            file_content,
+            file_bytes,
+        }
+    }
+}
+
+impl From<&str> for UblFile {
+    fn from(file_content: &str) -> Self {
+        Self::from(file_content.to_string())
+    }
 }
 
 pub trait FromPath {
@@ -16,8 +65,9 @@ pub trait FromPath {
 
 impl FromPath for UblFile {
     fn from_path(path: &Path) -> std::io::Result<UblFile> {
-        let file_content = fs::read_to_string(path)?;
-        Ok(UblFile { file_content })
+        let bytes = fs::read(path)?;
+        UblFile::from_bytes(bytes)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e.to_string()))
     }
 }
 
@@ -40,7 +90,7 @@ impl UblFile {
         let mut voided_line_document_type_code: Option<String> = None;
         let mut digest_value: Option<String> = None;
 
-        walk_xml(&self.file_content, |path, text| {
+        walk_xml(self.content(), |path, text| {
             let Some(element) = path.last() else {
                 return;
             };
@@ -100,7 +150,7 @@ impl UblFile {
 
     pub fn sha256(&self) -> String {
         let mut hasher = Sha256::new();
-        hasher.update(self.file_content.as_bytes());
+        hasher.update(&self.file_bytes);
         format!("{:x}", hasher.finalize())
     }
 }
@@ -196,9 +246,26 @@ mod tests {
 
     #[test]
     fn metadata_fails_on_invalid_xml() {
-        let file = UblFile {
-            file_content: "<Invoice><cbc:ID>F001-1</Invoice>".to_string(),
-        };
+        let file = UblFile::from("<Invoice><cbc:ID>F001-1</Invoice>");
         assert!(file.metadata().is_err());
+    }
+
+    #[test]
+    fn iso_8859_1_file_keeps_its_bytes() {
+        let header = r#"<?xml version="1.0" encoding="ISO-8859-1"?>"#;
+        let mut bytes = header.as_bytes().to_vec();
+        bytes.extend_from_slice(
+            b"<Invoice xmlns:cbc=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\" xmlns:cac=\"urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2\">",
+        );
+        bytes.extend_from_slice(b"<cbc:ID>F001-1</cbc:ID><cac:AccountingSupplierParty><cbc:CustomerAssignedAccountID>20123456789</cbc:CustomerAssignedAccountID><cbc:Name>Pe\xF1a</cbc:Name></cac:AccountingSupplierParty></Invoice>");
+
+        let file = UblFile::from_bytes(bytes.clone()).expect("ISO-8859-1 must be accepted");
+        assert!(file.content().contains("Peña"));
+        assert_eq!(file.bytes(), bytes.as_slice());
+        assert_eq!(file.metadata().unwrap().document_id, "F001-1");
+
+        // Decoded text goes back to the same ISO-8859-1 bytes
+        let from_text = UblFile::from(file.content().to_string());
+        assert_eq!(from_text.bytes(), bytes.as_slice());
     }
 }

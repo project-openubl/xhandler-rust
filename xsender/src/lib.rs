@@ -1,6 +1,7 @@
 mod analyzer;
 mod client_sunat;
 mod constants;
+mod encoding;
 mod file_sender;
 mod models;
 pub mod prelude;

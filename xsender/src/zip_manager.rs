@@ -6,7 +6,9 @@ use zip::result::ZipResult;
 use zip::write::SimpleFileOptions;
 use zip::{ZipArchive, ZipWriter};
 
-pub fn create_zip_from_str(content: &str, file_name_inside_zip: &str) -> ZipResult<Vec<u8>> {
+use crate::encoding::decode_xml;
+
+pub fn create_zip(content: &[u8], file_name_inside_zip: &str) -> ZipResult<Vec<u8>> {
     let mut data = Vec::new();
 
     {
@@ -15,7 +17,7 @@ pub fn create_zip_from_str(content: &str, file_name_inside_zip: &str) -> ZipResu
 
         let file_options = SimpleFileOptions::default();
         zip.start_file(file_name_inside_zip, file_options)?;
-        zip.write_all(content.as_bytes())?;
+        zip.write_all(content)?;
         zip.finish()?;
     }
 
@@ -27,7 +29,7 @@ pub fn decode_base64_zip_and_extract_first_file(base64: &str) -> anyhow::Result<
     Ok(extract_first_file_from_zip(&zip_buf)?)
 }
 
-/// Returns the CDR XML from a SUNAT zip: the first `.xml` entry, or the first
+/// Returns the decoded CDR XML from a SUNAT zip: the first `.xml` entry, or the first
 /// file if no entry has that extension. SUNAT zips usually include a `dummy/`
 /// directory entry, which is skipped.
 pub fn extract_first_file_from_zip(zip_buf: &[u8]) -> Result<Option<String>, std::io::Error> {
@@ -53,9 +55,11 @@ pub fn extract_first_file_from_zip(zip_buf: &[u8]) -> Result<Option<String>, std
     match xml_file_index.or(first_file_index) {
         Some(index) => {
             let mut entry = archive.by_index(index)?;
-            let mut buffer = String::new();
-            entry.read_to_string(&mut buffer)?;
-            Ok(Some(buffer))
+            let mut buffer = Vec::new();
+            entry.read_to_end(&mut buffer)?;
+            let xml = decode_xml(&buffer)
+                .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e.to_string()))?;
+            Ok(Some(xml))
         }
         None => Ok(None),
     }

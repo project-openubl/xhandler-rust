@@ -92,14 +92,21 @@ pub enum SendResult {
 
 impl SendArgs {
     pub async fn run(&self) -> anyhow::Result<ExitCode> {
-        let xml_content = std::fs::read_to_string(&self.input_file)
+        // Read raw bytes: signed XML may be ISO-8859-1 and must reach SUNAT unchanged
+        let xml_bytes = std::fs::read(&self.input_file)
             .with_context(|| format!("no se puede leer el archivo XML: {}", self.input_file))?;
+        let ubl_file = UblFile::from_bytes(xml_bytes).with_context(|| {
+            format!(
+                "no se puede decodificar el archivo XML: {}",
+                self.input_file
+            )
+        })?;
         let default_cdr = self
             .output_file
             .clone()
             .unwrap_or_else(|| format!("{}.zip", self.input_file));
 
-        let result = self.send_xml_content(&xml_content, &default_cdr).await?;
+        let result = self.send_ubl_file(&ubl_file, &default_cdr).await?;
 
         match result {
             SendResult::Cdr {
@@ -154,16 +161,23 @@ impl SendArgs {
         xml_content: &str,
         default_cdr_path: &str,
     ) -> anyhow::Result<SendResult> {
+        self.send_ubl_file(&UblFile::from(xml_content), default_cdr_path)
+            .await
+    }
+
+    /// Sends a UBL file to SUNAT, handles CDR/ticket/error, and returns a structured result.
+    pub async fn send_ubl_file(
+        &self,
+        ubl_file: &UblFile,
+        default_cdr_path: &str,
+    ) -> anyhow::Result<SendResult> {
         let urls = self.resolve_urls();
         let credentials = self.resolve_credentials()?;
 
         let sender = FileSender { urls, credentials };
-        let ubl_file = UblFile {
-            file_content: xml_content.to_string(),
-        };
 
         let result = sender
-            .send_file(&ubl_file)
+            .send_file(ubl_file)
             .await
             .map_err(|e| anyhow::anyhow!("error al enviar documento a SUNAT: {e}"))?;
 
