@@ -306,7 +306,9 @@ fn invoice_issue_time_without_fractional_seconds() {
         }],
         ..invoice_base()
     };
-    invoice.enrich(&common::defaults_base());
+    invoice
+        .enrich(&common::defaults_base())
+        .expect("Could not enrich");
     let xml = invoice.render().expect("Could not render invoice");
 
     assert!(
