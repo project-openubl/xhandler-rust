@@ -9,7 +9,8 @@ use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 
 use crate::client_sunat::{
-    ClientSunatErr, ErrorResponse, File, SendFileResponse, VerifyTicketResponse, VerifyTicketStatus,
+    send_request, ClientSunatErr, ErrorResponse, File, SendFileResponse, VerifyTicketResponse,
+    VerifyTicketStatus,
 };
 use crate::constants::HTTP_CLIENT;
 use crate::models::Credentials;
@@ -24,24 +25,25 @@ pub async fn send_document(
     credentials: &Credentials,
 ) -> Result<SendFileResponse, ClientSunatErr> {
     let token = fetch_token(credentials).await?;
-    let name = file.name.trim_end_matches(".zip");
+    let name = file.name.strip_suffix(".zip").unwrap_or(&file.name);
     let payload = json!({
         "archivo": {
             "nomArchivo": file.name,
             "arcGreZip": file.base_64,
             "hashZip": hash_zip(&file.base_64)?,
         }
-    });
+    })
+    .to_string();
 
-    let response = HTTP_CLIENT
-        .post(format!("{url}/comprobantes/{name}"))
-        .bearer_auth(token)
-        .header("Content-Type", "application/json")
-        .body(payload.to_string())
-        .send()
-        .await?;
-    let status = response.status();
-    parse_send_response(status, &response.text().await?)
+    let (status, body) = send_request(|| {
+        HTTP_CLIENT
+            .post(format!("{url}/comprobantes/{name}"))
+            .bearer_auth(&token)
+            .header("Content-Type", "application/json")
+            .body(payload.clone())
+    })
+    .await?;
+    parse_send_response(status, &body)
 }
 
 /// GET `{url}/comprobantes/envios/{ticket}`
@@ -51,13 +53,13 @@ pub async fn verify_ticket(
     credentials: &Credentials,
 ) -> Result<VerifyTicketResponse, ClientSunatErr> {
     let token = fetch_token(credentials).await?;
-    let response = HTTP_CLIENT
-        .get(format!("{url}/comprobantes/envios/{ticket}"))
-        .bearer_auth(token)
-        .send()
-        .await?;
-    let status = response.status();
-    parse_ticket_response(status, &response.text().await?)
+    let (status, body) = send_request(|| {
+        HTTP_CLIENT
+            .get(format!("{url}/comprobantes/envios/{ticket}"))
+            .bearer_auth(&token)
+    })
+    .await?;
+    parse_ticket_response(status, &body)
 }
 
 /// Requests an access token with the SOL user and the API client id/secret.
@@ -71,24 +73,25 @@ async fn fetch_token(credentials: &Credentials) -> Result<String, ClientSunatErr
         );
     };
 
-    let response = HTTP_CLIENT
-        .post(format!("{TOKEN_URL}/{client_id}/oauth2/token/"))
-        .form(&[
-            ("grant_type", "password"),
-            ("scope", TOKEN_SCOPE),
-            ("client_id", client_id),
-            ("client_secret", client_secret),
-            ("username", &credentials.username),
-            ("password", &credentials.password),
-        ])
-        .send()
-        .await?;
-    let status = response.status();
-    let body = response.text().await?;
+    let (status, body) = send_request(|| {
+        HTTP_CLIENT
+            .post(format!("{TOKEN_URL}/{client_id}/oauth2/token/"))
+            .form(&[
+                ("grant_type", "password"),
+                ("scope", TOKEN_SCOPE),
+                ("client_id", client_id),
+                ("client_secret", client_secret),
+                ("username", &credentials.username),
+                ("password", &credentials.password),
+            ])
+    })
+    .await?;
 
-    parse_json(&body)
-        .and_then(|json| text(&json["access_token"]))
-        .ok_or_else(|| anyhow!("Could not get a SUNAT access token ({status}): {body}").into())
+    let Some(json) = parse_json(&body) else {
+        return Err(ClientSunatErr::Response(status));
+    };
+    text(&json["access_token"])
+        .ok_or_else(|| anyhow!("Could not get a SUNAT access token ({status}): {json}").into())
 }
 
 /// Hex SHA-256 of the zip, as SUNAT expects in `hashZip`
@@ -100,14 +103,15 @@ fn hash_zip(zip_base64: &str) -> Result<String, ClientSunatErr> {
 }
 
 fn parse_send_response(status: StatusCode, body: &str) -> Result<SendFileResponse, ClientSunatErr> {
-    let json = parse_json(body);
-    if let Some(ticket) = json.as_ref().and_then(|json| text(&json["numTicket"])) {
+    let Some(json) = parse_json(body) else {
+        return Err(ClientSunatErr::Response(status));
+    };
+    if let Some(ticket) = text(&json["numTicket"]) {
         return Ok(SendFileResponse::Ticket(ticket));
     }
-    match json.as_ref().and_then(rest_error) {
-        Some(error) => Ok(SendFileResponse::Error(error)),
-        None => Err(ClientSunatErr::Response(status)),
-    }
+    rest_error(&json)
+        .map(SendFileResponse::Error)
+        .ok_or(ClientSunatErr::Response(status))
 }
 
 fn parse_ticket_response(
@@ -117,49 +121,49 @@ fn parse_ticket_response(
     let Some(json) = parse_json(body) else {
         return Err(ClientSunatErr::Response(status));
     };
-
     if let Some(status_code) = text(&json["codRespuesta"]) {
-        return Ok(match text(&json["arcCdr"]) {
-            Some(cdr_base64) => VerifyTicketResponse::Cdr(VerifyTicketStatus {
+        if let Some(cdr_base64) = text(&json["arcCdr"]) {
+            return Ok(VerifyTicketResponse::Cdr(VerifyTicketStatus {
                 cdr_base64,
                 status_code,
-            }),
-            None => match text(&json["error"]["numError"]) {
-                Some(code) => VerifyTicketResponse::Error(ErrorResponse {
-                    code,
-                    message: text(&json["error"]["desError"]).unwrap_or_default(),
-                }),
-                None => VerifyTicketResponse::NoCdr { status_code },
-            },
-        });
+            }));
+        }
+        if let Some(code) = text(&json["error"]["numError"]) {
+            let message = text(&json["error"]["desError"]).unwrap_or_default();
+            return Ok(VerifyTicketResponse::Error(ErrorResponse { code, message }));
+        }
+        return Ok(VerifyTicketResponse::NoCdr { status_code });
     }
-
-    match rest_error(&json) {
-        Some(error) => Ok(VerifyTicketResponse::Error(error)),
-        None => Err(ClientSunatErr::Response(status)),
-    }
+    rest_error(&json)
+        .map(VerifyTicketResponse::Error)
+        .ok_or(ClientSunatErr::Response(status))
 }
 
 /// SUNAT's REST error body: `{cod|status, msg|message, errors: [{cod, msg}]}`.
 /// The detailed errors are appended to the message as "cod - msg".
 fn rest_error(json: &Value) -> Option<ErrorResponse> {
     let code = text(&json["cod"]).or_else(|| text(&json["status"]))?;
-    let mut message = text(&json["msg"])
+    let mut parts: Vec<String> = text(&json["msg"])
         .or_else(|| text(&json["message"]))
-        .unwrap_or_default();
-    for error in json["errors"].as_array().into_iter().flatten() {
-        let detail = format!(
-            "{} - {}",
-            text(&error["cod"]).unwrap_or_default(),
-            text(&error["msg"]).unwrap_or_default()
-        );
-        message = if message.is_empty() {
-            detail
-        } else {
-            format!("{message}; {detail}")
-        };
-    }
-    Some(ErrorResponse { code, message })
+        .into_iter()
+        .collect();
+    parts.extend(
+        json["errors"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .map(|error| {
+                format!(
+                    "{} - {}",
+                    text(&error["cod"]).unwrap_or_default(),
+                    text(&error["msg"]).unwrap_or_default()
+                )
+            }),
+    );
+    Some(ErrorResponse {
+        code,
+        message: parts.join("; "),
+    })
 }
 
 fn parse_json(body: &str) -> Option<Value> {
@@ -234,7 +238,7 @@ mod tests {
         let body = r#"{"codRespuesta":"98"}"#;
         let response = parse_ticket_response(StatusCode::OK, body).unwrap();
         assert!(
-            matches!(response, VerifyTicketResponse::NoCdr { status_code } if Status::from_code_str(&status_code) == Status::EnProceso)
+            matches!(response, VerifyTicketResponse::NoCdr { status_code } if status_code == "98")
         );
     }
 

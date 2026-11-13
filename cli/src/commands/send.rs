@@ -21,21 +21,8 @@ pub struct SendArgs {
     #[arg(short = 'o', long = "output")]
     pub output_file: Option<String>,
 
-    /// Usuario SOL de SUNAT (con --beta se usan credenciales de prueba)
-    #[arg(long, env = "OPENUBL_USERNAME")]
-    pub username: Option<String>,
-
-    /// Clave SOL de SUNAT (con --beta se usan credenciales de prueba)
-    #[arg(long, env = "OPENUBL_PASSWORD")]
-    pub password: Option<String>,
-
-    /// Client ID de la API REST de SUNAT (requerido para guias de remision)
-    #[arg(long = "client-id", env = "OPENUBL_CLIENT_ID")]
-    pub client_id: Option<String>,
-
-    /// Client secret de la API REST de SUNAT (requerido para guias de remision)
-    #[arg(long = "client-secret", env = "OPENUBL_CLIENT_SECRET")]
-    pub client_secret: Option<String>,
+    #[command(flatten)]
+    pub credentials: CredentialArgs,
 
     /// Endpoint SOAP de facturas SUNAT (con --beta se usan URLs de prueba)
     #[arg(long = "url-invoice", env = "OPENUBL_URL_INVOICE")]
@@ -74,6 +61,55 @@ const PROD_URL_DESPATCH: &str = "https://api-cpe.sunat.gob.pe/v1/contribuyente/g
 const BETA_USERNAME: &str = "12345678959MODDATOS";
 const BETA_PASSWORD: &str = "MODDATOS";
 
+/// SUNAT credentials shared by send, apply and verify-ticket
+#[derive(Args, Clone, Default)]
+pub struct CredentialArgs {
+    /// Usuario SOL de SUNAT (con --beta se usan credenciales de prueba)
+    #[arg(long, env = "OPENUBL_USERNAME")]
+    pub username: Option<String>,
+
+    /// Clave SOL de SUNAT (con --beta se usan credenciales de prueba)
+    #[arg(long, env = "OPENUBL_PASSWORD")]
+    pub password: Option<String>,
+
+    /// Client ID de la API REST de SUNAT (requerido para guias de remision)
+    #[arg(long = "client-id", env = "OPENUBL_CLIENT_ID")]
+    pub client_id: Option<String>,
+
+    /// Client secret de la API REST de SUNAT (requerido para guias de remision)
+    #[arg(long = "client-secret", env = "OPENUBL_CLIENT_SECRET")]
+    pub client_secret: Option<String>,
+}
+
+impl CredentialArgs {
+    pub fn resolve(&self, beta: bool) -> anyhow::Result<Credentials> {
+        let username = self
+            .username
+            .clone()
+            .or_else(|| beta.then(|| BETA_USERNAME.to_string()))
+            .ok_or_else(|| {
+                anyhow::anyhow!(
+                    "se requiere --username (o usar --beta para credenciales de prueba)"
+                )
+            })?;
+        let password = self
+            .password
+            .clone()
+            .or_else(|| beta.then(|| BETA_PASSWORD.to_string()))
+            .ok_or_else(|| {
+                anyhow::anyhow!(
+                    "se requiere --password (o usar --beta para credenciales de prueba)"
+                )
+            })?;
+        Ok(Credentials {
+            username,
+            password,
+            client_id: self.client_id.clone(),
+            client_secret: self.client_secret.clone(),
+        })
+    }
+}
+
 /// Result of sending an XML file to SUNAT.
 pub enum SendResult {
     /// CDR was received and saved to the given path.
@@ -87,13 +123,13 @@ pub enum SendResult {
         ticket: String,
         verification: Option<(serde_json::Value, Status)>,
     },
-    /// SUNAT returned a SOAP fault.
+    /// SUNAT returned an error (SOAP fault or REST error).
     Error(ErrorResponse),
 }
 
 impl SendResult {
     /// Prints the result as JSON, adding the `extra` fields, and returns the exit code.
-    /// SOAP faults go to stderr, everything else to stdout.
+    /// SUNAT errors go to stderr, everything else to stdout.
     pub fn print(self, extra: &[(&str, serde_json::Value)]) -> anyhow::Result<ExitCode> {
         let is_fault = matches!(self, SendResult::Error(_));
         let (mut output, status) = match self {
@@ -173,7 +209,7 @@ impl SendArgs {
         default_cdr_path: &str,
     ) -> anyhow::Result<SendResult> {
         let urls = self.resolve_urls();
-        let credentials = self.resolve_credentials()?;
+        let credentials = self.credentials.resolve(self.beta)?;
 
         let sender = FileSender { urls, credentials };
 
@@ -209,33 +245,6 @@ impl SendArgs {
             }
             SendFileAggregatedResponse::Error(error) => Ok(SendResult::Error(error)),
         }
-    }
-
-    pub fn resolve_credentials(&self) -> anyhow::Result<Credentials> {
-        let username = self
-            .username
-            .clone()
-            .or_else(|| self.beta.then(|| BETA_USERNAME.to_string()))
-            .ok_or_else(|| {
-                anyhow::anyhow!(
-                    "se requiere --username (o usar --beta para credenciales de prueba)"
-                )
-            })?;
-        let password = self
-            .password
-            .clone()
-            .or_else(|| self.beta.then(|| BETA_PASSWORD.to_string()))
-            .ok_or_else(|| {
-                anyhow::anyhow!(
-                    "se requiere --password (o usar --beta para credenciales de prueba)"
-                )
-            })?;
-        Ok(Credentials {
-            username,
-            password,
-            client_id: self.client_id.clone(),
-            client_secret: self.client_secret.clone(),
-        })
     }
 
     pub fn resolve_urls(&self) -> Urls {

@@ -4,11 +4,12 @@ use clap::Args;
 
 use xhandler::prelude::*;
 
-use crate::commands::send::SendArgs;
+use crate::commands::send::{CredentialArgs, SendArgs};
 
 #[derive(Args)]
 #[command(after_help = "\x1b[1mEjemplos:\x1b[0m
   openubl verify-ticket --ticket 1703154974517 -o respuesta.zip --beta
+  openubl verify-ticket --ticket a7b3c1d2-0001 -o respuesta.zip --despatch --username 20123456789USUARIO --password clave --client-id id --client-secret secreto
 
 La salida es JSON en stdout. Codigo de salida: 0=aceptado o en proceso, 2=rechazado o error SUNAT.")]
 pub struct VerifyTicketArgs {
@@ -20,25 +21,16 @@ pub struct VerifyTicketArgs {
     #[arg(short = 'o', long = "output")]
     pub output_file: String,
 
-    /// Usuario SOL de SUNAT (con --beta se usan credenciales de prueba)
-    #[arg(long, env = "OPENUBL_USERNAME")]
-    pub username: Option<String>,
-
-    /// Clave SOL de SUNAT (con --beta se usan credenciales de prueba)
-    #[arg(long, env = "OPENUBL_PASSWORD")]
-    pub password: Option<String>,
-
-    /// Client ID de la API REST de SUNAT (requerido para guias de remision)
-    #[arg(long = "client-id", env = "OPENUBL_CLIENT_ID")]
-    pub client_id: Option<String>,
-
-    /// Client secret de la API REST de SUNAT (requerido para guias de remision)
-    #[arg(long = "client-secret", env = "OPENUBL_CLIENT_SECRET")]
-    pub client_secret: Option<String>,
+    #[command(flatten)]
+    pub credentials: CredentialArgs,
 
     /// Endpoint SOAP de facturas SUNAT (usado para verificar tickets)
     #[arg(long = "url-invoice", env = "OPENUBL_URL_INVOICE")]
     pub url_invoice: Option<String>,
+
+    /// Endpoint REST de guias de remision SUNAT (con --despatch)
+    #[arg(long = "url-despatch", env = "OPENUBL_URL_DESPATCH")]
+    pub url_despatch: Option<String>,
 
     /// El ticket es de una guia de remision (API REST, requiere --client-id y --client-secret)
     #[arg(long)]
@@ -54,19 +46,16 @@ impl VerifyTicketArgs {
         let send_args = SendArgs {
             input_file: String::new(),
             output_file: Some(self.output_file.clone()),
-            username: self.username.clone(),
-            password: self.password.clone(),
-            client_id: self.client_id.clone(),
-            client_secret: self.client_secret.clone(),
+            credentials: self.credentials.clone(),
             url_invoice: self.url_invoice.clone(),
             url_perception_retention: None,
-            url_despatch: None,
+            url_despatch: self.url_despatch.clone(),
             beta: self.beta,
             no_interactive: false,
         };
 
         let urls = send_args.resolve_urls();
-        let credentials = send_args.resolve_credentials()?;
+        let credentials = send_args.credentials.resolve(send_args.beta)?;
 
         let sender = FileSender { urls, credentials };
         let target = if self.despatch {
