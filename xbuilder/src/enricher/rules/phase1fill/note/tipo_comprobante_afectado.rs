@@ -29,7 +29,7 @@ where
                     Ok(true)
                 } else {
                     warn!(
-                        "tipo_comprobante_afectado no pudo ser inferido a partir de serie-numero"
+                        "could not infer comprobante_afectado_tipo from comprobante_afectado_serie_numero"
                     );
                     Ok(false)
                 }

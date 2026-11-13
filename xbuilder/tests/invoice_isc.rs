@@ -38,7 +38,7 @@ async fn invoice_sistema_al_valor() {
 
 #[serial_test::serial]
 #[tokio::test]
-async fn invoice_aplication_al_monto_fijo() {
+async fn invoice_aplicacion_al_monto_fijo() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -68,7 +68,7 @@ async fn invoice_aplication_al_monto_fijo() {
 
 #[serial_test::serial]
 #[tokio::test]
-async fn invoice_sistem_de_precios_de_venta_al_publico() {
+async fn invoice_sistema_de_precios_de_venta_al_publico() {
     let mut invoice = Invoice {
         detalles: vec![
             Detalle {
@@ -91,7 +91,7 @@ async fn invoice_sistem_de_precios_de_venta_al_publico() {
 
     assert_invoice(
         &mut invoice,
-        &format!("{BASE}/isc_sistemaDePreciosDeVentalAlPublico.xml"),
+        &format!("{BASE}/isc_sistemaDePreciosDeVentaAlPublico.xml"),
     )
     .await;
 }

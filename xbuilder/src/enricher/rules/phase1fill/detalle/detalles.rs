@@ -34,7 +34,7 @@ where
                 .ok_or(anyhow!("IGV Tasa could not be found"))?,
             icb_tasa: self
                 .get_icb_tasa()
-                .ok_or(anyhow!("IBC Tasa could not be found"))?,
+                .ok_or(anyhow!("ICB Tasa could not be found"))?,
             ivap_tasa: self
                 .get_ivap_tasa()
                 .ok_or(anyhow!("IVAP Tasa could not be found"))?,

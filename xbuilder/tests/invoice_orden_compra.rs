@@ -7,11 +7,11 @@ use crate::common::invoice_base;
 
 mod common;
 
-const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceOrdeDeCompraTest";
+const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceOrdenDeCompraTest";
 
 #[serial_test::serial]
 #[tokio::test]
-async fn invoice_custom_moneda() {
+async fn invoice_orden_de_compra() {
     let mut invoice = Invoice {
         orden_de_compra: Some("123456".into()),
         detalles: vec![

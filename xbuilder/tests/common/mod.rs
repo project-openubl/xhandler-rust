@@ -20,7 +20,7 @@ use xsigner::XSigner;
 const INVOICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-Invoice-2.1.xsd";
 const CREDIT_NOTE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-CreditNote-2.1.xsd";
 const DEBIT_NOTE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-DebitNote-2.1.xsd";
-const _DESPATCH_ADVICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-DespatchAdvice-2.1.xsd";
+const DESPATCH_ADVICE_XSD: &str = "tests/resources/xsd/2.1/maindoc/UBL-DespatchAdvice-2.1.xsd";
 const VOIDED_DOCUMENTS_XSD: &str = "tests/resources/xsd/2.0/maindoc/UBLPE-VoidedDocuments-1.0.xsd";
 const SUMMARY_DOCUMENTS_XSD: &str =
     "tests/resources/xsd/2.0/maindoc/UBLPE-SummaryDocuments-1.0.xsd";
@@ -255,7 +255,7 @@ pub async fn assert_despatch_advice(doc: &mut DespatchAdvice, snapshot_filename:
     assert_snapshot(&xml, snapshot_filename);
 
     let xml_signed = sign_xml(&xml);
-    assert_xsd(&xml_signed, _DESPATCH_ADVICE_XSD);
+    assert_xsd(&xml_signed, DESPATCH_ADVICE_XSD);
     // SUNAT send skipped: DespatchAdvice uses REST endpoint, not SOAP
 }
 
@@ -320,12 +320,12 @@ async fn assert_sunat(xml: &[u8]) {
         .await
         .expect("Could not get a valid response");
 
-    let documet_type = xml_file
+    let document_type = xml_file
         .metadata()
         .expect("Could not extract xml metadata")
         .document_type;
 
-    match documet_type.as_str() {
+    match document_type.as_str() {
         DocumentType::VOIDED_DOCUMENTS | DocumentType::SUMMARY_DOCUMENTS => {
             let result = match &result.response {
                 SendFileAggregatedResponse::Cdr(_, _) => false,

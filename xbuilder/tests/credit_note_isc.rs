@@ -37,7 +37,7 @@ async fn credit_note_sistema_al_valor() {
 
 #[serial_test::serial]
 #[tokio::test]
-async fn credit_note_aplication_al_monto_fijo() {
+async fn credit_note_aplicacion_al_monto_fijo() {
     let mut credit_note = CreditNote {
         detalles: vec![
             Detalle {
@@ -90,7 +90,7 @@ async fn credit_note_sistema_de_precios_de_venta_al_publico() {
 
     assert_credit_note(
         &mut credit_note,
-        &format!("{BASE}/isc_sistemaDePreciosDeVentalAlPublico.xml"),
+        &format!("{BASE}/isc_sistemaDePreciosDeVentaAlPublico.xml"),
     )
     .await;
 }

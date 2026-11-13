@@ -84,7 +84,7 @@ where
                     self.set_comprobante_tipo(Catalog12::BoletaDeVentaEmitidaPorAnticipos.code());
                     return Ok(true);
                 } else {
-                    warn!("No se pudo determinar el tipocomprobante de detalle")
+                    warn!("could not infer comprobante_tipo of anticipo from comprobante_serie_numero")
                 }
 
                 Ok(false)

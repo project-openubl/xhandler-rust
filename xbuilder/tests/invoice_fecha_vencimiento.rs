@@ -12,7 +12,7 @@ const BASE: &str = "tests/resources/e2e/renderer/invoice/InvoiceFechaVencimiento
 
 #[serial_test::serial]
 #[tokio::test]
-async fn invoice_custom_moneda() {
+async fn invoice_fecha_vencimiento() {
     let mut invoice = Invoice {
         fecha_vencimiento: NaiveDate::from_ymd_opt(2022, 1, 1),
         detalles: vec![

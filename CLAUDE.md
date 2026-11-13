@@ -50,4 +50,4 @@ xbuilder test switches: `XBUILDER_SKIP_SUNAT=true` skips sending to SUNAT beta (
 
 - `Invoice` = `Boleta`|`Factura`
 - `CreditNote` = `NotaDeCredito`
-- `DebitNote` = `NotaDeCredito`
+- `DebitNote` = `NotaDeDebito`

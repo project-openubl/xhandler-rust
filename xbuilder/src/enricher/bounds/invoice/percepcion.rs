@@ -13,7 +13,7 @@ impl InvoicePercepcionGetter for Invoice {
     }
 }
 
-// Monto Base
+// Porcentaje
 
 pub trait InvoicePercepcionPorcentajeGetter {
     fn get_porcentaje(&self) -> &Option<Decimal>;
