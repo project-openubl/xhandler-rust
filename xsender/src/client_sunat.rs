@@ -68,7 +68,7 @@ pub enum ConsultResponse {
 pub struct ConsultStatus {
     /// e.g. "0001" (accepted) for getStatus, or "0" for validaCDPcriterios
     pub status_code: String,
-    pub status_message: String,
+    pub status_message: Option<String>,
     /// CDR zip in base64 (getStatusCdr)
     pub cdr_base64: Option<String>,
 }
@@ -138,9 +138,7 @@ impl ClientSUNAT {
             VerifyTicketTarget::Rest(url) => rest::verify_ticket(url, ticket, credentials).await,
         }
     }
-}
 
-impl ClientSUNAT {
     /// BillConsultService getStatus: status of a document already sent
     pub async fn get_status(
         &self,
@@ -148,11 +146,12 @@ impl ClientSUNAT {
         document: &ConsultDocument,
         credentials: &Credentials,
     ) -> Result<ConsultResponse, ClientSunatErr> {
+        let operation = "getStatus";
         let body = BodyData::ConsultDocument {
-            operation: "getStatus",
+            operation,
             document: document.clone(),
         };
-        consult(url, body, "getStatus", credentials).await
+        consult(url, body, operation, credentials).await
     }
 
     /// BillConsultService getStatusCdr: status and CDR of a document already sent
@@ -162,11 +161,12 @@ impl ClientSUNAT {
         document: &ConsultDocument,
         credentials: &Credentials,
     ) -> Result<ConsultResponse, ClientSunatErr> {
+        let operation = "getStatusCdr";
         let body = BodyData::ConsultDocument {
-            operation: "getStatusCdr",
+            operation,
             document: document.clone(),
         };
-        consult(url, body, "getStatusCdr", credentials).await
+        consult(url, body, operation, credentials).await
     }
 
     /// BillValidService validaCDPcriterios: checks a document by its data
@@ -208,16 +208,20 @@ async fn consult(
     };
     let (status, response_body) =
         post_soap(url, envelope.to_string_xml()?, &format!("urn:{operation}")).await?;
-    Ok(
-        match parse_soap_response::<StatusXmlResponse>(status, &response_body)? {
-            StatusXmlResponse::Status(status) => ConsultResponse::Status(ConsultStatus {
+    parse_soap_response::<StatusXmlResponse>(status, &response_body).map(Into::into)
+}
+
+impl From<StatusXmlResponse> for ConsultResponse {
+    fn from(value: StatusXmlResponse) -> Self {
+        match value {
+            StatusXmlResponse::Status(status) => Self::Status(ConsultStatus {
                 status_code: status.status_code,
-                status_message: status.status_message.unwrap_or_default(),
-                cdr_base64: status.content,
+                status_message: status.status_message,
+                cdr_base64: status.cdr_base64,
             }),
-            StatusXmlResponse::Fault(fault) => ConsultResponse::Error(fault),
-        },
-    )
+            StatusXmlResponse::Fault(fault) => Self::Error(fault),
+        }
+    }
 }
 
 impl From<SendFileXmlResponse> for SendFileResponse {
@@ -233,7 +237,7 @@ impl From<SendFileXmlResponse> for SendFileResponse {
 impl From<StatusXmlResponse> for VerifyTicketResponse {
     fn from(value: StatusXmlResponse) -> Self {
         match value {
-            StatusXmlResponse::Status(status) => match status.content {
+            StatusXmlResponse::Status(status) => match status.cdr_base64 {
                 Some(cdr_base64) => Self::Cdr(VerifyTicketStatus {
                     cdr_base64,
                     status_code: status.status_code,

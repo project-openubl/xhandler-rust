@@ -15,7 +15,7 @@ pub struct StatusXml {
     pub status_code: String,
     pub status_message: Option<String>,
     /// CDR zip in base64, when the answer carries one
-    pub content: Option<String>,
+    pub cdr_base64: Option<String>,
 }
 
 impl FromStr for StatusXmlResponse {
@@ -24,7 +24,7 @@ impl FromStr for StatusXmlResponse {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut status_code: Option<String> = None;
         let mut status_message: Option<String> = None;
-        let mut content: Option<String> = None;
+        let mut cdr_base64: Option<String> = None;
         let mut fault_code: Option<String> = None;
         let mut fault_message: Option<String> = None;
 
@@ -43,12 +43,13 @@ impl FromStr for StatusXmlResponse {
             } else if (parent.is_local("status") || parent.is_local("statusCdr"))
                 && !text.is_empty()
             {
-                match element.local_name.as_str() {
-                    "statusCode" => status_code.get_or_insert(text),
-                    "statusMessage" => status_message.get_or_insert(text),
-                    "content" => content.get_or_insert(text),
+                let slot = match element.local_name.as_str() {
+                    "statusCode" => &mut status_code,
+                    "statusMessage" => &mut status_message,
+                    "content" => &mut cdr_base64,
                     _ => return,
                 };
+                slot.get_or_insert(text);
             }
         })?;
 
@@ -56,7 +57,7 @@ impl FromStr for StatusXmlResponse {
             (Some(status_code), _) => Ok(Self::Status(StatusXml {
                 status_code,
                 status_message,
-                content,
+                cdr_base64,
             })),
             (_, Some(code)) => Ok(Self::Fault(SoapFault {
                 code,
@@ -83,7 +84,9 @@ mod tests {
         let response = StatusXmlResponse::from_str(&file_content).expect("Could not read response");
 
         let result = match response {
-            StatusXmlResponse::Status(data) => (data.content.unwrap_or_default(), data.status_code),
+            StatusXmlResponse::Status(data) => {
+                (data.cdr_base64.unwrap_or_default(), data.status_code)
+            }
             StatusXmlResponse::Fault(_) => ("".to_string(), "".to_string()),
         };
 
@@ -100,7 +103,7 @@ mod tests {
         let response = StatusXmlResponse::from_str(&file_content).expect("Could not read response");
         match response {
             StatusXmlResponse::Status(data) => {
-                assert_eq!(data.content, None);
+                assert_eq!(data.cdr_base64, None);
                 assert_eq!(data.status_code, "98");
             }
             StatusXmlResponse::Fault(_) => panic!("Expected a status"),
@@ -134,7 +137,7 @@ mod tests {
             status.status_message.as_deref(),
             Some("El comprobante existe y está aceptado.")
         );
-        assert_eq!(status.content, None);
+        assert_eq!(status.cdr_base64, None);
     }
 
     #[test]
@@ -146,6 +149,6 @@ mod tests {
             panic!("Expected a status");
         };
         assert_eq!(status.status_code, "0004");
-        assert_eq!(status.content.as_deref(), Some("UEsDBA=="));
+        assert_eq!(status.cdr_base64.as_deref(), Some("UEsDBA=="));
     }
 }

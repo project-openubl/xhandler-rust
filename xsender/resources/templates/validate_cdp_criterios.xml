@@ -17,7 +17,7 @@
             <numeroDocIdReceptor>{{body.numero_documento_identidad_receptor}}</numeroDocIdReceptor>
             <fechaEmision>{{body.fecha_emision}}</fechaEmision>
             <importeTotal>{{body.importe_total}}</importeTotal>
-            <nroAutorizacion>{{body.numero_autorizacion | default(value="")}}</nroAutorizacion>
+            <nroAutorizacion>{{body.numero_autorizacion}}</nroAutorizacion>
         </ns2:validaCDPcriterios>
     </soap:Body>
 </soap:Envelope>

@@ -74,10 +74,7 @@ impl ToStringXml for EnvelopeData {
 
 #[cfg(test)]
 mod tests {
-    use crate::soap::envelope::BodyData::{
-        ConsultDocument as ConsultDocumentBody, SendFile, ValidateCdp as ValidateCdpBody,
-        ValidateFile, VerifyTicket,
-    };
+    use crate::soap::envelope::BodyData::{SendFile, ValidateFile, VerifyTicket};
     use crate::soap::envelope::*;
 
     #[test]
@@ -159,7 +156,7 @@ mod tests {
         let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
-            body: ConsultDocumentBody {
+            body: BodyData::ConsultDocument {
                 operation: "getStatusCdr",
                 document: document(),
             },
@@ -176,7 +173,7 @@ mod tests {
         let message = EnvelopeData {
             username: String::from("my_username"),
             password: String::from("my_password"),
-            body: ValidateCdpBody(ValidateCdp {
+            body: BodyData::ValidateCdp(ValidateCdp {
                 document: document(),
                 tipo_documento_identidad_receptor: String::from("6"),
                 numero_documento_identidad_receptor: String::from("12121212121"),

@@ -47,6 +47,7 @@ pub async fn send_document(
             .body(payload.clone())
     })
     .await?;
+    forget_rejected_token(status, credentials);
     parse_send_response(status, &body)
 }
 
@@ -63,6 +64,7 @@ pub async fn verify_ticket(
             .bearer_auth(&token)
     })
     .await?;
+    forget_rejected_token(status, credentials);
     parse_ticket_response(status, &body)
 }
 
@@ -71,7 +73,8 @@ static TOKENS: LazyLock<Mutex<HashMap<String, (String, Instant)>>> =
     LazyLock::new(Default::default);
 
 /// Requests an access token with the SOL user and the API client id/secret,
-/// reusing the previous one until a minute before it expires.
+/// reusing the previous one until a minute before it expires (or until SUNAT
+/// rejects it).
 async fn fetch_token(credentials: &Credentials) -> Result<String, ClientSunatErr> {
     let (Some(client_id), Some(client_secret)) =
         (&credentials.client_id, &credentials.client_secret)
@@ -81,7 +84,7 @@ async fn fetch_token(credentials: &Credentials) -> Result<String, ClientSunatErr
         );
     };
 
-    let key = format!("{client_id}:{}", credentials.username);
+    let key = token_key(client_id, &credentials.username);
     if let Some(token) = cached_token(&key) {
         return Ok(token);
     }
@@ -108,6 +111,20 @@ async fn fetch_token(credentials: &Credentials) -> Result<String, ClientSunatErr
     let expires_in = json["expires_in"].as_u64().unwrap_or(3600);
     store_token(key, &token, expires_in);
     Ok(token)
+}
+
+fn token_key(client_id: &str, username: &str) -> String {
+    format!("{client_id}:{username}")
+}
+
+/// A token SUNAT rejects (e.g. revoked before it expires) is not reused
+fn forget_rejected_token(status: StatusCode, credentials: &Credentials) {
+    if status != StatusCode::UNAUTHORIZED {
+        return;
+    }
+    if let (Some(client_id), Ok(mut tokens)) = (&credentials.client_id, TOKENS.lock()) {
+        tokens.remove(&token_key(client_id, &credentials.username));
+    }
 }
 
 fn cached_token(key: &str) -> Option<String> {
@@ -212,8 +229,12 @@ fn text(value: &Value) -> Option<String> {
 mod tests {
     use reqwest::StatusCode;
 
-    use super::{cached_token, hash_zip, parse_send_response, parse_ticket_response, store_token};
+    use super::{
+        cached_token, forget_rejected_token, hash_zip, parse_send_response, parse_ticket_response,
+        store_token,
+    };
     use crate::client_sunat::{SendFileResponse, VerifyTicketResponse};
+    use crate::models::Credentials;
     use crate::models::Status;
 
     #[test]
@@ -300,5 +321,17 @@ mod tests {
         assert_eq!(cached_token("client-b:user"), None);
 
         assert_eq!(cached_token("unknown"), None);
+
+        // A rejected token is dropped
+        store_token("client-c:user".into(), "token-c", 3600);
+        let credentials = Credentials {
+            username: "user".into(),
+            client_id: Some("client-c".into()),
+            ..Default::default()
+        };
+        forget_rejected_token(StatusCode::OK, &credentials);
+        assert_eq!(cached_token("client-c:user").as_deref(), Some("token-c"));
+        forget_rejected_token(StatusCode::UNAUTHORIZED, &credentials);
+        assert_eq!(cached_token("client-c:user"), None);
     }
 }
