@@ -1,7 +1,7 @@
 use anyhow::Result;
 use rust_decimal::Decimal;
 
-use crate::catalogs::{Catalog, Catalog53};
+use crate::catalogs::{code_for_name, Catalog, Catalog53};
 use crate::enricher::bounds::invoice::descuentos::{
     DescuentoGetter, DescuentoSetter, InvoiceDescuentosGetter,
 };
@@ -77,7 +77,13 @@ where
 {
     fn fill(&mut self) -> Result<bool> {
         match self.get_tipo() {
-            Some(..) => Ok(false),
+            Some(value) => match code_for_name::<Catalog53>(value) {
+                Some(code) => {
+                    self.set_tipo(&code);
+                    Ok(true)
+                }
+                None => Ok(false),
+            },
             None => {
                 self.set_tipo(Catalog53::DescuentoGlobalNoAfectaBaseImponibleIgvIvap.code());
                 Ok(true)

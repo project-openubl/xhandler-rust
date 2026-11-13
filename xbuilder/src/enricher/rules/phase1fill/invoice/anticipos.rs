@@ -2,7 +2,7 @@ use anyhow::Result;
 use log::warn;
 use regex::Regex;
 
-use crate::catalogs::{Catalog, Catalog12, Catalog53};
+use crate::catalogs::{code_for_name, Catalog, Catalog12, Catalog53};
 use crate::enricher::bounds::invoice::anticipos::{
     AnticipoGetter, AnticipoSetter, InvoiceAnticiposGetter,
 };
@@ -44,7 +44,13 @@ where
 {
     fn fill(&mut self) -> Result<bool> {
         match self.get_tipo() {
-            Some(..) => Ok(false),
+            Some(value) => match code_for_name::<Catalog53>(value) {
+                Some(code) => {
+                    self.set_tipo(&code);
+                    Ok(true)
+                }
+                None => Ok(false),
+            },
             None => {
                 self.set_tipo(
                     Catalog53::DescuentoGlobalPorAnticiposGravadosAfectaBaseImponibleIgvIvap.code(),
@@ -61,7 +67,13 @@ where
 {
     fn fill(&mut self) -> Result<bool> {
         match self.get_comprobante_tipo() {
-            Some(..) => Ok(false),
+            Some(value) => match code_for_name::<Catalog12>(value) {
+                Some(code) => {
+                    self.set_comprobante_tipo(&code);
+                    Ok(true)
+                }
+                None => Ok(false),
+            },
             None => {
                 if Regex::new(FACTURA_SERIE_REGEX)?.is_match(self.get_comprobante_serie_numero()) {
                     self.set_comprobante_tipo(Catalog12::FacturaEmitidaPorAnticipos.code());

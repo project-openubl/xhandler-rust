@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::catalogs::{Catalog, Catalog8};
+use crate::catalogs::{code_for_name, Catalog, Catalog8};
 use crate::enricher::bounds::detalle::isc_tipo::{DetalleIscTipoGetter, DetalleIscTipoSetter};
 use crate::enricher::rules::phase1fill::detalle::detalles::DetalleDefaults;
 
@@ -14,7 +14,13 @@ where
 {
     fn fill(&mut self, _: &DetalleDefaults) -> Result<bool> {
         match &self.get_isc_tipo() {
-            Some(..) => Ok(false),
+            Some(value) => match code_for_name::<Catalog8>(value) {
+                Some(code) => {
+                    self.set_isc_tipo(&code);
+                    Ok(true)
+                }
+                None => Ok(false),
+            },
             None => {
                 self.set_isc_tipo(Catalog8::SistemaAlValor.code());
                 Ok(true)
