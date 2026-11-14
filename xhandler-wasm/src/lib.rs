@@ -10,7 +10,9 @@
 //! - `xh_free(ptr, len)` releases the request and the response.
 
 mod builder;
+mod bytes;
 mod ops;
+mod signer;
 
 pub use builder::DefaultsInput;
 pub use ops::invoke;

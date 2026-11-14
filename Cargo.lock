@@ -3258,12 +3258,14 @@ name = "xhandler-wasm"
 version = "0.1.1"
 dependencies = [
  "anyhow",
+ "base64",
  "chrono",
  "rust_decimal",
  "schemars",
  "serde",
  "serde_json",
  "xbuilder",
+ "xsigner",
 ]
 
 [[package]]

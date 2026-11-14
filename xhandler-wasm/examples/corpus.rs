@@ -5,31 +5,31 @@
 //! where `expected` is the whole response: `{"ok": ...}` or
 //! `{"error": {"kind": ...}}` (error messages are not compared).
 //!
-//! Usage: corpus <xbuilder input dump dir> <xbuilder snapshots dir> <out dir>
+//! Usage: corpus <xbuilder input dump dir> <workspace root> <out dir>
 //!
 //! The dump comes from `XBUILDER_DUMP_INPUT=<dir> cargo test -p xbuilder`: the
 //! `build` input of every snapshot test. The snapshots are the source of
 //! truth: the run fails if the native `invoke` does not reproduce one of them.
 //! The `enrich` cases record what the native `invoke` returns, so they check
 //! that the bindings carry every field, not the enrichment itself (the
-//! xbuilder tests do).
+//! xbuilder tests do). The `sign` cases are the byte-exact signatures of the
+//! xsigner tests: RSA PKCS#1 v1.5 is deterministic.
 
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use base64::engine::general_purpose::STANDARD;
+use base64::Engine;
 use serde_json::{json, Value};
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    let [_, dump_dir, snapshots_dir, out_dir] = args.as_slice() else {
-        eprintln!("usage: corpus <dump dir> <snapshots dir> <out dir>");
+    let [_, dump_dir, root, out_dir] = args.as_slice() else {
+        eprintln!("usage: corpus <dump dir> <workspace root> <out dir>");
         std::process::exit(2);
     };
-    let (dump_dir, snapshots_dir, out_dir) = (
-        Path::new(dump_dir),
-        Path::new(snapshots_dir),
-        Path::new(out_dir),
-    );
+    let (dump_dir, root, out_dir) = (Path::new(dump_dir), Path::new(root), Path::new(out_dir));
+    let snapshots_dir = root.join("xbuilder/tests/resources/e2e");
 
     let mut corpus = Corpus::new(out_dir);
 
@@ -44,6 +44,8 @@ fn main() {
         corpus.check("enrich", relative, input, enriched);
     }
 
+    sign_cases(&mut corpus, &root.join("xsigner/resources/test"));
+
     for (op, name, input, kind) in error_cases() {
         corpus.check(
             op,
@@ -54,6 +56,83 @@ fn main() {
     }
 
     corpus.finish();
+}
+
+fn sign_cases(corpus: &mut Corpus, resources: &Path) {
+    let read = |name: &str| fs::read(resources.join(name)).expect("xsigner resource");
+    let text = |name: &str| String::from_utf8(read(name)).expect("UTF-8 resource");
+    let pem = json!({ "pem": {
+        "private_key": text("private.key"),
+        "certificate": text("public.cer"),
+    }});
+    let pkcs12 = |name: &str, password: &str| json!({ "pkcs12": { "der": STANDARD.encode(read(name)), "password": password } });
+    let sign = |xml: &[u8], key: &Value| json!({ "xml": STANDARD.encode(xml), "key": key });
+    let ok = |signed: &[u8]| json!({ "ok": STANDARD.encode(signed) });
+
+    // signed/<name>.xml -> signed/<name>.signed.xml, signed with private.key
+    let mut signed = files_with_suffix(&resources.join("signed"), ".signed.xml");
+    signed.sort();
+    for expected in signed {
+        let file = expected.file_name().unwrap().to_str().unwrap();
+        let name = file.strip_suffix(".signed.xml").unwrap();
+        let source = read(&format!("signed/{name}.xml"));
+        let expected = fs::read(&expected).unwrap();
+        corpus.check(
+            "sign",
+            Path::new(&format!("pem/{name}")),
+            sign(&source, &pem),
+            ok(&expected),
+        );
+    }
+
+    // The 3DES keystore holds the same key as private.key
+    let invoice = read("signed/invoice_no_template.xml");
+    corpus.check(
+        "sign",
+        Path::new("pkcs12/legacy_3des"),
+        sign(&invoice, &pkcs12("legacy_3des.pfx", "password")),
+        ok(&read("signed/invoice_no_template.signed.xml")),
+    );
+    // Another key: the expected output is the native one
+    let llama = pkcs12("LLAMA-PE-CERTIFICADO-DEMO-10467793549.pfx", "password");
+    let expected = invoke("sign", &sign(&invoice, &llama));
+    corpus.check(
+        "sign",
+        Path::new("pkcs12/llama"),
+        sign(&invoice, &llama),
+        expected,
+    );
+
+    let error = |kind: &str| json!({ "error": { "kind": kind } });
+    corpus.check(
+        "sign",
+        Path::new("errors/wrong_password"),
+        sign(&invoice, &pkcs12("legacy_3des.pfx", "wrong")),
+        error("invalid_key"),
+    );
+    let other_key = json!({ "pem": {
+        "private_key": text("other_private.key"),
+        "certificate": text("public.cer"),
+    }});
+    corpus.check(
+        "sign",
+        Path::new("errors/certificate_of_another_key"),
+        sign(&invoice, &other_key),
+        error("invalid_key"),
+    );
+    let in_use = br#"<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"><ext:UBLExtensions><ext:UBLExtension><ext:ExtensionContent><x/></ext:ExtensionContent></ext:UBLExtension></ext:UBLExtensions></Invoice>"#;
+    corpus.check(
+        "sign",
+        Path::new("errors/extension_content_in_use"),
+        sign(in_use, &pem),
+        error("invalid_input"),
+    );
+    corpus.check(
+        "sign",
+        Path::new("errors/xml_not_base64"),
+        json!({ "xml": "<Invoice/>", "key": pem }),
+        error("invalid_input"),
+    );
 }
 
 fn error_cases() -> Vec<(&'static str, &'static str, Value, &'static str)> {
@@ -154,6 +233,14 @@ fn invoke(op: &str, input: &Value) -> Value {
 
 fn read_json(path: &Path) -> Value {
     serde_json::from_slice(&fs::read(path).expect("read")).expect("json")
+}
+
+fn files_with_suffix(dir: &Path, suffix: &str) -> Vec<PathBuf> {
+    fs::read_dir(dir)
+        .unwrap_or_else(|e| panic!("{}: {e}", dir.display()))
+        .map(|entry| entry.expect("dir entry").path())
+        .filter(|path| path.to_str().is_some_and(|p| p.ends_with(suffix)))
+        .collect()
 }
 
 fn json_files(dir: &Path) -> Vec<PathBuf> {

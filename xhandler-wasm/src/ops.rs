@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::builder;
+use crate::{builder, signer};
 
 #[derive(Deserialize)]
 struct Request {
@@ -35,6 +35,8 @@ pub enum ErrorKind {
     Validation,
     /// The XML could not be rendered.
     Render,
+    /// The private key or certificate can't be read, e.g. a wrong password.
+    InvalidKey,
 }
 
 impl Error {
@@ -71,6 +73,7 @@ fn dispatch(op: &str, input: Value) -> OpResult {
         "version" => Ok(env!("CARGO_PKG_VERSION").into()),
         "build" => builder::build(input),
         "enrich" => builder::enrich(input),
+        "sign" => signer::sign(input),
         _ => Err(Error::new(
             ErrorKind::InvalidRequest,
             anyhow::anyhow!("unknown op: {op}"),

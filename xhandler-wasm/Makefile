@@ -38,7 +38,7 @@ conformance:
 	rm -rf $(DUMP) $(DIST)/conformance
 	cd $(ROOT) && XBUILDER_SKIP_SUNAT=true XBUILDER_DUMP_INPUT=$(DUMP) cargo test -q -p xbuilder --tests
 	cd $(ROOT) && cargo run -q -p xhandler-wasm --example corpus -- \
-		$(DUMP) xbuilder/tests/resources/e2e $(DIST)/conformance
+		$(DUMP) $(ROOT) $(DIST)/conformance
 
 clean:
 	rm -rf $(DIST) $(DUMP)
