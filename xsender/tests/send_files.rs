@@ -23,6 +23,7 @@ async fn send_invoice() {
     let file_path = format!("{BASE}/12345678912-01-F001-1.xml");
     let xml_file = UblFile::from_path(&file_path).expect("File not found");
 
+    wait_for_sunat().await;
     let result = CLIENT
         .send_file(&xml_file)
         .await
@@ -51,6 +52,7 @@ async fn send_voided_documents() {
     let file_path = format!("{BASE}/12345678912-RA-20200328-1.xml");
     let xml_file = UblFile::from_path(&file_path).expect("File not found");
 
+    wait_for_sunat().await;
     let file_result = CLIENT
         .send_file(&xml_file)
         .await
@@ -99,6 +101,7 @@ async fn send_pack() {
     let files = ["12345678912-01-F001-1.xml", "12345678912-RA-20200328-1.xml"]
         .map(|name| UblFile::from_path(format!("{BASE}/{name}")).unwrap());
 
+    wait_for_sunat().await;
     let result = CLIENT
         .send_pack("12345678912-LT-20160405-1", &files)
         .await
@@ -109,4 +112,18 @@ async fn send_pack() {
         SendFileAggregatedResponse::Fault(fault) => assert_eq!(fault.status(), Status::Exception),
         SendFileAggregatedResponse::Cdr(..) => panic!("A pack is answered with a ticket"),
     }
+}
+
+/// SUNAT beta answers HTTP 401 to requests sent right after another: waits
+/// until 3 s have passed since the previous request of this test binary
+async fn wait_for_sunat() {
+    static LAST_REQUEST: std::sync::Mutex<Option<std::time::Instant>> = std::sync::Mutex::new(None);
+    let wait = {
+        let mut last = LAST_REQUEST.lock().unwrap();
+        let now = std::time::Instant::now();
+        let next = last.map_or(now, |last| last + std::time::Duration::from_secs(3));
+        *last = Some(next.max(now));
+        next.saturating_duration_since(now)
+    };
+    tokio::time::sleep(wait).await;
 }
