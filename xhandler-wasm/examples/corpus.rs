@@ -7,17 +7,17 @@
 //!
 //! Usage: corpus <xbuilder input dump dir> <xbuilder snapshots dir> <out dir>
 //!
-//! The dump comes from `XBUILDER_DUMP_INPUT=<dir> cargo test -p xbuilder`. The
-//! snapshots are the source of truth: the run fails if the native `invoke`
-//! does not reproduce one of them.
+//! The dump comes from `XBUILDER_DUMP_INPUT=<dir> cargo test -p xbuilder`: the
+//! `build` input of every snapshot test. The snapshots are the source of
+//! truth: the run fails if the native `invoke` does not reproduce one of them.
+//! The `enrich` cases record what the native `invoke` returns, so they check
+//! that the bindings carry every field, not the enrichment itself (the
+//! xbuilder tests do).
 
 use std::fs;
 use std::path::{Path, PathBuf};
 
 use serde_json::{json, Value};
-
-/// The date of `defaults_base()` in the xbuilder tests; the rates are the defaults.
-const DEFAULTS: &str = r#"{"fecha_emision": "2019-12-24"}"#;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -32,14 +32,12 @@ fn main() {
     );
 
     let mut corpus = Corpus::new(out_dir);
-    let defaults: Value = serde_json::from_str(DEFAULTS).expect("defaults");
 
     for dump in json_files(dump_dir) {
         let relative = dump.strip_prefix(dump_dir).expect("inside dump dir");
-        let document: Value = read_json(&dump);
+        let input = read_json(&dump);
         let snapshot = fs::read_to_string(snapshots_dir.join(relative).with_extension("xml"))
             .unwrap_or_else(|e| panic!("snapshot of {}: {e}", relative.display()));
-        let input = json!({ "document": document, "defaults": defaults });
 
         corpus.check("build", relative, input.clone(), json!({ "ok": snapshot }));
         let enriched = invoke("enrich", &input);
@@ -88,12 +86,6 @@ fn error_cases() -> Vec<(&'static str, &'static str, Value, &'static str)> {
             "build",
             "errors/unknown_kind",
             json!({ "document": { "kind": "Nope", "spec": {} }, "defaults": { "fecha_emision": "2019-12-24" } }),
-            "invalid_input",
-        ),
-        (
-            "build",
-            "errors/missing_defaults",
-            json!({ "document": invoice("10")["document"] }),
             "invalid_input",
         ),
         (

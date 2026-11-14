@@ -11,7 +11,10 @@ values and the formats date / partial-time / decimal / uint32. Anything else
 fails loudly so a model change is never silently mistranslated.
 
 Rust owns the defaults: Go relies on zero values plus `omitempty`, Java on
-`null` plus `@JsonInclude(NON_NULL)`, and Python mirrors the schema defaults.
+`null` plus `@JsonInclude(NON_NULL)`. Python mirrors the schema defaults, so
+its models read like the Rust ones (`list` fields can be appended to).
+Every document type carries its `kind` explicitly, so subclasses and proxies
+keep it.
 """
 
 import json
@@ -172,15 +175,14 @@ def go_field(p: Prop) -> str:
     t = p.type
     pointer, option = False, ",omitempty"
     if t.nullable:
-        # xbuilder treats a null string as an empty one; other optional values
-        # need a pointer to tell "unset" from the zero value.
-        pointer = t.kind not in ("string", "array", "map")
+        # A pointer tells "unset" (Rust None) from the zero value
+        pointer = t.kind not in ("array", "map")
     elif p.required:
         option = ""
     elif t.kind == "decimal" and p.default not in (None, "0"):
         pointer = True  # e.g. Defaults.igv_tasa: unset means the Rust default
-    elif t.kind in ("date", "time"):
-        option = ",omitzero"
+    elif t.kind == "date":
+        option = ",omitzero"  # e.g. Envio.fecha_traslado: unset, not year 1
     elif t.kind in ("ref", "decimal"):
         option = ""  # always sent; the zero value equals the Rust default
     return f'{pascal(p.name)} {go_type(t, pointer)} `json:"{p.name}{option}"`'
@@ -202,6 +204,15 @@ def gen_go(models: list[Model], kinds: list[str]) -> str:
         out += ["}", ""]
     for kind in kinds:
         out += [f'func ({kind}) Kind() string {{ return "{kind}" }}', ""]
+    out += [
+        "// NewDocument returns an empty document of the given kind, e.g. \"Invoice\",",
+        "// or false when the kind is unknown.",
+        "func NewDocument(kind string) (Document, bool) {",
+        "\tswitch kind {",
+    ]
+    for kind in kinds:
+        out += [f'\tcase "{kind}":', f"\t\treturn &{kind}{{}}, true"]
+    out += ["\t}", "\treturn nil, false", "}", ""]
     return "\n".join(out)
 
 
@@ -211,7 +222,7 @@ PY_SCALARS = {
     "string": "str",
     "bool": "bool",
     "uint32": "int",
-    "decimal": "Decimal",
+    "decimal": "PlainDecimal",
     "date": "date",
     "time": "time",
 }
@@ -300,9 +311,16 @@ def gen_python(models: list[Model], kinds: list[str]) -> str:
         "from datetime import date, time",
         "from decimal import Decimal",
         "from enum import Enum",
-        "from typing import Union",
+        "from typing import Annotated, ClassVar, Union",
         "",
-        "from pydantic import BaseModel, ConfigDict, Field",
+        "from pydantic import BaseModel, ConfigDict, Field, PlainSerializer",
+        "",
+        f"__all__ = {sorted([m.name for m in models] + ['Document', 'DOCUMENT_KINDS'])!r}",
+        "",
+        "PlainDecimal = Annotated[",
+        '    Decimal, PlainSerializer(lambda d: format(d, "f"), return_type=str, when_used="json")',
+        "]",
+        '"""A Decimal sent as plain text with its scale: "118.00", never "1.18E+2"."""',
         "",
         "",
         "class _Model(BaseModel):",
@@ -319,6 +337,8 @@ def gen_python(models: list[Model], kinds: list[str]) -> str:
             continue
         out.append(f"class {m.name}(_Model):")
         out += py_doc(m.description, "    ")
+        if m.name in kinds:
+            out.append(f"    kind: ClassVar[str] = {m.name!r}")
         for p in m.props:
             if keyword.iskeyword(p.name):
                 raise ValueError(f"python keyword as field name: {p.name}")
@@ -357,29 +377,44 @@ def java_doc(text: str | None, indent: str) -> list[str]:
     return [f"{indent}/**"] + comment(text.replace("*/", "*&#47;"), f"{indent} * ") + [f"{indent} */"]
 
 
+def java_imports(m: Model) -> list[str]:
+    """The imports a model class needs, sorted."""
+    imports = {
+        "com.fasterxml.jackson.annotation.JsonInclude",
+        "com.fasterxml.jackson.annotation.JsonProperty",
+        "lombok.AllArgsConstructor",
+        "lombok.Builder",
+        "lombok.Data",
+        "lombok.NoArgsConstructor",
+    }
+    by_kind = {
+        "decimal": "java.math.BigDecimal",
+        "date": "java.time.LocalDate",
+        "time": "java.time.LocalTime",
+        "array": "java.util.List",
+        "map": "java.util.Map",
+    }
+    for p in m.props:
+        t: Type | None = p.type
+        while t:
+            if t.kind in by_kind:
+                imports.add(by_kind[t.kind])
+            t = t.item
+    return sorted(imports)
+
+
 def gen_java(models: list[Model], kinds: list[str], package: str) -> dict[str, str]:
     files = {}
     for m in models:
         out = [f"// {HEADER}", f"package {package};", ""]
         if m.enum:
+            out += ["import com.fasterxml.jackson.annotation.JsonProperty;", ""]
             out += java_doc(m.description, "")
-            out += [f"public enum {m.name} {{", f"    {', '.join(m.enum)}", "}", ""]
+            constants = [f'    @JsonProperty("{v}")\n    {v.upper()}' for v in m.enum]
+            out += [f"public enum {m.name} {{", ",\n".join(constants), "}", ""]
             files[m.name] = "\n".join(out)
             continue
-        out += [
-            "import com.fasterxml.jackson.annotation.JsonInclude;",
-            "import com.fasterxml.jackson.annotation.JsonProperty;",
-            "import java.math.BigDecimal;",
-            "import java.time.LocalDate;",
-            "import java.time.LocalTime;",
-            "import java.util.List;",
-            "import java.util.Map;",
-            "import lombok.AllArgsConstructor;",
-            "import lombok.Builder;",
-            "import lombok.Data;",
-            "import lombok.NoArgsConstructor;",
-            "",
-        ]
+        out += [f"import {i};" for i in java_imports(m)] + [""]
         out += java_doc(m.description, "")
         implements = " implements Document" if m.name in kinds else ""
         out += [
@@ -393,6 +428,8 @@ def gen_java(models: list[Model], kinds: list[str], package: str) -> dict[str, s
         for p in m.props:
             out += java_doc(p.description, "    ")
             out += [f'    @JsonProperty("{p.name}")', f"    private {java_type(p.type)} {camel(p.name)};", ""]
+        if m.name in kinds:
+            out += ["    @Override", "    public String kind() {", f'        return "{m.name}";', "    }", ""]
         out[-1:] = ["}", ""]
         files[m.name] = "\n".join(out)
     files["Document"] = "\n".join(
@@ -402,10 +439,8 @@ def gen_java(models: list[Model], kinds: list[str], package: str) -> dict[str, s
             "",
             "/** Any document xbuilder can enrich and render: " + ", ".join(kinds) + ". */",
             "public interface Document {",
-            "    /** The `kind` tag of the document, e.g. {@code Invoice}. */",
-            "    default String kind() {",
-            "        return getClass().getSimpleName();",
-            "    }",
+            "    /** The {@code kind} tag of the document, e.g. {@code Invoice}. */",
+            "    String kind();",
             "}",
             "",
         ]

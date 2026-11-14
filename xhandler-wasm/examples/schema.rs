@@ -3,7 +3,8 @@
 
 use schemars::generate::SchemaSettings;
 use schemars::JsonSchema;
-use xbuilder::prelude::*;
+use xbuilder::prelude::Document;
+use xhandler_wasm::DefaultsInput;
 
 /// Root of the schema: references every type the bindings need.
 #[allow(dead_code)]
@@ -11,7 +12,7 @@ use xbuilder::prelude::*;
 #[schemars(title = "Xhandler")]
 struct Root {
     document: Document,
-    defaults: Defaults,
+    defaults: DefaultsInput,
 }
 
 fn main() {

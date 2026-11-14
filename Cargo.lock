@@ -3258,6 +3258,8 @@ name = "xhandler-wasm"
 version = "0.1.1"
 dependencies = [
  "anyhow",
+ "chrono",
+ "rust_decimal",
  "schemars",
  "serde",
  "serde_json",

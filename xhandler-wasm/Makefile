@@ -18,18 +18,19 @@ JAVA_MODELS_PACKAGE := io.github.project.openubl.xbuilder.models
 dist: wasm schema models conformance
 
 wasm:
-	cd $(ROOT) && cargo build -p xhandler-wasm --release --target wasm32-wasip1
+	cd $(ROOT) && cargo build -p xhandler-wasm --profile wasm --target wasm32-wasip1
 	mkdir -p $(DIST)
-	cp $(ROOT)/target/wasm32-wasip1/release/xhandler_wasm.wasm $(DIST)/xhandler.wasm
+	cp $(ROOT)/target/wasm32-wasip1/wasm/xhandler_wasm.wasm $(DIST)/xhandler.wasm
 	cd $(ROOT) && cargo pkgid -p xhandler-wasm | sed 's/.*[#@]//' > $(DIST)/VERSION
 
 schema:
 	mkdir -p $(DIST)
-	cd $(ROOT) && cargo run -q -p xhandler-wasm --example schema > $(DIST)/xhandler.schema.json
+	cd $(ROOT) && cargo run -q -p xhandler-wasm --features schema --example schema > $(DIST)/xhandler.schema.json
 
 models: schema
 	rm -rf $(DIST)/models && mkdir -p $(DIST)/models/go $(DIST)/models/python
 	python3 codegen.py $(DIST)/xhandler.schema.json go $(DIST)/models/go/models_gen.go
+	gofmt -w $(DIST)/models/go/models_gen.go
 	python3 codegen.py $(DIST)/xhandler.schema.json python $(DIST)/models/python/models.py
 	python3 codegen.py $(DIST)/xhandler.schema.json java $(DIST)/models/java $(JAVA_MODELS_PACKAGE)
 

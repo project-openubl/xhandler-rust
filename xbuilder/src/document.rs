@@ -13,6 +13,7 @@ use crate::renderer::Renderer;
 /// Any document xbuilder creates, tagged with its kind. In JSON/YAML:
 /// `{"kind": "Invoice", "spec": {...}}`.
 #[derive(Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(tag = "kind", content = "spec")]
 pub enum Document {
     Invoice(Box<Invoice>),

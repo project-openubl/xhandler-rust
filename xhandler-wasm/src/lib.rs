@@ -12,6 +12,7 @@
 mod builder;
 mod ops;
 
+pub use builder::DefaultsInput;
 pub use ops::invoke;
 
 /// Reserves `len` bytes in the module memory.
