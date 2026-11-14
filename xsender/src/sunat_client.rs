@@ -116,18 +116,40 @@ async fn consult(
     }
 }
 
-/// Sends a call, with an OAuth token when it needs one. A token SUNAT
-/// rejects (HTTP 401) is forgotten, so the next call asks for a new one.
+/// Pauses before retrying a request SUNAT's front proxy refused
+const RATE_LIMIT_PAUSES: [Duration; 2] = [Duration::from_secs(1), Duration::from_secs(2)];
+
+/// Sends a call, with an OAuth token when it needs one. SUNAT revokes tokens
+/// before they expire: a call rejected with HTTP 401 is retried once with a
+/// new token. Calls refused by SUNAT's rate limiting are retried after a pause.
 async fn exchange(call: &Call, credentials: &Credentials) -> Result<Answer, SunatClientError> {
-    let token = match call.needs_token() {
-        true => Some(token(credentials).await?),
-        false => None,
-    };
-    let (status, body) = send(&call.request(credentials, token.as_deref())?).await?;
-    if token.is_some() && status == 401 {
+    if call.needs_token() {
+        let (status, body) = send_with_token(call, credentials).await?;
+        if status != 401 {
+            return call.parse(status, &body);
+        }
         forget_token(credentials);
+        let (status, body) = send_with_token(call, credentials).await?;
+        return call.parse(status, &body);
     }
-    call.parse(status, &body)
+
+    let request = call.request(credentials, None)?;
+    let mut pauses = RATE_LIMIT_PAUSES.iter();
+    loop {
+        let (status, body) = send(&request).await?;
+        match (call.parse(status, &body), pauses.next()) {
+            (Err(SunatClientError::RateLimited), Some(pause)) => tokio::time::sleep(*pause).await,
+            (answer, _) => return answer,
+        }
+    }
+}
+
+async fn send_with_token(
+    call: &Call,
+    credentials: &Credentials,
+) -> Result<(u16, String), SunatClientError> {
+    let token = token(credentials).await?;
+    send(&call.request(credentials, Some(&token))?).await
 }
 
 /// Sends the request, again once if the connection failed
@@ -162,7 +184,8 @@ async fn token(credentials: &Credentials) -> Result<String, SunatClientError> {
     if let Some(token) = cached_token(&key) {
         return Ok(token);
     }
-    let Answer::Token(token) = Box::pin(exchange(&Call::Token, credentials)).await? else {
+    let call = Call::Token { url: None };
+    let Answer::Token(token) = Box::pin(exchange(&call, credentials)).await? else {
         unreachable!("a Token call answers Token");
     };
     store_token(key, &token.access_token, token.expires_in);

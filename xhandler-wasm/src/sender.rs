@@ -97,7 +97,11 @@ fn invalid_input(error: impl Into<anyhow::Error>) -> Error {
 }
 
 fn response_error(error: SunatClientError) -> Error {
-    Error::new(ErrorKind::Response, error)
+    let kind = match error {
+        SunatClientError::RateLimited => ErrorKind::RateLimited,
+        _ => ErrorKind::Response,
+    };
+    Error::new(kind, error)
 }
 
 fn prepared_json(prepared: PreparedSend) -> Value {
@@ -229,7 +233,8 @@ impl TargetJson {
     }
 }
 
-/// A SUNAT call, e.g. `{"send_file": {"target": ..., "file": ...}}` or `"token"`
+/// A SUNAT call, e.g. `{"send_file": {"target": ..., "file": ...}}` or
+/// `{"token": {"url"?}}`
 #[derive(Deserialize)]
 #[serde(rename_all = "snake_case")]
 enum CallJson {
@@ -257,7 +262,9 @@ enum CallJson {
         url: String,
         file: FileJson,
     },
-    Token,
+    Token {
+        url: Option<String>,
+    },
 }
 
 impl TryFrom<CallJson> for Call {
@@ -280,7 +287,7 @@ impl TryFrom<CallJson> for Call {
                 url,
                 file: file.into(),
             },
-            CallJson::Token => Call::Token,
+            CallJson::Token { url } => Call::Token { url },
         })
     }
 }

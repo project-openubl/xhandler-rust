@@ -289,7 +289,11 @@ fn sender_cases(corpus: &mut Corpus, resources: &Path) {
             "validate_file",
             json!({ "validate_file": { "url": "https://sunat/billValidService", "file": file } }),
         ),
-        ("token", json!("token")),
+        ("token", json!({ "token": {} })),
+        (
+            "token_custom_url",
+            json!({ "token": { "url": "http://localhost:8080" } }),
+        ),
     ];
     let credentials = json!({
         "username": "12345678959MODDATOS",
@@ -328,6 +332,14 @@ fn sender_cases(corpus: &mut Corpus, resources: &Path) {
         ("verify_ticket_rest_error", parse("verify_ticket_rest", 200, r#"{"codRespuesta":"99","error":{"numError":"2223","desError":"El documento ya fue informado"}}"#.into())),
         ("token", parse("token", 200, r#"{"access_token":"abc","expires_in":600}"#.into())),
         ("errors/html_page", parse("send_file_soap", 503, "<html><body>Service Unavailable</body></html>".into())),
+        (
+            "errors/rate_limited",
+            parse("send_file_soap", 401, "<html><title>401 Authorization Required</title></html>".into()),
+        ),
+        (
+            "errors/rest_server_error",
+            parse("send_file_rest", 502, r#"{"cod":"502","msg":"Bad Gateway"}"#.into()),
+        ),
         ("errors/token_rejected", parse("token", 401, r#"{"error":"invalid_client"}"#.into())),
     ];
     for (name, input) in answers {

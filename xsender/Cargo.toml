@@ -15,6 +15,7 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 reqwest = { workspace = true, optional = true }
 serde_urlencoded = "0.7"
+tokio = { workspace = true, features = ["time"], optional = true }
 regex = { workspace = true }
 base64 = { workspace = true }
 thiserror = { workspace = true }
@@ -26,7 +27,7 @@ encoding_rs = { workspace = true }
 default = ["http"]
 # SunatClient and FileSender's sending: reqwest. Without it, xsender builds
 # and parses the SUNAT requests (exchange) for another HTTP client.
-http = ["dep:reqwest"]
+http = ["dep:reqwest", "dep:tokio"]
 
 [dev-dependencies]
 serial_test = { workspace = true }

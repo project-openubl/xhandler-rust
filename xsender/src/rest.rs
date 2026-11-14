@@ -16,10 +16,14 @@ use crate::fault::SunatFault;
 use crate::models::Credentials;
 use crate::ubl_file::sha256_hex;
 
-const TOKEN_URL: &str = "https://api-seguridad.sunat.gob.pe/v1/clientessol";
+/// Where SUNAT gives the OAuth tokens
+pub const SECURITY_API_URL: &str = "https://api-seguridad.sunat.gob.pe";
 const TOKEN_SCOPE: &str = "https://api-cpe.sunat.gob.pe";
 
-pub fn token_request(credentials: &Credentials) -> Result<HttpRequest, SunatClientError> {
+pub fn token_request(
+    security_api_url: &str,
+    credentials: &Credentials,
+) -> Result<HttpRequest, SunatClientError> {
     let (Some(client_id), Some(client_secret)) =
         (&credentials.client_id, &credentials.client_secret)
     else {
@@ -38,7 +42,10 @@ pub fn token_request(credentials: &Credentials) -> Result<HttpRequest, SunatClie
     .map_err(|e| anyhow!("Invalid credentials: {e}"))?;
     Ok(HttpRequest {
         method: HttpMethod::Post,
-        url: format!("{TOKEN_URL}/{client_id}/oauth2/token/"),
+        url: format!(
+            "{security_api_url}/v1/clientessol/{}/oauth2/token/",
+            path_segment(client_id)
+        ),
         headers: vec![(
             "Content-Type".into(),
             "application/x-www-form-urlencoded".into(),
@@ -86,7 +93,7 @@ pub fn send_document_request(url: &str, file: &File, token: &str) -> HttpRequest
     };
     HttpRequest {
         method: HttpMethod::Post,
-        url: format!("{url}/comprobantes/{name}"),
+        url: format!("{url}/comprobantes/{}", path_segment(name)),
         headers: vec![
             ("Authorization".into(), format!("Bearer {token}")),
             ("Content-Type".into(), "application/json".into()),
@@ -98,10 +105,23 @@ pub fn send_document_request(url: &str, file: &File, token: &str) -> HttpRequest
 pub fn verify_ticket_request(url: &str, ticket: &str, token: &str) -> HttpRequest {
     HttpRequest {
         method: HttpMethod::Get,
-        url: format!("{url}/comprobantes/envios/{ticket}"),
+        url: format!("{url}/comprobantes/envios/{}", path_segment(ticket)),
         headers: vec![("Authorization".into(), format!("Bearer {token}"))],
         body: None,
     }
+}
+
+/// Percent-encodes a value for a URL path: everything but A-Z a-z 0-9 - . _ ~
+fn path_segment(value: &str) -> String {
+    value
+        .bytes()
+        .map(|byte| match byte {
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'.' | b'_' | b'~' => {
+                char::from(byte).to_string()
+            }
+            _ => format!("%{byte:02X}"),
+        })
+        .collect()
 }
 
 /// Hex SHA-256 of the zip bytes; the zip comes from this crate, so it is
@@ -115,7 +135,7 @@ fn hash_zip(zip_base64: &str) -> String {
 }
 
 pub fn parse_send_response(status: u16, body: &str) -> Result<SendFileResponse, SunatClientError> {
-    let Some(json) = parse_json(body) else {
+    let Some(json) = parse_json(body).filter(|_| status < 500) else {
         return Err(SunatClientError::Response(status));
     };
     if let Some(ticket) = text(&json["numTicket"]) {
@@ -130,7 +150,8 @@ pub fn parse_ticket_response(
     status: u16,
     body: &str,
 ) -> Result<VerifyTicketResponse, SunatClientError> {
-    let Some(json) = parse_json(body) else {
+    // A server error (5xx) is not an answer about the document
+    let Some(json) = parse_json(body).filter(|_| status < 500) else {
         return Err(SunatClientError::Response(status));
     };
     if let Some(status_code) = text(&json["codRespuesta"]) {
@@ -277,7 +298,7 @@ mod tests {
             client_id: Some("client".into()),
             client_secret: Some("secret".into()),
         };
-        let request = token_request(&credentials).unwrap();
+        let request = token_request(super::SECURITY_API_URL, &credentials).unwrap();
         assert_eq!(
             request.url,
             "https://api-seguridad.sunat.gob.pe/v1/clientessol/client/oauth2/token/"
@@ -286,7 +307,17 @@ mod tests {
         assert!(body.starts_with("grant_type=password&scope=https%3A%2F%2Fapi-cpe.sunat.gob.pe"));
         assert!(body.ends_with("&password=pass%26word"));
 
-        assert!(token_request(&Credentials::default()).is_err());
+        assert!(token_request(super::SECURITY_API_URL, &Credentials::default()).is_err());
+    }
+
+    #[test]
+    fn path_segments_are_percent_encoded() {
+        assert_eq!(super::path_segment("T001-1 a/b"), "T001-1%20a%2Fb");
+    }
+
+    #[test]
+    fn server_errors_are_not_answers() {
+        assert!(parse_send_response(502, r#"{"cod":"502","msg":"Bad Gateway"}"#).is_err());
     }
 
     #[test]

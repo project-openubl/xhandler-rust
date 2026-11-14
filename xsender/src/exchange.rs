@@ -32,6 +32,11 @@ pub enum SunatClientError {
     /// The answer could not be parsed; the HTTP status says why, e.g. 503
     #[error("Unexpected response from server (HTTP {0})")]
     Response(u16),
+    /// SUNAT's front proxy refused the request with a "401 Authorization
+    /// Required" page: the service never saw it, so it can be retried after
+    /// a pause
+    #[error("SUNAT is rate limiting the requests (HTTP 401)")]
+    RateLimited,
     #[error("Error while creating the template")]
     Templating(#[from] tera::Error),
     #[error(transparent)]
@@ -125,8 +130,11 @@ pub enum Call {
         url: String,
         file: File,
     },
-    /// OAuth token of the REST API (guias de remision)
-    Token,
+    /// OAuth token of the REST API (guias de remision), requested to the
+    /// security API at `url` (SUNAT's by default)
+    Token {
+        url: Option<String>,
+    },
 }
 
 /// The parsed answer of a [`Call`], of the variant of the call
@@ -209,7 +217,10 @@ impl Call {
                 credentials,
                 BodyData::ValidateFile(file_data(file)),
             ),
-            Call::Token => rest::token_request(credentials),
+            Call::Token { url } => rest::token_request(
+                url.as_deref().unwrap_or(rest::SECURITY_API_URL),
+                credentials,
+            ),
         }
     }
 
@@ -242,7 +253,7 @@ impl Call {
             | Call::ValidateFile { .. } => {
                 parse_soap::<StatusXmlResponse>(status, body).map(|r| Answer::Consult(r.into()))
             }
-            Call::Token => rest::parse_token(status, body).map(Answer::Token),
+            Call::Token { .. } => rest::parse_token(status, body).map(Answer::Token),
         }
     }
 }
@@ -299,6 +310,7 @@ where
 {
     match T::from_str(body) {
         Ok(response) => Ok(response),
+        Err(_) if status == 401 => Err(SunatClientError::RateLimited),
         Err(_) if !(200..300).contains(&status) => Err(SunatClientError::Response(status)),
         Err(error) => Err(error.into()),
     }
@@ -408,6 +420,15 @@ mod tests {
         };
         assert_eq!(fault.sunat_code(), Some(2335));
         assert_eq!(fault.status(), Status::Rejected);
+    }
+
+    #[test]
+    fn a_401_page_instead_of_soap_is_rate_limiting() {
+        let page = "<html><title>401 Authorization Required</title></html>";
+        assert!(matches!(
+            send_bill().parse(401, page),
+            Err(SunatClientError::RateLimited)
+        ));
     }
 
     #[test]

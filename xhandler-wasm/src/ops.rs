@@ -40,6 +40,9 @@ pub enum ErrorKind {
     InvalidKey,
     /// The answer of SUNAT can't be read, e.g. an HTML error page.
     Response,
+    /// SUNAT's front proxy refused the request (rate limiting): retry it
+    /// after a pause.
+    RateLimited,
 }
 
 impl Error {
