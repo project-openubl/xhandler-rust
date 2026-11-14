@@ -2,7 +2,6 @@
 
 [![License](https://img.shields.io/github/license/project-openubl/xhandler-rust?logo=apache)](https://www.apache.org/licenses/LICENSE-2.0)
 [![CI](https://github.com/project-openubl/xhandler-rust/actions/workflows/ci-repo.yml/badge.svg)](https://github.com/project-openubl/xhandler-rust/actions/workflows/ci-repo.yml)
-[![Project Chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg?logo=zulip)](https://projectopenubl.zulipchat.com/)
 
 Crea, firma y envía los comprobantes electrónicos (XML UBL) de la SUNAT del Perú, desde Rust o desde
 la línea de comandos (`openubl`). También hay librerías para
@@ -142,8 +141,7 @@ async fn main() -> anyhow::Result<()> {
 
 ## Contribuir
 
-Revisa [CONTRIBUTING.md](CONTRIBUTING.md). Preguntas en el
-[chat de Zulip](https://projectopenubl.zulipchat.com/).
+Revisa [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Licencia
 
