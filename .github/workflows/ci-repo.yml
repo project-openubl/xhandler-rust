@@ -56,6 +56,5 @@ jobs:
       - uses: Swatinem/rust-cache@v2.9.3
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
-      - run: rustup target add wasm32-wasip1
       - run: cargo check -p xsender --no-default-features --target wasm32-wasip1
       - run: make -C xhandler-wasm dist

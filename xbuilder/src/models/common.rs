@@ -225,8 +225,9 @@ pub struct Detalle {
     /// Incluye el código y el tipo de estructura GTIN (e.g. "GTIN-8", "GTIN-13", "GTIN-14").
     pub codigo_gs1: Option<CodigoGs1>,
 
-    /// Precio + bool. True si el precio incluye impuestos, false si no incluye impuestos
+    /// Precio unitario sin impuestos; se calcula de `precio_con_impuestos` si no se da
     pub precio: Option<Decimal>,
+    /// Precio unitario con impuestos; se calcula de `precio` si no se da
     pub precio_con_impuestos: Option<Decimal>,
     pub precio_referencia: Option<Decimal>,
     /// Catalog16
