@@ -73,7 +73,7 @@ pub struct ValidateCdp {
 }
 
 /// Defines where the document should be sent
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum SendFileTarget {
     /// URL and Method
     Soap(String, SoapFileTargetAction),
@@ -83,7 +83,7 @@ pub enum SendFileTarget {
 }
 
 /// Defines where the document should be sent
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum VerifyTicketTarget {
     /// URL and Method
     Soap(String),
@@ -92,7 +92,7 @@ pub enum VerifyTicketTarget {
     Rest(String),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum SoapFileTargetAction {
     /// Sends a single file
     Bill,
@@ -102,7 +102,7 @@ pub enum SoapFileTargetAction {
     Pack,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum RestFileTargetAction {
     SendDocument,
 }
