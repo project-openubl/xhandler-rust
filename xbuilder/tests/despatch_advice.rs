@@ -33,7 +33,7 @@ async fn despatch_advice_min_data() {
             peso_total: dec!(1),
             peso_total_unidad_medida: "KG".into(),
             tipo_modalidad_traslado: "02".into(),
-            fecha_traslado: fecha(),
+            fecha_traslado: Some(fecha()),
             partida: Some(Partida {
                 direccion: "DireccionOrigen".into(),
                 ubigeo: "010101".into(),
@@ -87,7 +87,7 @@ async fn despatch_advice_carrier_data() {
             peso_total: dec!(500.00),
             peso_total_unidad_medida: "KGM".into(),
             tipo_modalidad_traslado: "01".into(),
-            fecha_traslado: fecha(),
+            fecha_traslado: Some(fecha()),
             choferes: vec![Chofer {
                 tipo_documento_identidad: "1".into(),
                 numero_documento_identidad: "44444444".into(),
@@ -160,7 +160,7 @@ async fn despatch_advice_complex_data() {
             sustento_peso: Some("Empaque madera".into()),
             numero_bultos: Some(10),
             tipo_modalidad_traslado: "01".into(),
-            fecha_traslado: fecha(),
+            fecha_traslado: Some(fecha()),
             choferes: vec![
                 Chofer {
                     tipo: Some("CONDUCTOR_PRINCIPAL".into()),
@@ -232,4 +232,22 @@ async fn despatch_advice_complex_data() {
     };
 
     assert_despatch_advice(&mut doc, &format!("{BASE}/complex_data.xml")).await;
+}
+
+#[test]
+fn despatch_advice_requires_fecha_traslado() {
+    let mut doc = DespatchAdvice {
+        serie_numero: "T001-1".into(),
+        envio: Envio {
+            fecha_traslado: None,
+            ..Default::default()
+        },
+        ..Default::default()
+    };
+
+    let error = doc
+        .enrich(&common::defaults_base())
+        .unwrap_err()
+        .to_string();
+    assert!(error.contains("envio.fecha_traslado"), "{error}");
 }

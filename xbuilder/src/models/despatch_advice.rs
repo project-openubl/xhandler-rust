@@ -91,8 +91,9 @@ pub struct Envio {
     pub indicadores: Vec<String>,
     /// Catalog18: modalidad de traslado (01=publico, 02=privado)
     pub tipo_modalidad_traslado: String,
-    #[serde(deserialize_with = "crate::serde_date::deserialize")]
-    pub fecha_traslado: NaiveDate,
+    /// Fecha de inicio del traslado; obligatoria
+    #[serde(default, deserialize_with = "crate::serde_date::option::deserialize")]
+    pub fecha_traslado: Option<NaiveDate>,
     pub transportista: Option<Transportista>,
     pub choferes: Vec<Chofer>,
     pub vehiculo: Option<Vehiculo>,
