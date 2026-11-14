@@ -345,9 +345,12 @@ fn cdr_json(zip: &str, cdr: &CdrMetadata) -> Value {
     })
 }
 
+/// `code` is SUNAT's raw code (e.g. "soap-env:Client.0111"), `sunat_code` the
+/// number in it (111)
 fn fault_json(fault: &SunatFault) -> Value {
     json!({
         "code": fault.code,
+        "sunat_code": fault.sunat_code(),
         "message": fault.message,
         "status": fault.status().to_string(),
     })
