@@ -37,9 +37,13 @@ impl RsaKeyPair {
     pub fn from_pkcs12(der: &[u8], password: &str) -> Result<Self, SignError> {
         let keystore =
             KeyStore::from_pkcs12(der, password, Pkcs12ImportPolicy::Strict).map_err(|error| {
-                SignError::Key(format!(
-                    "Could not open the PKCS#12 keystore, check its password ({error})"
-                ))
+                match error {
+                    // The MAC check fails, or decryption yields garbage when the
+                    // keystore has no MAC
+                    p12_keystore::error::Error::MacError(_)
+                    | p12_keystore::error::Error::UnpadError => SignError::WrongPassword,
+                    error => SignError::Key(format!("Invalid PKCS#12 keystore: {error}")),
+                }
             })?;
         let missing = || {
             SignError::Key(

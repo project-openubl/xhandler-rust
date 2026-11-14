@@ -26,6 +26,9 @@ pub enum SignError {
     QuickXml(#[from] quick_xml::Error),
     #[error("{0}")]
     Key(String),
+    /// The PKCS#12 keystore can't be opened with the given password
+    #[error("Wrong password for the PKCS#12 keystore")]
+    WrongPassword,
     #[error("{0}")]
     Invalid(String),
 }
@@ -322,7 +325,14 @@ mod tests {
         .unwrap();
         let key_pair = RsaKeyPair::from_pkcs12(&pfx, "password").expect("Could not read pfx");
         assert!(key_pair.certificate_to_pem().is_ok());
-        assert!(RsaKeyPair::from_pkcs12(&pfx, "wrong password").is_err());
+        assert!(matches!(
+            RsaKeyPair::from_pkcs12(&pfx, "wrong password"),
+            Err(SignError::WrongPassword)
+        ));
+        assert!(matches!(
+            RsaKeyPair::from_pkcs12(b"not a keystore", "password"),
+            Err(SignError::Key(_))
+        ));
     }
 
     /// Older keystores (e.g. exported from Windows) encrypt with 3DES
