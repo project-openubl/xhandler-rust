@@ -9,8 +9,8 @@ use serde::Serialize;
 use serde_json::Value;
 
 use crate::exchange::{
-    File, HttpMethod, HttpRequest, SendFileResponse, SunatClientError, Token, VerifyTicketResponse,
-    VerifyTicketStatus,
+    File, HttpMethod, HttpRequest, HttpResponse, SendFileResponse, SunatClientError, Token,
+    VerifyTicketResponse, VerifyTicketStatus,
 };
 use crate::fault::SunatFault;
 use crate::models::Credentials;
@@ -54,8 +54,9 @@ pub fn token_request(
     })
 }
 
-pub fn parse_token(status: u16, body: &str) -> Result<Token, SunatClientError> {
-    let Some(json) = parse_json(body) else {
+pub fn parse_token(response: &HttpResponse) -> Result<Token, SunatClientError> {
+    let status = response.status;
+    let Some(json) = parse_json(&response.body) else {
         return Err(SunatClientError::Response(status));
     };
     let access_token = text(&json["access_token"])
@@ -136,24 +137,25 @@ fn hash_zip(zip_base64: &str) -> Result<String, SunatClientError> {
     Ok(sha256_hex(&zip))
 }
 
-pub fn parse_send_response(status: u16, body: &str) -> Result<SendFileResponse, SunatClientError> {
-    let Some(json) = parse_json(body).filter(|_| status < 500) else {
+pub fn parse_send_response(response: &HttpResponse) -> Result<SendFileResponse, SunatClientError> {
+    let status = response.status;
+    let Some(json) = parse_json(&response.body).filter(|_| status < 500) else {
         return Err(SunatClientError::Response(status));
     };
     if let Some(ticket) = text(&json["numTicket"]) {
         return Ok(SendFileResponse::Ticket(ticket));
     }
-    rest_error(&json)
+    rest_error(response, &json)
         .map(SendFileResponse::Fault)
         .ok_or(SunatClientError::Response(status))
 }
 
 pub fn parse_ticket_response(
-    status: u16,
-    body: &str,
+    response: &HttpResponse,
 ) -> Result<VerifyTicketResponse, SunatClientError> {
+    let status = response.status;
     // A server error (5xx) is not an answer about the document
-    let Some(json) = parse_json(body).filter(|_| status < 500) else {
+    let Some(json) = parse_json(&response.body).filter(|_| status < 500) else {
         return Err(SunatClientError::Response(status));
     };
     if let Some(status_code) = text(&json["codRespuesta"]) {
@@ -165,17 +167,30 @@ pub fn parse_ticket_response(
         }
         if let Some(code) = text(&json["error"]["numError"]) {
             let message = text(&json["error"]["desError"]).unwrap_or_default();
-            return Ok(VerifyTicketResponse::Fault(SunatFault { code, message }));
+            return Ok(VerifyTicketResponse::Fault(SunatFault {
+                code,
+                message,
+                http_status: Some(status),
+            }));
         }
         return Ok(VerifyTicketResponse::NoCdr { status_code });
     }
-    rest_error(&json)
+    rest_error(response, &json)
         .map(VerifyTicketResponse::Fault)
         .ok_or(SunatClientError::Response(status))
 }
 
-fn rest_error(json: &Value) -> Option<SunatFault> {
-    let code = text(&json["cod"]).or_else(|| text(&json["status"]))?;
+/// SUNAT's REST error: `{cod|status, msg|message, errors: [{cod, msg}]}`. The
+/// fault keeps the HTTP status and SUNAT's own code: from a `cod` (or `codigo`)
+/// header if SUNAT sends one, else the first detailed error, else `cod`.
+fn rest_error(response: &HttpResponse, json: &Value) -> Option<SunatFault> {
+    let general = text(&json["cod"]).or_else(|| text(&json["status"]))?;
+    let code = response
+        .header("cod")
+        .or_else(|| response.header("codigo"))
+        .map(str::to_string)
+        .or_else(|| text(&json["errors"][0]["cod"]))
+        .unwrap_or(general);
     let mut parts: Vec<String> = text(&json["msg"])
         .or_else(|| text(&json["message"]))
         .into_iter()
@@ -196,6 +211,7 @@ fn rest_error(json: &Value) -> Option<SunatFault> {
     Some(SunatFault {
         code,
         message: parts.join("; "),
+        http_status: Some(response.status),
     })
 }
 
@@ -215,7 +231,15 @@ fn text(value: &Value) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::{hash_zip, parse_send_response, parse_ticket_response, parse_token, token_request};
-    use crate::exchange::{SendFileResponse, VerifyTicketResponse};
+    use crate::exchange::{HttpResponse, SendFileResponse, VerifyTicketResponse};
+
+    fn answer(status: u16, body: &str) -> HttpResponse {
+        HttpResponse {
+            status,
+            headers: vec![],
+            body: body.to_string(),
+        }
+    }
     use crate::models::{Credentials, Status};
 
     #[test]
@@ -230,18 +254,21 @@ mod tests {
     #[test]
     fn send_returns_the_ticket() {
         let body = r#"{"numTicket":"a7b3c1d2-0001","fecRecepcion":"2023-01-01T10:00:00"}"#;
-        let response = parse_send_response(200, body).unwrap();
+        let response = parse_send_response(&answer(200, body)).unwrap();
         assert!(matches!(response, SendFileResponse::Ticket(ticket) if ticket == "a7b3c1d2-0001"));
     }
 
     #[test]
     fn send_returns_sunat_errors() {
         let body = r#"{"cod":"422","msg":"Unprocessable Entity","errors":[{"cod":"1033","msg":"El comprobante fue registrado previamente"}]}"#;
-        let response = parse_send_response(422, body).unwrap();
+        let response = parse_send_response(&answer(422, body)).unwrap();
         let SendFileResponse::Fault(fault) = response else {
             panic!("Expected a fault");
         };
-        assert_eq!(fault.code, "422");
+        // Both codes: SUNAT's and the HTTP status
+        assert_eq!(fault.code, "1033");
+        assert_eq!(fault.sunat_code(), Some(1033));
+        assert_eq!(fault.http_status, Some(422));
         assert_eq!(
             fault.message,
             "Unprocessable Entity; 1033 - El comprobante fue registrado previamente"
@@ -249,14 +276,37 @@ mod tests {
     }
 
     #[test]
+    fn sunat_code_from_a_header() {
+        let mut response = answer(400, r#"{"cod":"400","msg":"Bad Request"}"#);
+        response.headers = vec![("COD".into(), "2033".into())];
+        let SendFileResponse::Fault(fault) = parse_send_response(&response).unwrap() else {
+            panic!("Expected a fault");
+        };
+        assert_eq!(
+            (fault.code.as_str(), fault.http_status),
+            ("2033", Some(400))
+        );
+    }
+
+    #[test]
+    fn without_detail_the_code_is_the_general_one() {
+        let body = r#"{"status":404,"message":"Ticket no encontrado"}"#;
+        let VerifyTicketResponse::Fault(fault) = parse_ticket_response(&answer(404, body)).unwrap()
+        else {
+            panic!("Expected a fault");
+        };
+        assert_eq!((fault.code.as_str(), fault.http_status), ("404", Some(404)));
+    }
+
+    #[test]
     fn send_without_json_body_is_an_error() {
-        assert!(parse_send_response(502, "<html/>").is_err());
+        assert!(parse_send_response(&answer(502, "<html/>")).is_err());
     }
 
     #[test]
     fn ticket_with_cdr() {
         let body = r#"{"codRespuesta":"0","indCdrGenerado":"1","arcCdr":"UEsDBA=="}"#;
-        let response = parse_ticket_response(200, body).unwrap();
+        let response = parse_ticket_response(&answer(200, body)).unwrap();
         let VerifyTicketResponse::Cdr(status) = response else {
             panic!("Expected a CDR");
         };
@@ -267,7 +317,7 @@ mod tests {
     #[test]
     fn ticket_in_progress() {
         let body = r#"{"codRespuesta":"98"}"#;
-        let response = parse_ticket_response(200, body).unwrap();
+        let response = parse_ticket_response(&answer(200, body)).unwrap();
         assert!(
             matches!(response, VerifyTicketResponse::NoCdr { status_code } if status_code == "98")
         );
@@ -276,7 +326,7 @@ mod tests {
     #[test]
     fn ticket_with_error_and_no_cdr() {
         let body = r#"{"codRespuesta":"99","indCdrGenerado":"0","error":{"numError":"2223","desError":"El documento ya fue informado"}}"#;
-        let response = parse_ticket_response(200, body).unwrap();
+        let response = parse_ticket_response(&answer(200, body)).unwrap();
         let VerifyTicketResponse::Fault(fault) = response else {
             panic!("Expected a fault");
         };
@@ -288,7 +338,7 @@ mod tests {
     #[test]
     fn ticket_not_found() {
         let body = r#"{"status":404,"message":"Ticket no encontrado"}"#;
-        let response = parse_ticket_response(404, body).unwrap();
+        let response = parse_ticket_response(&answer(404, body)).unwrap();
         assert!(matches!(response, VerifyTicketResponse::Fault(fault) if fault.code == "404"));
     }
 
@@ -320,17 +370,18 @@ mod tests {
 
     #[test]
     fn server_errors_are_not_answers() {
-        assert!(parse_send_response(502, r#"{"cod":"502","msg":"Bad Gateway"}"#).is_err());
+        assert!(parse_send_response(&answer(502, r#"{"cod":"502","msg":"Bad Gateway"}"#)).is_err());
     }
 
     #[test]
     fn token_answer() {
-        let token = parse_token(200, r#"{"access_token":"abc","expires_in":600}"#).unwrap();
+        let token =
+            parse_token(&answer(200, r#"{"access_token":"abc","expires_in":600}"#)).unwrap();
         assert_eq!(
             (token.access_token.as_str(), token.expires_in),
             ("abc", 600)
         );
-        assert!(parse_token(401, r#"{"error":"invalid_client"}"#).is_err());
-        assert!(parse_token(502, "<html/>").is_err());
+        assert!(parse_token(&answer(401, r#"{"error":"invalid_client"}"#)).is_err());
+        assert!(parse_token(&answer(502, "<html/>")).is_err());
     }
 }

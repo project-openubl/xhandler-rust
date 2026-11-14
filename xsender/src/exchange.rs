@@ -94,6 +94,24 @@ pub struct HttpRequest {
     pub body: Option<String>,
 }
 
+/// The HTTP answer to an [`HttpRequest`]
+#[derive(Clone, Debug, Default)]
+pub struct HttpResponse {
+    pub status: u16,
+    pub headers: Vec<(String, String)>,
+    pub body: String,
+}
+
+impl HttpResponse {
+    /// The value of a header, whatever its case
+    pub fn header(&self, name: &str) -> Option<&str> {
+        self.headers
+            .iter()
+            .find(|(header, _)| header.eq_ignore_ascii_case(name))
+            .map(|(_, value)| value.as_str())
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum HttpMethod {
@@ -226,9 +244,11 @@ impl Call {
     }
 
     /// Parses the HTTP answer of [`Self::request`]. SUNAT answers SOAP faults
-    /// with HTTP 500, so the body is parsed whatever the status.
-    pub fn parse(&self, status: u16, body: &str) -> Result<Answer, SunatClientError> {
-        match self {
+    /// with HTTP 500, so the body is parsed whatever the status. Faults keep
+    /// the HTTP status.
+    pub fn parse(&self, response: &HttpResponse) -> Result<Answer, SunatClientError> {
+        let (status, body) = (response.status, response.body.as_str());
+        let answer = match self {
             Call::SendFile {
                 target: SendFileTarget::Soap(..),
                 ..
@@ -238,7 +258,7 @@ impl Call {
             Call::SendFile {
                 target: SendFileTarget::Rest(..),
                 ..
-            } => rest::parse_send_response(status, body).map(Answer::SendFile),
+            } => rest::parse_send_response(response).map(Answer::SendFile),
             Call::VerifyTicket {
                 target: VerifyTicketTarget::Soap(_),
                 ..
@@ -247,15 +267,29 @@ impl Call {
             Call::VerifyTicket {
                 target: VerifyTicketTarget::Rest(_),
                 ..
-            } => rest::parse_ticket_response(status, body).map(Answer::VerifyTicket),
+            } => rest::parse_ticket_response(response).map(Answer::VerifyTicket),
             Call::GetStatus { .. }
             | Call::GetStatusCdr { .. }
             | Call::ValidateCdp { .. }
             | Call::ValidateFile { .. } => {
                 parse_soap::<StatusXmlResponse>(status, body).map(|r| Answer::Consult(r.into()))
             }
-            Call::Token { .. } => rest::parse_token(status, body).map(Answer::Token),
-        }
+            Call::Token { .. } => rest::parse_token(response).map(Answer::Token),
+        }?;
+        Ok(answer.with_http_status(status))
+    }
+}
+
+impl Answer {
+    fn with_http_status(mut self, status: u16) -> Self {
+        let fault = match &mut self {
+            Answer::SendFile(SendFileResponse::Fault(fault))
+            | Answer::VerifyTicket(VerifyTicketResponse::Fault(fault))
+            | Answer::Consult(ConsultResponse::Fault(fault)) => fault,
+            _ => return self,
+        };
+        fault.http_status = Some(status);
+        self
     }
 }
 
@@ -361,7 +395,15 @@ impl From<StatusXmlResponse> for VerifyTicketResponse {
 mod tests {
     use std::fs;
 
-    use super::{Answer, Call, File, HttpMethod, SendFileResponse, SunatClientError};
+    use super::{Answer, Call, File, HttpMethod, HttpResponse, SendFileResponse, SunatClientError};
+
+    fn answer(status: u16, body: &str) -> HttpResponse {
+        HttpResponse {
+            status,
+            headers: vec![],
+            body: body.to_string(),
+        }
+    }
     use crate::models::{Credentials, SendFileTarget, SoapFileTargetAction, Status};
 
     const RESOURCES: &str = "resources/test";
@@ -415,11 +457,13 @@ mod tests {
             "{RESOURCES}/bill_service_response_fault_rechazo.xml"
         ))
         .expect("Could not read file");
-        let Ok(Answer::SendFile(SendFileResponse::Fault(fault))) = send_bill().parse(500, &body)
+        let Ok(Answer::SendFile(SendFileResponse::Fault(fault))) =
+            send_bill().parse(&answer(500, &body))
         else {
             panic!("A SOAP fault must be returned as a response");
         };
         assert_eq!(fault.sunat_code(), Some(2335));
+        assert_eq!(fault.http_status, Some(500));
         assert_eq!(fault.status(), Status::Rejected);
     }
 
@@ -427,14 +471,17 @@ mod tests {
     fn a_401_page_instead_of_soap_is_rate_limiting() {
         let page = "<html><title>401 Authorization Required</title></html>";
         assert!(matches!(
-            send_bill().parse(401, page),
+            send_bill().parse(&answer(401, page)),
             Err(SunatClientError::RateLimited)
         ));
     }
 
     #[test]
     fn http_error_without_soap_body_is_an_error() {
-        let result = send_bill().parse(503, "<html><body>Service Unavailable</body></html>");
+        let result = send_bill().parse(&answer(
+            503,
+            "<html><body>Service Unavailable</body></html>",
+        ));
         assert!(matches!(result, Err(SunatClientError::Response(503))));
     }
 }

@@ -50,6 +50,7 @@ impl FromStr for SendFileXmlResponse {
             (_, _, Some(code)) => Ok(Self::Fault(SunatFault {
                 code,
                 message: fault_message.unwrap_or_default(),
+                ..Default::default()
             })),
             _ => Err(anyhow!("Could not read the expected data")),
         }

@@ -6,7 +6,7 @@ use std::time::{Duration, Instant};
 
 use crate::constants::HTTP_CLIENT;
 use crate::exchange::{
-    Answer, Call, ConsultResponse, File, HttpMethod, HttpRequest, SendFileResponse,
+    Answer, Call, ConsultResponse, File, HttpMethod, HttpRequest, HttpResponse, SendFileResponse,
     SunatClientError, VerifyTicketResponse,
 };
 use crate::models::{
@@ -133,21 +133,21 @@ impl SunatClient {
     ) -> Result<Answer, SunatClientError> {
         if call.needs_token() {
             let token = self.token(credentials).await?;
-            let (status, body) = send(&call.request(credentials, Some(&token))?).await?;
-            if status != 401 || credentials.token.is_some() {
-                return call.parse(status, &body);
+            let response = send(&call.request(credentials, Some(&token))?).await?;
+            if response.status != 401 || credentials.token.is_some() {
+                return call.parse(&response);
             }
             forget_token(credentials, &token);
             let token = self.token(credentials).await?;
-            let (status, body) = send(&call.request(credentials, Some(&token))?).await?;
-            return call.parse(status, &body);
+            let response = send(&call.request(credentials, Some(&token))?).await?;
+            return call.parse(&response);
         }
 
         let request = call.request(credentials, None)?;
         let mut pauses = RATE_LIMIT_PAUSES.iter();
         loop {
-            let (status, body) = send(&request).await?;
-            match (call.parse(status, &body), pauses.next()) {
+            let response = send(&request).await?;
+            match (call.parse(&response), pauses.next()) {
                 (Err(SunatClientError::RateLimited), Some(pause)) => {
                     tokio::time::sleep(*pause).await
                 }
@@ -182,7 +182,7 @@ impl SunatClient {
 }
 
 /// Sends the request, again once if the connection failed
-async fn send(request: &HttpRequest) -> Result<(u16, String), SunatClientError> {
+async fn send(request: &HttpRequest) -> Result<HttpResponse, SunatClientError> {
     let build = || {
         let mut builder = match request.method {
             HttpMethod::Get => HTTP_CLIENT.get(&request.url),
@@ -201,7 +201,16 @@ async fn send(request: &HttpRequest) -> Result<(u16, String), SunatClientError> 
         other => other?,
     };
     let status = response.status().as_u16();
-    Ok((status, response.text().await?))
+    let headers = response
+        .headers()
+        .iter()
+        .filter_map(|(name, value)| Some((name.to_string(), value.to_str().ok()?.to_string())))
+        .collect();
+    Ok(HttpResponse {
+        status,
+        headers,
+        body: response.text().await?,
+    })
 }
 
 /// Tokens of each client and SOL user, reused until a minute before they expire

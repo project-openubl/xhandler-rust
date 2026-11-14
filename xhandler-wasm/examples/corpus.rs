@@ -345,6 +345,13 @@ fn sender_cases(corpus: &mut Corpus, resources: &Path) {
     for (name, input) in answers {
         native("parse", name, input);
     }
+    let mut with_header = parse(
+        "send_file_rest",
+        400,
+        r#"{"cod":"400","msg":"Bad Request"}"#.into(),
+    );
+    with_header["headers"] = json!([["cod", "2033"]]);
+    native("parse", "send_file_rest_error_code_in_header", with_header);
 }
 
 /// Error messages are not compared: they may change without breaking anyone.
@@ -395,6 +402,12 @@ fn error_cases() -> Vec<(&'static str, &'static str, Value, &'static str)> {
             "errors/invalid_date",
             json!({ "document": invoice("10")["document"], "defaults": { "fecha_emision": "24/12/2019" } }),
             "invalid_input",
+        ),
+        (
+            "build",
+            "errors/despatch_advice_without_fecha_traslado",
+            json!({ "document": { "kind": "DespatchAdvice", "spec": { "serie_numero": "T001-1" } } }),
+            "validation",
         ),
         ("nope", "errors/unknown_op", json!({}), "invalid_request"),
     ]

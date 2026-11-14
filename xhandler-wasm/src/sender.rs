@@ -3,7 +3,7 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use xsender::exchange::{Answer, Call, File, HttpRequest, SunatClientError};
+use xsender::exchange::{Answer, Call, File, HttpRequest, HttpResponse, SunatClientError};
 use xsender::prelude::*;
 // These xsender functions share their names with the ops
 use xsender::prelude::{
@@ -78,17 +78,30 @@ pub fn request(input: Value) -> OpResult {
     Ok(serde_json::to_value(request).expect("requests are serializable"))
 }
 
-/// `{call, status, body}` -> the answer, with the CDR read and the SUNAT status
+/// `{call, status, headers?, body}` -> the answer, with the CDR read and the
+/// SUNAT status
 pub fn parse(input: Value) -> OpResult {
     #[derive(Deserialize)]
     struct Input {
         call: CallJson,
         status: u16,
+        #[serde(default)]
+        headers: Vec<(String, String)>,
         body: String,
     }
-    let Input { call, status, body } = parse_input(input)?;
+    let Input {
+        call,
+        status,
+        headers,
+        body,
+    } = parse_input(input)?;
+    let response = HttpResponse {
+        status,
+        headers,
+        body,
+    };
     let answer = Call::try_from(call)?
-        .parse(status, &body)
+        .parse(&response)
         .map_err(response_error)?;
     answer_json(answer)
 }
@@ -350,12 +363,13 @@ fn cdr_json(zip: &str, cdr: &CdrMetadata) -> Value {
     })
 }
 
-/// `code` is SUNAT's raw code (e.g. "soap-env:Client.0111"), `sunat_code` the
-/// number in it (111)
+/// `code` is SUNAT's code as given (e.g. "soap-env:Client.0111" or "1033"),
+/// `sunat_code` its number (111) and `http_status` the status of the answer
 fn fault_json(fault: &SunatFault) -> Value {
     json!({
         "code": fault.code,
         "sunat_code": fault.sunat_code(),
+        "http_status": fault.http_status,
         "message": fault.message,
         "status": fault.status().to_string(),
     })
