@@ -4,20 +4,11 @@
 [![CI](https://github.com/project-openubl/xhandler-rust/actions/workflows/ci-repo.yml/badge.svg)](https://github.com/project-openubl/xhandler-rust/actions/workflows/ci-repo.yml)
 [![Project Chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg?logo=zulip)](https://projectopenubl.zulipchat.com/)
 
-Crea, firma y envía los comprobantes electrónicos (XML UBL) de la SUNAT del Perú: facturas,
-boletas, notas de crédito y débito, guías de remisión, percepciones, retenciones, resúmenes
-diarios, comunicaciones de baja y reversiones.
-
-Se usa como librería de Rust (`xhandler`) o con la herramienta de línea de comandos `openubl`. El mismo núcleo
-es la base de las librerías de [Go](https://github.com/project-openubl/xhandler-go),
+Crea, firma y envía los comprobantes electrónicos (XML UBL) de la SUNAT del Perú, desde Rust o desde
+la línea de comandos (`openubl`). También hay librerías para
+[Go](https://github.com/project-openubl/xhandler-go),
 [Python](https://github.com/project-openubl/xhandler-python) y
 [Java](https://github.com/project-openubl/xhandler-java).
-
-| Módulo de `xhandler` | Qué hace |
-|---|---|
-| `xbuilder` | Crea el XML a partir de los datos esenciales: completa los valores por defecto y calcula impuestos y totales |
-| `xsigner` | Firma el XML (RSA-SHA256, certificados PEM o PKCS#12) |
-| `xsender` | Envía a la SUNAT (servicios SOAP y API REST de guías) y lee el CDR, tickets y errores |
 
 ## Línea de comandos: `openubl`
 
@@ -86,10 +77,6 @@ openubl verify-ticket --ticket 1703154974517 --beta
 xhandler = { git = "https://github.com/project-openubl/xhandler-rust" }
 ```
 
-La feature `http` (activa por defecto) envía con reqwest. Sin ella (`default-features = false`),
-`xhandler::xsender::exchange` arma las peticiones a la SUNAT y lee sus respuestas para que las
-envíes con tu propio cliente HTTP.
-
 El ejemplo también usa `rust_decimal`, `rust_decimal_macros`, `chrono`, `tokio` y `anyhow`.
 
 ### Uso
@@ -147,11 +134,16 @@ async fn main() -> anyhow::Result<()> {
 }
 ```
 
+- `xhandler::xbuilder`: crea el XML; `enrich` completa valores por defecto, impuestos y totales.
+- `xhandler::xsigner`: firma con certificados PKCS#12 (`from_pkcs12`) o PEM (`from_pem`).
+- `xhandler::xsender`: `FileSender` envía y consulta tickets; `SunatClient` tiene además los
+  servicios de consulta y validación. Sin la feature `http` (`default-features = false`),
+  `xsender::exchange` arma las peticiones y lee las respuestas para tu propio cliente HTTP.
+
 ## Contribuir
 
-Revisa [CONTRIBUTING.md](CONTRIBUTING.md). Preguntas e ideas en el
-[chat de Zulip](https://projectopenubl.zulipchat.com/). El servidor web y la interfaz están en
-[xhandler-ui](https://github.com/project-openubl/xhandler-ui).
+Revisa [CONTRIBUTING.md](CONTRIBUTING.md). Preguntas en el
+[chat de Zulip](https://projectopenubl.zulipchat.com/).
 
 ## Licencia
 
