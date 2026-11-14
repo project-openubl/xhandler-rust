@@ -37,7 +37,7 @@ models: schema
 
 conformance:
 	rm -rf $(DUMP) $(DIST)/conformance
-	cd $(ROOT) && XBUILDER_SKIP_SUNAT=true XBUILDER_DUMP_INPUT=$(DUMP) cargo test -q -p xbuilder --tests
+	cd $(ROOT) && XBUILDER_SKIP_SUNAT=true XBUILDER_DUMP_INPUT=$(DUMP) cargo test -q -p xhandler --test xbuilder
 	cd $(ROOT) && cargo run -q -p xhandler-wasm --example corpus -- \
 		$(DUMP) $(ROOT) $(DIST)/conformance
 

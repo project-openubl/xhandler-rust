@@ -1,7 +1,7 @@
 use std::process::Command;
 
 const BINARY: &str = env!("CARGO_BIN_EXE_openubl");
-const E2E_RESOURCES: &str = "../xsender/tests/resources/e2e";
+const E2E_RESOURCES: &str = "../xhandler/tests/resources/xsender/e2e";
 
 fn assert_valid_zip(path: &std::path::Path) {
     let bytes = std::fs::read(path).unwrap();
@@ -91,7 +91,7 @@ fn verify_ticket_missing_credentials_without_beta_fails() {
 // SUNAT beta's getStatus endpoint may answer, after ~60s, with a SOAP fault
 // over HTTP 500 ("Failed to establish a backside connection"); it is reported
 // as structured JSON like any other SUNAT error.
-// Run on demand: `cargo test -p openubl-cli --test verify_ticket_command -- --ignored`
+// Run on demand: `cargo test -p xhandler-cli --test verify_ticket_command -- --ignored`
 #[ignore = "slow (~60s against SUNAT beta) and rate limited right after the send"]
 #[serial_test::serial]
 #[test]

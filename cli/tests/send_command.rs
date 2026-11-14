@@ -1,9 +1,9 @@
 use std::process::Command;
 
-use openubl_cli::commands::send::{CredentialArgs, SendArgs};
+use xhandler_cli::commands::send::{CredentialArgs, SendArgs};
 
 const BINARY: &str = env!("CARGO_BIN_EXE_openubl");
-const E2E_RESOURCES: &str = "../xsender/tests/resources/e2e";
+const E2E_RESOURCES: &str = "../xhandler/tests/resources/xsender/e2e";
 
 fn assert_valid_zip(path: &std::path::Path) {
     let bytes = std::fs::read(path).unwrap();

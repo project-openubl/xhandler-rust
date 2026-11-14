@@ -3,10 +3,12 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use xsender::exchange::{Answer, Call, File, HttpRequest, HttpResponse, SunatClientError};
-use xsender::prelude::*;
+use xhandler::xsender::exchange::{
+    Answer, Call, File, HttpRequest, HttpResponse, SunatClientError,
+};
+use xhandler::xsender::prelude::*;
 // These xsender functions share their names with the ops
-use xsender::prelude::{
+use xhandler::xsender::prelude::{
     prepare_send_file as prepare_send_file_of, prepare_send_pack as prepare_send_pack_of,
 };
 

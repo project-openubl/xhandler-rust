@@ -26,7 +26,7 @@ This ADR defines a kubectl-inspired CLI called `openubl` that accepts declarativ
 
 ```
 cli/
-  Cargo.toml            # name = "openubl-cli", [[bin]] name = "openubl"
+  Cargo.toml            # name = "xhandler-cli", [[bin]] name = "openubl"
   src/
     main.rs             # Entry point, clap parsing
     commands/
@@ -240,7 +240,7 @@ Documents are defined using a kubectl-inspired `kind`/`spec` structure. The `kin
 
 Format is auto-detected from file extension (`.json`, `.yaml`, `.yml`). When reading from stdin, use `--format` to specify.
 
-The input is read into `xbuilder::document::Document`, an enum over the nine document types (`Invoice`, `CreditNote`, `DebitNote`, `DespatchAdvice`, `Perception`, `Retention`, `SummaryDocuments`, `VoidedDocuments`, `Reversion`).
+The input is read into `xhandler::xbuilder::document::Document`, an enum over the nine document types (`Invoice`, `CreditNote`, `DebitNote`, `DespatchAdvice`, `Perception`, `Retention`, `SummaryDocuments`, `VoidedDocuments`, `Reversion`).
 
 #### Invoice (Boleta / Factura)
 

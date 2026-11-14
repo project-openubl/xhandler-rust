@@ -2,7 +2,7 @@ use std::process::Command;
 
 const BINARY: &str = env!("CARGO_BIN_EXE_openubl");
 const RESOURCES: &str = "tests/resources";
-const SIGNER_RESOURCES: &str = "../xsigner/resources/test";
+const SIGNER_RESOURCES: &str = "../xhandler/tests/resources/xsigner";
 
 /// Helper: create an unsigned invoice XML via the `create` subcommand.
 fn create_invoice_xml() -> String {

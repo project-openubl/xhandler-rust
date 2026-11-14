@@ -14,19 +14,21 @@ Rust libraries for Peru SUNAT electronic invoicing: create UBL XML, sign, send v
 # Fedora: sudo dnf install pkg-config libxml2-devel clang-devel
 cargo build
 cargo test
-cargo test -p xbuilder test_name    # single test
+cargo test -p xhandler --test xbuilder test_name    # single xbuilder test
 cargo fmt --check
 cargo clippy --all-targets --all-features -- -D warnings
 ```
 
-Rust 1.100.0 pinned in `rust-toolchain.toml`. The crates build for Android/iOS (used by xhandler-mobile): xsigner/xbuilder are pure Rust; xsender's TLS (`ring`) needs the target's C compiler (Android NDK / Xcode). CI checks both. Clippy allows unwrap/expect in tests.
+Rust 1.100.0 pinned in `rust-toolchain.toml`. xhandler builds for Android/iOS (used by xhandler-mobile): without the `http` feature it is pure Rust; with it, reqwest's TLS (`ring`) needs the target's C compiler (Android NDK / Xcode). CI checks both. Clippy allows unwrap/expect in tests.
 
 ## Crates
 
-- **xbuilder** — XML generation via Tera templates + 3-phase enrichment pipeline
-- **xsigner** — RSA-SHA256 XML digital signatures, pure Rust (own C14N on quick-xml, RustCrypto)
-- **xsender** — ZIP, SOAP send to SUNAT, CDR response parsing, file analysis
-- **xhandler** — umbrella re-export
+- **xhandler** (`xhandler/`) — the library, the only one published besides the CLI. Its modules:
+  - `xbuilder` — XML generation via Tera templates + 3-phase enrichment pipeline
+  - `xsigner` — RSA-SHA256 XML digital signatures, pure Rust (own C14N on quick-xml, RustCrypto)
+  - `xsender` — ZIP, SOAP/REST calls to SUNAT (sans-IO `exchange`; reqwest client behind the default `http` feature), CDR response parsing, file analysis
+- **xhandler-cli** (`cli/`) — the `openubl` binary
+- **xhandler-wasm** — WebAssembly core of the Go, Python and Java bindings (not published)
 
 ## XBuilder Enrichment Pipeline
 
@@ -35,7 +37,7 @@ User provides minimal input; pipeline fills defaults and computes values:
 2. **Phase 2 Process** (`rules/phase2_process/`) — compute: tax amounts, prices, line totals
 3. **Phase 3 Summary** (`rules/phase3_summary/`) — document totals, detractions, legends
 
-Rules implement traits from `enricher/bounds/`. Output rendered via Tera templates (`xbuilder/resources/templates/`, embedded at build time via `build.rs`).
+Rules implement traits from `enricher/bounds/`. Output rendered via Tera templates (`xhandler/resources/templates/xbuilder/`, embedded at build time via `build.rs`).
 
 ## Domain Terms
 
@@ -43,7 +45,7 @@ IGV=VAT, ISC=excise tax, ICB=bag tax, CDR=SUNAT receipt, detalle=line item, prov
 
 ## Tests
 
-xbuilder integration tests in `xbuilder/tests/`, snapshot-compare against `xbuilder/tests/resources/`. xsender/xsigner use inline `#[cfg(test)]`.
+xbuilder integration tests are one test binary, `xhandler/tests/xbuilder/` (`main.rs` declares a module per file), snapshot-compared against `xhandler/tests/resources/xbuilder/`. `xhandler/tests/xsender.rs` sends to SUNAT beta. xsender/xsigner unit tests are inline `#[cfg(test)]`, with fixtures in `xhandler/tests/resources/{xsender,xsigner}/`.
 
 xbuilder test switches: `XBUILDER_SKIP_SUNAT=true` skips sending to SUNAT beta (snapshot + XSD still run); `XBUILDER_SNAPSHOT_UPDATE=true` rewrites snapshots with the rendered XML.
 
@@ -63,5 +65,5 @@ Follows RFC 430 and the Rust API Guidelines (C-CASE, C-CONV, C-GETTER, C-WORD-OR
 - **Domain field order**: Spanish head noun first, without `de`/`del` (`tipo_comprobante`, `forma_pago`, `descripcion_sustento`). When several fields describe the same sub-entity, the shared prefix wins (`igv_tipo`/`igv_tasa`, `comprobante_afectado_tipo`/`comprobante_afectado_serie_numero`). A Catalog1 document type is `tipo_comprobante`; other catalogs (12, 21, 61) use `tipo_documento`.
 - **Enricher traits**: bounds are `<Scope><Field>Getter`/`Setter` with methods `field()`, `field_mut()`, `set_field(val)`; rules are `<Scope><Field><Phase>Rule` (`Fill`/`Process`/`Summary`). Scope is the struct the trait is implemented on (`Detalle`, `Invoice`, `Percepcion`, ...); traits shared by several documents omit it (`MonedaGetter`, `ProveedorGetter`), and whole-struct accessors on a sub-entity omit the field (`AnticipoGetter`, `DescuentoGetter`). Implement an existing shared trait instead of adding a per-document copy.
 - **Errors** are `XxxError`. Conversions use `as_`/`to_`/`into_` and std `FromStr`/`TryFrom`; constructors `new`/`from_*`; booleans `is_*`/`has_*`.
-- **Tests**: fns are `<doc>_<scenario>` (no `test_` prefix); snapshots live in `xbuilder/tests/resources/e2e/renderer/<test_file_stem>/<snapshot>.xml` (homologacion: `e2e/homologacion/groupNN/`, with `inafecto/`/`exonerado/` subdirs where a group has both), all snake_case.
+- **Tests**: fns are `<doc>_<scenario>` (no `test_` prefix); snapshots live in `xhandler/tests/resources/xbuilder/e2e/renderer/<test_file_stem>/<snapshot>.xml` (homologacion: `e2e/homologacion/groupNN/`, with `inafecto/`/`exonerado/` subdirs where a group has both), all snake_case.
 - **Templates**: snake_case file names (`renderer/credit_note.xml`, `include/document_line.xml`).

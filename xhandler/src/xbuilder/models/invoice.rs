@@ -1,0 +1,84 @@
+use std::collections::HashMap;
+
+use chrono::{NaiveDate, NaiveTime};
+use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+
+use crate::xbuilder::models::common::{
+    Anticipo, Cargo, Cliente, Descuento, Detalle, Detraccion, Direccion, DocumentoRelacionado,
+    Firmante, FormaPago, Guia, Percepcion, Proveedor, TotalImporteInvoice, TotalImpuestos,
+};
+
+/// Boleta o Factura
+#[derive(Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[serde(default)]
+pub struct Invoice {
+    pub leyendas: HashMap<String, String>,
+
+    pub serie_numero: String,
+    pub moneda: Option<String>,
+    #[serde(
+        default,
+        deserialize_with = "crate::xbuilder::serde_date::option::deserialize"
+    )]
+    pub fecha_emision: Option<NaiveDate>,
+    pub hora_emision: Option<NaiveTime>,
+    #[serde(
+        default,
+        deserialize_with = "crate::xbuilder::serde_date::option::deserialize"
+    )]
+    pub fecha_vencimiento: Option<NaiveDate>,
+    pub proveedor: Proveedor,
+    pub cliente: Cliente,
+    pub firmante: Option<Firmante>,
+    pub icb_tasa: Option<Decimal>,
+    pub igv_tasa: Option<Decimal>,
+    pub ivap_tasa: Option<Decimal>,
+
+    /// Catalog1
+    pub tipo_comprobante: Option<String>,
+
+    /// Catalog51
+    pub tipo_operacion: Option<String>,
+
+    pub detraccion: Option<Detraccion>,
+    pub percepcion: Option<Percepcion>,
+
+    pub direccion_entrega: Option<Direccion>,
+    /// Factura guia: the invoice also works as the guia de remision
+    pub guia_embebida: Option<GuiaEmbebida>,
+    pub forma_pago: Option<FormaPago>,
+
+    pub anticipos: Vec<Anticipo>,
+    pub descuentos: Vec<Descuento>,
+    pub cargos: Vec<Cargo>,
+
+    pub detalles: Vec<Detalle>,
+
+    pub total_importe: Option<TotalImporteInvoice>,
+    pub total_impuestos: Option<TotalImpuestos>,
+
+    pub guias: Vec<Guia>,
+    pub documentos_relacionados: Vec<DocumentoRelacionado>,
+
+    pub observaciones: Option<String>,
+    pub orden_compra: Option<String>,
+}
+
+/// Datos del traslado de una factura guia
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub struct GuiaEmbebida {
+    pub partida: Direccion,
+    pub destino: Direccion,
+    pub transportista: Cliente,
+    /// Licencia de conducir del chofer
+    pub licencia: String,
+    /// Placa del vehiculo
+    pub placa: String,
+    /// Catalog18: modalidad de traslado
+    pub tipo_modalidad_traslado: String,
+    pub peso_bruto: Decimal,
+    pub peso_bruto_unidad_medida: String,
+}

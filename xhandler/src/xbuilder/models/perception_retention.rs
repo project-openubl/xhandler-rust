@@ -1,0 +1,92 @@
+use chrono::NaiveDate;
+use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+
+use crate::xbuilder::models::common::{Cliente, Firmante, Proveedor};
+
+/// Comprobante de Percepcion
+#[derive(Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[serde(default)]
+pub struct Perception {
+    pub serie: String,
+    pub numero: u32,
+    #[serde(
+        default,
+        deserialize_with = "crate::xbuilder::serde_date::option::deserialize"
+    )]
+    pub fecha_emision: Option<NaiveDate>,
+    pub moneda: Option<String>,
+    pub proveedor: Proveedor,
+    pub cliente: Cliente,
+    pub firmante: Option<Firmante>,
+    /// Catalog22
+    pub tipo_regimen: String,
+    pub tipo_regimen_porcentaje: Decimal,
+    pub importe_total_percibido: Decimal,
+    pub importe_total_cobrado: Decimal,
+    pub observaciones: Option<String>,
+    pub operacion: Option<PercepcionRetencionOperacion>,
+    /// Computed during enrichment: "{serie}-{numero}"
+    pub documento_id: Option<String>,
+}
+
+/// Comprobante de Retencion
+#[derive(Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[serde(default)]
+pub struct Retention {
+    pub serie: String,
+    pub numero: u32,
+    #[serde(
+        default,
+        deserialize_with = "crate::xbuilder::serde_date::option::deserialize"
+    )]
+    pub fecha_emision: Option<NaiveDate>,
+    pub moneda: Option<String>,
+    pub proveedor: Proveedor,
+    pub cliente: Cliente,
+    pub firmante: Option<Firmante>,
+    /// Catalog23
+    pub tipo_regimen: String,
+    pub tipo_regimen_porcentaje: Decimal,
+    pub importe_total_retenido: Decimal,
+    pub importe_total_pagado: Decimal,
+    pub observaciones: Option<String>,
+    pub operacion: Option<PercepcionRetencionOperacion>,
+    /// Computed during enrichment: "{serie}-{numero}"
+    pub documento_id: Option<String>,
+}
+
+/// Operacion de percepcion o retencion
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub struct PercepcionRetencionOperacion {
+    pub numero_operacion: u32,
+    #[serde(deserialize_with = "crate::xbuilder::serde_date::deserialize")]
+    pub fecha_operacion: NaiveDate,
+    pub importe_operacion: Decimal,
+    pub comprobante_afectado: PercepcionRetencionComprobanteAfectado,
+    pub tipo_cambio: Option<TipoCambio>,
+}
+
+/// Comprobante afectado por la percepcion o retencion
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub struct PercepcionRetencionComprobanteAfectado {
+    pub tipo_comprobante: String,
+    pub serie_numero: String,
+    #[serde(deserialize_with = "crate::xbuilder::serde_date::deserialize")]
+    pub fecha_emision: NaiveDate,
+    pub importe_total: Decimal,
+    pub moneda: Option<String>,
+}
+
+/// Tipo de cambio
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub struct TipoCambio {
+    pub valor: Decimal,
+    #[serde(deserialize_with = "crate::xbuilder::serde_date::deserialize")]
+    pub fecha: NaiveDate,
+}

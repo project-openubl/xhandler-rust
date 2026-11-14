@@ -1,0 +1,316 @@
+use chrono::{NaiveDate, NaiveTime};
+use rust_decimal_macros::dec;
+
+use xhandler::xbuilder::models::common::Detalle;
+use xhandler::xbuilder::prelude::*;
+
+use crate::common::invoice_base;
+use crate::common::{assert_invoice, cliente_base, proveedor_base};
+
+const BASE: &str = "tests/resources/xbuilder/e2e/renderer/invoice";
+
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_unidad_medida() {
+    let mut invoice = Invoice {
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                unidad_medida: Some("KGM".into()),
+                ..Default::default()
+            },
+            Detalle {
+                descripcion: "Item2".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                unidad_medida: Some("KGM".into()),
+                ..Default::default()
+            },
+        ],
+        ..invoice_base()
+    };
+
+    assert_invoice(&mut invoice, &format!("{BASE}/custom_unidad_medida.xml")).await;
+}
+
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_fecha_emision() {
+    let mut invoice = Invoice {
+        fecha_emision: NaiveDate::from_ymd_opt(2019, 1, 6),
+        hora_emision: NaiveTime::from_hms_opt(0, 0, 0),
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..Default::default()
+            },
+            Detalle {
+                descripcion: "Item2".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..Default::default()
+            },
+        ],
+        ..invoice_base()
+    };
+
+    assert_invoice(&mut invoice, &format!("{BASE}/custom_fecha_emision.xml")).await;
+}
+
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_cliente_direccion_and_contacto() {
+    let mut invoice = Invoice {
+        cliente: Cliente {
+            contacto: Some(Contacto {
+                email: Some("carlos@gmail.com".into()),
+                telefono: Some("+123456789".into()),
+            }),
+            direccion: Some(Direccion {
+                codigo_local: Some("0101".into()),
+                ubigeo: Some("050101".into()),
+                departamento: Some("Ayacucho".into()),
+                provincia: Some("Huamanga".into()),
+                distrito: Some("Jesus Nazareno".into()),
+                urbanizacion: Some("000000".into()),
+                direccion: Some("Jr. Las piedras 123".into()),
+                codigo_pais: Some("PE".into()),
+            }),
+            ..cliente_base()
+        },
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..Default::default()
+            },
+            Detalle {
+                descripcion: "Item2".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..Default::default()
+            },
+        ],
+        ..invoice_base()
+    };
+
+    assert_invoice(
+        &mut invoice,
+        &format!("{BASE}/custom_cliente_direccion_and_contacto.xml"),
+    )
+    .await;
+}
+
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_proveedor_direccion_and_contacto() {
+    let mut invoice = Invoice {
+        proveedor: Proveedor {
+            contacto: Some(Contacto {
+                email: Some("carlos@gmail.com".into()),
+                telefono: Some("+123456789".into()),
+            }),
+            direccion: Some(Direccion {
+                codigo_local: Some("0101".into()),
+                ubigeo: Some("050101".into()),
+                departamento: Some("Ayacucho".into()),
+                provincia: Some("Huamanga".into()),
+                distrito: Some("Jesus Nazareno".into()),
+                urbanizacion: Some("000000".into()),
+                direccion: Some("Jr. Las piedras 123".into()),
+                codigo_pais: Some("PE".into()),
+            }),
+            ..proveedor_base()
+        },
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..Default::default()
+            },
+            Detalle {
+                descripcion: "Item2".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..Default::default()
+            },
+        ],
+        ..invoice_base()
+    };
+
+    assert_invoice(
+        &mut invoice,
+        &format!("{BASE}/custom_proveedor_direccion_and_contacto.xml"),
+    )
+    .await;
+}
+
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_custom_firmante() {
+    let mut invoice = Invoice {
+        firmante: Some(Firmante {
+            ruc: "000000000000".into(),
+            razon_social: "Wolsnut4 S.A.C.".into(),
+        }),
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..Default::default()
+            },
+            Detalle {
+                descripcion: "Item2".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                ..Default::default()
+            },
+        ],
+        ..invoice_base()
+    };
+
+    assert_invoice(&mut invoice, &format!("{BASE}/custom_firmante.xml")).await;
+}
+
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_with_icb_precio_unitario() {
+    let mut invoice = Invoice {
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                icb_aplica: true,
+                ..Default::default()
+            },
+            Detalle {
+                descripcion: "Item2".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(100)),
+                icb_aplica: true,
+                ..Default::default()
+            },
+        ],
+        ..invoice_base()
+    };
+
+    assert_invoice(&mut invoice, &format!("{BASE}/icb.xml")).await;
+}
+
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_with_icb_precio_con_igv() {
+    let mut invoice = Invoice {
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1".into(),
+                cantidad: dec!(10),
+                precio_con_impuestos: Some(dec!(118)),
+                icb_aplica: true,
+                ..Default::default()
+            },
+            Detalle {
+                descripcion: "Item2".into(),
+                cantidad: dec!(10),
+                precio_con_impuestos: Some(dec!(118)),
+                icb_aplica: true,
+                ..Default::default()
+            },
+        ],
+        ..invoice_base()
+    };
+
+    assert_invoice(&mut invoice, &format!("{BASE}/icb.xml")).await;
+}
+
+#[serial_test::serial]
+#[tokio::test]
+async fn invoice_with_custom_proveedor_direccion_not_null_and_codigo_local_null() {
+    let mut invoice = Invoice {
+        proveedor: Proveedor {
+            direccion: Some(Direccion {
+                direccion: Some("Jr. las flores 123".into()),
+                codigo_local: None,
+                ubigeo: None,
+                departamento: None,
+                provincia: None,
+                distrito: None,
+                urbanizacion: None,
+                codigo_pais: None,
+            }),
+            ..proveedor_base()
+        },
+        detalles: vec![
+            Detalle {
+                descripcion: "Item1".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(118)),
+                ..Default::default()
+            },
+            Detalle {
+                descripcion: "Item2".into(),
+                cantidad: dec!(10),
+                precio: Some(dec!(118)),
+                ..Default::default()
+            },
+        ],
+        ..invoice_base()
+    };
+
+    assert_invoice(&mut invoice, &format!("{BASE}/custom_codigo_local.xml")).await;
+}
+
+#[test]
+fn invoice_with_cliente_contacto_email_only() {
+    let mut invoice = Invoice {
+        detalles: vec![Detalle {
+            descripcion: "Item1".into(),
+            cantidad: dec!(1),
+            precio: Some(dec!(100)),
+            ..Default::default()
+        }],
+        ..invoice_base()
+    };
+    invoice.cliente.contacto = Some(Contacto {
+        email: Some("carlos@gmail.com".into()),
+        ..Default::default()
+    });
+    invoice
+        .enrich(&crate::common::defaults_base())
+        .expect("Could not enrich");
+    let xml = invoice.render().expect("Could not render invoice");
+
+    assert!(xml.contains("<cbc:ElectronicMail>carlos@gmail.com</cbc:ElectronicMail>"));
+    assert!(!xml.contains("<cbc:Telephone>"));
+}
+
+#[test]
+fn invoice_issue_time_without_fractional_seconds() {
+    let mut invoice = Invoice {
+        hora_emision: NaiveTime::from_hms_nano_opt(10, 11, 12, 123_456_789),
+        detalles: vec![Detalle {
+            descripcion: "Item1".into(),
+            cantidad: dec!(1),
+            precio: Some(dec!(100)),
+            ..Default::default()
+        }],
+        ..invoice_base()
+    };
+    invoice
+        .enrich(&crate::common::defaults_base())
+        .expect("Could not enrich");
+    let xml = invoice.render().expect("Could not render invoice");
+
+    assert!(
+        xml.contains("<cbc:IssueTime>10:11:12</cbc:IssueTime>"),
+        "{xml}"
+    );
+}

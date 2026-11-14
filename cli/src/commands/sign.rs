@@ -6,8 +6,8 @@ use clap::Args;
 
 use xhandler::prelude::*;
 
-pub const BETA_PRIVATE_KEY: &str = include_str!("../../../xsigner/resources/test/private.key");
-pub const BETA_CERTIFICATE: &str = include_str!("../../../xsigner/resources/test/public.cer");
+pub const BETA_PRIVATE_KEY: &str = include_str!("../../resources/beta/private.key");
+pub const BETA_CERTIFICATE: &str = include_str!("../../resources/beta/public.cer");
 
 #[derive(Args)]
 #[command(after_help = "\x1b[1mEjemplos:\x1b[0m
