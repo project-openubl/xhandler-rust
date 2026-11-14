@@ -5,7 +5,8 @@
 use anyhow::anyhow;
 use base64::engine::general_purpose;
 use base64::Engine;
-use serde_json::{json, Value};
+use serde::Serialize;
+use serde_json::Value;
 
 use crate::exchange::{
     File, HttpMethod, HttpRequest, SendFileResponse, SunatClientError, Token, VerifyTicketResponse,
@@ -59,15 +60,30 @@ pub fn parse_token(status: u16, body: &str) -> Result<Token, SunatClientError> {
     })
 }
 
+/// Body of the send request. A struct, so the bytes don't depend on whether
+/// serde_json preserves the order of maps (a crate feature).
+#[derive(Serialize)]
+struct SendDocument<'a> {
+    archivo: Archivo<'a>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct Archivo<'a> {
+    arc_gre_zip: &'a str,
+    hash_zip: String,
+    nom_archivo: &'a str,
+}
+
 pub fn send_document_request(url: &str, file: &File, token: &str) -> HttpRequest {
     let name = file.filename.strip_suffix(".zip").unwrap_or(&file.filename);
-    let payload = json!({
-        "archivo": {
-            "nomArchivo": file.filename,
-            "arcGreZip": file.zip_base64,
-            "hashZip": hash_zip(&file.zip_base64),
-        }
-    });
+    let payload = SendDocument {
+        archivo: Archivo {
+            arc_gre_zip: &file.zip_base64,
+            hash_zip: hash_zip(&file.zip_base64),
+            nom_archivo: &file.filename,
+        },
+    };
     HttpRequest {
         method: HttpMethod::Post,
         url: format!("{url}/comprobantes/{name}"),
@@ -75,7 +91,7 @@ pub fn send_document_request(url: &str, file: &File, token: &str) -> HttpRequest
             ("Authorization".into(), format!("Bearer {token}")),
             ("Content-Type".into(), "application/json".into()),
         ],
-        body: Some(payload.to_string()),
+        body: Some(serde_json::to_string(&payload).expect("the body is serializable")),
     }
 }
 
