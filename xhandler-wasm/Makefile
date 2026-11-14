@@ -30,7 +30,8 @@ schema:
 models: schema
 	rm -rf $(DIST)/models && mkdir -p $(DIST)/models/go $(DIST)/models/python
 	python3 codegen.py $(DIST)/xhandler.schema.json go $(DIST)/models/go/models_gen.go
-	gofmt -w $(DIST)/models/go/models_gen.go
+	# gofmt when Go is installed; the Go repository formats it on sync anyway
+	command -v gofmt >/dev/null && gofmt -w $(DIST)/models/go/models_gen.go || true
 	python3 codegen.py $(DIST)/xhandler.schema.json python $(DIST)/models/python/models.py
 	python3 codegen.py $(DIST)/xhandler.schema.json java $(DIST)/models/java $(JAVA_MODELS_PACKAGE)
 

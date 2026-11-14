@@ -46,3 +46,16 @@ jobs:
       # xsender's TLS (ring) compiles C, so use the runner's Android NDK
       - run: cargo install cargo-ndk --locked
       - run: cargo ndk --target arm64-v8a check -p xhandler
+
+  # The WebAssembly core of the Go, Python and Java bindings (xhandler-wasm):
+  # the corpus generation fails if the native core disagrees with a snapshot
+  bindings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: Swatinem/rust-cache@v2.9.3
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+      - run: rustup target add wasm32-wasip1
+      - run: cargo check -p xsender --no-default-features --target wasm32-wasip1
+      - run: make -C xhandler-wasm dist
