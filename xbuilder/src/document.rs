@@ -121,6 +121,19 @@ mod tests {
         assert_eq!(read_back.render().unwrap(), document.render().unwrap());
     }
 
+    /// Payment in full has no installments; `cuotas` can be left out
+    #[test]
+    fn document_reads_forma_pago_contado_without_cuotas() {
+        let spec = SPEC.replace(
+            r#""detalles""#,
+            r#""forma_pago": {"tipo": "Contado"}, "detalles""#,
+        );
+        let json = format!(r#"{{"kind": "Invoice", "spec": {spec}}}"#);
+        let mut document: Document = serde_json::from_str(&json).unwrap();
+        document.enrich(&defaults()).unwrap();
+        assert!(document.render().unwrap().contains("Contado"));
+    }
+
     #[test]
     fn document_rejects_unknown_kinds() {
         let error = serde_json::from_str::<Document>(r#"{"kind": "Factura", "spec": {}}"#)

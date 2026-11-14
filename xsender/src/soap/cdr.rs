@@ -14,6 +14,11 @@ pub struct CdrMetadata {
 }
 
 impl CdrMetadata {
+    /// Reads the CDR of a SUNAT answer: a base64 zip with the CDR XML
+    pub fn from_zip_base64(base64: &str) -> anyhow::Result<Self> {
+        Self::from_str(&crate::zip_archive::read_cdr_from_base64_zip(base64)?)
+    }
+
     /// ACEPTADO, RECHAZADO, EXCEPCION... according to `response_code`
     pub fn status(&self) -> Status {
         Status::from_code_str(&self.response_code)
@@ -66,6 +71,17 @@ mod tests {
     use crate::soap::cdr::CdrMetadata;
 
     const RESOURCES: &str = "resources/test";
+
+    #[test]
+    fn read_cdr_from_zip_base64() {
+        use base64::Engine;
+        let xml = fs::read(format!("{RESOURCES}/R-12345678901-01-F001-00000587.xml")).unwrap();
+        let zip = crate::zip_archive::create_zip(&[("R-F001-587.xml".into(), &xml)]).unwrap();
+        let base64 = base64::engine::general_purpose::STANDARD.encode(zip);
+
+        let cdr = CdrMetadata::from_zip_base64(&base64).unwrap();
+        assert_eq!(cdr.response_code, "0");
+    }
 
     #[test]
     fn read_cdr_without_notes() {

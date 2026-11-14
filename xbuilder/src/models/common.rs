@@ -77,8 +77,10 @@ pub enum TipoFormaPago {
     Contado,
 }
 
-/// Forma de pago
-#[derive(Clone, Debug, Deserialize, Serialize)]
+/// Forma de pago. A missing `tipo` is filled in by the enricher, and
+/// payment in full ("contado") has no `cuotas`.
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[serde(default)]
 pub struct FormaPago {
     pub tipo: Option<TipoFormaPago>,
     pub cuotas: Vec<CuotaPago>,
