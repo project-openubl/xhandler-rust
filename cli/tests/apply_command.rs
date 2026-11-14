@@ -1,6 +1,6 @@
 use std::process::Command;
 
-const BINARY: &str = env!("CARGO_BIN_EXE_openubl");
+const BINARY: &str = env!("CARGO_BIN_EXE_xhandler");
 const RESOURCES: &str = "tests/resources";
 
 fn assert_valid_xml(path: &std::path::Path) {
@@ -49,13 +49,13 @@ fn apply_without_save_xml_does_not_create_unsigned() {
 
     let output = Command::new(BINARY)
         .args(["apply", "-f", input_path.to_str().unwrap(), "--beta"])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
-        .env_remove("OPENUBL_PRIVATE_KEY")
-        .env_remove("OPENUBL_CERTIFICATE")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
+        .env_remove("XHANDLER_PRIVATE_KEY")
+        .env_remove("XHANDLER_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl apply");
+        .expect("failed to execute xhandler apply");
 
     assert!(
         output.status.success(),
@@ -114,13 +114,13 @@ fn apply_with_save_xml_creates_unsigned() {
             "--beta",
             "--save-xml",
         ])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
-        .env_remove("OPENUBL_PRIVATE_KEY")
-        .env_remove("OPENUBL_CERTIFICATE")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
+        .env_remove("XHANDLER_PRIVATE_KEY")
+        .env_remove("XHANDLER_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl apply");
+        .expect("failed to execute xhandler apply");
 
     assert!(
         output.status.success(),
@@ -196,13 +196,13 @@ fn apply_with_custom_output_paths() {
             "-o",
             custom_cdr.to_str().unwrap(),
         ])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
-        .env_remove("OPENUBL_PRIVATE_KEY")
-        .env_remove("OPENUBL_CERTIFICATE")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
+        .env_remove("XHANDLER_PRIVATE_KEY")
+        .env_remove("XHANDLER_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl apply");
+        .expect("failed to execute xhandler apply");
 
     assert!(
         output.status.success(),
@@ -244,13 +244,13 @@ fn apply_dry_run_without_save_xml() {
             "--beta",
             "--dry-run",
         ])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
-        .env_remove("OPENUBL_PRIVATE_KEY")
-        .env_remove("OPENUBL_CERTIFICATE")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
+        .env_remove("XHANDLER_PRIVATE_KEY")
+        .env_remove("XHANDLER_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl apply");
+        .expect("failed to execute xhandler apply");
 
     assert!(
         output.status.success(),
@@ -298,13 +298,13 @@ fn apply_dry_run_with_save_xml() {
             "--dry-run",
             "--save-xml",
         ])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
-        .env_remove("OPENUBL_PRIVATE_KEY")
-        .env_remove("OPENUBL_CERTIFICATE")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
+        .env_remove("XHANDLER_PRIVATE_KEY")
+        .env_remove("XHANDLER_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl apply");
+        .expect("failed to execute xhandler apply");
 
     assert!(
         output.status.success(),

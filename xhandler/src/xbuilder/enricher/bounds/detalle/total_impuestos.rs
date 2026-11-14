@@ -1,0 +1,23 @@
+use rust_decimal::Decimal;
+
+use crate::xbuilder::models::common::Detalle;
+
+pub trait DetalleTotalImpuestosGetter {
+    fn total_impuestos(&self) -> &Option<Decimal>;
+}
+
+pub trait DetalleTotalImpuestosSetter {
+    fn set_total_impuestos(&mut self, val: Decimal);
+}
+
+impl DetalleTotalImpuestosGetter for Detalle {
+    fn total_impuestos(&self) -> &Option<Decimal> {
+        &self.total_impuestos
+    }
+}
+
+impl DetalleTotalImpuestosSetter for Detalle {
+    fn set_total_impuestos(&mut self, val: Decimal) {
+        self.total_impuestos = Some(val);
+    }
+}

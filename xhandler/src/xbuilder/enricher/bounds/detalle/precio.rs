@@ -1,0 +1,23 @@
+use rust_decimal::Decimal;
+
+use crate::xbuilder::models::common::Detalle;
+
+pub trait DetallePrecioGetter {
+    fn precio(&self) -> &Option<Decimal>;
+}
+
+pub trait DetallePrecioSetter {
+    fn set_precio(&mut self, val: Decimal);
+}
+
+impl DetallePrecioGetter for Detalle {
+    fn precio(&self) -> &Option<Decimal> {
+        &self.precio
+    }
+}
+
+impl DetallePrecioSetter for Detalle {
+    fn set_precio(&mut self, val: Decimal) {
+        self.precio = Some(val);
+    }
+}

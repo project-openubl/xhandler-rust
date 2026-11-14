@@ -1,5 +1,5 @@
-use openubl_cli::input::{read_input, InputFormat};
 use xhandler::prelude::Document;
+use xhandler_cli::input::{read_input, InputFormat};
 
 const RESOURCES: &str = "tests/resources";
 

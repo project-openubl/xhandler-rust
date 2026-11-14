@@ -1,11 +1,65 @@
 [package]
 name = "xhandler"
-version = "0.1.0"
-edition = "2021"
-license = "Apache-2.0"
-description = "Creates XML files based on UBL under the standards of Peru."
+description = "Create, sign and send the UBL XML electronic documents of SUNAT (Peru)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords = ["sunat", "ubl", "peru", "xml", "invoice"]
+categories = ["encoding", "api-bindings"]
+readme = "../README.md"
+# The test fixtures (snapshots, XSD) are larger than what crates.io accepts
+exclude = ["/tests"]
+
+[features]
+default = ["http"]
+# xsender's SunatClient and FileSender sending: reqwest. Without it, xsender
+# builds and parses the SUNAT requests (xsender::exchange) for another HTTP client.
+http = ["dep:reqwest", "dep:tokio"]
+# JSON Schema of the xbuilder models, used to generate the types of the bindings
+schema = ["dep:schemars"]
 
 [dependencies]
-xbuilder = { path = "../xbuilder" }
-xsender = { path = "../xsender" }
-xsigner = { path = "../xsigner" }
+anyhow = { workspace = true }
+base64 = { workspace = true }
+chrono = { workspace = true, features = ["serde"] }
+encoding_rs = { workspace = true }
+lazy_static = { workspace = true }
+log = { workspace = true }
+p12-keystore = { workspace = true }
+quick-xml = { workspace = true }
+regex = { workspace = true }
+reqwest = { workspace = true, optional = true }
+rsa = { workspace = true }
+rust_decimal = { workspace = true }
+schemars = { workspace = true, optional = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+serde_urlencoded = { workspace = true }
+sha2 = { workspace = true }
+static-files = { workspace = true }
+tera = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["time", "sync"], optional = true }
+x509-cert = { workspace = true }
+xml = { workspace = true }
+zip = { workspace = true }
+
+[dev-dependencies]
+libxml = { workspace = true }
+rust_decimal_macros = { workspace = true }
+serial_test = { workspace = true }
+tokio = { workspace = true, features = ["macros"] }
+
+[build-dependencies]
+static-files = { workspace = true }
+
+# The xbuilder tests send their documents with xsender
+[[test]]
+name = "xbuilder"
+required-features = ["http"]
+
+[[test]]
+name = "xsender"
+required-features = ["http"]

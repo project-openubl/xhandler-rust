@@ -7,9 +7,9 @@ use xhandler::prelude::*;
 
 #[derive(Args)]
 #[command(after_help = "\x1b[1mEjemplos:\x1b[0m
-  openubl send -f firmado.xml --beta
-  openubl send -f firmado.xml --username 20123456789MODDATOS --password clave
-  openubl send -f guia.xml --username 20123456789USUARIO --password clave --client-id id --client-secret secreto
+  xhandler send -f firmado.xml --beta
+  xhandler send -f firmado.xml --username 20123456789MODDATOS --password clave
+  xhandler send -f guia.xml --username 20123456789USUARIO --password clave --client-id id --client-secret secreto
 
 La salida es JSON en stdout. Codigo de salida: 0=aceptado/ticket, 2=rechazado o error SUNAT.")]
 pub struct SendArgs {
@@ -25,15 +25,15 @@ pub struct SendArgs {
     pub credentials: CredentialArgs,
 
     /// Endpoint SOAP de facturas SUNAT (con --beta se usan URLs de prueba)
-    #[arg(long, env = "OPENUBL_URL_INVOICE")]
+    #[arg(long, env = "XHANDLER_URL_INVOICE")]
     pub url_invoice: Option<String>,
 
     /// Endpoint SOAP de percepciones/retenciones SUNAT (con --beta se usan URLs de prueba)
-    #[arg(long, env = "OPENUBL_URL_PERCEPTION_RETENTION")]
+    #[arg(long, env = "XHANDLER_URL_PERCEPTION_RETENTION")]
     pub url_perception_retention: Option<String>,
 
     /// Endpoint REST de guias de remision SUNAT (requerido con --beta: SUNAT no tiene beta para guias)
-    #[arg(long, env = "OPENUBL_URL_DESPATCH")]
+    #[arg(long, env = "XHANDLER_URL_DESPATCH")]
     pub url_despatch: Option<String>,
 
     /// Usar URLs de prueba, credenciales de prueba de SUNAT beta
@@ -52,19 +52,19 @@ const BETA_PASSWORD: &str = "MODDATOS";
 #[derive(Args, Clone, Default)]
 pub struct CredentialArgs {
     /// Usuario SOL de SUNAT (con --beta se usan credenciales de prueba)
-    #[arg(long, env = "OPENUBL_USERNAME")]
+    #[arg(long, env = "XHANDLER_USERNAME")]
     pub username: Option<String>,
 
     /// Clave SOL de SUNAT (con --beta se usan credenciales de prueba)
-    #[arg(long, env = "OPENUBL_PASSWORD")]
+    #[arg(long, env = "XHANDLER_PASSWORD")]
     pub password: Option<String>,
 
     /// Client ID de la API REST de SUNAT (requerido para guias de remision)
-    #[arg(long, env = "OPENUBL_CLIENT_ID")]
+    #[arg(long, env = "XHANDLER_CLIENT_ID")]
     pub client_id: Option<String>,
 
     /// Client secret de la API REST de SUNAT (requerido para guias de remision)
-    #[arg(long, env = "OPENUBL_CLIENT_SECRET")]
+    #[arg(long, env = "XHANDLER_CLIENT_SECRET")]
     pub client_secret: Option<String>,
 }
 
