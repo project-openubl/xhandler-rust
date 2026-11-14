@@ -12,6 +12,7 @@
 mod builder;
 mod bytes;
 mod ops;
+mod sender;
 mod signer;
 
 pub use builder::DefaultsInput;
@@ -23,13 +24,16 @@ pub extern "C" fn xh_alloc(len: usize) -> *mut u8 {
     Box::into_raw(vec![0u8; len].into_boxed_slice()).cast()
 }
 
-/// Releases memory returned by [`xh_alloc`] or [`xh_invoke`].
+/// Releases memory returned by [`xh_alloc`] or [`xh_invoke`]. It is zeroed
+/// first: requests may carry passwords and private keys, and instances are
+/// reused.
 ///
 /// # Safety
 /// `ptr` and `len` must come from one of those functions and be freed once.
 #[no_mangle]
 pub unsafe extern "C" fn xh_free(ptr: *mut u8, len: usize) {
-    drop(Box::from_raw(std::ptr::slice_from_raw_parts_mut(ptr, len)));
+    let mut memory = Box::from_raw(std::ptr::slice_from_raw_parts_mut(ptr, len));
+    memory.fill(0);
 }
 
 /// Runs the JSON request at `ptr` and returns the packed `(ptr << 32) | len`

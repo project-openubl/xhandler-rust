@@ -13,7 +13,10 @@
 //! The `enrich` cases record what the native `invoke` returns, so they check
 //! that the bindings carry every field, not the enrichment itself (the
 //! xbuilder tests do). The `sign` cases are the byte-exact signatures of the
-//! xsigner tests: RSA PKCS#1 v1.5 is deterministic.
+//! xsigner tests: RSA PKCS#1 v1.5 is deterministic. The sender cases
+//! (prepare_*, request, parse) record what the native `invoke` returns for the
+//! xsender test files, so the bindings exchange the same requests and answers
+//! (the xsender tests check their content).
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -45,6 +48,7 @@ fn main() {
     }
 
     sign_cases(&mut corpus, &root.join("xsigner/resources/test"));
+    sender_cases(&mut corpus, &root.join("xsender/resources/test"));
 
     for (op, name, input, kind) in error_cases() {
         corpus.check(
@@ -93,7 +97,7 @@ fn sign_cases(corpus: &mut Corpus, resources: &Path) {
         sign(&invoice, &pkcs12("legacy_3des.pfx", "password")),
         ok(&read("signed/invoice_no_template.signed.xml")),
     );
-    // Another key: the expected output is the native one
+    // Another key: the expected output records the native one
     let llama = pkcs12("LLAMA-PE-CERTIFICADO-DEMO-10467793549.pfx", "password");
     let expected = invoke("sign", &sign(&invoice, &llama));
     corpus.check(
@@ -103,7 +107,47 @@ fn sign_cases(corpus: &mut Corpus, resources: &Path) {
         expected,
     );
 
+    // ISO-8859-1 bytes sign like their UTF-8 twin: the output is UTF-8
+    let utf8 = text("signed/special_characters.xml");
+    let latin1: Vec<u8> = utf8
+        .replacen("encoding=\"UTF-8\"", "encoding=\"ISO-8859-1\"", 1)
+        .chars()
+        .map(|c| u8::try_from(u32::from(c)).expect("Latin-1 text"))
+        .collect();
+    corpus.check(
+        "sign",
+        Path::new("pem/special_characters_iso_8859_1"),
+        sign(&latin1, &pem),
+        ok(&read("signed/special_characters.signed.xml")),
+    );
+
     let error = |kind: &str| json!({ "error": { "kind": kind } });
+    corpus.check(
+        "sign",
+        Path::new("errors/not_utf8_nor_declared_latin1"),
+        sign(b"<Invoice>Pe\xf1a</Invoice>", &pem),
+        error("invalid_input"),
+    );
+    corpus.check(
+        "sign",
+        Path::new("errors/garbage_pem"),
+        sign(
+            &invoice,
+            &json!({ "pem": { "private_key": "not a key", "certificate": text("public.cer") } }),
+        ),
+        error("invalid_key"),
+    );
+    let mut truncated = read("legacy_3des.pfx");
+    truncated.truncate(100);
+    corpus.check(
+        "sign",
+        Path::new("errors/truncated_pkcs12"),
+        sign(
+            &invoice,
+            &json!({ "pkcs12": { "der": STANDARD.encode(truncated), "password": "password" } }),
+        ),
+        error("invalid_key"),
+    );
     corpus.check(
         "sign",
         Path::new("errors/wrong_password"),
@@ -133,6 +177,173 @@ fn sign_cases(corpus: &mut Corpus, resources: &Path) {
         json!({ "xml": "<Invoice/>", "key": pem }),
         error("invalid_input"),
     );
+}
+
+fn sender_cases(corpus: &mut Corpus, resources: &Path) {
+    let read = |name: &str| fs::read(resources.join(name)).expect("xsender resource");
+    let text = |name: &str| String::from_utf8(read(name)).expect("UTF-8 resource");
+    let xml = |name: &str| STANDARD.encode(read(name));
+    let production = json!({
+        "invoice": "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService",
+        "perception_retention": "https://e-factura.sunat.gob.pe/ol-ti-itemision-otroscpe-gem/billService",
+        "despatch": "https://api-cpe.sunat.gob.pe/v1/contribuyente/gem",
+    });
+    let beta = json!({
+        "invoice": "https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService",
+        "perception_retention": "https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService",
+        "despatch": "",
+    });
+    let mut native = |op: &str, name: &str, input: Value| {
+        let expected = invoke(op, &input);
+        corpus.check(op, Path::new(name), input, without_message(expected));
+    };
+
+    for file in [
+        "F001-1.xml",
+        "150101-F001-11.xml",
+        "RA-20200328-1.xml",
+        "P001-1.xml",
+        "R001-1.xml",
+        "despatch-advice-T.xml",
+        "despatch-advice-V.xml",
+        "invoice_custom_prefixes.xml",
+    ] {
+        let name = file.trim_end_matches(".xml");
+        native(
+            "prepare_send_file",
+            name,
+            json!({ "xml": xml(file), "urls": production }),
+        );
+    }
+    native(
+        "prepare_send_file",
+        "errors/despatch_without_url",
+        json!({ "xml": xml("despatch-advice-T.xml"), "urls": beta }),
+    );
+    native(
+        "prepare_send_file",
+        "errors/not_a_document",
+        json!({ "xml": STANDARD.encode("<html/>"), "urls": beta }),
+    );
+    native(
+        "prepare_send_pack",
+        "invoices",
+        json!({ "name": "12345678912-20200328-1", "files": [xml("F001-1.xml"), xml("150101-F001-11.xml")], "urls": beta }),
+    );
+    native(
+        "verify_ticket_target",
+        "voided_documents",
+        json!({ "xml": xml("RA-20200328-1.xml"), "urls": beta }),
+    );
+    native(
+        "verify_ticket_target",
+        "despatch_advice",
+        json!({ "xml": xml("despatch-advice-T.xml"), "urls": production }),
+    );
+    native(
+        "verify_ticket_target",
+        "errors/invoice",
+        json!({ "xml": xml("F001-1.xml"), "urls": beta }),
+    );
+
+    let soap_bill = json!({ "protocol": "soap", "url": beta["invoice"], "action": "bill" });
+    let soap = json!({ "protocol": "soap", "url": beta["invoice"] });
+    let rest = json!({ "protocol": "rest", "url": production["despatch"] });
+    let file = json!({ "filename": "12345678912-01-F001-1.zip", "zip": "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==" });
+    let document =
+        json!({ "ruc": "12345678912", "tipo_comprobante": "01", "serie": "F001", "numero": 1 });
+    let calls = [
+        (
+            "send_file_soap",
+            json!({ "send_file": { "target": soap_bill, "file": file } }),
+        ),
+        (
+            "send_file_rest",
+            json!({ "send_file": { "target": rest, "file": file } }),
+        ),
+        (
+            "verify_ticket_soap",
+            json!({ "verify_ticket": { "target": soap, "ticket": "1703154974517" } }),
+        ),
+        (
+            "verify_ticket_rest",
+            json!({ "verify_ticket": { "target": rest, "ticket": "a7b3c1d2-0001" } }),
+        ),
+        (
+            "get_status",
+            json!({ "get_status": { "url": "https://sunat/billConsultService", "document": document } }),
+        ),
+        (
+            "get_status_cdr",
+            json!({ "get_status_cdr": { "url": "https://sunat/billConsultService", "document": document } }),
+        ),
+        (
+            "validate_cdp",
+            json!({ "validate_cdp": { "url": "https://sunat/billValidService", "cdp": {
+                "ruc": "12345678912", "tipo_comprobante": "01", "serie": "F001", "numero": 1,
+                "tipo_documento_identidad_receptor": "6", "numero_documento_identidad_receptor": "12121212121",
+                "fecha_emision": "24/12/2019", "importe_total": "118.00", "numero_autorizacion": null,
+            }}}),
+        ),
+        (
+            "validate_file",
+            json!({ "validate_file": { "url": "https://sunat/billValidService", "file": file } }),
+        ),
+        ("token", json!("token")),
+    ];
+    let credentials = json!({
+        "username": "12345678959MODDATOS",
+        "password": "MODDATOS",
+        "client_id": "client-id",
+        "client_secret": "client-secret",
+    });
+    for (name, call) in &calls {
+        native(
+            "request",
+            name,
+            json!({ "call": call, "credentials": credentials, "token": "the-token" }),
+        );
+    }
+    native(
+        "request",
+        "errors/rest_without_token",
+        json!({ "call": calls[1].1, "credentials": credentials }),
+    );
+
+    let call = |name: &str| calls.iter().find(|(n, _)| *n == name).unwrap().1.clone();
+    let parse = |call_name: &str, status: u16, body: String| json!({ "call": call(call_name), "status": status, "body": body });
+    let answers = [
+        ("send_file_cdr", parse("send_file_soap", 200, text("bill_service_response_ok.xml"))),
+        ("send_file_ticket", parse("send_file_soap", 200, text("bill_service_response_ticket.xml"))),
+        ("send_file_fault", parse("send_file_soap", 500, text("bill_service_response_fault.xml"))),
+        ("send_file_rejected", parse("send_file_soap", 500, text("bill_service_response_fault_rechazo.xml"))),
+        ("verify_ticket_cdr", parse("verify_ticket_soap", 200, text("get_status_response_ok.xml"))),
+        ("verify_ticket_in_progress", parse("verify_ticket_soap", 200, text("get_status_response_in_progress.xml"))),
+        ("verify_ticket_fault", parse("verify_ticket_soap", 500, text("get_status_response_fault.xml"))),
+        ("get_status_cdr", parse("get_status_cdr", 200, text("get_status_cdr_response.xml"))),
+        ("validate_cdp", parse("validate_cdp", 200, text("valida_cdp_response.xml"))),
+        ("send_file_rest_ticket", parse("send_file_rest", 200, r#"{"numTicket":"a7b3c1d2-0001"}"#.into())),
+        ("send_file_rest_error", parse("send_file_rest", 422, r#"{"cod":"422","msg":"Unprocessable Entity","errors":[{"cod":"1033","msg":"El comprobante fue registrado previamente"}]}"#.into())),
+        ("verify_ticket_rest_in_progress", parse("verify_ticket_rest", 200, r#"{"codRespuesta":"98"}"#.into())),
+        ("verify_ticket_rest_error", parse("verify_ticket_rest", 200, r#"{"codRespuesta":"99","error":{"numError":"2223","desError":"El documento ya fue informado"}}"#.into())),
+        ("token", parse("token", 200, r#"{"access_token":"abc","expires_in":600}"#.into())),
+        ("errors/html_page", parse("send_file_soap", 503, "<html><body>Service Unavailable</body></html>".into())),
+        ("errors/token_rejected", parse("token", 401, r#"{"error":"invalid_client"}"#.into())),
+    ];
+    for (name, input) in answers {
+        native("parse", name, input);
+    }
+}
+
+/// Error messages are not compared: they may change without breaking anyone.
+fn without_message(mut response: Value) -> Value {
+    if let Some(error) = response.get_mut("error") {
+        error
+            .as_object_mut()
+            .expect("error object")
+            .remove("message");
+    }
+    response
 }
 
 fn error_cases() -> Vec<(&'static str, &'static str, Value, &'static str)> {

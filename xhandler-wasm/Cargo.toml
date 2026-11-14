@@ -20,6 +20,7 @@ schema = ["dep:schemars", "xbuilder/schema"]
 [dependencies]
 xbuilder = { path = "../xbuilder" }
 xsigner = { path = "../xsigner" }
+xsender = { path = "../xsender", default-features = false }
 base64 = { workspace = true }
 chrono = { workspace = true, features = ["clock"] }
 rust_decimal = { workspace = true }

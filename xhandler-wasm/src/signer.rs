@@ -3,7 +3,7 @@ use serde_json::Value;
 use xsigner::{RsaKeyPair, SignError, XSigner};
 
 use crate::bytes::Base64;
-use crate::ops::{parse_input, Error, ErrorKind, OpResult};
+use crate::ops::{Error, ErrorKind, OpResult};
 
 #[derive(Deserialize)]
 struct Input {
@@ -28,7 +28,13 @@ enum Key {
 /// `{xml, key: {pem: {private_key, certificate}} | {pkcs12: {der, password}}}`
 /// -> the signed XML (UTF-8), in base64.
 pub fn sign(input: Value) -> OpResult {
-    let Input { xml, key } = parse_input(input)?;
+    // serde quotes the values it rejects, which here may be key material
+    let Input { xml, key } = serde_json::from_value(input).map_err(|_| {
+        Error::new(
+            ErrorKind::InvalidInput,
+            anyhow::anyhow!("expected {{xml: base64, key: {{pem}} | {{pkcs12}}}}"),
+        )
+    })?;
     let key_pair = match key {
         Key::Pem {
             private_key,

@@ -3265,6 +3265,7 @@ dependencies = [
  "serde",
  "serde_json",
  "xbuilder",
+ "xsender",
  "xsigner",
 ]
 

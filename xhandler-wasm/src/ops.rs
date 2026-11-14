@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::{builder, signer};
+use crate::{builder, sender, signer};
 
 #[derive(Deserialize)]
 struct Request {
@@ -35,8 +35,11 @@ pub enum ErrorKind {
     Validation,
     /// The XML could not be rendered.
     Render,
-    /// The private key or certificate can't be read, e.g. a wrong password.
+    /// The private key or certificate can't be read (e.g. a wrong keystore
+    /// password), or the certificate is not the one of the private key.
     InvalidKey,
+    /// The answer of SUNAT can't be read, e.g. an HTML error page.
+    Response,
 }
 
 impl Error {
@@ -74,6 +77,11 @@ fn dispatch(op: &str, input: Value) -> OpResult {
         "build" => builder::build(input),
         "enrich" => builder::enrich(input),
         "sign" => signer::sign(input),
+        "prepare_send_file" => sender::prepare_send_file(input),
+        "prepare_send_pack" => sender::prepare_send_pack(input),
+        "verify_ticket_target" => sender::verify_ticket_target(input),
+        "request" => sender::request(input),
+        "parse" => sender::parse(input),
         _ => Err(Error::new(
             ErrorKind::InvalidRequest,
             anyhow::anyhow!("unknown op: {op}"),

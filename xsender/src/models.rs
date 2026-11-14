@@ -1,5 +1,6 @@
 /// Set of URL where the company should send his documents
-#[derive(Clone)]
+#[derive(Clone, Default, serde::Deserialize)]
+#[serde(default)]
 pub struct Urls {
     pub invoice: String,
     pub perception_retention: String,
@@ -31,7 +32,7 @@ impl Urls {
 }
 
 /// Credentials of the company for sending documents
-#[derive(Clone, Default)]
+#[derive(Clone, Default, serde::Deserialize)]
 pub struct Credentials {
     /// SOL user, e.g. "20123456789MODDATOS"
     pub username: String,
@@ -49,7 +50,7 @@ pub const BILL_VALID_SERVICE_URL: &str =
     "https://e-factura.sunat.gob.pe/ol-it-wsconsvalidcpe/billValidService";
 
 /// A document already sent to SUNAT, to look up in the consult services
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct ConsultDocument {
     pub ruc: String,
     /// Catalog1, e.g. "01"
@@ -59,7 +60,7 @@ pub struct ConsultDocument {
 }
 
 /// Criteria to validate a document with `validaCDPcriterios`
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct ValidateCdp {
     #[serde(flatten)]
     pub document: ConsultDocument,
