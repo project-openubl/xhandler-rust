@@ -24,16 +24,21 @@ pub extern "C" fn xh_alloc(len: usize) -> *mut u8 {
     Box::into_raw(vec![0u8; len].into_boxed_slice()).cast()
 }
 
-/// Releases memory returned by [`xh_alloc`] or [`xh_invoke`]. It is zeroed
-/// first: requests may carry passwords and private keys, and instances are
-/// reused.
+/// Releases memory returned by [`xh_alloc`] or [`xh_invoke`]. The request
+/// and response buffers are wiped first, as they may carry passwords and
+/// private keys and instances are reused (the copies serde makes while
+/// running an op are not).
 ///
 /// # Safety
 /// `ptr` and `len` must come from one of those functions and be freed once.
 #[no_mangle]
 pub unsafe extern "C" fn xh_free(ptr: *mut u8, len: usize) {
-    let mut memory = Box::from_raw(std::ptr::slice_from_raw_parts_mut(ptr, len));
-    memory.fill(0);
+    for offset in 0..len {
+        // Volatile, so the compiler can't drop the writes before the free
+        std::ptr::write_volatile(ptr.add(offset), 0);
+    }
+    std::sync::atomic::compiler_fence(std::sync::atomic::Ordering::SeqCst);
+    drop(Box::from_raw(std::ptr::slice_from_raw_parts_mut(ptr, len)));
 }
 
 /// Runs the JSON request at `ptr` and returns the packed `(ptr << 32) | len`

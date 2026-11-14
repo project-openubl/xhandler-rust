@@ -13,8 +13,14 @@ use crate::models::{
     ConsultDocument, Credentials, SendFileTarget, ValidateCdp, VerifyTicketTarget,
 };
 
+/// Pauses before retrying a request SUNAT's front proxy refused
+const RATE_LIMIT_PAUSES: [Duration; 2] = [Duration::from_secs(1), Duration::from_secs(2)];
+
 #[derive(Default)]
-pub struct SunatClient {}
+pub struct SunatClient {
+    /// Where the tokens of the guias are requested; SUNAT's by default
+    pub security_api_url: Option<String>,
+}
 
 impl SunatClient {
     pub async fn send_file(
@@ -27,7 +33,7 @@ impl SunatClient {
             target: target.clone(),
             file: file.clone(),
         };
-        match exchange(&call, credentials).await? {
+        match self.exchange(&call, credentials).await? {
             Answer::SendFile(response) => Ok(response),
             _ => unreachable!("a SendFile call answers SendFile"),
         }
@@ -43,7 +49,7 @@ impl SunatClient {
             target: target.clone(),
             ticket: ticket.to_string(),
         };
-        match exchange(&call, credentials).await? {
+        match self.exchange(&call, credentials).await? {
             Answer::VerifyTicket(response) => Ok(response),
             _ => unreachable!("a VerifyTicket call answers VerifyTicket"),
         }
@@ -60,7 +66,7 @@ impl SunatClient {
             url: url.to_string(),
             document: document.clone(),
         };
-        consult(&call, credentials).await
+        self.consult(&call, credentials).await
     }
 
     /// BillConsultService getStatusCdr: CDR of a document already sent
@@ -74,7 +80,7 @@ impl SunatClient {
             url: url.to_string(),
             document: document.clone(),
         };
-        consult(&call, credentials).await
+        self.consult(&call, credentials).await
     }
 
     /// BillValidService validaCDPcriterios
@@ -88,7 +94,7 @@ impl SunatClient {
             url: url.to_string(),
             cdp: cdp.clone(),
         };
-        consult(&call, credentials).await
+        self.consult(&call, credentials).await
     }
 
     /// BillValidService verificaCPEarchivo
@@ -102,54 +108,77 @@ impl SunatClient {
             url: url.to_string(),
             file: file.clone(),
         };
-        consult(&call, credentials).await
+        self.consult(&call, credentials).await
     }
-}
 
-async fn consult(
-    call: &Call,
-    credentials: &Credentials,
-) -> Result<ConsultResponse, SunatClientError> {
-    match exchange(call, credentials).await? {
-        Answer::Consult(response) => Ok(response),
-        _ => unreachable!("a consult call answers Consult"),
+    async fn consult(
+        &self,
+        call: &Call,
+        credentials: &Credentials,
+    ) -> Result<ConsultResponse, SunatClientError> {
+        match self.exchange(call, credentials).await? {
+            Answer::Consult(response) => Ok(response),
+            _ => unreachable!("a consult call answers Consult"),
+        }
     }
-}
 
-/// Pauses before retrying a request SUNAT's front proxy refused
-const RATE_LIMIT_PAUSES: [Duration; 2] = [Duration::from_secs(1), Duration::from_secs(2)];
-
-/// Sends a call, with an OAuth token when it needs one. SUNAT revokes tokens
-/// before they expire: a call rejected with HTTP 401 is retried once with a
-/// new token. Calls refused by SUNAT's rate limiting are retried after a pause.
-async fn exchange(call: &Call, credentials: &Credentials) -> Result<Answer, SunatClientError> {
-    if call.needs_token() {
-        let (status, body) = send_with_token(call, credentials).await?;
-        if status != 401 {
+    /// Sends a call, with an OAuth token when it needs one. SUNAT revokes
+    /// tokens before they expire: a call rejected with HTTP 401 is retried
+    /// once with a new token (unless the token was given in the credentials).
+    /// Calls refused by SUNAT's rate limiting are retried after a pause.
+    async fn exchange(
+        &self,
+        call: &Call,
+        credentials: &Credentials,
+    ) -> Result<Answer, SunatClientError> {
+        if call.needs_token() {
+            let token = self.token(credentials).await?;
+            let (status, body) = send(&call.request(credentials, Some(&token))?).await?;
+            if status != 401 || credentials.token.is_some() {
+                return call.parse(status, &body);
+            }
+            forget_token(credentials, &token);
+            let token = self.token(credentials).await?;
+            let (status, body) = send(&call.request(credentials, Some(&token))?).await?;
             return call.parse(status, &body);
         }
-        forget_token(credentials);
-        let (status, body) = send_with_token(call, credentials).await?;
-        return call.parse(status, &body);
-    }
 
-    let request = call.request(credentials, None)?;
-    let mut pauses = RATE_LIMIT_PAUSES.iter();
-    loop {
-        let (status, body) = send(&request).await?;
-        match (call.parse(status, &body), pauses.next()) {
-            (Err(SunatClientError::RateLimited), Some(pause)) => tokio::time::sleep(*pause).await,
-            (answer, _) => return answer,
+        let request = call.request(credentials, None)?;
+        let mut pauses = RATE_LIMIT_PAUSES.iter();
+        loop {
+            let (status, body) = send(&request).await?;
+            match (call.parse(status, &body), pauses.next()) {
+                (Err(SunatClientError::RateLimited), Some(pause)) => {
+                    tokio::time::sleep(*pause).await
+                }
+                (answer, _) => return answer,
+            }
         }
     }
-}
 
-async fn send_with_token(
-    call: &Call,
-    credentials: &Credentials,
-) -> Result<(u16, String), SunatClientError> {
-    let token = token(credentials).await?;
-    send(&call.request(credentials, Some(&token))?).await
+    /// The token of the credentials, a cached one, or a new one. One token is
+    /// requested at a time, so concurrent calls don't revoke each other's.
+    async fn token(&self, credentials: &Credentials) -> Result<String, SunatClientError> {
+        if let Some(token) = &credentials.token {
+            return Ok(token.clone());
+        }
+        let key = token_key(credentials);
+        if let Some(token) = cached_token(&key) {
+            return Ok(token);
+        }
+        let _requesting = TOKEN_REQUEST.lock().await;
+        if let Some(token) = cached_token(&key) {
+            return Ok(token);
+        }
+        let call = Call::Token {
+            url: self.security_api_url.clone(),
+        };
+        let Answer::Token(token) = Box::pin(self.exchange(&call, credentials)).await? else {
+            unreachable!("a Token call answers Token");
+        };
+        store_token(key, &token.access_token, token.expires_in);
+        Ok(token.access_token)
+    }
 }
 
 /// Sends the request, again once if the connection failed
@@ -179,27 +208,21 @@ async fn send(request: &HttpRequest) -> Result<(u16, String), SunatClientError> 
 static TOKENS: LazyLock<Mutex<HashMap<String, (String, Instant)>>> =
     LazyLock::new(Default::default);
 
-async fn token(credentials: &Credentials) -> Result<String, SunatClientError> {
-    let key = token_key(credentials);
-    if let Some(token) = cached_token(&key) {
-        return Ok(token);
-    }
-    let call = Call::Token { url: None };
-    let Answer::Token(token) = Box::pin(exchange(&call, credentials)).await? else {
-        unreachable!("a Token call answers Token");
-    };
-    store_token(key, &token.access_token, token.expires_in);
-    Ok(token.access_token)
-}
+/// Held while a token is requested
+static TOKEN_REQUEST: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
 
 fn token_key(credentials: &Credentials) -> String {
     let client_id = credentials.client_id.as_deref().unwrap_or_default();
     format!("{client_id}:{}", credentials.username)
 }
 
-fn forget_token(credentials: &Credentials) {
+/// Forgets the rejected token, unless another call already replaced it
+fn forget_token(credentials: &Credentials, rejected: &str) {
     if let Ok(mut tokens) = TOKENS.lock() {
-        tokens.remove(&token_key(credentials));
+        let key = token_key(credentials);
+        if tokens.get(&key).is_some_and(|(token, _)| token == rejected) {
+            tokens.remove(&key);
+        }
     }
 }
 
@@ -231,16 +254,22 @@ mod tests {
         assert_eq!(cached_token("client-b:user"), None);
 
         assert_eq!(cached_token("unknown"), None);
+    }
 
-        // A rejected token is dropped
+    #[test]
+    fn only_the_rejected_token_is_forgotten() {
         let credentials = Credentials {
             username: "user".into(),
             client_id: Some("client-c".into()),
             ..Default::default()
         };
         store_token(token_key(&credentials), "token-c", 3600);
+
+        // Another call replaced the token it got rejected
+        forget_token(&credentials, "an-older-token");
         assert_eq!(cached_token("client-c:user").as_deref(), Some("token-c"));
-        forget_token(&credentials);
+
+        forget_token(&credentials, "token-c");
         assert_eq!(cached_token("client-c:user"), None);
     }
 }

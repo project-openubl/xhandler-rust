@@ -40,6 +40,10 @@ pub struct Credentials {
     /// API client of the REST services (guias de remision), from SUNAT's SOL menu
     pub client_id: Option<String>,
     pub client_secret: Option<String>,
+    /// A token of the guias obtained elsewhere; when set, it is used as is
+    /// instead of asking SUNAT for one
+    #[serde(skip)]
+    pub token: Option<String>,
 }
 
 /// SUNAT service to look up documents already sent (getStatus, getStatusCdr)

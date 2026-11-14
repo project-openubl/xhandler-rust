@@ -25,6 +25,7 @@ pub struct File {
 }
 
 #[derive(Debug, thiserror::Error)]
+#[non_exhaustive]
 pub enum SunatClientError {
     #[cfg(feature = "http")]
     #[error("Http client error")]
@@ -185,7 +186,7 @@ impl Call {
             Call::SendFile {
                 target: SendFileTarget::Rest(url, _),
                 file,
-            } => Ok(rest::send_document_request(url, file, required(token)?)),
+            } => rest::send_document_request(url, file, required(token)?),
             Call::VerifyTicket {
                 target: VerifyTicketTarget::Soap(url),
                 ticket,

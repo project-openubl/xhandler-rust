@@ -62,11 +62,16 @@ pub fn request(input: Value) -> OpResult {
         credentials: Credentials,
         token: Option<String>,
     }
+    // serde quotes the values it rejects, which here may be passwords
     let Input {
         call,
         credentials,
         token,
-    } = parse_input(input)?;
+    } = serde_json::from_value(input).map_err(|_| {
+        invalid_input(anyhow::anyhow!(
+            "expected {{call, credentials: {{username, password, client_id?, client_secret?}}, token?}}"
+        ))
+    })?;
     let request: HttpRequest = Call::try_from(call)?
         .request(&credentials, token.as_deref())
         .map_err(invalid_input)?;

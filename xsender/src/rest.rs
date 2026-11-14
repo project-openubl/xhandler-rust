@@ -82,16 +82,20 @@ struct Archivo<'a> {
     nom_archivo: &'a str,
 }
 
-pub fn send_document_request(url: &str, file: &File, token: &str) -> HttpRequest {
+pub fn send_document_request(
+    url: &str,
+    file: &File,
+    token: &str,
+) -> Result<HttpRequest, SunatClientError> {
     let name = file.filename.strip_suffix(".zip").unwrap_or(&file.filename);
     let payload = SendDocument {
         archivo: Archivo {
             arc_gre_zip: &file.zip_base64,
-            hash_zip: hash_zip(&file.zip_base64),
+            hash_zip: hash_zip(&file.zip_base64)?,
             nom_archivo: &file.filename,
         },
     };
-    HttpRequest {
+    Ok(HttpRequest {
         method: HttpMethod::Post,
         url: format!("{url}/comprobantes/{}", path_segment(name)),
         headers: vec![
@@ -99,7 +103,7 @@ pub fn send_document_request(url: &str, file: &File, token: &str) -> HttpRequest
             ("Content-Type".into(), "application/json".into()),
         ],
         body: Some(serde_json::to_string(&payload).expect("the body is serializable")),
-    }
+    })
 }
 
 pub fn verify_ticket_request(url: &str, ticket: &str, token: &str) -> HttpRequest {
@@ -124,14 +128,12 @@ fn path_segment(value: &str) -> String {
         .collect()
 }
 
-/// Hex SHA-256 of the zip bytes; the zip comes from this crate, so it is
-/// valid base64.
-fn hash_zip(zip_base64: &str) -> String {
-    sha256_hex(
-        &general_purpose::STANDARD
-            .decode(zip_base64)
-            .unwrap_or_default(),
-    )
+/// Hex SHA-256 of the zip bytes
+fn hash_zip(zip_base64: &str) -> Result<String, SunatClientError> {
+    let zip = general_purpose::STANDARD
+        .decode(zip_base64)
+        .map_err(|e| anyhow!("Invalid zip: {e}"))?;
+    Ok(sha256_hex(&zip))
 }
 
 pub fn parse_send_response(status: u16, body: &str) -> Result<SendFileResponse, SunatClientError> {
@@ -220,7 +222,7 @@ mod tests {
     fn hash_zip_is_hex_sha256_of_the_zip_bytes() {
         // base64("abc")
         assert_eq!(
-            hash_zip("YWJj"),
+            hash_zip("YWJj").unwrap(),
             "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
         );
     }
@@ -297,6 +299,7 @@ mod tests {
             password: "pass&word".into(),
             client_id: Some("client".into()),
             client_secret: Some("secret".into()),
+            token: None,
         };
         let request = token_request(super::SECURITY_API_URL, &credentials).unwrap();
         assert_eq!(

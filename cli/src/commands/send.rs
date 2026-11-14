@@ -93,6 +93,7 @@ impl CredentialArgs {
             password,
             client_id: self.client_id.clone(),
             client_secret: self.client_secret.clone(),
+            token: None,
         })
     }
 }
