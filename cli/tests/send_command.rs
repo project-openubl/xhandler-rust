@@ -1,9 +1,9 @@
 use std::process::Command;
 
-use openubl_cli::commands::send::{CredentialArgs, SendArgs};
+use xhandler_cli::commands::send::{CredentialArgs, SendArgs};
 
-const BINARY: &str = env!("CARGO_BIN_EXE_openubl");
-const E2E_RESOURCES: &str = "../xsender/tests/resources/e2e";
+const BINARY: &str = env!("CARGO_BIN_EXE_xhandler");
+const E2E_RESOURCES: &str = "../xhandler/tests/resources/xsender/e2e";
 
 fn assert_valid_zip(path: &std::path::Path) {
     let bytes = std::fs::read(path).unwrap();
@@ -34,11 +34,11 @@ fn send_invoice_to_sunat_beta() {
 
     let output = Command::new(BINARY)
         .args(["send", "-f", input_path.to_str().unwrap(), "--beta"])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl send");
+        .expect("failed to execute xhandler send");
 
     assert!(
         output.status.success(),
@@ -86,11 +86,11 @@ fn send_invoice_to_sunat_beta_saves_cdr() {
             cdr_path.to_str().unwrap(),
             "--beta",
         ])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl send");
+        .expect("failed to execute xhandler send");
 
     assert!(
         output.status.success(),
@@ -115,11 +115,11 @@ fn send_voided_documents_to_sunat_beta() {
             &format!("{E2E_RESOURCES}/12345678912-RA-20200328-1.xml"),
             "--beta",
         ])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl send");
+        .expect("failed to execute xhandler send");
 
     assert!(
         output.status.success(),
@@ -143,7 +143,7 @@ fn send_missing_file_arg_fails() {
         .args(["send", "--username", "user", "--password", "pass"])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl send");
+        .expect("failed to execute xhandler send");
 
     assert!(!output.status.success(), "should fail without -f");
 }
@@ -152,11 +152,11 @@ fn send_missing_file_arg_fails() {
 fn send_missing_credentials_without_beta_fails() {
     let output = Command::new(BINARY)
         .args(["send", "-f", "some.xml"])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl send");
+        .expect("failed to execute xhandler send");
 
     assert!(
         !output.status.success(),
@@ -168,11 +168,11 @@ fn send_missing_credentials_without_beta_fails() {
 fn send_nonexistent_file_fails() {
     let output = Command::new(BINARY)
         .args(["send", "-f", "nonexistent.xml", "--beta"])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl send");
+        .expect("failed to execute xhandler send");
 
     assert!(!output.status.success(), "should fail for nonexistent file");
 }

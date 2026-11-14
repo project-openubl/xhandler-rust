@@ -1,8 +1,8 @@
 use std::process::Command;
 
-const BINARY: &str = env!("CARGO_BIN_EXE_openubl");
+const BINARY: &str = env!("CARGO_BIN_EXE_xhandler");
 const RESOURCES: &str = "tests/resources";
-const SIGNER_RESOURCES: &str = "../xsigner/resources/test";
+const SIGNER_RESOURCES: &str = "../xhandler/tests/resources/xsigner";
 
 /// Helper: create an unsigned invoice XML via the `create` subcommand.
 fn create_invoice_xml() -> String {
@@ -10,7 +10,7 @@ fn create_invoice_xml() -> String {
         .args(["create", "-f", &format!("{RESOURCES}/invoice.yaml")])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl create");
+        .expect("failed to execute xhandler create");
     assert!(
         output.status.success(),
         "create failed: {:?}",
@@ -28,11 +28,11 @@ fn sign_xml_with_beta_certs() {
 
     let output = Command::new(BINARY)
         .args(["sign", "-f", unsigned_path.to_str().unwrap(), "--beta"])
-        .env_remove("OPENUBL_PRIVATE_KEY")
-        .env_remove("OPENUBL_CERTIFICATE")
+        .env_remove("XHANDLER_PRIVATE_KEY")
+        .env_remove("XHANDLER_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl sign");
+        .expect("failed to execute xhandler sign");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -68,7 +68,7 @@ fn sign_xml_with_explicit_certs() {
         ])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl sign");
+        .expect("failed to execute xhandler sign");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -98,11 +98,11 @@ fn sign_xml_to_output_file() {
             signed_path.to_str().unwrap(),
             "--beta",
         ])
-        .env_remove("OPENUBL_PRIVATE_KEY")
-        .env_remove("OPENUBL_CERTIFICATE")
+        .env_remove("XHANDLER_PRIVATE_KEY")
+        .env_remove("XHANDLER_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl sign");
+        .expect("failed to execute xhandler sign");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -127,14 +127,14 @@ fn sign_xml_from_stdin() {
 
     let mut child = Command::new(BINARY)
         .args(["sign", "-f", "-", "--beta"])
-        .env_remove("OPENUBL_PRIVATE_KEY")
-        .env_remove("OPENUBL_CERTIFICATE")
+        .env_remove("XHANDLER_PRIVATE_KEY")
+        .env_remove("XHANDLER_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
         .stderr(std::process::Stdio::piped())
         .spawn()
-        .expect("failed to spawn openubl sign");
+        .expect("failed to spawn xhandler sign");
 
     use std::io::Write;
     child
@@ -163,11 +163,11 @@ fn sign_missing_certs_without_beta_fails() {
 
     let output = Command::new(BINARY)
         .args(["sign", "-f", unsigned_path.to_str().unwrap()])
-        .env_remove("OPENUBL_PRIVATE_KEY")
-        .env_remove("OPENUBL_CERTIFICATE")
+        .env_remove("XHANDLER_PRIVATE_KEY")
+        .env_remove("XHANDLER_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl sign");
+        .expect("failed to execute xhandler sign");
 
     assert!(
         !output.status.success(),
@@ -196,7 +196,7 @@ fn sign_nonexistent_private_key_fails() {
         ])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl sign");
+        .expect("failed to execute xhandler sign");
 
     assert!(
         !output.status.success(),
@@ -212,7 +212,7 @@ fn sign_missing_file_arg_fails() {
         .args(["sign", "--beta"])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl sign");
+        .expect("failed to execute xhandler sign");
 
     assert!(!output.status.success(), "should fail without -f");
 }
@@ -233,11 +233,11 @@ fn sign_xml_with_pfx() {
             "--pfx-password",
             "password",
         ])
-        .env_remove("OPENUBL_PRIVATE_KEY")
-        .env_remove("OPENUBL_CERTIFICATE")
+        .env_remove("XHANDLER_PRIVATE_KEY")
+        .env_remove("XHANDLER_CERTIFICATE")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl sign");
+        .expect("failed to execute xhandler sign");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
     let stdout = String::from_utf8(output.stdout).unwrap();

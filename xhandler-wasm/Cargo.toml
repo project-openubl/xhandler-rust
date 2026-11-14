@@ -15,12 +15,10 @@ crate-type = ["cdylib", "rlib"]
 
 [features]
 # JSON Schema of the inputs, used by examples/schema.rs
-schema = ["dep:schemars", "xbuilder/schema"]
+schema = ["dep:schemars", "xhandler/schema"]
 
 [dependencies]
-xbuilder = { path = "../xbuilder" }
-xsigner = { path = "../xsigner" }
-xsender = { path = "../xsender", default-features = false }
+xhandler = { workspace = true }
 base64 = { workspace = true }
 chrono = { workspace = true, features = ["clock"] }
 rust_decimal = { workspace = true }

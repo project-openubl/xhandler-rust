@@ -1389,24 +1389,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "384b8ab6d37215f3c5301a95a4accb5d64aa607f1fcb26a11b5303878451b4fe"
 
 [[package]]
-name = "openubl-cli"
-version = "0.1.1"
-dependencies = [
- "anyhow",
- "base64",
- "chrono",
- "clap",
- "rust_decimal",
- "rust_decimal_macros",
- "serde",
- "serde_json",
- "serde_yaml",
- "serial_test",
- "tokio",
- "xhandler",
-]
-
-[[package]]
 name = "p12-keystore"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3222,35 +3204,54 @@ dependencies = [
 ]
 
 [[package]]
-name = "xbuilder"
+name = "xhandler"
 version = "0.1.1"
 dependencies = [
  "anyhow",
+ "base64",
  "chrono",
+ "encoding_rs",
  "lazy_static",
  "libxml",
  "log",
+ "p12-keystore",
+ "quick-xml",
  "regex",
+ "reqwest",
+ "rsa",
  "rust_decimal",
  "rust_decimal_macros",
  "schemars",
  "serde",
  "serde_json",
+ "serde_urlencoded",
  "serial_test",
+ "sha2 0.11.1",
  "static-files",
  "tera",
+ "thiserror 2.0.21",
  "tokio",
- "xsender",
- "xsigner",
+ "x509-cert",
+ "xml",
+ "zip",
 ]
 
 [[package]]
-name = "xhandler"
-version = "0.1.0"
+name = "xhandler-cli"
+version = "0.1.1"
 dependencies = [
- "xbuilder",
- "xsender",
- "xsigner",
+ "anyhow",
+ "base64",
+ "chrono",
+ "clap",
+ "rust_decimal",
+ "rust_decimal_macros",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "serial_test",
+ "tokio",
+ "xhandler",
 ]
 
 [[package]]
@@ -3264,9 +3265,7 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
- "xbuilder",
- "xsender",
- "xsigner",
+ "xhandler",
 ]
 
 [[package]]
@@ -3274,42 +3273,6 @@ name = "xml"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2f45bb2c13fec6a6cb4c0f76a7e94839e110a14ec803ec2940777a94c347bc52"
-
-[[package]]
-name = "xsender"
-version = "0.1.1"
-dependencies = [
- "anyhow",
- "base64",
- "encoding_rs",
- "lazy_static",
- "regex",
- "reqwest",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "serial_test",
- "sha2 0.11.1",
- "static-files",
- "tera",
- "thiserror 2.0.21",
- "tokio",
- "xml",
- "zip",
-]
-
-[[package]]
-name = "xsigner"
-version = "0.1.0"
-dependencies = [
- "base64",
- "p12-keystore",
- "quick-xml",
- "rsa",
- "sha2 0.11.1",
- "thiserror 2.0.21",
- "x509-cert",
-]
 
 [[package]]
 name = "yoke"

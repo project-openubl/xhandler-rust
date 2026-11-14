@@ -8,9 +8,9 @@ use crate::input;
 
 #[derive(Args)]
 #[command(after_help = "\x1b[1mEjemplos:\x1b[0m
-  openubl create -f factura.yaml
-  openubl create -f factura.yaml -o factura.xml
-  cat factura.json | openubl create -f - --format json")]
+  xhandler create -f factura.yaml
+  xhandler create -f factura.yaml -o factura.xml
+  cat factura.json | xhandler create -f - --format json")]
 pub struct CreateArgs {
     /// Archivo de entrada JSON/YAML. Usar "-" para leer desde stdin
     #[arg(short = 'f', long)]

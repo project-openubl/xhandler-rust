@@ -3,7 +3,7 @@
 
 use schemars::generate::SchemaSettings;
 use schemars::JsonSchema;
-use xbuilder::prelude::Document;
+use xhandler::xbuilder::prelude::Document;
 use xhandler_wasm::DefaultsInput;
 
 /// Root of the schema: references every type the bindings need.

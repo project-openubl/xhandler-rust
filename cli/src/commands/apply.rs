@@ -10,10 +10,10 @@ use crate::commands::sign::KeyArgs;
 
 #[derive(Args)]
 #[command(after_help = "\x1b[1mEjemplos:\x1b[0m
-  openubl apply -f factura.yaml --beta
-  openubl apply -f factura.yaml --beta --save-xml --dry-run
-  openubl apply -f factura.yaml --private-key llave.pem --certificate cert.pem --username user --password clave
-  openubl apply -f factura.yaml --pfx certificado.pfx --pfx-password clave --username user --password clave
+  xhandler apply -f factura.yaml --beta
+  xhandler apply -f factura.yaml --beta --save-xml --dry-run
+  xhandler apply -f factura.yaml --private-key llave.pem --certificate cert.pem --username user --password clave
+  xhandler apply -f factura.yaml --pfx certificado.pfx --pfx-password clave --username user --password clave
 
 La salida es JSON en stdout. Codigo de salida: 0=aceptado/ticket, 2=rechazado o error SUNAT.")]
 pub struct ApplyArgs {

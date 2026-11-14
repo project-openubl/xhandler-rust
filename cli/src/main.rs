@@ -2,7 +2,7 @@ use std::process::ExitCode;
 
 use clap::Parser;
 
-use openubl_cli::cli::Cli;
+use xhandler_cli::cli::Cli;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<ExitCode> {

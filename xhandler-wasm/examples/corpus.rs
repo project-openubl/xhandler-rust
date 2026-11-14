@@ -7,7 +7,7 @@
 //!
 //! Usage: corpus <xbuilder input dump dir> <workspace root> <out dir>
 //!
-//! The dump comes from `XBUILDER_DUMP_INPUT=<dir> cargo test -p xbuilder`: the
+//! The dump comes from `XBUILDER_DUMP_INPUT=<dir> cargo test -p xhandler --test xbuilder`: the
 //! `build` input of every snapshot test. The snapshots are the source of
 //! truth: the run fails if the native `invoke` does not reproduce one of them.
 //! The `enrich` cases record what the native `invoke` returns, so they check
@@ -32,7 +32,7 @@ fn main() {
         std::process::exit(2);
     };
     let (dump_dir, root, out_dir) = (Path::new(dump_dir), Path::new(root), Path::new(out_dir));
-    let snapshots_dir = root.join("xbuilder/tests/resources/e2e");
+    let snapshots_dir = root.join("xhandler/tests/resources/xbuilder/e2e");
 
     let mut corpus = Corpus::new(out_dir);
 
@@ -47,8 +47,8 @@ fn main() {
         corpus.check("enrich", relative, input, enriched);
     }
 
-    sign_cases(&mut corpus, &root.join("xsigner/resources/test"));
-    sender_cases(&mut corpus, &root.join("xsender/resources/test"));
+    sign_cases(&mut corpus, &root.join("xhandler/tests/resources/xsigner"));
+    sender_cases(&mut corpus, &root.join("xhandler/tests/resources/xsender"));
 
     for (op, name, input, kind) in error_cases() {
         corpus.check(

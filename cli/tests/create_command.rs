@@ -1,6 +1,6 @@
 use std::process::Command;
 
-const BINARY: &str = env!("CARGO_BIN_EXE_openubl");
+const BINARY: &str = env!("CARGO_BIN_EXE_xhandler");
 const RESOURCES: &str = "tests/resources";
 
 #[test]
@@ -9,7 +9,7 @@ fn create_invoice_from_yaml() {
         .args(["create", "-f", &format!("{RESOURCES}/invoice.yaml")])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -35,7 +35,7 @@ fn create_invoice_from_json() {
         .args(["create", "-f", &format!("{RESOURCES}/invoice.json")])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -61,7 +61,7 @@ fn create_invoice_to_file() {
         ])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -89,7 +89,7 @@ fn create_invoice_dry_run() {
         ])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -117,7 +117,7 @@ fn create_credit_note_from_yaml() {
         .args(["create", "-f", &format!("{RESOURCES}/credit_note.yaml")])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -134,7 +134,7 @@ fn create_debit_note_from_yaml() {
         .args(["create", "-f", &format!("{RESOURCES}/debit_note.yaml")])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -151,7 +151,7 @@ fn create_despatch_advice_from_yaml() {
         .args(["create", "-f", &format!("{RESOURCES}/despatch_advice.yaml")])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -168,7 +168,7 @@ fn create_perception_from_yaml() {
         .args(["create", "-f", &format!("{RESOURCES}/perception.yaml")])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -185,7 +185,7 @@ fn create_retention_from_yaml() {
         .args(["create", "-f", &format!("{RESOURCES}/retention.yaml")])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -206,7 +206,7 @@ fn create_summary_documents_from_yaml() {
         ])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -227,7 +227,7 @@ fn create_voided_documents_from_yaml() {
         ])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
@@ -244,7 +244,7 @@ fn create_nonexistent_file_fails() {
         .args(["create", "-f", "nonexistent.yaml"])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(!output.status.success(), "should fail for nonexistent file");
 }
@@ -255,7 +255,7 @@ fn create_missing_file_arg_fails() {
         .args(["create"])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(!output.status.success(), "should fail without -f");
 }
@@ -266,7 +266,7 @@ fn create_reversion_from_yaml() {
         .args(["create", "-f", &format!("{RESOURCES}/reversion.yaml")])
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl");
+        .expect("failed to execute xhandler");
 
     assert!(output.status.success(), "exit code: {:?}", output.status);
 
