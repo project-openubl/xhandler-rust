@@ -8,8 +8,8 @@ use crate::commands::send::{CredentialArgs, SendArgs};
 
 #[derive(Args)]
 #[command(after_help = "\x1b[1mEjemplos:\x1b[0m
-  openubl verify-ticket --ticket 1703154974517 -o respuesta.zip --beta
-  openubl verify-ticket --ticket a7b3c1d2-0001 -o respuesta.zip --despatch --username 20123456789USUARIO --password clave --client-id id --client-secret secreto
+  xhandler verify-ticket --ticket 1703154974517 -o respuesta.zip --beta
+  xhandler verify-ticket --ticket a7b3c1d2-0001 -o respuesta.zip --despatch --username 20123456789USUARIO --password clave --client-id id --client-secret secreto
 
 La salida es JSON en stdout. Codigo de salida: 0=aceptado o en proceso, 2=rechazado o error SUNAT.")]
 pub struct VerifyTicketArgs {
@@ -25,11 +25,11 @@ pub struct VerifyTicketArgs {
     pub credentials: CredentialArgs,
 
     /// Endpoint SOAP de facturas SUNAT (usado para verificar tickets)
-    #[arg(long, env = "OPENUBL_URL_INVOICE")]
+    #[arg(long, env = "XHANDLER_URL_INVOICE")]
     pub url_invoice: Option<String>,
 
     /// Endpoint REST de guias de remision SUNAT (con --despatch)
-    #[arg(long, env = "OPENUBL_URL_DESPATCH")]
+    #[arg(long, env = "XHANDLER_URL_DESPATCH")]
     pub url_despatch: Option<String>,
 
     /// El ticket es de una guia de remision (API REST, requiere --client-id y --client-secret)

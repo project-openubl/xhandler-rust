@@ -1,6 +1,6 @@
 use std::process::Command;
 
-const BINARY: &str = env!("CARGO_BIN_EXE_openubl");
+const BINARY: &str = env!("CARGO_BIN_EXE_xhandler");
 const E2E_RESOURCES: &str = "../xhandler/tests/resources/xsender/e2e";
 
 fn assert_valid_zip(path: &std::path::Path) {
@@ -22,11 +22,11 @@ fn send_voided_and_get_ticket() -> String {
             &format!("{E2E_RESOURCES}/12345678912-RA-20200328-1.xml"),
             "--beta",
         ])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl send");
+        .expect("failed to execute xhandler send");
 
     assert!(
         output.status.success(),
@@ -48,11 +48,11 @@ fn send_voided_and_get_ticket() -> String {
 fn verify_ticket_missing_ticket_fails() {
     let output = Command::new(BINARY)
         .args(["verify-ticket", "-o", "output.zip", "--beta"])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl verify-ticket");
+        .expect("failed to execute xhandler verify-ticket");
 
     assert!(!output.status.success(), "should fail without --ticket");
 }
@@ -61,11 +61,11 @@ fn verify_ticket_missing_ticket_fails() {
 fn verify_ticket_missing_output_fails() {
     let output = Command::new(BINARY)
         .args(["verify-ticket", "--ticket", "123", "--beta"])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl verify-ticket");
+        .expect("failed to execute xhandler verify-ticket");
 
     assert!(!output.status.success(), "should fail without -o");
 }
@@ -74,11 +74,11 @@ fn verify_ticket_missing_output_fails() {
 fn verify_ticket_missing_credentials_without_beta_fails() {
     let output = Command::new(BINARY)
         .args(["verify-ticket", "--ticket", "123", "-o", "output.zip"])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl verify-ticket");
+        .expect("failed to execute xhandler verify-ticket");
 
     assert!(
         !output.status.success(),
@@ -111,11 +111,11 @@ fn verify_ticket_from_voided_documents() {
             cdr_path.to_str().unwrap(),
             "--beta",
         ])
-        .env_remove("OPENUBL_USERNAME")
-        .env_remove("OPENUBL_PASSWORD")
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
-        .expect("failed to execute openubl verify-ticket");
+        .expect("failed to execute xhandler verify-ticket");
 
     let stdout = String::from_utf8(output.stdout).unwrap();
     let stderr = String::from_utf8(output.stderr).unwrap();

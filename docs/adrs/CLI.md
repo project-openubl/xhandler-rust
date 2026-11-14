@@ -1,4 +1,4 @@
-# ADR: `openubl` CLI Binary
+# ADR: `xhandler` CLI Binary
 
 ## Status
 
@@ -14,19 +14,19 @@ The xhandler-rust project provides three Rust library crates for Peru SUNAT elec
 
 Currently, users must write Rust code to use these libraries. There is no standalone CLI tool that allows a user to define a document in a JSON or YAML file, generate UBL XML, sign it, and send it to SUNAT — all from the command line.
 
-This ADR defines a kubectl-inspired CLI called `openubl` that accepts declarative document definitions as input files and orchestrates the full invoicing pipeline.
+This ADR defines a kubectl-inspired CLI called `xhandler` that accepts declarative document definitions as input files and orchestrates the full invoicing pipeline.
 
 ## Decision
 
 ### 1. CLI Binary and Crate
 
-- **Binary name**: `openubl`
+- **Binary name**: `xhandler`
 - **Crate**: `cli/` at workspace root
 - **Framework**: `clap` with derive features (already used in the server crate)
 
 ```
 cli/
-  Cargo.toml            # name = "xhandler-cli", [[bin]] name = "openubl"
+  Cargo.toml            # name = "xhandler-cli", [[bin]] name = "xhandler"
   src/
     main.rs             # Entry point, clap parsing
     commands/
@@ -44,7 +44,7 @@ Add `"cli"` to workspace members and `serde_yaml` to workspace dependencies in r
 
 ### 2. Subcommands
 
-#### `openubl create`
+#### `xhandler create`
 
 Generates UBL XML from a JSON/YAML document definition. Runs the xbuilder enrichment pipeline (fill defaults, compute taxes, summarize totals) and renders the XML via Tera templates.
 
@@ -57,19 +57,19 @@ Generates UBL XML from a JSON/YAML document definition. Runs the xbuilder enrich
 
 ```bash
 # Generate XML to a file
-openubl create -f invoice.yaml -o invoice.xml
+xhandler create -f invoice.yaml -o invoice.xml
 
 # Generate XML to stdout
-openubl create -f invoice.yaml
+xhandler create -f invoice.yaml
 
 # Validate without rendering
-openubl create -f invoice.yaml --dry-run
+xhandler create -f invoice.yaml --dry-run
 
 # Read from stdin
-cat invoice.json | openubl create -f - --format json -o invoice.xml
+cat invoice.json | xhandler create -f - --format json -o invoice.xml
 ```
 
-#### `openubl sign`
+#### `xhandler sign`
 
 Signs a UBL XML document with RSA-SHA256. Reads the XML, applies the digital signature using the provided private key and certificate, and writes the signed XML.
 
@@ -77,21 +77,21 @@ Signs a UBL XML document with RSA-SHA256. Reads the XML, applies the digital sig
 |------|-------|----------|---------|-------------|
 | `--file <PATH>` | `-f` | Yes | — | Input unsigned XML file. Use `-` for stdin. |
 | `--output <PATH>` | `-o` | No | — | Output signed XML file path. Writes to stdout if omitted. |
-| `--private-key <PATH>` | — | Yes | `OPENUBL_PRIVATE_KEY` | Path to PKCS#1 PEM private key file. |
-| `--certificate <PATH>` | — | Yes | `OPENUBL_CERTIFICATE` | Path to X.509 PEM certificate file. |
+| `--private-key <PATH>` | — | Yes | `XHANDLER_PRIVATE_KEY` | Path to PKCS#1 PEM private key file. |
+| `--certificate <PATH>` | — | Yes | `XHANDLER_CERTIFICATE` | Path to X.509 PEM certificate file. |
 
 ```bash
 # Sign to a file
-openubl sign -f invoice.xml --private-key key.pem --certificate cert.pem -o signed.xml
+xhandler sign -f invoice.xml --private-key key.pem --certificate cert.pem -o signed.xml
 
 # Sign to stdout
-openubl sign -f invoice.xml --private-key key.pem --certificate cert.pem
+xhandler sign -f invoice.xml --private-key key.pem --certificate cert.pem
 
 # Sign reading from stdin
-cat invoice.xml | openubl sign -f - --private-key key.pem --certificate cert.pem -o signed.xml
+cat invoice.xml | xhandler sign -f - --private-key key.pem --certificate cert.pem -o signed.xml
 ```
 
-#### `openubl send`
+#### `xhandler send`
 
 Sends a signed XML to SUNAT. Automatically determines the correct endpoint and protocol (SOAP/REST) based on the document type extracted from the XML metadata (via xsender's analyzer).
 
@@ -99,11 +99,11 @@ Sends a signed XML to SUNAT. Automatically determines the correct endpoint and p
 |------|-------|----------|---------|-------------|
 | `--file <PATH>` | `-f` | Yes | — | Signed XML file to send. |
 | `--output <PATH>` | `-o` | No | — | Output file for CDR XML response. If omitted, CDR is not saved to disk. |
-| `--username <USER>` | — | Yes | `OPENUBL_USERNAME` | SUNAT SOL username (e.g., `20123456789MODDATOS`). |
-| `--password <PASS>` | — | Yes | `OPENUBL_PASSWORD` | SUNAT SOL password. |
-| `--url-invoice <URL>` | — | No | `OPENUBL_URL_INVOICE` | SUNAT invoice SOAP endpoint. |
-| `--url-perception-retention <URL>` | — | No | `OPENUBL_URL_PERCEPTION_RETENTION` | SUNAT perception/retention SOAP endpoint. |
-| `--url-despatch <URL>` | — | No | `OPENUBL_URL_DESPATCH` | SUNAT despatch REST endpoint. |
+| `--username <USER>` | — | Yes | `XHANDLER_USERNAME` | SUNAT SOL username (e.g., `20123456789MODDATOS`). |
+| `--password <PASS>` | — | Yes | `XHANDLER_PASSWORD` | SUNAT SOL password. |
+| `--url-invoice <URL>` | — | No | `XHANDLER_URL_INVOICE` | SUNAT invoice SOAP endpoint. |
+| `--url-perception-retention <URL>` | — | No | `XHANDLER_URL_PERCEPTION_RETENTION` | SUNAT perception/retention SOAP endpoint. |
+| `--url-despatch <URL>` | — | No | `XHANDLER_URL_DESPATCH` | SUNAT despatch REST endpoint. |
 | `--beta` | — | No | — | Use SUNAT beta/test URLs instead of production. |
 
 **Output behavior** depends on the SUNAT response type:
@@ -114,7 +114,7 @@ Sends a signed XML to SUNAT. Automatically determines the correct endpoint and p
 
 - **Ticket (async response)** — For SummaryDocuments, VoidedDocuments:
   - Prints ticket ID to stdout: `{ "ticket": "1234567890" }`
-  - Use `openubl verify-ticket` to check status later
+  - Use `xhandler verify-ticket` to check status later
 
 - **Error** — SUNAT rejection:
   - Prints error to stderr: `{ "code": "2109", "message": "El contribuyente no está activo" }`
@@ -122,17 +122,17 @@ Sends a signed XML to SUNAT. Automatically determines the correct endpoint and p
 
 ```bash
 # Send and save CDR
-openubl send -f signed.xml --username USER --password PASS --beta -o cdr.xml
+xhandler send -f signed.xml --username USER --password PASS --beta -o cdr.xml
 
 # Send without saving CDR (just see the metadata)
-openubl send -f signed.xml --username USER --password PASS --beta
+xhandler send -f signed.xml --username USER --password PASS --beta
 
 # Send with explicit URLs
-openubl send -f signed.xml --username USER --password PASS \
+xhandler send -f signed.xml --username USER --password PASS \
   --url-invoice "https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService"
 ```
 
-#### `openubl apply`
+#### `xhandler apply`
 
 Full pipeline: create + sign + send in one command. Accepts all flags from `create`, `sign`, and `send`.
 
@@ -140,10 +140,10 @@ Full pipeline: create + sign + send in one command. Accepts all flags from `crea
 |------|-------|----------|---------|-------------|
 | `--file <PATH>` | `-f` | Yes | — | Input JSON/YAML document definition. |
 | `--output <PATH>` | `-o` | No | — | Output file for CDR XML response. |
-| `--private-key <PATH>` | — | Yes | `OPENUBL_PRIVATE_KEY` | Path to PKCS#1 PEM private key file. |
-| `--certificate <PATH>` | — | Yes | `OPENUBL_CERTIFICATE` | Path to X.509 PEM certificate file. |
-| `--username <USER>` | — | Yes | `OPENUBL_USERNAME` | SUNAT SOL username. |
-| `--password <PASS>` | — | Yes | `OPENUBL_PASSWORD` | SUNAT SOL password. |
+| `--private-key <PATH>` | — | Yes | `XHANDLER_PRIVATE_KEY` | Path to PKCS#1 PEM private key file. |
+| `--certificate <PATH>` | — | Yes | `XHANDLER_CERTIFICATE` | Path to X.509 PEM certificate file. |
+| `--username <USER>` | — | Yes | `XHANDLER_USERNAME` | SUNAT SOL username. |
+| `--password <PASS>` | — | Yes | `XHANDLER_PASSWORD` | SUNAT SOL password. |
 | `--beta` | — | No | — | Use SUNAT beta/test URLs. |
 | `--save-xml <PATH>` | — | No | — | Save intermediate unsigned XML to file. |
 | `--save-signed-xml <PATH>` | — | No | — | Save intermediate signed XML to file. |
@@ -151,23 +151,23 @@ Full pipeline: create + sign + send in one command. Accepts all flags from `crea
 
 ```bash
 # Full pipeline
-openubl apply -f invoice.yaml \
+xhandler apply -f invoice.yaml \
   --private-key key.pem --certificate cert.pem \
   --username USER --password PASS --beta
 
 # Full pipeline saving all intermediates
-openubl apply -f invoice.yaml \
+xhandler apply -f invoice.yaml \
   --private-key key.pem --certificate cert.pem \
   --username USER --password PASS --beta \
   --save-xml unsigned.xml --save-signed-xml signed.xml -o cdr.xml
 
 # Dry run: create + sign without sending
-openubl apply -f invoice.yaml \
+xhandler apply -f invoice.yaml \
   --private-key key.pem --certificate cert.pem \
   --dry-run --save-signed-xml signed.xml
 ```
 
-#### `openubl verify-ticket`
+#### `xhandler verify-ticket`
 
 Checks the status of an async submission (SummaryDocuments, VoidedDocuments).
 
@@ -175,17 +175,17 @@ Checks the status of an async submission (SummaryDocuments, VoidedDocuments).
 |------|-------|----------|---------|-------------|
 | `--ticket <ID>` | — | Yes | — | Ticket number from a previous `send` response. |
 | `--output <PATH>` | `-o` | No | — | Output file for CDR XML response. |
-| `--username <USER>` | — | Yes | `OPENUBL_USERNAME` | SUNAT SOL username. |
-| `--password <PASS>` | — | Yes | `OPENUBL_PASSWORD` | SUNAT SOL password. |
-| `--url-invoice <URL>` | — | No | `OPENUBL_URL_INVOICE` | SUNAT invoice SOAP endpoint (used for ticket verification). |
+| `--username <USER>` | — | Yes | `XHANDLER_USERNAME` | SUNAT SOL username. |
+| `--password <PASS>` | — | Yes | `XHANDLER_PASSWORD` | SUNAT SOL password. |
+| `--url-invoice <URL>` | — | No | `XHANDLER_URL_INVOICE` | SUNAT invoice SOAP endpoint (used for ticket verification). |
 | `--beta` | — | No | — | Use SUNAT beta/test URLs. |
 
 ```bash
 # Verify a ticket
-openubl verify-ticket --ticket 1234567890 --username USER --password PASS --beta
+xhandler verify-ticket --ticket 1234567890 --username USER --password PASS --beta
 
 # Verify and save the CDR
-openubl verify-ticket --ticket 1234567890 --username USER --password PASS --beta -o cdr.xml
+xhandler verify-ticket --ticket 1234567890 --username USER --password PASS --beta -o cdr.xml
 ```
 
 ### 3. Unix Pipe Composability
@@ -194,17 +194,17 @@ When `-o` is omitted, each subcommand writes its primary output to stdout. This 
 
 ```bash
 # Full pipeline via unix pipes
-openubl create -f invoice.yaml \
-  | openubl sign --private-key key.pem --certificate cert.pem \
-  | openubl send -f - --username USER --password PASS --beta
+xhandler create -f invoice.yaml \
+  | xhandler sign --private-key key.pem --certificate cert.pem \
+  | xhandler send -f - --username USER --password PASS --beta
 
 # Create and sign, save result
-openubl create -f invoice.yaml \
-  | openubl sign --private-key key.pem --certificate cert.pem -o signed.xml
+xhandler create -f invoice.yaml \
+  | xhandler sign --private-key key.pem --certificate cert.pem -o signed.xml
 
 # Batch processing
 for f in documents/*.yaml; do
-  openubl apply -f "$f" \
+  xhandler apply -f "$f" \
     --private-key key.pem --certificate cert.pem \
     --username USER --password PASS --beta \
     --save-signed-xml "signed/$(basename "$f" .yaml).xml"
@@ -218,14 +218,14 @@ Diagnostics, progress messages, and warnings are written to stderr so stdout rem
 All credential and certificate flags support environment variable fallback using clap's `#[arg(env = "...")]`:
 
 ```bash
-export OPENUBL_PRIVATE_KEY=key.pem
-export OPENUBL_CERTIFICATE=cert.pem
-export OPENUBL_USERNAME=20123456789MODDATOS
-export OPENUBL_PASSWORD=moddatos
+export XHANDLER_PRIVATE_KEY=key.pem
+export XHANDLER_CERTIFICATE=cert.pem
+export XHANDLER_USERNAME=20123456789MODDATOS
+export XHANDLER_PASSWORD=moddatos
 
 # Now these are equivalent:
-openubl apply -f invoice.yaml --beta
-openubl apply -f invoice.yaml \
+xhandler apply -f invoice.yaml --beta
+xhandler apply -f invoice.yaml \
   --private-key key.pem --certificate cert.pem \
   --username 20123456789MODDATOS --password moddatos --beta
 ```
@@ -543,22 +543,22 @@ The same documents can be expressed in JSON:
 # === Individual commands with file I/O ===
 
 # Step 1: Create XML from YAML definition
-openubl create -f factura.yaml -o factura.xml
+xhandler create -f factura.yaml -o factura.xml
 
 # Step 2: Sign the XML
-openubl sign -f factura.xml \
+xhandler sign -f factura.xml \
   --private-key key.pem --certificate cert.pem \
   -o factura-signed.xml
 
 # Step 3: Send to SUNAT beta and save CDR
-openubl send -f factura-signed.xml \
+xhandler send -f factura-signed.xml \
   --username 20123456789MODDATOS --password moddatos \
   --beta -o cdr-response.xml
 
 
 # === Full pipeline in one command ===
 
-openubl apply -f factura.yaml \
+xhandler apply -f factura.yaml \
   --private-key key.pem --certificate cert.pem \
   --username 20123456789MODDATOS --password moddatos \
   --beta -o cdr-response.xml
@@ -566,7 +566,7 @@ openubl apply -f factura.yaml \
 
 # === Full pipeline saving all intermediate files ===
 
-openubl apply -f factura.yaml \
+xhandler apply -f factura.yaml \
   --private-key key.pem --certificate cert.pem \
   --username 20123456789MODDATOS --password moddatos \
   --beta \
@@ -577,20 +577,20 @@ openubl apply -f factura.yaml \
 
 # === Unix pipes ===
 
-openubl create -f factura.yaml \
-  | openubl sign --private-key key.pem --certificate cert.pem \
-  | openubl send -f - --username USER --password PASS --beta
+xhandler create -f factura.yaml \
+  | xhandler sign --private-key key.pem --certificate cert.pem \
+  | xhandler send -f - --username USER --password PASS --beta
 
 
 # === Dry run: validate + enrich only ===
 
-openubl create -f factura.yaml --dry-run
+xhandler create -f factura.yaml --dry-run
 # Output: enriched document as JSON (with computed taxes, totals, defaults filled in)
 
 
 # === Dry run: create + sign without sending ===
 
-openubl apply -f factura.yaml \
+xhandler apply -f factura.yaml \
   --private-key key.pem --certificate cert.pem \
   --dry-run \
   --save-signed-xml factura-signed.xml
@@ -599,32 +599,32 @@ openubl apply -f factura.yaml \
 # === Async documents: send + verify ticket ===
 
 # Send a SummaryDocuments (returns a ticket)
-openubl send -f resumen-signed.xml \
+xhandler send -f resumen-signed.xml \
   --username USER --password PASS --beta
 # Output: { "ticket": "1698267890123" }
 
 # Later, verify the ticket
-openubl verify-ticket --ticket 1698267890123 \
+xhandler verify-ticket --ticket 1698267890123 \
   --username USER --password PASS --beta -o cdr-response.xml
 
 
 # === Environment variables for credentials ===
 
-export OPENUBL_PRIVATE_KEY=key.pem
-export OPENUBL_CERTIFICATE=cert.pem
-export OPENUBL_USERNAME=20123456789MODDATOS
-export OPENUBL_PASSWORD=moddatos
+export XHANDLER_PRIVATE_KEY=key.pem
+export XHANDLER_CERTIFICATE=cert.pem
+export XHANDLER_USERNAME=20123456789MODDATOS
+export XHANDLER_PASSWORD=moddatos
 
-openubl apply -f factura.yaml --beta
-openubl apply -f nota-credito.yaml --beta
-openubl apply -f guia-remision.yaml --beta
+xhandler apply -f factura.yaml --beta
+xhandler apply -f nota-credito.yaml --beta
+xhandler apply -f guia-remision.yaml --beta
 
 
 # === Batch processing ===
 
 for f in documents/*.yaml; do
   echo "Processing $f..."
-  openubl apply -f "$f" \
+  xhandler apply -f "$f" \
     --private-key key.pem --certificate cert.pem \
     --username USER --password PASS --beta \
     --save-signed-xml "signed/$(basename "$f" .yaml).xml" \

@@ -1,6 +1,6 @@
 [package]
 name = "xhandler-cli"
-description = "openubl: create, sign and send the UBL XML electronic documents of SUNAT (Peru) from the command line"
+description = "The xhandler command: create, sign and send the UBL XML electronic documents of SUNAT (Peru)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -16,7 +16,7 @@ name = "xhandler_cli"
 path = "src/lib.rs"
 
 [[bin]]
-name = "openubl"
+name = "xhandler"
 path = "src/main.rs"
 
 [dependencies]

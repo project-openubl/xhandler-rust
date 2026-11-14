@@ -4,12 +4,12 @@
 [![CI](https://github.com/project-openubl/xhandler-rust/actions/workflows/ci-repo.yml/badge.svg)](https://github.com/project-openubl/xhandler-rust/actions/workflows/ci-repo.yml)
 
 Crea, firma y envía los comprobantes electrónicos (XML UBL) de la SUNAT del Perú, desde Rust o desde
-la línea de comandos (`openubl`). También hay librerías para
+la línea de comandos (`xhandler`). También hay librerías para
 [Go](https://github.com/project-openubl/xhandler-go),
 [Python](https://github.com/project-openubl/xhandler-python) y
 [Java](https://github.com/project-openubl/xhandler-java).
 
-## Línea de comandos: `openubl`
+## Línea de comandos: `xhandler`
 
 ### Instalación
 
@@ -47,25 +47,25 @@ Los otros tipos (`kind`) son `CreditNote`, `DebitNote`, `DespatchAdvice`, `Perce
 ```shell
 # Todo en un paso: crear, firmar y enviar. --beta usa el entorno de pruebas de la SUNAT,
 # con credenciales y certificado de prueba.
-openubl apply -f factura.yaml --beta
+xhandler apply -f factura.yaml --beta
 
 # O paso a paso
-openubl create -f factura.yaml -o factura.xml
-openubl sign -f factura.xml --pfx certificado.pfx --pfx-password clave -o firmado.xml
-openubl send -f firmado.xml --username 20123456789USUARIO --password clave
+xhandler create -f factura.yaml -o factura.xml
+xhandler sign -f factura.xml --pfx certificado.pfx --pfx-password clave -o firmado.xml
+xhandler send -f firmado.xml --username 20123456789USUARIO --password clave
 
 # Los resúmenes y las bajas devuelven un ticket: consúltalo después
-openubl verify-ticket --ticket 1703154974517 --beta
+xhandler verify-ticket --ticket 1703154974517 --beta
 ```
 
 - La salida es JSON. El código de salida es 0 si la SUNAT acepta el comprobante (o devuelve un
   ticket) y 2 si lo rechaza.
 - Las credenciales y certificados pueden venir de variables de entorno, p. ej.
-  `OPENUBL_USERNAME`, `OPENUBL_PASSWORD`, `OPENUBL_PFX` y `OPENUBL_PFX_PASSWORD`.
+  `XHANDLER_USERNAME`, `XHANDLER_PASSWORD`, `XHANDLER_PFX` y `XHANDLER_PFX_PASSWORD`.
 - Las guías de remisión también necesitan `--client-id` y `--client-secret`. La SUNAT no tiene beta
   para ellas.
 
-`openubl <comando> --help` muestra todas las opciones.
+`xhandler <comando> --help` muestra todas las opciones.
 
 ## Librería
 

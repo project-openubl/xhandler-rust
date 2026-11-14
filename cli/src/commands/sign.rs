@@ -11,9 +11,9 @@ pub const BETA_CERTIFICATE: &str = include_str!("../../resources/beta/public.cer
 
 #[derive(Args)]
 #[command(after_help = "\x1b[1mEjemplos:\x1b[0m
-  openubl sign -f factura.xml --beta
-  openubl sign -f factura.xml --private-key llave.pem --certificate cert.pem -o firmado.xml
-  openubl sign -f factura.xml --pfx certificado.pfx --pfx-password clave -o firmado.xml")]
+  xhandler sign -f factura.xml --beta
+  xhandler sign -f factura.xml --private-key llave.pem --certificate cert.pem -o firmado.xml
+  xhandler sign -f factura.xml --pfx certificado.pfx --pfx-password clave -o firmado.xml")]
 pub struct SignArgs {
     /// Archivo XML sin firmar. Usar "-" para leer desde stdin
     #[arg(short = 'f', long)]
@@ -62,19 +62,19 @@ impl SignArgs {
 #[derive(Args)]
 pub struct KeyArgs {
     /// Ruta al archivo de llave privada PEM, PKCS#1 o PKCS#8 (con --beta se usan certificados de prueba)
-    #[arg(long, env = "OPENUBL_PRIVATE_KEY")]
+    #[arg(long, env = "XHANDLER_PRIVATE_KEY")]
     pub private_key: Option<String>,
 
     /// Ruta al archivo de certificado X.509 PEM (con --beta se usan certificados de prueba)
-    #[arg(long, env = "OPENUBL_CERTIFICATE")]
+    #[arg(long, env = "XHANDLER_CERTIFICATE")]
     pub certificate: Option<String>,
 
     /// Ruta al certificado PKCS#12 (.pfx/.p12). Tiene prioridad sobre --private-key/--certificate
-    #[arg(long, env = "OPENUBL_PFX")]
+    #[arg(long, env = "XHANDLER_PFX")]
     pub pfx: Option<String>,
 
     /// Clave del certificado PKCS#12
-    #[arg(long, env = "OPENUBL_PFX_PASSWORD")]
+    #[arg(long, env = "XHANDLER_PFX_PASSWORD")]
     pub pfx_password: Option<String>,
 }
 

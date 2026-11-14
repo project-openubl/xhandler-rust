@@ -27,7 +27,7 @@ Rust 1.100.0 pinned in `rust-toolchain.toml`. xhandler builds for Android/iOS (u
   - `xbuilder` — XML generation via Tera templates + 3-phase enrichment pipeline
   - `xsigner` — RSA-SHA256 XML digital signatures, pure Rust (own C14N on quick-xml, RustCrypto)
   - `xsender` — ZIP, SOAP/REST calls to SUNAT (sans-IO `exchange`; reqwest client behind the default `http` feature), CDR response parsing, file analysis
-- **xhandler-cli** (`cli/`) — the `openubl` binary
+- **xhandler-cli** (`cli/`) — the `xhandler` binary
 - **xhandler-wasm** — WebAssembly core of the Go, Python and Java bindings (not published)
 
 ## XBuilder Enrichment Pipeline
