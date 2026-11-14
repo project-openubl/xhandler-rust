@@ -8,6 +8,7 @@ use crate::catalogs::{Catalog53, FromCode};
 
 /// Quien provee el documento electronico. Quien genera o crea el documento.
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Proveedor {
     pub ruc: String,
@@ -19,6 +20,7 @@ pub struct Proveedor {
 
 /// Quien firma electronicamente el XML
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Firmante {
     pub ruc: String,
     pub razon_social: String,
@@ -26,6 +28,7 @@ pub struct Firmante {
 
 /// Quien es el cliente de la transaccion
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Cliente {
     /// Catalog6
@@ -38,6 +41,7 @@ pub struct Cliente {
 
 /// Direccion
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Direccion {
     pub ubigeo: Option<String>,
     pub codigo_local: Option<String>,
@@ -51,6 +55,7 @@ pub struct Direccion {
 
 /// Contacto
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Contacto {
     pub telefono: Option<String>,
@@ -59,6 +64,7 @@ pub struct Contacto {
 
 /// Detraccion
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Detraccion {
     /// Catalog59
     pub medio_pago: String,
@@ -72,6 +78,7 @@ pub struct Detraccion {
 
 /// Tipo de forma de pago
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub enum TipoFormaPago {
     Credito,
     Contado,
@@ -81,6 +88,7 @@ pub enum TipoFormaPago {
 /// payment in full ("contado") has no `cuotas`.
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 #[serde(default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct FormaPago {
     pub tipo: Option<TipoFormaPago>,
     pub cuotas: Vec<CuotaPago>,
@@ -89,6 +97,7 @@ pub struct FormaPago {
 
 /// Cuota de pago
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct CuotaPago {
     pub importe: Decimal,
     #[serde(deserialize_with = "crate::serde_date::deserialize")]
@@ -97,6 +106,7 @@ pub struct CuotaPago {
 
 /// Percepcion asociada a un documento
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Percepcion {
     /// Catalog53
     pub tipo: String,
@@ -109,6 +119,7 @@ pub struct Percepcion {
 
 /// Anticipo asociado a un documento
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Anticipo {
     /// Catalog53. Valores válidos: "04", "05", "06"
     pub tipo: Option<String>,
@@ -124,6 +135,7 @@ pub struct Anticipo {
 
 /// Descuento asociado a un documento o item
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Descuento {
     /// Catalog53.
     pub tipo: Option<String>,
@@ -134,6 +146,7 @@ pub struct Descuento {
 
 /// Cargo global (AllowanceCharge con ChargeIndicator true)
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Cargo {
     /// Catalog53, e.g. "49" (afecta la base imponible) or "50" (no la afecta)
     pub tipo: String,
@@ -154,6 +167,7 @@ impl Cargo {
 
 /// Guia asociada a un documento
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Guia {
     /// Catalog1. Valores válidos: "09", "31"
     pub tipo_comprobante: String,
@@ -162,6 +176,7 @@ pub struct Guia {
 
 /// Documento relacionado
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DocumentoRelacionado {
     /// Catalog12.
     pub tipo_documento: String,
@@ -170,6 +185,7 @@ pub struct DocumentoRelacionado {
 
 /// Código estándar GS1/GTIN para identificación de producto
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct CodigoGs1 {
     /// Código GS1/GTIN del producto
     pub codigo: String,
@@ -179,6 +195,7 @@ pub struct CodigoGs1 {
 
 /// Atributo adicional de un detalle
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Atributo {
     pub nombre: String,
@@ -193,6 +210,7 @@ pub struct Atributo {
 
 /// Detalle de las ventas en Boleta/Factura/Nota Credito/Nota Debito
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Detalle {
     pub descripcion: String,
@@ -207,8 +225,9 @@ pub struct Detalle {
     /// Incluye el código y el tipo de estructura GTIN (e.g. "GTIN-8", "GTIN-13", "GTIN-14").
     pub codigo_gs1: Option<CodigoGs1>,
 
-    /// Precio + bool. True si el precio incluye impuestos, false si no incluye impuestos
+    /// Precio unitario sin impuestos; se calcula de `precio_con_impuestos` si no se da
     pub precio: Option<Decimal>,
+    /// Precio unitario con impuestos; se calcula de `precio` si no se da
     pub precio_con_impuestos: Option<Decimal>,
     pub precio_referencia: Option<Decimal>,
     /// Catalog16
@@ -239,6 +258,7 @@ pub struct Detalle {
 
 /// Total Importe Invoice
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TotalImporteInvoice {
     pub anticipos: Decimal,
     pub descuentos: Decimal,
@@ -252,6 +272,7 @@ pub struct TotalImporteInvoice {
 
 // Total importe Note
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TotalImporteNote {
     pub importe: Decimal,
     pub importe_sin_impuestos: Decimal,
@@ -259,6 +280,7 @@ pub struct TotalImporteNote {
 
 /// Total impuestos
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TotalImpuestos {
     pub total: Decimal,
     pub ivap_importe: Decimal,

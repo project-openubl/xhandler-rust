@@ -63,6 +63,7 @@ impl FromStr for StatusXmlResponse {
             (_, Some(code)) => Ok(Self::Fault(SunatFault {
                 code,
                 message: fault_message.unwrap_or_default(),
+                ..Default::default()
             })),
             _ => Err(anyhow!("Could not extract the status from the response")),
         }

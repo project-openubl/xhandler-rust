@@ -1,5 +1,6 @@
 /// Set of URL where the company should send his documents
-#[derive(Clone)]
+#[derive(Clone, Default, serde::Deserialize)]
+#[serde(default)]
 pub struct Urls {
     pub invoice: String,
     pub perception_retention: String,
@@ -31,7 +32,7 @@ impl Urls {
 }
 
 /// Credentials of the company for sending documents
-#[derive(Clone, Default)]
+#[derive(Clone, Default, serde::Deserialize)]
 pub struct Credentials {
     /// SOL user, e.g. "20123456789MODDATOS"
     pub username: String,
@@ -39,6 +40,10 @@ pub struct Credentials {
     /// API client of the REST services (guias de remision), from SUNAT's SOL menu
     pub client_id: Option<String>,
     pub client_secret: Option<String>,
+    /// A token of the guias obtained elsewhere; when set, it is used as is
+    /// instead of asking SUNAT for one
+    #[serde(skip)]
+    pub token: Option<String>,
 }
 
 /// SUNAT service to look up documents already sent (getStatus, getStatusCdr)
@@ -49,7 +54,7 @@ pub const BILL_VALID_SERVICE_URL: &str =
     "https://e-factura.sunat.gob.pe/ol-it-wsconsvalidcpe/billValidService";
 
 /// A document already sent to SUNAT, to look up in the consult services
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct ConsultDocument {
     pub ruc: String,
     /// Catalog1, e.g. "01"
@@ -59,7 +64,7 @@ pub struct ConsultDocument {
 }
 
 /// Criteria to validate a document with `validaCDPcriterios`
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct ValidateCdp {
     #[serde(flatten)]
     pub document: ConsultDocument,
@@ -73,7 +78,7 @@ pub struct ValidateCdp {
 }
 
 /// Defines where the document should be sent
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum SendFileTarget {
     /// URL and Method
     Soap(String, SoapFileTargetAction),
@@ -83,7 +88,7 @@ pub enum SendFileTarget {
 }
 
 /// Defines where the document should be sent
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum VerifyTicketTarget {
     /// URL and Method
     Soap(String),
@@ -92,7 +97,7 @@ pub enum VerifyTicketTarget {
     Rest(String),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum SoapFileTargetAction {
     /// Sends a single file
     Bill,
@@ -102,7 +107,7 @@ pub enum SoapFileTargetAction {
     Pack,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum RestFileTargetAction {
     SendDocument,
 }

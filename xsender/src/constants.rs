@@ -1,8 +1,10 @@
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 
 use regex::Regex;
+#[cfg(feature = "http")]
 use reqwest::Client;
 use std::str::from_utf8;
+#[cfg(feature = "http")]
 use std::time::Duration;
 use tera::Tera;
 
@@ -29,6 +31,10 @@ lazy_static::lazy_static! {
     pub static ref BOLETA_SERIE_REGEX: Regex = Regex::new("^[Bb].*$").expect("valid regex");
     pub static ref GUIA_REMISION_REMITENTE_SERIE_REGEX: Regex = Regex::new("^[Tt].*$").expect("valid regex");
     pub static ref GUIA_REMISION_TRANSPORTISTA_SERIE_REGEX: Regex = Regex::new("^[Vv].*$").expect("valid regex");
+}
+
+#[cfg(feature = "http")]
+lazy_static::lazy_static! {
     // Same limits as Java's CXF defaults (30s connect / 60s receive), with
     // room for SUNAT's slow getStatus answers. No verbose connection logging:
     // the SOAP body carries the SOL password.

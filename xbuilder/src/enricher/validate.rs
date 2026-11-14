@@ -12,7 +12,8 @@ use crate::models::perception_retention::{Perception, Retention};
 use crate::models::summary_documents::SummaryDocuments;
 use crate::models::voided_documents::VoidedDocuments;
 
-/// Checks, after enrichment, the catalog codes xhandler-java rejects
+/// Checks, after enrichment, the catalog codes xhandler-java rejects and the
+/// required values that have no default
 pub trait Validate {
     fn validate(&self) -> Result<()> {
         Ok(())
@@ -99,8 +100,15 @@ impl Validate for SummaryDocuments {
     }
 }
 
-// No catalog codes to check for these documents
+// Nothing to check for these documents
 impl Validate for VoidedDocuments {}
 impl Validate for Perception {}
 impl Validate for Retention {}
-impl Validate for DespatchAdvice {}
+impl Validate for DespatchAdvice {
+    fn validate(&self) -> Result<()> {
+        if self.envio.fecha_traslado.is_none() {
+            return Err(anyhow!("envio.fecha_traslado is required"));
+        }
+        Ok(())
+    }
+}

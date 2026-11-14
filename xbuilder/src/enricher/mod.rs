@@ -14,11 +14,24 @@ mod rules;
 mod summary;
 mod validate;
 
+/// Values used when the document does not set them.
 pub struct Defaults {
     pub icb_tasa: Decimal,
     pub igv_tasa: Decimal,
     pub ivap_tasa: Decimal,
     pub fecha_emision: NaiveDate,
+}
+
+impl Defaults {
+    /// The current SUNAT rates: ICB 0.20, IGV 18% and IVAP 4%.
+    pub fn new(fecha_emision: NaiveDate) -> Self {
+        Self {
+            icb_tasa: Decimal::new(2, 1),
+            igv_tasa: Decimal::new(18, 2),
+            ivap_tasa: Decimal::new(4, 2),
+            fecha_emision,
+        }
+    }
 }
 
 pub trait Enrich {

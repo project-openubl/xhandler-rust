@@ -6,6 +6,7 @@ use crate::models::common::{Cliente, Firmante, Proveedor};
 
 /// Comprobante de Percepcion
 #[derive(Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Perception {
     pub serie: String,
@@ -29,6 +30,7 @@ pub struct Perception {
 
 /// Comprobante de Retencion
 #[derive(Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct Retention {
     pub serie: String,
@@ -52,6 +54,7 @@ pub struct Retention {
 
 /// Operacion de percepcion o retencion
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PercepcionRetencionOperacion {
     pub numero_operacion: u32,
     #[serde(deserialize_with = "crate::serde_date::deserialize")]
@@ -63,6 +66,7 @@ pub struct PercepcionRetencionOperacion {
 
 /// Comprobante afectado por la percepcion o retencion
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PercepcionRetencionComprobanteAfectado {
     pub tipo_comprobante: String,
     pub serie_numero: String,
@@ -74,6 +78,7 @@ pub struct PercepcionRetencionComprobanteAfectado {
 
 /// Tipo de cambio
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TipoCambio {
     pub valor: Decimal,
     #[serde(deserialize_with = "crate::serde_date::deserialize")]

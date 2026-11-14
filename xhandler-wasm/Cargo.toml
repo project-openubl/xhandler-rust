@@ -1,0 +1,33 @@
+[package]
+name = "xhandler-wasm"
+description = "WebAssembly entry point of xhandler, shared by the Go, Python and Java bindings."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[[example]]
+name = "schema"
+required-features = ["schema"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# JSON Schema of the inputs, used by examples/schema.rs
+schema = ["dep:schemars", "xbuilder/schema"]
+
+[dependencies]
+xbuilder = { path = "../xbuilder" }
+xsigner = { path = "../xsigner" }
+xsender = { path = "../xsender", default-features = false }
+base64 = { workspace = true }
+chrono = { workspace = true, features = ["clock"] }
+rust_decimal = { workspace = true }
+schemars = { workspace = true, optional = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+
+[dev-dependencies]
+schemars = { workspace = true, features = ["preserve_order"] }

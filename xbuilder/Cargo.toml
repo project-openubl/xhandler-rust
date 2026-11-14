@@ -15,6 +15,11 @@ lazy_static = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 rust_decimal = { workspace = true }
 anyhow = { workspace = true }
+schemars = { workspace = true, optional = true }
+
+[features]
+# JSON Schema of the models, used to generate the types of the bindings
+schema = ["dep:schemars"]
 
 [dev-dependencies]
 rust_decimal_macros = { workspace = true }

@@ -7,15 +7,16 @@ use zip::result::ZipError;
 use crate::analyzer::{
     filename_formatted_without_extension, send_file_target, verify_ticket_target,
 };
+use crate::exchange::{
+    File, SendFileResponse, SunatClientError, VerifyTicketResponse, VerifyTicketStatus,
+};
 use crate::fault::SunatFault;
 use crate::models::{
     Credentials, DocumentType, SendFileTarget, SoapFileTargetAction, Urls, VerifyTicketTarget,
 };
-use crate::prelude::VerifyTicketStatus;
 use crate::soap::cdr::CdrMetadata;
-use crate::sunat_client::{
-    File, SendFileResponse, SunatClient, SunatClientError, VerifyTicketResponse,
-};
+#[cfg(feature = "http")]
+use crate::sunat_client::SunatClient;
 use crate::ubl_file::{UblFile, UblMetadata};
 use crate::zip_archive::{create_zip, read_cdr_from_base64_zip};
 
@@ -71,111 +72,147 @@ pub enum VerifyTicketAggregatedResponse {
     Fault(SunatFault),
 }
 
+/// What [`FileSender::send_file`] and [`FileSender::send_pack`] send: the zip
+/// and the services for it and its ticket
+pub struct PreparedSend {
+    pub file: File,
+    pub send_file_target: SendFileTarget,
+    pub verify_ticket_target: Option<VerifyTicketTarget>,
+}
+
+/// The zip of a document (named as SUNAT expects) and its services
+pub fn prepare_send_file(xml: &UblFile, urls: &Urls) -> Result<PreparedSend, FileSenderError> {
+    let metadata = checked_metadata(xml, urls)?;
+    let send_file_target = send_file_target(
+        &metadata.document_type,
+        &metadata.voided_line_document_type_code,
+        urls,
+    )
+    .ok_or(FileSenderError::TargetDiscovery)?;
+    let verify_ticket_target = verify_ticket_target(
+        &metadata.document_type,
+        &metadata.voided_line_document_type_code,
+        urls,
+    );
+    let name = sunat_filename(&metadata)?;
+    let entries = [(format!("{name}.xml"), xml.bytes())];
+    Ok(PreparedSend {
+        file: zip_file(format!("{name}.zip"), &entries)?,
+        send_file_target,
+        verify_ticket_target,
+    })
+}
+
+/// The zip of several invoices sent together (sendPack)
+pub fn prepare_send_pack(
+    pack_name: &str,
+    files: &[UblFile],
+    urls: &Urls,
+) -> Result<PreparedSend, FileSenderError> {
+    let entries = files
+        .iter()
+        .map(|xml| {
+            Ok((
+                format!("{}.xml", sunat_filename(&xml.metadata()?)?),
+                xml.bytes(),
+            ))
+        })
+        .collect::<Result<Vec<_>, FileSenderError>>()?;
+    Ok(PreparedSend {
+        file: zip_file(format!("{pack_name}.zip"), &entries)?,
+        send_file_target: SendFileTarget::Soap(urls.invoice.clone(), SoapFileTargetAction::Pack),
+        verify_ticket_target: Some(VerifyTicketTarget::Soap(urls.invoice.clone())),
+    })
+}
+
+/// The service that answers the tickets of a document
+pub fn file_verify_ticket_target(
+    xml: &UblFile,
+    urls: &Urls,
+) -> Result<VerifyTicketTarget, FileSenderError> {
+    let metadata = checked_metadata(xml, urls)?;
+    verify_ticket_target(
+        &metadata.document_type,
+        &metadata.voided_line_document_type_code,
+        urls,
+    )
+    .ok_or(FileSenderError::TargetDiscovery)
+}
+
+/// Reads the CDR in the answer
+impl TryFrom<SendFileResponse> for SendFileAggregatedResponse {
+    type Error = FileSenderError;
+
+    fn try_from(response: SendFileResponse) -> Result<Self, Self::Error> {
+        Ok(match response {
+            SendFileResponse::Cdr(cdr_base64) => {
+                let cdr_metadata = read_cdr_metadata(&cdr_base64)?;
+                Self::Cdr(cdr_base64, cdr_metadata)
+            }
+            SendFileResponse::Ticket(ticket) => Self::Ticket(ticket),
+            SendFileResponse::Fault(fault) => Self::Fault(fault),
+        })
+    }
+}
+
+/// Reads the CDR in the answer
+impl TryFrom<VerifyTicketResponse> for VerifyTicketAggregatedResponse {
+    type Error = FileSenderError;
+
+    fn try_from(response: VerifyTicketResponse) -> Result<Self, Self::Error> {
+        Ok(match response {
+            VerifyTicketResponse::Cdr(status) => {
+                let cdr_metadata = read_cdr_metadata(&status.cdr_base64)?;
+                Self::Cdr(status, cdr_metadata)
+            }
+            VerifyTicketResponse::NoCdr { status_code } => Self::NoCdr { status_code },
+            VerifyTicketResponse::Fault(fault) => Self::Fault(fault),
+        })
+    }
+}
+
+#[cfg(feature = "http")]
 impl FileSender {
     pub async fn send_file(
         &self,
         xml: &UblFile,
     ) -> Result<SendFileResponseWrapper, FileSenderError> {
-        let metadata = self.checked_metadata(xml)?;
-        let send_target = send_file_target(
-            &metadata.document_type,
-            &metadata.voided_line_document_type_code,
-            &self.urls,
-        )
-        .ok_or(FileSenderError::TargetDiscovery)?;
-        let verify_ticket_target = verify_ticket_target(
-            &metadata.document_type,
-            &metadata.voided_line_document_type_code,
-            &self.urls,
-        );
-
-        let name = sunat_filename(&metadata)?;
-        let entries = [(format!("{name}.xml"), xml.bytes())];
-        self.send(
-            format!("{name}.zip"),
-            &entries,
-            send_target,
-            verify_ticket_target,
-        )
-        .await
+        self.send(prepare_send_file(xml, &self.urls)?).await
     }
 
-    /// Sends several documents in one zip with sendPack (SUNAT answers with a
-    /// ticket). `pack_name` is the zip name without extension, e.g.
-    /// "20123456789-LT-20240131-1". SUNAT only accepts packs in production.
     pub async fn send_pack(
         &self,
         pack_name: &str,
         files: &[UblFile],
     ) -> Result<SendFileResponseWrapper, FileSenderError> {
-        let entries = files
-            .iter()
-            .map(|xml| {
-                Ok((
-                    format!("{}.xml", sunat_filename(&xml.metadata()?)?),
-                    xml.bytes(),
-                ))
-            })
-            .collect::<Result<Vec<_>, FileSenderError>>()?;
-        let send_target =
-            SendFileTarget::Soap(self.urls.invoice.clone(), SoapFileTargetAction::Pack);
-        let verify_ticket_target = Some(VerifyTicketTarget::Soap(self.urls.invoice.clone()));
-        self.send(
-            format!("{pack_name}.zip"),
-            &entries,
-            send_target,
-            verify_ticket_target,
-        )
-        .await
+        self.send(prepare_send_pack(pack_name, files, &self.urls)?)
+            .await
     }
 
     async fn send(
         &self,
-        zip_name: String,
-        entries: &[(String, &[u8])],
-        send_target: SendFileTarget,
-        verify_ticket_target: Option<VerifyTicketTarget>,
+        prepared: PreparedSend,
     ) -> Result<SendFileResponseWrapper, FileSenderError> {
-        let file = File {
-            filename: zip_name,
-            zip_base64: general_purpose::STANDARD.encode(create_zip(entries)?),
-        };
-
-        let result = SunatClient::default()
-            .send_file(&send_target, &file, &self.credentials)
+        let response = SunatClient::default()
+            .send_file(
+                &prepared.send_file_target,
+                &prepared.file,
+                &self.credentials,
+            )
             .await?;
-
-        let response = match result {
-            SendFileResponse::Cdr(cdr_base64) => {
-                let cdr_xml = read_cdr_from_base64_zip(&cdr_base64)?;
-                let cdr_metadata = CdrMetadata::from_str(&cdr_xml)?;
-                SendFileAggregatedResponse::Cdr(cdr_base64, cdr_metadata)
-            }
-            SendFileResponse::Ticket(ticket) => SendFileAggregatedResponse::Ticket(ticket),
-            SendFileResponse::Fault(fault) => SendFileAggregatedResponse::Fault(fault),
-        };
-
         Ok(SendFileResponseWrapper {
-            response,
-            send_file_target: send_target,
-            verify_ticket_target,
+            response: response.try_into()?,
+            send_file_target: prepared.send_file_target,
+            verify_ticket_target: prepared.verify_ticket_target,
         })
     }
 
-    /// Checks the ticket SUNAT answered when `xml` was sent; the service to
-    /// ask is inferred from the document, like in [`Self::send_file`].
     pub async fn verify_file_ticket(
         &self,
         xml: &UblFile,
         ticket: &str,
     ) -> Result<VerifyTicketResponseWrapper, FileSenderError> {
-        let metadata = self.checked_metadata(xml)?;
-        let target = verify_ticket_target(
-            &metadata.document_type,
-            &metadata.voided_line_document_type_code,
-            &self.urls,
-        )
-        .ok_or(FileSenderError::TargetDiscovery)?;
+        let target = file_verify_ticket_target(xml, &self.urls)?;
         self.verify_ticket(&target, ticket).await
     }
 
@@ -184,38 +221,34 @@ impl FileSender {
         target: &VerifyTicketTarget,
         ticket: &str,
     ) -> Result<VerifyTicketResponseWrapper, FileSenderError> {
-        let client = SunatClient::default();
-        let result = client
+        let response = SunatClient::default()
             .verify_ticket(target, ticket, &self.credentials)
             .await?;
-
-        let response = match result {
-            VerifyTicketResponse::Cdr(status) => {
-                let cdr_xml = read_cdr_from_base64_zip(&status.cdr_base64)?;
-                let cdr_metadata = CdrMetadata::from_str(&cdr_xml)?;
-                VerifyTicketAggregatedResponse::Cdr(status, cdr_metadata)
-            }
-            VerifyTicketResponse::NoCdr { status_code } => {
-                VerifyTicketAggregatedResponse::NoCdr { status_code }
-            }
-            VerifyTicketResponse::Fault(fault) => VerifyTicketAggregatedResponse::Fault(fault),
-        };
-
-        Ok(VerifyTicketResponseWrapper { response })
+        Ok(VerifyTicketResponseWrapper {
+            response: response.try_into()?,
+        })
     }
 }
 
-/// File name SUNAT expects, without extension, e.g. "12345678912-01-F001-1"
-impl FileSender {
-    /// Metadata of a document this sender has a URL for
-    fn checked_metadata(&self, xml: &UblFile) -> Result<UblMetadata, FileSenderError> {
-        let metadata = xml.metadata()?;
-        if metadata.document_type == DocumentType::DESPATCH_ADVICE && self.urls.despatch.is_empty()
-        {
-            return Err(FileSenderError::NoDespatchUrl);
-        }
-        Ok(metadata)
+fn checked_metadata(xml: &UblFile, urls: &Urls) -> Result<UblMetadata, FileSenderError> {
+    let metadata = xml.metadata()?;
+    if metadata.document_type == DocumentType::DESPATCH_ADVICE && urls.despatch.is_empty() {
+        return Err(FileSenderError::NoDespatchUrl);
     }
+    Ok(metadata)
+}
+
+fn zip_file(filename: String, entries: &[(String, &[u8])]) -> Result<File, FileSenderError> {
+    Ok(File {
+        filename,
+        zip_base64: general_purpose::STANDARD.encode(create_zip(entries)?),
+    })
+}
+
+fn read_cdr_metadata(cdr_base64: &str) -> Result<CdrMetadata, FileSenderError> {
+    Ok(CdrMetadata::from_str(&read_cdr_from_base64_zip(
+        cdr_base64,
+    )?)?)
 }
 
 fn sunat_filename(metadata: &UblMetadata) -> Result<String, FileSenderError> {

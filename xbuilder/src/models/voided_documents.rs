@@ -5,6 +5,7 @@ use crate::models::common::{Firmante, Proveedor};
 
 /// Comunicacion de Baja
 #[derive(Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct VoidedDocuments {
     pub numero: u32,
@@ -23,11 +24,13 @@ pub struct VoidedDocuments {
 /// rendered with its template), used to revert perception (P) and retention
 /// (R) documents. Its ID is "RR-YYYYMMDD-{numero}".
 #[derive(Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(transparent)]
 pub struct Reversion(pub VoidedDocuments);
 
 /// Detalle de un comprobante dado de baja
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct VoidedDocumentsItem {
     /// Catalog1: auto-filled from serie prefix (F->"01", B->"03", T->"09", V->"31", P->"40", R->"20")

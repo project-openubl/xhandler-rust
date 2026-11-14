@@ -2,7 +2,6 @@ use std::fs;
 
 use chrono::NaiveDate;
 use libxml::parser::Parser;
-use rust_decimal_macros::dec;
 
 use xbuilder::prelude::*;
 
@@ -43,12 +42,7 @@ lazy_static::lazy_static! {
 }
 
 pub fn defaults_base() -> Defaults {
-    Defaults {
-        fecha_emision: NaiveDate::from_ymd_opt(2019, 12, 24).unwrap(),
-        icb_tasa: dec!(0.2),
-        igv_tasa: dec!(0.18),
-        ivap_tasa: dec!(0.04),
-    }
+    Defaults::new(NaiveDate::from_ymd_opt(2019, 12, 24).unwrap())
 }
 
 #[allow(dead_code)]
@@ -149,6 +143,7 @@ pub fn assert_invoice_offline(invoice: &mut Invoice, snapshot_filename: &str) {
 
 fn render_and_check_invoice(invoice: &mut Invoice, snapshot_filename: &str) -> Vec<u8> {
     let defaults = defaults_base();
+    dump_input(&defaults, &*invoice, snapshot_filename);
     invoice.enrich(&defaults).expect("Could not enrich");
 
     let xml = invoice.render().expect("Could not render invoice");
@@ -163,6 +158,7 @@ fn render_and_check_invoice(invoice: &mut Invoice, snapshot_filename: &str) -> V
 #[allow(dead_code)]
 pub async fn assert_credit_note(credit_note: &mut CreditNote, snapshot_filename: &str) {
     let defaults = defaults_base();
+    dump_input(&defaults, &*credit_note, snapshot_filename);
     credit_note.enrich(&defaults).expect("Could not enrich");
 
     let xml = credit_note.render().expect("Could not render credit note");
@@ -177,6 +173,7 @@ pub async fn assert_credit_note(credit_note: &mut CreditNote, snapshot_filename:
 #[allow(dead_code)]
 pub async fn assert_debit_note(debit_note: &mut DebitNote, snapshot_filename: &str) {
     let defaults = defaults_base();
+    dump_input(&defaults, &*debit_note, snapshot_filename);
     debit_note.enrich(&defaults).expect("Could not enrich");
 
     let xml = debit_note.render().expect("Could not render debit note");
@@ -190,8 +187,12 @@ pub async fn assert_debit_note(debit_note: &mut DebitNote, snapshot_filename: &s
 
 #[allow(dead_code)]
 /// Also used for [`Reversion`], which shares the VoidedDocuments template and XSD
-pub async fn assert_voided_documents(doc: &mut (impl Enrich + Renderer), snapshot_filename: &str) {
+pub async fn assert_voided_documents(
+    doc: &mut (impl Enrich + Renderer + serde::Serialize),
+    snapshot_filename: &str,
+) {
     let defaults = defaults_base();
+    dump_input(&defaults, &*doc, snapshot_filename);
     doc.enrich(&defaults).expect("Could not enrich");
 
     let xml = doc.render().expect("Could not render voided documents");
@@ -206,6 +207,7 @@ pub async fn assert_voided_documents(doc: &mut (impl Enrich + Renderer), snapsho
 #[allow(dead_code)]
 pub async fn assert_summary_documents(doc: &mut SummaryDocuments, snapshot_filename: &str) {
     let defaults = defaults_base();
+    dump_input(&defaults, &*doc, snapshot_filename);
     doc.enrich(&defaults).expect("Could not enrich");
 
     let xml = doc.render().expect("Could not render summary documents");
@@ -220,6 +222,7 @@ pub async fn assert_summary_documents(doc: &mut SummaryDocuments, snapshot_filen
 #[allow(dead_code)]
 pub async fn assert_perception(doc: &mut Perception, snapshot_filename: &str) {
     let defaults = defaults_base();
+    dump_input(&defaults, &*doc, snapshot_filename);
     doc.enrich(&defaults).expect("Could not enrich");
 
     let xml = doc.render().expect("Could not render perception");
@@ -234,6 +237,7 @@ pub async fn assert_perception(doc: &mut Perception, snapshot_filename: &str) {
 #[allow(dead_code)]
 pub async fn assert_retention(doc: &mut Retention, snapshot_filename: &str) {
     let defaults = defaults_base();
+    dump_input(&defaults, &*doc, snapshot_filename);
     doc.enrich(&defaults).expect("Could not enrich");
 
     let xml = doc.render().expect("Could not render retention");
@@ -248,6 +252,7 @@ pub async fn assert_retention(doc: &mut Retention, snapshot_filename: &str) {
 #[allow(dead_code)]
 pub async fn assert_despatch_advice(doc: &mut DespatchAdvice, snapshot_filename: &str) {
     let defaults = defaults_base();
+    dump_input(&defaults, &*doc, snapshot_filename);
     doc.enrich(&defaults).expect("Could not enrich");
 
     let xml = doc.render().expect("Could not render despatch advice");
@@ -263,6 +268,39 @@ fn env_flag(name: &str) -> bool {
     std::env::var(name)
         .map(|value| matches!(value.to_lowercase().as_str(), "1" | "true" | "yes"))
         .unwrap_or(false)
+}
+
+/// `XBUILDER_DUMP_INPUT=<dir>` writes the input of each snapshot as the
+/// `{"document": {"kind", "spec"}, "defaults"}` JSON of the bindings' `build`
+/// op, next to its snapshot path (relative to `tests/resources/e2e/`). It feeds
+/// the conformance corpus of the bindings.
+fn dump_input<T: serde::Serialize>(defaults: &Defaults, document: &T, snapshot_filename: &str) {
+    let Ok(dir) = std::env::var("XBUILDER_DUMP_INPUT") else {
+        return;
+    };
+    // The test documents are the model structs themselves, e.g. `Invoice`
+    let kind = std::any::type_name::<T>()
+        .rsplit("::")
+        .next()
+        .expect("type name");
+    let input = serde_json::json!({
+        "document": { "kind": kind, "spec": document },
+        "defaults": {
+            "fecha_emision": defaults.fecha_emision,
+            "icb_tasa": defaults.icb_tasa,
+            "igv_tasa": defaults.igv_tasa,
+            "ivap_tasa": defaults.ivap_tasa,
+        },
+    });
+    let relative = snapshot_filename
+        .strip_prefix("tests/resources/e2e/")
+        .unwrap_or(snapshot_filename);
+    let path = std::path::Path::new(&dir)
+        .join(relative)
+        .with_extension("json");
+    fs::create_dir_all(path.parent().expect("parent dir")).expect("Could not create dump dir");
+    let json = serde_json::to_string_pretty(&input).expect("Could not serialize input");
+    fs::write(&path, json).expect("Could not write input dump");
 }
 
 fn assert_snapshot(expected: &str, snapshot_filename: &str) {

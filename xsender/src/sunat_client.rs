@@ -1,82 +1,25 @@
-use std::str::FromStr;
+//! Sends the [`Call`]s of [`crate::exchange`] with reqwest (feature `http`).
 
-use reqwest::StatusCode;
+use std::collections::HashMap;
+use std::sync::{LazyLock, Mutex};
+use std::time::{Duration, Instant};
 
 use crate::constants::HTTP_CLIENT;
-use crate::fault::SunatFault;
-use crate::models::{
-    ConsultDocument, Credentials, SendFileTarget, SoapFileTargetAction, ValidateCdp,
-    VerifyTicketTarget,
+use crate::exchange::{
+    Answer, Call, ConsultResponse, File, HttpMethod, HttpRequest, HttpResponse, SendFileResponse,
+    SunatClientError, VerifyTicketResponse,
 };
-use crate::rest;
-use crate::soap::envelope::{BodyData, EnvelopeData, FileData, ToXmlString};
-use crate::soap::send_file_response::SendFileXmlResponse;
-use crate::soap::status_response::StatusXmlResponse;
+use crate::models::{
+    ConsultDocument, Credentials, SendFileTarget, ValidateCdp, VerifyTicketTarget,
+};
+
+/// Pauses before retrying a request SUNAT's front proxy refused
+const RATE_LIMIT_PAUSES: [Duration; 2] = [Duration::from_secs(1), Duration::from_secs(2)];
 
 #[derive(Default)]
-pub struct SunatClient {}
-
-pub struct File {
-    pub filename: String,
-    pub zip_base64: String,
-}
-
-#[derive(Debug, thiserror::Error)]
-pub enum SunatClientError {
-    #[error("Http client error")]
-    HttpClient(reqwest::Error),
-    #[error("Unexpected response from server")]
-    Response(StatusCode),
-    #[error("Error while creating the template")]
-    Templating(tera::Error),
-    #[error(transparent)]
-    Any(#[from] anyhow::Error),
-}
-
-impl From<reqwest::Error> for SunatClientError {
-    fn from(e: reqwest::Error) -> Self {
-        Self::HttpClient(e)
-    }
-}
-
-impl From<tera::Error> for SunatClientError {
-    fn from(e: tera::Error) -> Self {
-        Self::Templating(e)
-    }
-}
-
-pub enum SendFileResponse {
-    Cdr(String),
-    Ticket(String),
-    Fault(SunatFault),
-}
-
-pub enum VerifyTicketResponse {
-    Cdr(VerifyTicketStatus),
-    /// The ticket answer carries no CDR, e.g. status code 98 (still processing)
-    NoCdr {
-        status_code: String,
-    },
-    Fault(SunatFault),
-}
-
-/// Answer of the consult (BillConsultService) and validation (BillValidService) services
-pub enum ConsultResponse {
-    Status(ConsultStatus),
-    Fault(SunatFault),
-}
-
-pub struct ConsultStatus {
-    /// e.g. "0001" (accepted) for getStatus, or "0" for validaCDPcriterios
-    pub status_code: String,
-    pub status_message: Option<String>,
-    /// CDR zip in base64 (getStatusCdr)
-    pub cdr_base64: Option<String>,
-}
-
-pub struct VerifyTicketStatus {
-    pub cdr_base64: String,
-    pub status_code: String,
+pub struct SunatClient {
+    /// Where the tokens of the guias are requested; SUNAT's by default
+    pub security_api_url: Option<String>,
 }
 
 impl SunatClient {
@@ -86,32 +29,13 @@ impl SunatClient {
         file: &File,
         credentials: &Credentials,
     ) -> Result<SendFileResponse, SunatClientError> {
-        match &target {
-            SendFileTarget::Soap(url, action) => {
-                let operation = match action {
-                    SoapFileTargetAction::Bill => "sendBill",
-                    SoapFileTargetAction::Summary => "sendSummary",
-                    SoapFileTargetAction::Pack => "sendPack",
-                };
-
-                let envelope = EnvelopeData {
-                    username: credentials.username.clone(),
-                    password: credentials.password.clone(),
-                    body: BodyData::SendFile {
-                        operation,
-                        file: FileData {
-                            filename: file.filename.clone(),
-                            zip_base64: file.zip_base64.clone(),
-                        },
-                    },
-                };
-
-                let body = envelope.to_xml_string()?;
-                let soap_action = format!("urn:{operation}");
-                let (status, response_body) = post_soap(url, body, &soap_action).await?;
-                parse_soap_response::<SendFileXmlResponse>(status, &response_body).map(Into::into)
-            }
-            SendFileTarget::Rest(url, _) => rest::send_document(url, file, credentials).await,
+        let call = Call::SendFile {
+            target: target.clone(),
+            file: file.clone(),
+        };
+        match self.exchange(&call, credentials).await? {
+            Answer::SendFile(response) => Ok(response),
+            _ => unreachable!("a SendFile call answers SendFile"),
         }
     }
 
@@ -121,19 +45,13 @@ impl SunatClient {
         ticket: &str,
         credentials: &Credentials,
     ) -> Result<VerifyTicketResponse, SunatClientError> {
-        match &target {
-            VerifyTicketTarget::Soap(url) => {
-                let envelope = EnvelopeData {
-                    username: credentials.username.clone(),
-                    password: credentials.password.clone(),
-                    body: BodyData::VerifyTicket(ticket.to_string()),
-                };
-
-                let body = envelope.to_xml_string()?;
-                let (status, response_body) = post_soap(url, body, "urn:getStatus").await?;
-                parse_soap_response::<StatusXmlResponse>(status, &response_body).map(Into::into)
-            }
-            VerifyTicketTarget::Rest(url) => rest::verify_ticket(url, ticket, credentials).await,
+        let call = Call::VerifyTicket {
+            target: target.clone(),
+            ticket: ticket.to_string(),
+        };
+        match self.exchange(&call, credentials).await? {
+            Answer::VerifyTicket(response) => Ok(response),
+            _ => unreachable!("a VerifyTicket call answers VerifyTicket"),
         }
     }
 
@@ -144,194 +62,223 @@ impl SunatClient {
         document: &ConsultDocument,
         credentials: &Credentials,
     ) -> Result<ConsultResponse, SunatClientError> {
-        let operation = "getStatus";
-        let body = BodyData::ConsultDocument {
-            operation,
+        let call = Call::GetStatus {
+            url: url.to_string(),
             document: document.clone(),
         };
-        consult(url, body, operation, credentials).await
+        self.consult(&call, credentials).await
     }
 
-    /// BillConsultService getStatusCdr: status and CDR of a document already sent
+    /// BillConsultService getStatusCdr: CDR of a document already sent
     pub async fn get_status_cdr(
         &self,
         url: &str,
         document: &ConsultDocument,
         credentials: &Credentials,
     ) -> Result<ConsultResponse, SunatClientError> {
-        let operation = "getStatusCdr";
-        let body = BodyData::ConsultDocument {
-            operation,
+        let call = Call::GetStatusCdr {
+            url: url.to_string(),
             document: document.clone(),
         };
-        consult(url, body, operation, credentials).await
+        self.consult(&call, credentials).await
     }
 
-    /// BillValidService validaCDPcriterios: checks a document by its data
+    /// BillValidService validaCDPcriterios
     pub async fn validate_cdp(
         &self,
         url: &str,
         cdp: &ValidateCdp,
         credentials: &Credentials,
     ) -> Result<ConsultResponse, SunatClientError> {
-        let body = BodyData::ValidateCdp(cdp.clone());
-        consult(url, body, "validaCDPcriterios", credentials).await
+        let call = Call::ValidateCdp {
+            url: url.to_string(),
+            cdp: cdp.clone(),
+        };
+        self.consult(&call, credentials).await
     }
 
-    /// BillValidService verificaCPEarchivo: checks a signed XML file
+    /// BillValidService verificaCPEarchivo
     pub async fn validate_file(
         &self,
         url: &str,
         file: &File,
         credentials: &Credentials,
     ) -> Result<ConsultResponse, SunatClientError> {
-        let body = BodyData::ValidateFile(FileData {
-            filename: file.filename.clone(),
-            zip_base64: file.zip_base64.clone(),
-        });
-        consult(url, body, "verificaCPEarchivo", credentials).await
+        let call = Call::ValidateFile {
+            url: url.to_string(),
+            file: file.clone(),
+        };
+        self.consult(&call, credentials).await
+    }
+
+    async fn consult(
+        &self,
+        call: &Call,
+        credentials: &Credentials,
+    ) -> Result<ConsultResponse, SunatClientError> {
+        match self.exchange(call, credentials).await? {
+            Answer::Consult(response) => Ok(response),
+            _ => unreachable!("a consult call answers Consult"),
+        }
+    }
+
+    /// Sends a call, with an OAuth token when it needs one. SUNAT revokes
+    /// tokens before they expire: a call rejected with HTTP 401 is retried
+    /// once with a new token (unless the token was given in the credentials).
+    /// Calls refused by SUNAT's rate limiting are retried after a pause.
+    async fn exchange(
+        &self,
+        call: &Call,
+        credentials: &Credentials,
+    ) -> Result<Answer, SunatClientError> {
+        if call.needs_token() {
+            let token = self.token(credentials).await?;
+            let response = send(&call.request(credentials, Some(&token))?).await?;
+            if response.status != 401 || credentials.token.is_some() {
+                return call.parse(&response);
+            }
+            forget_token(credentials, &token);
+            let token = self.token(credentials).await?;
+            let response = send(&call.request(credentials, Some(&token))?).await?;
+            return call.parse(&response);
+        }
+
+        let request = call.request(credentials, None)?;
+        let mut pauses = RATE_LIMIT_PAUSES.iter();
+        loop {
+            let response = send(&request).await?;
+            match (call.parse(&response), pauses.next()) {
+                (Err(SunatClientError::RateLimited), Some(pause)) => {
+                    tokio::time::sleep(*pause).await
+                }
+                (answer, _) => return answer,
+            }
+        }
+    }
+
+    /// The token of the credentials, a cached one, or a new one. One token is
+    /// requested at a time, so concurrent calls don't revoke each other's.
+    async fn token(&self, credentials: &Credentials) -> Result<String, SunatClientError> {
+        if let Some(token) = &credentials.token {
+            return Ok(token.clone());
+        }
+        let key = token_key(credentials);
+        if let Some(token) = cached_token(&key) {
+            return Ok(token);
+        }
+        let _requesting = TOKEN_REQUEST.lock().await;
+        if let Some(token) = cached_token(&key) {
+            return Ok(token);
+        }
+        let call = Call::Token {
+            url: self.security_api_url.clone(),
+        };
+        let Answer::Token(token) = Box::pin(self.exchange(&call, credentials)).await? else {
+            unreachable!("a Token call answers Token");
+        };
+        store_token(key, &token.access_token, token.expires_in);
+        Ok(token.access_token)
     }
 }
 
-async fn consult(
-    url: &str,
-    body: BodyData,
-    operation: &str,
-    credentials: &Credentials,
-) -> Result<ConsultResponse, SunatClientError> {
-    let envelope = EnvelopeData {
-        username: credentials.username.clone(),
-        password: credentials.password.clone(),
-        body,
+/// Sends the request, again once if the connection failed
+async fn send(request: &HttpRequest) -> Result<HttpResponse, SunatClientError> {
+    let build = || {
+        let mut builder = match request.method {
+            HttpMethod::Get => HTTP_CLIENT.get(&request.url),
+            HttpMethod::Post => HTTP_CLIENT.post(&request.url),
+        };
+        for (name, value) in &request.headers {
+            builder = builder.header(name, value);
+        }
+        if let Some(body) = &request.body {
+            builder = builder.body(body.clone());
+        }
+        builder
     };
-    let (status, response_body) =
-        post_soap(url, envelope.to_xml_string()?, &format!("urn:{operation}")).await?;
-    parse_soap_response::<StatusXmlResponse>(status, &response_body).map(Into::into)
-}
-
-impl From<StatusXmlResponse> for ConsultResponse {
-    fn from(value: StatusXmlResponse) -> Self {
-        match value {
-            StatusXmlResponse::Status(status) => Self::Status(ConsultStatus {
-                status_code: status.status_code,
-                status_message: status.status_message,
-                cdr_base64: status.cdr_base64,
-            }),
-            StatusXmlResponse::Fault(fault) => Self::Fault(fault),
-        }
-    }
-}
-
-impl From<SendFileXmlResponse> for SendFileResponse {
-    fn from(value: SendFileXmlResponse) -> Self {
-        match value {
-            SendFileXmlResponse::Cdr(cdr) => Self::Cdr(cdr),
-            SendFileXmlResponse::Ticket(ticket) => Self::Ticket(ticket),
-            SendFileXmlResponse::Fault(fault) => Self::Fault(fault),
-        }
-    }
-}
-
-impl From<StatusXmlResponse> for VerifyTicketResponse {
-    fn from(value: StatusXmlResponse) -> Self {
-        match value {
-            StatusXmlResponse::Status(status) => match status.cdr_base64 {
-                Some(cdr_base64) => Self::Cdr(VerifyTicketStatus {
-                    cdr_base64,
-                    status_code: status.status_code,
-                }),
-                None => Self::NoCdr {
-                    status_code: status.status_code,
-                },
-            },
-            StatusXmlResponse::Fault(fault) => Self::Fault(fault),
-        }
-    }
-}
-
-/// Sends a request and returns the HTTP status and body. A connection failure
-/// is retried once; that request never reached SUNAT, so retrying it can't
-/// register the same document twice.
-pub(crate) async fn send_request(
-    request: impl Fn() -> reqwest::RequestBuilder,
-) -> Result<(StatusCode, String), SunatClientError> {
-    let response = match request().send().await {
-        Err(error) if error.is_connect() => request().send().await?,
+    let response = match build().send().await {
+        Err(error) if error.is_connect() => build().send().await?,
         other => other?,
     };
-    let status = response.status();
-    Ok((status, response.text().await?))
-}
-
-/// POSTs a SOAP envelope
-async fn post_soap(
-    url: &str,
-    body: String,
-    soap_action: &str,
-) -> Result<(StatusCode, String), SunatClientError> {
-    send_request(|| {
-        HTTP_CLIENT
-            .post(url)
-            .body(body.clone())
-            .header("Content-Type", "text/xml; charset=utf-8")
-            .header("SOAPAction", soap_action)
+    let status = response.status().as_u16();
+    let headers = response
+        .headers()
+        .iter()
+        .filter_map(|(name, value)| Some((name.to_string(), value.to_str().ok()?.to_string())))
+        .collect();
+    Ok(HttpResponse {
+        status,
+        headers,
+        body: response.text().await?,
     })
-    .await
 }
 
-/// SUNAT reports rejections as SOAP faults with HTTP 500, so the body is
-/// parsed regardless of the status code. A non-2xx response whose body is not
-/// a SOAP response is returned as [`SunatClientError::Response`].
-fn parse_soap_response<T>(status: StatusCode, body: &str) -> Result<T, SunatClientError>
-where
-    T: FromStr<Err = anyhow::Error>,
-{
-    match T::from_str(body) {
-        Ok(response) => Ok(response),
-        Err(_) if !status.is_success() => Err(SunatClientError::Response(status)),
-        Err(error) => Err(error.into()),
+/// Tokens of each client and SOL user, reused until a minute before they expire
+static TOKENS: LazyLock<Mutex<HashMap<String, (String, Instant)>>> =
+    LazyLock::new(Default::default);
+
+/// Held while a token is requested
+static TOKEN_REQUEST: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+
+fn token_key(credentials: &Credentials) -> String {
+    let client_id = credentials.client_id.as_deref().unwrap_or_default();
+    format!("{client_id}:{}", credentials.username)
+}
+
+/// Forgets the rejected token, unless another call already replaced it
+fn forget_token(credentials: &Credentials, rejected: &str) {
+    if let Ok(mut tokens) = TOKENS.lock() {
+        let key = token_key(credentials);
+        if tokens.get(&key).is_some_and(|(token, _)| token == rejected) {
+            tokens.remove(&key);
+        }
+    }
+}
+
+fn cached_token(key: &str) -> Option<String> {
+    let tokens = TOKENS.lock().ok()?;
+    let (token, reuse_until) = tokens.get(key)?;
+    (Instant::now() < *reuse_until).then(|| token.clone())
+}
+
+fn store_token(key: String, token: &str, expires_in: u64) {
+    let reuse_until = Instant::now() + Duration::from_secs(expires_in.saturating_sub(60));
+    if let Ok(mut tokens) = TOKENS.lock() {
+        tokens.insert(key, (token.to_string(), reuse_until));
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-
-    use reqwest::StatusCode;
-
-    use super::{parse_soap_response, SendFileResponse, SunatClientError};
-    use crate::models::Status;
-    use crate::soap::send_file_response::SendFileXmlResponse;
-
-    const RESOURCES: &str = "resources/test";
+    use super::{cached_token, forget_token, store_token, token_key};
+    use crate::models::Credentials;
 
     #[test]
-    fn http_500_with_soap_fault_is_parsed() {
-        let body = fs::read_to_string(format!(
-            "{RESOURCES}/bill_service_response_fault_rechazo.xml"
-        ))
-        .expect("Could not read file");
-        let response: SendFileResponse =
-            parse_soap_response::<SendFileXmlResponse>(StatusCode::INTERNAL_SERVER_ERROR, &body)
-                .map(Into::into)
-                .expect("A SOAP fault must be returned as a response");
+    fn tokens_are_reused_until_a_minute_before_they_expire() {
+        store_token("client-a:user".into(), "token-a", 3600);
+        assert_eq!(cached_token("client-a:user").as_deref(), Some("token-a"));
 
-        let SendFileResponse::Fault(fault) = response else {
-            panic!("Expected a fault");
-        };
-        assert_eq!(fault.sunat_code(), Some(2335));
-        assert_eq!(fault.status(), Status::Rejected);
+        // Less than a minute left: request a new one
+        store_token("client-b:user".into(), "token-b", 30);
+        assert_eq!(cached_token("client-b:user"), None);
+
+        assert_eq!(cached_token("unknown"), None);
     }
 
     #[test]
-    fn http_error_without_soap_body_is_an_error() {
-        let result = parse_soap_response::<SendFileXmlResponse>(
-            StatusCode::SERVICE_UNAVAILABLE,
-            "<html><body>Service Unavailable</body></html>",
-        );
-        assert!(matches!(
-            result,
-            Err(SunatClientError::Response(StatusCode::SERVICE_UNAVAILABLE))
-        ));
+    fn only_the_rejected_token_is_forgotten() {
+        let credentials = Credentials {
+            username: "user".into(),
+            client_id: Some("client-c".into()),
+            ..Default::default()
+        };
+        store_token(token_key(&credentials), "token-c", 3600);
+
+        // Another call replaced the token it got rejected
+        forget_token(&credentials, "an-older-token");
+        assert_eq!(cached_token("client-c:user").as_deref(), Some("token-c"));
+
+        forget_token(&credentials, "token-c");
+        assert_eq!(cached_token("client-c:user"), None);
     }
 }

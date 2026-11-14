@@ -1,12 +1,15 @@
 use crate::models::Status;
 
 /// Error answer from SUNAT: a SOAP fault, or the equivalent JSON error of the REST API
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct SunatFault {
-    /// Raw `faultcode`, e.g. `soap-env:Client.0111`
+    /// SUNAT's code: the raw SOAP `faultcode` (e.g. `soap-env:Client.0111`), or
+    /// SUNAT's error code of a REST answer (e.g. `1033`)
     pub code: String,
-    /// `faultstring`
+    /// `faultstring`, or the messages of a REST answer
     pub message: String,
+    /// HTTP status of the answer, e.g. 500 for SOAP faults or 422 for REST errors
+    pub http_status: Option<u16>,
 }
 
 impl SunatFault {
@@ -46,6 +49,7 @@ mod tests {
         SunatFault {
             code: code.to_string(),
             message: message.to_string(),
+            ..Default::default()
         }
     }
 

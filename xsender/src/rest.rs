@@ -1,82 +1,29 @@
 //! SUNAT REST API used for guias de remision (GRE): an OAuth token, then the
-//! zipped document is sent and its ticket checked with that token.
-
-use std::collections::HashMap;
-use std::sync::{LazyLock, Mutex};
-use std::time::{Duration, Instant};
+//! zipped document is sent and its ticket checked with that token. Requests
+//! are built and answers parsed here; see [`crate::exchange`].
 
 use anyhow::anyhow;
 use base64::engine::general_purpose;
 use base64::Engine;
-use reqwest::StatusCode;
-use serde_json::{json, Value};
+use serde::Serialize;
+use serde_json::Value;
 
-use crate::constants::HTTP_CLIENT;
+use crate::exchange::{
+    File, HttpMethod, HttpRequest, HttpResponse, SendFileResponse, SunatClientError, Token,
+    VerifyTicketResponse, VerifyTicketStatus,
+};
 use crate::fault::SunatFault;
 use crate::models::Credentials;
-use crate::sunat_client::{
-    send_request, File, SendFileResponse, SunatClientError, VerifyTicketResponse,
-    VerifyTicketStatus,
-};
 use crate::ubl_file::sha256_hex;
 
-const TOKEN_URL: &str = "https://api-seguridad.sunat.gob.pe/v1/clientessol";
+/// Where SUNAT gives the OAuth tokens
+pub const SECURITY_API_URL: &str = "https://api-seguridad.sunat.gob.pe";
 const TOKEN_SCOPE: &str = "https://api-cpe.sunat.gob.pe";
 
-/// POST `{url}/comprobantes/{name}`. SUNAT answers with a ticket.
-pub async fn send_document(
-    url: &str,
-    file: &File,
+pub fn token_request(
+    security_api_url: &str,
     credentials: &Credentials,
-) -> Result<SendFileResponse, SunatClientError> {
-    let token = fetch_token(credentials).await?;
-    let name = file.filename.strip_suffix(".zip").unwrap_or(&file.filename);
-    let payload = json!({
-        "archivo": {
-            "nomArchivo": file.filename,
-            "arcGreZip": file.zip_base64,
-            "hashZip": hash_zip(&file.zip_base64)?,
-        }
-    })
-    .to_string();
-
-    let (status, body) = send_request(|| {
-        HTTP_CLIENT
-            .post(format!("{url}/comprobantes/{name}"))
-            .bearer_auth(&token)
-            .header("Content-Type", "application/json")
-            .body(payload.clone())
-    })
-    .await?;
-    forget_rejected_token(status, credentials);
-    parse_send_response(status, &body)
-}
-
-/// GET `{url}/comprobantes/envios/{ticket}`
-pub async fn verify_ticket(
-    url: &str,
-    ticket: &str,
-    credentials: &Credentials,
-) -> Result<VerifyTicketResponse, SunatClientError> {
-    let token = fetch_token(credentials).await?;
-    let (status, body) = send_request(|| {
-        HTTP_CLIENT
-            .get(format!("{url}/comprobantes/envios/{ticket}"))
-            .bearer_auth(&token)
-    })
-    .await?;
-    forget_rejected_token(status, credentials);
-    parse_ticket_response(status, &body)
-}
-
-/// Access tokens by client id and SOL user, with the instant they stop being reused
-static TOKENS: LazyLock<Mutex<HashMap<String, (String, Instant)>>> =
-    LazyLock::new(Default::default);
-
-/// Requests an access token with the SOL user and the API client id/secret,
-/// reusing the previous one until a minute before it expires (or until SUNAT
-/// rejects it).
-async fn fetch_token(credentials: &Credentials) -> Result<String, SunatClientError> {
+) -> Result<HttpRequest, SunatClientError> {
     let (Some(client_id), Some(client_secret)) =
         (&credentials.client_id, &credentials.client_secret)
     else {
@@ -84,64 +31,105 @@ async fn fetch_token(credentials: &Credentials) -> Result<String, SunatClientErr
             anyhow!("client_id and client_secret are required for guias de remision").into(),
         );
     };
-
-    let key = token_key(client_id, &credentials.username);
-    if let Some(token) = cached_token(&key) {
-        return Ok(token);
-    }
-
-    let (status, body) = send_request(|| {
-        HTTP_CLIENT
-            .post(format!("{TOKEN_URL}/{client_id}/oauth2/token/"))
-            .form(&[
-                ("grant_type", "password"),
-                ("scope", TOKEN_SCOPE),
-                ("client_id", client_id),
-                ("client_secret", client_secret),
-                ("username", &credentials.username),
-                ("password", &credentials.password),
-            ])
+    let form = serde_urlencoded::to_string([
+        ("grant_type", "password"),
+        ("scope", TOKEN_SCOPE),
+        ("client_id", client_id),
+        ("client_secret", client_secret),
+        ("username", &credentials.username),
+        ("password", &credentials.password),
+    ])
+    .map_err(|e| anyhow!("Invalid credentials: {e}"))?;
+    Ok(HttpRequest {
+        method: HttpMethod::Post,
+        url: format!(
+            "{security_api_url}/v1/clientessol/{}/oauth2/token/",
+            path_segment(client_id)
+        ),
+        headers: vec![(
+            "Content-Type".into(),
+            "application/x-www-form-urlencoded".into(),
+        )],
+        body: Some(form),
     })
-    .await?;
+}
 
-    let Some(json) = parse_json(&body) else {
+pub fn parse_token(response: &HttpResponse) -> Result<Token, SunatClientError> {
+    let status = response.status;
+    let Some(json) = parse_json(&response.body) else {
         return Err(SunatClientError::Response(status));
     };
-    let token = text(&json["access_token"])
+    let access_token = text(&json["access_token"])
         .ok_or_else(|| anyhow!("Could not get a SUNAT access token ({status}): {json}"))?;
     let expires_in = json["expires_in"].as_u64().unwrap_or(3600);
-    store_token(key, &token, expires_in);
-    Ok(token)
+    Ok(Token {
+        access_token,
+        expires_in,
+    })
 }
 
-fn token_key(client_id: &str, username: &str) -> String {
-    format!("{client_id}:{username}")
+/// Body of the send request. A struct, so the bytes don't depend on whether
+/// serde_json preserves the order of maps (a crate feature).
+#[derive(Serialize)]
+struct SendDocument<'a> {
+    archivo: Archivo<'a>,
 }
 
-/// A token SUNAT rejects (e.g. revoked before it expires) is not reused
-fn forget_rejected_token(status: StatusCode, credentials: &Credentials) {
-    if status != StatusCode::UNAUTHORIZED {
-        return;
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct Archivo<'a> {
+    arc_gre_zip: &'a str,
+    hash_zip: String,
+    nom_archivo: &'a str,
+}
+
+pub fn send_document_request(
+    url: &str,
+    file: &File,
+    token: &str,
+) -> Result<HttpRequest, SunatClientError> {
+    let name = file.filename.strip_suffix(".zip").unwrap_or(&file.filename);
+    let payload = SendDocument {
+        archivo: Archivo {
+            arc_gre_zip: &file.zip_base64,
+            hash_zip: hash_zip(&file.zip_base64)?,
+            nom_archivo: &file.filename,
+        },
+    };
+    Ok(HttpRequest {
+        method: HttpMethod::Post,
+        url: format!("{url}/comprobantes/{}", path_segment(name)),
+        headers: vec![
+            ("Authorization".into(), format!("Bearer {token}")),
+            ("Content-Type".into(), "application/json".into()),
+        ],
+        body: Some(serde_json::to_string(&payload).expect("the body is serializable")),
+    })
+}
+
+pub fn verify_ticket_request(url: &str, ticket: &str, token: &str) -> HttpRequest {
+    HttpRequest {
+        method: HttpMethod::Get,
+        url: format!("{url}/comprobantes/envios/{}", path_segment(ticket)),
+        headers: vec![("Authorization".into(), format!("Bearer {token}"))],
+        body: None,
     }
-    if let (Some(client_id), Ok(mut tokens)) = (&credentials.client_id, TOKENS.lock()) {
-        tokens.remove(&token_key(client_id, &credentials.username));
-    }
 }
 
-fn cached_token(key: &str) -> Option<String> {
-    let tokens = TOKENS.lock().ok()?;
-    let (token, reuse_until) = tokens.get(key)?;
-    (Instant::now() < *reuse_until).then(|| token.clone())
+/// Percent-encodes a value for a URL path: everything but A-Z a-z 0-9 - . _ ~
+fn path_segment(value: &str) -> String {
+    value
+        .bytes()
+        .map(|byte| match byte {
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'.' | b'_' | b'~' => {
+                char::from(byte).to_string()
+            }
+            _ => format!("%{byte:02X}"),
+        })
+        .collect()
 }
 
-fn store_token(key: String, token: &str, expires_in: u64) {
-    let reuse_until = Instant::now() + Duration::from_secs(expires_in.saturating_sub(60));
-    if let Ok(mut tokens) = TOKENS.lock() {
-        tokens.insert(key, (token.to_string(), reuse_until));
-    }
-}
-
-/// Hex SHA-256 of the zip, as SUNAT expects in `hashZip`
+/// Hex SHA-256 of the zip bytes
 fn hash_zip(zip_base64: &str) -> Result<String, SunatClientError> {
     let zip = general_purpose::STANDARD
         .decode(zip_base64)
@@ -149,26 +137,25 @@ fn hash_zip(zip_base64: &str) -> Result<String, SunatClientError> {
     Ok(sha256_hex(&zip))
 }
 
-fn parse_send_response(
-    status: StatusCode,
-    body: &str,
-) -> Result<SendFileResponse, SunatClientError> {
-    let Some(json) = parse_json(body) else {
+pub fn parse_send_response(response: &HttpResponse) -> Result<SendFileResponse, SunatClientError> {
+    let status = response.status;
+    let Some(json) = parse_json(&response.body).filter(|_| status < 500) else {
         return Err(SunatClientError::Response(status));
     };
     if let Some(ticket) = text(&json["numTicket"]) {
         return Ok(SendFileResponse::Ticket(ticket));
     }
-    rest_error(&json)
+    rest_error(response, &json)
         .map(SendFileResponse::Fault)
         .ok_or(SunatClientError::Response(status))
 }
 
-fn parse_ticket_response(
-    status: StatusCode,
-    body: &str,
+pub fn parse_ticket_response(
+    response: &HttpResponse,
 ) -> Result<VerifyTicketResponse, SunatClientError> {
-    let Some(json) = parse_json(body) else {
+    let status = response.status;
+    // A server error (5xx) is not an answer about the document
+    let Some(json) = parse_json(&response.body).filter(|_| status < 500) else {
         return Err(SunatClientError::Response(status));
     };
     if let Some(status_code) = text(&json["codRespuesta"]) {
@@ -180,19 +167,30 @@ fn parse_ticket_response(
         }
         if let Some(code) = text(&json["error"]["numError"]) {
             let message = text(&json["error"]["desError"]).unwrap_or_default();
-            return Ok(VerifyTicketResponse::Fault(SunatFault { code, message }));
+            return Ok(VerifyTicketResponse::Fault(SunatFault {
+                code,
+                message,
+                http_status: Some(status),
+            }));
         }
         return Ok(VerifyTicketResponse::NoCdr { status_code });
     }
-    rest_error(&json)
+    rest_error(response, &json)
         .map(VerifyTicketResponse::Fault)
         .ok_or(SunatClientError::Response(status))
 }
 
-/// SUNAT's REST error body: `{cod|status, msg|message, errors: [{cod, msg}]}`.
-/// The detailed errors are appended to the message as "cod - msg".
-fn rest_error(json: &Value) -> Option<SunatFault> {
-    let code = text(&json["cod"]).or_else(|| text(&json["status"]))?;
+/// SUNAT's REST error: `{cod|status, msg|message, errors: [{cod, msg}]}`. The
+/// fault keeps the HTTP status and SUNAT's own code: from a `cod` (or `codigo`)
+/// header if SUNAT sends one, else the first detailed error, else `cod`.
+fn rest_error(response: &HttpResponse, json: &Value) -> Option<SunatFault> {
+    let general = text(&json["cod"]).or_else(|| text(&json["status"]))?;
+    let code = response
+        .header("cod")
+        .or_else(|| response.header("codigo"))
+        .map(str::to_string)
+        .or_else(|| text(&json["errors"][0]["cod"]))
+        .unwrap_or(general);
     let mut parts: Vec<String> = text(&json["msg"])
         .or_else(|| text(&json["message"]))
         .into_iter()
@@ -213,6 +211,7 @@ fn rest_error(json: &Value) -> Option<SunatFault> {
     Some(SunatFault {
         code,
         message: parts.join("; "),
+        http_status: Some(response.status),
     })
 }
 
@@ -231,15 +230,17 @@ fn text(value: &Value) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use reqwest::StatusCode;
+    use super::{hash_zip, parse_send_response, parse_ticket_response, parse_token, token_request};
+    use crate::exchange::{HttpResponse, SendFileResponse, VerifyTicketResponse};
 
-    use super::{
-        cached_token, forget_rejected_token, hash_zip, parse_send_response, parse_ticket_response,
-        store_token,
-    };
-    use crate::models::Credentials;
-    use crate::models::Status;
-    use crate::sunat_client::{SendFileResponse, VerifyTicketResponse};
+    fn answer(status: u16, body: &str) -> HttpResponse {
+        HttpResponse {
+            status,
+            headers: vec![],
+            body: body.to_string(),
+        }
+    }
+    use crate::models::{Credentials, Status};
 
     #[test]
     fn hash_zip_is_hex_sha256_of_the_zip_bytes() {
@@ -253,18 +254,21 @@ mod tests {
     #[test]
     fn send_returns_the_ticket() {
         let body = r#"{"numTicket":"a7b3c1d2-0001","fecRecepcion":"2023-01-01T10:00:00"}"#;
-        let response = parse_send_response(StatusCode::OK, body).unwrap();
+        let response = parse_send_response(&answer(200, body)).unwrap();
         assert!(matches!(response, SendFileResponse::Ticket(ticket) if ticket == "a7b3c1d2-0001"));
     }
 
     #[test]
     fn send_returns_sunat_errors() {
         let body = r#"{"cod":"422","msg":"Unprocessable Entity","errors":[{"cod":"1033","msg":"El comprobante fue registrado previamente"}]}"#;
-        let response = parse_send_response(StatusCode::UNPROCESSABLE_ENTITY, body).unwrap();
+        let response = parse_send_response(&answer(422, body)).unwrap();
         let SendFileResponse::Fault(fault) = response else {
             panic!("Expected a fault");
         };
-        assert_eq!(fault.code, "422");
+        // Both codes: SUNAT's and the HTTP status
+        assert_eq!(fault.code, "1033");
+        assert_eq!(fault.sunat_code(), Some(1033));
+        assert_eq!(fault.http_status, Some(422));
         assert_eq!(
             fault.message,
             "Unprocessable Entity; 1033 - El comprobante fue registrado previamente"
@@ -272,14 +276,37 @@ mod tests {
     }
 
     #[test]
+    fn sunat_code_from_a_header() {
+        let mut response = answer(400, r#"{"cod":"400","msg":"Bad Request"}"#);
+        response.headers = vec![("COD".into(), "2033".into())];
+        let SendFileResponse::Fault(fault) = parse_send_response(&response).unwrap() else {
+            panic!("Expected a fault");
+        };
+        assert_eq!(
+            (fault.code.as_str(), fault.http_status),
+            ("2033", Some(400))
+        );
+    }
+
+    #[test]
+    fn without_detail_the_code_is_the_general_one() {
+        let body = r#"{"status":404,"message":"Ticket no encontrado"}"#;
+        let VerifyTicketResponse::Fault(fault) = parse_ticket_response(&answer(404, body)).unwrap()
+        else {
+            panic!("Expected a fault");
+        };
+        assert_eq!((fault.code.as_str(), fault.http_status), ("404", Some(404)));
+    }
+
+    #[test]
     fn send_without_json_body_is_an_error() {
-        assert!(parse_send_response(StatusCode::BAD_GATEWAY, "<html/>").is_err());
+        assert!(parse_send_response(&answer(502, "<html/>")).is_err());
     }
 
     #[test]
     fn ticket_with_cdr() {
         let body = r#"{"codRespuesta":"0","indCdrGenerado":"1","arcCdr":"UEsDBA=="}"#;
-        let response = parse_ticket_response(StatusCode::OK, body).unwrap();
+        let response = parse_ticket_response(&answer(200, body)).unwrap();
         let VerifyTicketResponse::Cdr(status) = response else {
             panic!("Expected a CDR");
         };
@@ -290,7 +317,7 @@ mod tests {
     #[test]
     fn ticket_in_progress() {
         let body = r#"{"codRespuesta":"98"}"#;
-        let response = parse_ticket_response(StatusCode::OK, body).unwrap();
+        let response = parse_ticket_response(&answer(200, body)).unwrap();
         assert!(
             matches!(response, VerifyTicketResponse::NoCdr { status_code } if status_code == "98")
         );
@@ -299,7 +326,7 @@ mod tests {
     #[test]
     fn ticket_with_error_and_no_cdr() {
         let body = r#"{"codRespuesta":"99","indCdrGenerado":"0","error":{"numError":"2223","desError":"El documento ya fue informado"}}"#;
-        let response = parse_ticket_response(StatusCode::OK, body).unwrap();
+        let response = parse_ticket_response(&answer(200, body)).unwrap();
         let VerifyTicketResponse::Fault(fault) = response else {
             panic!("Expected a fault");
         };
@@ -311,31 +338,50 @@ mod tests {
     #[test]
     fn ticket_not_found() {
         let body = r#"{"status":404,"message":"Ticket no encontrado"}"#;
-        let response = parse_ticket_response(StatusCode::NOT_FOUND, body).unwrap();
+        let response = parse_ticket_response(&answer(404, body)).unwrap();
         assert!(matches!(response, VerifyTicketResponse::Fault(fault) if fault.code == "404"));
     }
 
     #[test]
-    fn tokens_are_reused_until_a_minute_before_they_expire() {
-        store_token("client-a:user".into(), "token-a", 3600);
-        assert_eq!(cached_token("client-a:user").as_deref(), Some("token-a"));
-
-        // Less than a minute left: request a new one
-        store_token("client-b:user".into(), "token-b", 30);
-        assert_eq!(cached_token("client-b:user"), None);
-
-        assert_eq!(cached_token("unknown"), None);
-
-        // A rejected token is dropped
-        store_token("client-c:user".into(), "token-c", 3600);
+    fn token_request_is_a_password_grant() {
         let credentials = Credentials {
-            username: "user".into(),
-            client_id: Some("client-c".into()),
-            ..Default::default()
+            username: "20123456789MODDATOS".into(),
+            password: "pass&word".into(),
+            client_id: Some("client".into()),
+            client_secret: Some("secret".into()),
+            token: None,
         };
-        forget_rejected_token(StatusCode::OK, &credentials);
-        assert_eq!(cached_token("client-c:user").as_deref(), Some("token-c"));
-        forget_rejected_token(StatusCode::UNAUTHORIZED, &credentials);
-        assert_eq!(cached_token("client-c:user"), None);
+        let request = token_request(super::SECURITY_API_URL, &credentials).unwrap();
+        assert_eq!(
+            request.url,
+            "https://api-seguridad.sunat.gob.pe/v1/clientessol/client/oauth2/token/"
+        );
+        let body = request.body.unwrap();
+        assert!(body.starts_with("grant_type=password&scope=https%3A%2F%2Fapi-cpe.sunat.gob.pe"));
+        assert!(body.ends_with("&password=pass%26word"));
+
+        assert!(token_request(super::SECURITY_API_URL, &Credentials::default()).is_err());
+    }
+
+    #[test]
+    fn path_segments_are_percent_encoded() {
+        assert_eq!(super::path_segment("T001-1 a/b"), "T001-1%20a%2Fb");
+    }
+
+    #[test]
+    fn server_errors_are_not_answers() {
+        assert!(parse_send_response(&answer(502, r#"{"cod":"502","msg":"Bad Gateway"}"#)).is_err());
+    }
+
+    #[test]
+    fn token_answer() {
+        let token =
+            parse_token(&answer(200, r#"{"access_token":"abc","expires_in":600}"#)).unwrap();
+        assert_eq!(
+            (token.access_token.as_str(), token.expires_in),
+            ("abc", 600)
+        );
+        assert!(parse_token(&answer(401, r#"{"error":"invalid_client"}"#)).is_err());
+        assert!(parse_token(&answer(502, "<html/>")).is_err());
     }
 }

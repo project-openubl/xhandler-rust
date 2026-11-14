@@ -6,6 +6,7 @@ use crate::models::common::{Firmante, Proveedor};
 
 /// Resumen diario de boletas
 #[derive(Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct SummaryDocuments {
     pub numero: u32,
@@ -23,6 +24,7 @@ pub struct SummaryDocuments {
 
 /// Detalle de un comprobante en el resumen
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct SummaryDocumentsItem {
     /// Catalog19: "1"=Adicionar, "2"=Modificar, "3"=Anulado
@@ -32,6 +34,7 @@ pub struct SummaryDocumentsItem {
 
 /// Comprobante dentro de SummaryDocumentsItem
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct SummaryDocumentsItemComprobante {
     /// Catalog1: "03"=Boleta, "07"=NC, "08"=ND
@@ -47,6 +50,7 @@ pub struct SummaryDocumentsItemComprobante {
 
 /// Percepcion aplicada a una boleta del resumen
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct SummaryDocumentsPercepcion {
     /// Catalog22: regimen de percepcion
     pub tipo_regimen: String,
@@ -62,6 +66,7 @@ pub struct SummaryDocumentsPercepcion {
 
 /// Cliente simplificado para SummaryDocuments
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct SummaryDocumentsCliente {
     pub numero_documento_identidad: String,
@@ -70,6 +75,7 @@ pub struct SummaryDocumentsCliente {
 
 /// Comprobante afectado (para NC/ND en el resumen)
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct SummaryDocumentsComprobanteAfectado {
     pub tipo_comprobante: String,
     pub serie_numero: String,
@@ -77,6 +83,7 @@ pub struct SummaryDocumentsComprobanteAfectado {
 
 /// Valor de venta de un comprobante en el resumen
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct SummaryDocumentsValorVenta {
     pub importe_total: Decimal,
@@ -89,6 +96,7 @@ pub struct SummaryDocumentsValorVenta {
 
 /// Impuestos de un comprobante en el resumen
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct SummaryDocumentsImpuestos {
     /// Filled with 0 when missing
