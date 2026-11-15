@@ -55,8 +55,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: Swatinem/rust-cache@v2.9.3
-      - run: sudo apt-get install -y musl-tools
+      - run: sudo apt-get update -q && sudo apt-get install -y musl-tools
       - run: rustup target add x86_64-unknown-linux-musl
+      # As the release does: the tag's version, then the build
+      - run: ./hack/set-version.sh 0.0.0-ci.1
       - run: cargo build -p xhandler-cli --target x86_64-unknown-linux-musl
 
   # The WebAssembly core of the Go, Python and Java bindings (xhandler-wasm):

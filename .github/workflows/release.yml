@@ -21,6 +21,12 @@ on:
         required: true
         type: string
 
+run-name: Release ${{ github.event.release.tag_name || inputs.tag }}
+
+# One run per release at a time: two would upload to the same release
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag }}
+
 permissions:
   contents: read
 
@@ -35,9 +41,12 @@ jobs:
     steps:
       - id: version
         run: |
-          version="${TAG#v}"
-          echo "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'
-          echo "version=$version" >> "$GITHUB_OUTPUT"
+          # Same versions as release-tools' create-release
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]]; then
+            echo "::error::$TAG is not vX.Y.Z or vX.Y.Z-alpha.N, -beta.N, -rc.N"
+            exit 1
+          fi
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
 
   dist:
     needs: version
@@ -87,7 +96,7 @@ jobs:
         shell: bash
       - name: musl toolchain
         if: runner.os == 'Linux'
-        run: sudo apt-get install -y musl-tools
+        run: sudo apt-get update -q && sudo apt-get install -y musl-tools
       - run: rustup target add ${{ matrix.target }}
       - run: cargo build --release -p xhandler-cli --target ${{ matrix.target }}
       - name: Package
@@ -127,7 +136,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' | grep -qx SHA256SUMS; then
+          assets=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
+          if grep -qx SHA256SUMS <<<"$assets"; then
             echo "::notice::$TAG already has its assets"
             exit 0
           fi
@@ -160,10 +170,17 @@ jobs:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN || steps.auth.outputs.token }}
         run: |
           for crate in xhandler xhandler-cli; do
-            if curl -sf -A "project-openubl release" "https://crates.io/api/v1/crates/$crate/$VERSION" >/dev/null; then
-              echo "$crate $VERSION is already published"
-            else
-              # The version set from the tag is the only change
-              cargo publish --allow-dirty -p "$crate"
-            fi
+            # crates.io asks API clients for a User-Agent with a contact
+            status=$(curl -s -o /dev/null -w '%{http_code}' \
+              -A "project-openubl-release (https://github.com/project-openubl/xhandler-rust)" \
+              "https://crates.io/api/v1/crates/$crate/$VERSION")
+            case "$status" in
+            200) echo "$crate $VERSION is already published" ;;
+            # The version set from the tag is the only change
+            404) cargo publish --allow-dirty -p "$crate" ;;
+            *)
+              echo "::error::crates.io answered HTTP $status for $crate $VERSION"
+              exit 1
+              ;;
+            esac
           done
