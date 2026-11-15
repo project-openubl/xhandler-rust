@@ -49,3 +49,12 @@ writes `dist/`: `xhandler.wasm`, `VERSION`, `xhandler.schema.json` (JSON Schema 
 models), `models/` (the Go, Python and Java model types, from `codegen.py`) and
 `conformance/` (the cases every binding must pass: `<op>/<name>.json` with `input` and
 `expected`). The bindings copy it with `make sync`.
+
+## core.sh
+
+The release workflow attaches `dist/` to each GitHub release (`xhandler-dist-<version>.tar.gz`,
+`xhandler.wasm`, `SHA256SUMS`). [`core.sh`](core.sh) reads that format: the bindings download it
+from the tag of the core they work on and run it for `make sync CORE=<version>` (download, checksum
+verified), `make verify-core` and `make verify-release` (the committed `xhandler.wasm` is the
+released one). A change to the release format changes `core.sh` in the same pull request;
+`make -C xhandler-wasm test-core` tests it against `dist/`.
