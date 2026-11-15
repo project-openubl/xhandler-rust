@@ -228,7 +228,7 @@ async fn invoice_with_icb_precio_con_igv() {
         ..invoice_base()
     };
 
-    assert_invoice(&mut invoice, &format!("{BASE}/icb.xml")).await;
+    assert_invoice(&mut invoice, &format!("{BASE}/icb_precio_con_igv.xml")).await;
 }
 
 #[serial_test::serial]

@@ -288,7 +288,19 @@ fn dump_input<T: serde::Serialize>(defaults: &Defaults, document: &T, snapshot_f
         .with_extension("json");
     fs::create_dir_all(path.parent().expect("parent dir")).expect("Could not create dump dir");
     let json = serde_json::to_string_pretty(&input).expect("Could not serialize input");
-    fs::write(&path, json).expect("Could not write input dump");
+    // One snapshot, one case: two tests writing the same case would make the corpus depend on
+    // which test runs last (the dump directory starts empty)
+    let mut file = fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&path)
+        .unwrap_or_else(|err| {
+            panic!(
+                "Could not write the input dump {}: {err} (does another test use the snapshot {snapshot_filename}?)",
+                path.display()
+            )
+        });
+    std::io::Write::write_all(&mut file, json.as_bytes()).expect("Could not write input dump");
 }
 
 fn assert_snapshot(expected: &str, snapshot_filename: &str) {
