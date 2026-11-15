@@ -28,7 +28,7 @@ rust_decimal_macros = "1.36"
 xml = "1.4"
 zip = { version = "7.0", default-features = false, features = ["deflate"] }
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "charset", "http2"] }
-base64 = "0.22"
+base64 = "0.23"
 thiserror = "2.0"
 anyhow = "1.0"
 sha2 = "0.11"
