@@ -7,7 +7,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.1.1"
+version = "0.0.0-dev"
 edition = "2021"
 publish = false
 license = "Apache-2.0"
@@ -15,7 +15,7 @@ repository = "https://github.com/project-openubl/xhandler-rust"
 homepage = "https://project-openubl.github.io"
 
 [workspace.dependencies]
-xhandler = { path = "xhandler", version = "0.1.1", default-features = false }
+xhandler = { path = "xhandler", version = "0.0.0-dev", default-features = false }
 chrono = { version = "0.4", default-features = false, features = ["std", "serde"] }
 regex = "1.11"
 log = "0.4"

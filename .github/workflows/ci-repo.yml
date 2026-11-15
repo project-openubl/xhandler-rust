@@ -33,6 +33,8 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
       - run: cargo test
+      # What the release publishes to crates.io packages and builds
+      - run: cargo publish --workspace --dry-run
 
   # The libraries must keep building for Android and iOS (xhandler-mobile)
   mobile-targets:
@@ -46,6 +48,16 @@ jobs:
       # reqwest's TLS (ring) compiles C, so use the runner's Android NDK
       - run: cargo install cargo-ndk --locked
       - run: cargo ndk --target arm64-v8a check -p xhandler
+
+  # The release's static Linux binary of the CLI (musl) must keep building
+  cli-static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: Swatinem/rust-cache@v2.9.3
+      - run: sudo apt-get install -y musl-tools
+      - run: rustup target add x86_64-unknown-linux-musl
+      - run: cargo build -p xhandler-cli --target x86_64-unknown-linux-musl
 
   # The WebAssembly core of the Go, Python and Java bindings (xhandler-wasm):
   # the corpus generation fails if the native core disagrees with a snapshot
