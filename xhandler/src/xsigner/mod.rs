@@ -61,6 +61,21 @@ impl XSigner {
     /// Returns the original document plus the signature, as UTF-8 with a UTF-8
     /// XML declaration. The rest of the document is left untouched.
     pub fn sign(&self, key_pair: &RsaKeyPair) -> Result<Vec<u8>, SignError> {
+        let prepared = self.prepare()?;
+        let signature_value = key_pair.sign(prepared.data_to_sign())?;
+        Ok(prepared.finalize(&signature_value, key_pair.certificate_der()))
+    }
+
+    /// First step of signing with a key held elsewhere, e.g. in an HSM.
+    ///
+    /// Sign [`PreparedSignature::data_to_sign`] with RSA PKCS#1 v1.5 and SHA-256
+    /// (Java: `SHA256withRSA`; PKCS#11: `CKM_SHA256_RSA_PKCS`), then call
+    /// [`PreparedSignature::finalize`] with the signature and the certificate.
+    /// The result is the same as [`XSigner::sign`] with that key.
+    ///
+    /// Preparing is deterministic, so a stateless service can prepare once to
+    /// get the data to sign and prepare again to finalize.
+    pub fn prepare(&self) -> Result<PreparedSignature, SignError> {
         // The text is already decoded: without its declaration (which may say
         // e.g. encoding="ISO-8859-1") it is parsed as what it is, UTF-8.
         let mut document = strip_xml_declaration(&self.xml_document).to_string();
@@ -69,7 +84,7 @@ impl XSigner {
         // Reference URI="" + enveloped transform: the digest is the inclusive
         // C14N 1.0 (without comments) of the document without the signature.
         let canonical_document = c14n::canonicalize(&document)?;
-        let digest_base64 =
+        let digest_value =
             general_purpose::STANDARD.encode(Sha256::digest(canonical_document.as_bytes()));
 
         let signed_info = format!(
@@ -79,7 +94,7 @@ impl XSigner {
 <ds:Reference URI=\"\">\
 <ds:Transforms><ds:Transform Algorithm=\"http://www.w3.org/2000/09/xmldsig#enveloped-signature\"/></ds:Transforms>\
 <ds:DigestMethod Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha256\"/>\
-<ds:DigestValue>{digest_base64}</ds:DigestValue>\
+<ds:DigestValue>{digest_value}</ds:DigestValue>\
 </ds:Reference>\
 </ds:SignedInfo>"
         );
@@ -88,20 +103,58 @@ impl XSigner {
         // are the same and don't depend on where it is inserted.
         let canonical_signed_info = c14n::canonicalize(&signed_info)?;
 
-        let signature_value =
-            general_purpose::STANDARD.encode(key_pair.sign(canonical_signed_info.as_bytes())?);
-        let certificate = general_purpose::STANDARD.encode(key_pair.certificate_der());
+        Ok(PreparedSignature {
+            document,
+            position,
+            signed_info,
+            canonical_signed_info,
+            digest_value,
+        })
+    }
+}
 
+/// A document ready to be signed: see [`XSigner::prepare`].
+#[derive(Debug, Clone)]
+pub struct PreparedSignature {
+    document: String,
+    position: usize,
+    signed_info: String,
+    canonical_signed_info: String,
+    digest_value: String,
+}
+
+impl PreparedSignature {
+    /// The bytes to sign with RSA PKCS#1 v1.5 + SHA-256: the canonical
+    /// `ds:SignedInfo`.
+    pub fn data_to_sign(&self) -> &[u8] {
+        self.canonical_signed_info.as_bytes()
+    }
+
+    /// The document's `ds:DigestValue` (base64), also known before signing.
+    pub fn digest_value(&self) -> &str {
+        &self.digest_value
+    }
+
+    /// Second step: inserts the signature made over
+    /// [`PreparedSignature::data_to_sign`] and the signer's certificate (DER).
+    /// Returns the signed document as UTF-8 with a UTF-8 XML declaration.
+    pub fn finalize(mut self, signature_value: &[u8], certificate_der: &[u8]) -> Vec<u8> {
+        let signature_value = general_purpose::STANDARD.encode(signature_value);
+        let certificate = general_purpose::STANDARD.encode(certificate_der);
         let signature = format!(
             "<ds:Signature xmlns:ds=\"{DS_NS}\" Id=\"{SIGNATURE_ID}\">\
 {signed_info}\
 <ds:SignatureValue>{signature_value}</ds:SignatureValue>\
 <ds:KeyInfo><ds:X509Data><ds:X509Certificate>{certificate}</ds:X509Certificate></ds:X509Data></ds:KeyInfo>\
-</ds:Signature>"
+</ds:Signature>",
+            signed_info = self.signed_info
         );
-        document.insert_str(position, &signature);
-
-        Ok(format!("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n{document}").into_bytes())
+        self.document.insert_str(self.position, &signature);
+        format!(
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n{}",
+            self.document
+        )
+        .into_bytes()
     }
 }
 
@@ -365,6 +418,48 @@ mod tests {
     /// Each `signed/<name>.signed.xml` was produced from `signed/<name>.xml`
     /// by the previous libxml2/OpenSSL implementation; RSA PKCS#1 v1.5 is
     /// deterministic, so the output must be byte-for-byte the same.
+    /// The two-step flow (external key, e.g. an HSM) gives the same bytes as
+    /// signing with the key pair in one step.
+    #[test]
+    fn prepare_and_finalize_match_sign() {
+        let xml = fs::read_to_string(format!("{RESOURCES}/invoice_no_template.xml")).unwrap();
+        let key_pair = key_pair();
+        let signer = XSigner { xml_document: xml };
+
+        let prepared = signer.prepare().unwrap();
+        // The "external" signer: any RSA PKCS#1 v1.5 SHA-256 implementation
+        let signature_value = key_pair.sign(prepared.data_to_sign()).unwrap();
+        let two_step = prepared.finalize(&signature_value, key_pair.certificate_der());
+
+        assert_eq!(two_step, signer.sign(&key_pair).unwrap());
+    }
+
+    /// A stateless service prepares once to get the data to sign, and again
+    /// to finalize: both preparations must be identical.
+    #[test]
+    fn prepare_is_deterministic() {
+        let xml = fs::read_to_string(format!("{RESOURCES}/invoice_no_template.xml")).unwrap();
+        let signer = XSigner { xml_document: xml };
+        let first = signer.prepare().unwrap();
+        let second = signer.prepare().unwrap();
+        assert_eq!(first.data_to_sign(), second.data_to_sign());
+        assert_eq!(first.digest_value(), second.digest_value());
+    }
+
+    /// The digest is known before signing and ends up in the signed document.
+    #[test]
+    fn prepare_exposes_the_digest_value() {
+        let xml = fs::read_to_string(format!("{RESOURCES}/invoice_no_template.xml")).unwrap();
+        let key_pair = key_pair();
+        let prepared = XSigner { xml_document: xml }.prepare().unwrap();
+        let digest_value = prepared.digest_value().to_string();
+        let signature_value = key_pair.sign(prepared.data_to_sign()).unwrap();
+        let signed =
+            String::from_utf8(prepared.finalize(&signature_value, key_pair.certificate_der()))
+                .unwrap();
+        assert!(signed.contains(&format!("<ds:DigestValue>{digest_value}</ds:DigestValue>")));
+    }
+
     #[test]
     fn sign_matches_previous_implementation() {
         let mut checked = 0;
