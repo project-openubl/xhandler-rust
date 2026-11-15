@@ -72,3 +72,5 @@ jobs:
         uses: ./.github/actions/install-dependencies
       - run: cargo check -p xhandler --no-default-features --target wasm32-wasip1
       - run: make -C xhandler-wasm dist
+      # core.sh, which the libraries download to sync and verify the core
+      - run: make -C xhandler-wasm test-core

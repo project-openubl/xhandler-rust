@@ -6,6 +6,9 @@
 #   dist/models/                model types generated for each language
 #   dist/conformance/           cases every binding must pass
 #
+# core.sh is what the libraries run to sync and verify the core of a release; `make test-core`
+# tests it against dist/.
+#
 # Run from the workspace root: make -C xhandler-wasm dist
 
 ROOT := $(abspath ..)
@@ -13,7 +16,7 @@ DIST := $(ROOT)/dist
 DUMP := $(ROOT)/target/xbuilder-input-dump
 JAVA_MODELS_PACKAGE := io.github.project.openubl.xbuilder.models
 
-.PHONY: dist wasm schema models conformance clean
+.PHONY: dist wasm schema models conformance test-core clean
 
 dist: wasm schema models conformance
 
@@ -40,6 +43,10 @@ conformance:
 	cd $(ROOT) && XBUILDER_SKIP_SUNAT=true XBUILDER_DUMP_INPUT=$(DUMP) cargo test -q -p xhandler --test xbuilder
 	cd $(ROOT) && cargo run -q -p xhandler-wasm --example corpus -- \
 		$(DUMP) $(ROOT) $(DIST)/conformance
+
+# core.sh, which the libraries use to sync and verify the core, against a release made from dist/
+test-core:
+	./test-core.sh $(DIST)
 
 clean:
 	rm -rf $(DIST) $(DUMP)
