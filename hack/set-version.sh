@@ -5,7 +5,7 @@ set -euo pipefail
 version="$1"
 cd "$(dirname "$0")/.."
 # [workspace.package]'s version, and the version of the xhandler dependency of xhandler-cli
-perl -0pi -e "s/(\[workspace\.package\]\nversion = )\"[^\"]*\"/\$1\"$version\"/; s/(xhandler = \{ path = \"xhandler\", version = )\"[^\"]*\"/\$1\"$version\"/" Cargo.toml
+perl -0pi -e "s/(\[workspace\.package\]\r?\nversion = )\"[^\"]*\"/\$1\"$version\"/; s/(xhandler = \{ path = \"xhandler\", version = )\"[^\"]*\"/\$1\"$version\"/" Cargo.toml
 grep -q "^version = \"$version\"" Cargo.toml
 grep -q "xhandler = { path = \"xhandler\", version = \"$version\"" Cargo.toml
 # Cargo.lock records the workspace versions too
