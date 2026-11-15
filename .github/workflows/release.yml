@@ -103,10 +103,13 @@ jobs:
             cp "target/${{ matrix.target }}/release/xhandler" "$name/"
             tar -czf "$name.tar.gz" "$name"
           fi
+      # Only the archive: the folder it was built from has the same name prefix
       - uses: actions/upload-artifact@v7.0.2
         with:
           name: cli-${{ matrix.target }}
-          path: xhandler-${{ env.VERSION }}-*
+          path: |
+            xhandler-${{ env.VERSION }}-${{ matrix.target }}.tar.gz
+            xhandler-${{ env.VERSION }}-${{ matrix.target }}.zip
 
   upload:
     needs: [dist, cli]
