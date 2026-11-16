@@ -204,7 +204,10 @@ where
 
 impl<T> FillCreditNote for T
 where
-    T: NoteComprobanteAfectadoTipoFillRule + CreditNoteTipoNotaFillRule,
+    T: NoteComprobanteAfectadoTipoFillRule
+        + CreditNoteTipoNotaFillRule
+        + InvoiceFormaPagoTotalFillRule
+        + InvoiceFormaPagoTipoFillRule,
 {
     fn fill_credit_note(&mut self, _: &Defaults) {
         let mut changed = true;
@@ -213,6 +216,9 @@ where
             let results = [
                 NoteComprobanteAfectadoTipoFillRule::fill(self).unwrap_or_default(),
                 CreditNoteTipoNotaFillRule::fill(self).unwrap_or_default(),
+                // Only a given forma_pago (type 13): there is no default
+                InvoiceFormaPagoTotalFillRule::fill(self).unwrap_or_default(),
+                InvoiceFormaPagoTipoFillRule::fill(self).unwrap_or_default(),
             ];
 
             changed = results.contains(&true);

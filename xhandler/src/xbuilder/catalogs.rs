@@ -309,6 +309,9 @@ catalog! {
         Bonificacion = "08",
         DisminucionEnElValor = "09",
         OtrosConceptos = "10",
+        AjustesDeOperacionesDeExportacion = "11",
+        AjustesAfectosAlIvap = "12",
+        AjustesMontosYFechasDePago = "13",
     }
 }
 
@@ -317,6 +320,8 @@ catalog! {
         InteresPorMora = "01",
         AumentoEnElValor = "02",
         PenalidadOtrosConceptos = "03",
+        AjustesDeOperacionesDeExportacion = "10",
+        AjustesAfectosAlIvap = "11",
     }
 }
 
