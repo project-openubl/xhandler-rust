@@ -9,12 +9,14 @@
 //!   `{"error": {"kind": "...", "message": "..."}}`.
 //! - `xh_free(ptr, len)` releases the request and the response.
 
+mod answer;
 mod builder;
 mod bytes;
 mod ops;
 mod sender;
 mod signer;
 
+pub use answer::{ConsultResult, SendFileAnswer, VerifyResult};
 pub use builder::DefaultsInput;
 pub use ops::invoke;
 

@@ -3,7 +3,8 @@
 #   dist/xhandler.wasm          the WebAssembly module
 #   dist/VERSION                version reported by the `version` op
 #   dist/xhandler.schema.json   JSON Schema of the models
-#   dist/models/                model types generated for each language
+#   dist/models/                model types generated for each language: the
+#                               documents (xbuilder), and in xsender/ the SUNAT answers
 #   dist/conformance/           cases every binding must pass
 #
 # core.sh is what the libraries run to sync and verify the core of a release; `make test-core`
@@ -14,7 +15,9 @@
 ROOT := $(abspath ..)
 DIST := $(ROOT)/dist
 DUMP := $(ROOT)/target/xbuilder-input-dump
+SCHEMA := $(DIST)/xhandler.schema.json
 JAVA_MODELS_PACKAGE := io.github.project.openubl.xbuilder.models
+JAVA_ANSWERS_PACKAGE := io.github.project.openubl.xsender.models.answers
 
 .PHONY: dist wasm schema models conformance test-core clean
 
@@ -28,15 +31,18 @@ wasm:
 
 schema:
 	mkdir -p $(DIST)
-	cd $(ROOT) && cargo run -q -p xhandler-wasm --features schema --example schema > $(DIST)/xhandler.schema.json
+	cd $(ROOT) && cargo run -q -p xhandler-wasm --features schema --example schema > $(SCHEMA)
 
 models: schema
-	rm -rf $(DIST)/models && mkdir -p $(DIST)/models/go $(DIST)/models/python
-	python3 codegen.py $(DIST)/xhandler.schema.json go $(DIST)/models/go/models_gen.go
+	rm -rf $(DIST)/models && mkdir -p $(DIST)/models/go/xsender $(DIST)/models/python/xsender
+	python3 codegen.py $(SCHEMA) xbuilder go $(DIST)/models/go/models_gen.go
+	python3 codegen.py $(SCHEMA) xsender go $(DIST)/models/go/xsender/models_gen.go
 	# gofmt when Go is installed; the Go repository formats it on sync anyway
-	command -v gofmt >/dev/null && gofmt -w $(DIST)/models/go/models_gen.go || true
-	python3 codegen.py $(DIST)/xhandler.schema.json python $(DIST)/models/python/models.py
-	python3 codegen.py $(DIST)/xhandler.schema.json java $(DIST)/models/java $(JAVA_MODELS_PACKAGE)
+	command -v gofmt >/dev/null && gofmt -w $(DIST)/models/go || true
+	python3 codegen.py $(SCHEMA) xbuilder python $(DIST)/models/python/models.py
+	python3 codegen.py $(SCHEMA) xsender python $(DIST)/models/python/xsender/models_gen.py
+	python3 codegen.py $(SCHEMA) xbuilder java $(DIST)/models/java $(JAVA_MODELS_PACKAGE)
+	python3 codegen.py $(SCHEMA) xsender java $(DIST)/models/java/xsender $(JAVA_ANSWERS_PACKAGE)
 
 conformance:
 	rm -rf $(DUMP) $(DIST)/conformance

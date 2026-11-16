@@ -46,7 +46,8 @@ make -C xhandler-wasm dist
 ```
 
 writes `dist/`: `xhandler.wasm`, `VERSION`, `xhandler.schema.json` (JSON Schema of the
-models), `models/` (the Go, Python and Java model types, from `codegen.py`) and
+models), `models/` (the Go, Python and Java types, from `codegen.py`: the documents, and in
+`xsender/` the answers of the SUNAT services) and
 `conformance/` (the cases every binding must pass: `<op>/<name>.json` with `input` and
 `expected`). The bindings copy it with `make sync`.
 
