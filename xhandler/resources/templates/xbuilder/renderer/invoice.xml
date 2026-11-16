@@ -1,5 +1,3 @@
-{%- import "ubl/standard/include/document_line.xml" as macros_document_line -%}
-{%- import "ubl/standard/include/address.xml" as macros_address -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
     {%- include "ubl/standard/include/namespaces.xml" -%}
@@ -11,8 +9,8 @@
     {%- endif %}
     <cbc:InvoiceTypeCode listID="{{tipo_operacion}}" listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">{{tipo_comprobante}}</cbc:InvoiceTypeCode>
     {%- if leyendas %}
-    {%- for key,value in leyendas %}
-    <cbc:Note languageLocaleID="{{key}}"><![CDATA[{{value | cdata | safe}}]]></cbc:Note>
+    {%- for key in leyendas | keys | sort %}
+    <cbc:Note languageLocaleID="{{key}}"><![CDATA[{{leyendas[key] | cdata | safe}}]]></cbc:Note>
     {%- endfor %}
     {%- endif %}
     {%- if observaciones %}
@@ -44,7 +42,7 @@
     {%- if direccion_entrega %}
     <cac:Delivery>
         <cac:DeliveryLocation>
-            <cac:Address>{{ macros_address::address(direccion=direccion_entrega) }}
+            <cac:Address>{{ <address direccion={direccion_entrega} /> }}
             </cac:Address>
         </cac:DeliveryLocation>
     </cac:Delivery>
@@ -165,7 +163,7 @@
         <cbc:MultiplierFactorNumeric>{{it.factor | round_decimal}}</cbc:MultiplierFactorNumeric>
         {%- endif %}
         <cbc:Amount currencyID="{{moneda}}">{{it.monto | round_decimal}}</cbc:Amount>
-        <cbc:BaseAmount currencyID="{{moneda}}">{{it.monto_base | default(value=it.monto) | round_decimal}}</cbc:BaseAmount>
+        <cbc:BaseAmount currencyID="{{moneda}}">{{it.monto_base | default(value=it.monto, boolean=true) | round_decimal}}</cbc:BaseAmount>
     </cac:AllowanceCharge>
     {%- endfor %}
     {%- for it in descuentos %}
@@ -202,7 +200,7 @@
     {%- for it in detalles %}
     <cac:InvoiceLine>
         <cbc:ID>{{loop.index}}</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="{{it.unidad_medida}}" unitCodeListAgencyName="United Nations Economic Commission for Europe" unitCodeListID="UN/ECE rec 20">{{it.cantidad}}</cbc:InvoicedQuantity>{{ macros_document_line::line(item=it) }}
+        <cbc:InvoicedQuantity unitCode="{{it.unidad_medida}}" unitCodeListAgencyName="United Nations Economic Commission for Europe" unitCodeListID="UN/ECE rec 20">{{it.cantidad}}</cbc:InvoicedQuantity>{{ <line item={it} moneda={moneda} /> }}
     </cac:InvoiceLine>
     {%- endfor %}
 </Invoice>
