@@ -1,5 +1,3 @@
-{%- import "ubl/standard/include/document_line.xml" as macros_document_line -%}
-{%- import "ubl/standard/include/address.xml" as macros_address -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <DebitNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:DebitNote-2"
     {%- include "ubl/standard/include/namespaces.xml" -%}
@@ -25,7 +23,7 @@
     {%- for it in detalles %}
     <cac:DebitNoteLine>
         <cbc:ID>{{loop.index}}</cbc:ID>
-        <cbc:DebitedQuantity unitCode="{{it.unidad_medida}}" unitCodeListAgencyName="United Nations Economic Commission for Europe" unitCodeListID="UN/ECE rec 20">{{it.cantidad}}</cbc:DebitedQuantity>{{ macros_document_line::line(item=it) }}
+        <cbc:DebitedQuantity unitCode="{{it.unidad_medida}}" unitCodeListAgencyName="United Nations Economic Commission for Europe" unitCodeListID="UN/ECE rec 20">{{it.cantidad}}</cbc:DebitedQuantity>{{ <line item={it} moneda={moneda} /> }}
     </cac:DebitNoteLine>
     {%- endfor %}
 </DebitNote>

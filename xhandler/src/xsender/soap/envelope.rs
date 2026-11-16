@@ -1,5 +1,5 @@
 use serde::Serialize;
-use tera::{Context, Result};
+use tera::{Context, TeraResult as Result};
 
 use crate::xsender::constants::TEMPLATES;
 use crate::xsender::models::{ConsultDocument, ValidateCdp};
@@ -185,8 +185,7 @@ mod tests {
 
         let xml = message.to_xml_string().unwrap();
         assert!(xml.contains("<serieCDP>F001</serieCDP>"));
-        // Tera escapes "/" as "&#x2F;", which XML parsers decode back
-        assert!(xml.contains("<fechaEmision>31&#x2F;01&#x2F;2022</fechaEmision>"));
+        assert!(xml.contains("<fechaEmision>31/01/2022</fechaEmision>"));
         assert!(xml.contains("<nroAutorizacion></nroAutorizacion>"));
     }
 
