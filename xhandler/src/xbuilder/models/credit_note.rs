@@ -5,7 +5,7 @@ use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
 use crate::xbuilder::models::common::{
-    Cliente, Detalle, DocumentoRelacionado, Firmante, Guia, Proveedor, TotalImporteNote,
+    Cliente, Detalle, DocumentoRelacionado, Firmante, FormaPago, Guia, Proveedor, TotalImporteNote,
     TotalImpuestos,
 };
 
@@ -47,4 +47,10 @@ pub struct CreditNote {
     pub documentos_relacionados: Vec<DocumentoRelacionado>,
 
     pub orden_compra: Option<String>,
+
+    /// The corrected amount owed and installments of the factura it
+    /// modifies: required for `tipo_nota` "13" (Catalog9, ajustes de montos
+    /// y/o fechas de pago) and refused for the others. Unlike an invoice's,
+    /// it isn't filled in when missing.
+    pub forma_pago: Option<FormaPago>,
 }

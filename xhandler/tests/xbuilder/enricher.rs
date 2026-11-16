@@ -406,6 +406,54 @@ fn invalid_tipo_nota_is_an_error() {
 }
 
 #[test]
+fn credit_note_forma_pago_only_for_tipo_13_with_cuotas() {
+    let cuota = CuotaPago {
+        importe: Decimal::TEN,
+        fecha_pago: NaiveDate::from_ymd_opt(2099, 1, 1).unwrap(),
+    };
+    let forma_pago = |cuotas: Vec<CuotaPago>| {
+        Some(FormaPago {
+            tipo: None,
+            total: None,
+            cuotas,
+        })
+    };
+    for (tipo_nota, forma_pago, error) in [
+        (
+            "01",
+            forma_pago(vec![cuota.clone()]),
+            "forma_pago: only for tipo_nota 13",
+        ),
+        (
+            "13",
+            forma_pago(vec![]),
+            "forma_pago: tipo_nota 13 needs its cuotas",
+        ),
+        ("13", None, "tipo_nota 13 needs forma_pago with its cuotas"),
+    ] {
+        let mut credit_note = CreditNote {
+            tipo_nota: Some(tipo_nota.into()),
+            forma_pago,
+            ..Default::default()
+        };
+        let enriched = credit_note.enrich(&defaults_base());
+        assert_eq!(enriched.unwrap_err().to_string(), error, "{tipo_nota}");
+    }
+}
+
+#[test]
+fn credit_note_forma_pago_is_never_defaulted() {
+    let mut credit_note = CreditNote {
+        tipo_nota: Some("01".into()),
+        ..Default::default()
+    };
+    credit_note
+        .enrich(&defaults_base())
+        .expect("Could not enrich");
+    assert!(credit_note.forma_pago.is_none());
+}
+
+#[test]
 fn cargo_tipo_by_name() {
     let invoice = enrich(Invoice {
         cargos: vec![Cargo {

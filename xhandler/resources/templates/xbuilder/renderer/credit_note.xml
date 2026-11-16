@@ -18,6 +18,9 @@
     {%- include "ubl/common/signature.xml" %}
     {% include "ubl/standard/include/supplier.xml" %}
     {% include "ubl/standard/include/customer.xml" -%}
+    {%- if forma_pago %}
+    {%- include "ubl/standard/include/payment_terms.xml" -%}
+    {%- endif -%}
     {% include "ubl/standard/include/tax_total.xml" %}
     <cac:LegalMonetaryTotal>
         {%- include "ubl/standard/include/monetary_total.xml" %}

@@ -77,7 +77,22 @@ impl Validate for Invoice {
 impl Validate for CreditNote {
     fn validate(&self) -> Result<()> {
         check_sales_document(&self.cliente, &self.detalles)?;
-        check::<Catalog9>("tipo_nota", self.tipo_nota.as_deref())
+        check::<Catalog9>("tipo_nota", self.tipo_nota.as_deref())?;
+        // Type 13 adjusts the installments of a factura al crédito: only it
+        // carries a forma_pago, and with them.
+        let ajuste = self
+            .tipo_nota
+            .as_deref()
+            .and_then(|tipo| Catalog9::from_code(tipo).ok())
+            == Some(Catalog9::AjustesMontosYFechasDePago);
+        match &self.forma_pago {
+            Some(_) if !ajuste => Err(anyhow!("forma_pago: only for tipo_nota 13")),
+            Some(forma_pago) if forma_pago.cuotas.is_empty() => {
+                Err(anyhow!("forma_pago: tipo_nota 13 needs its cuotas"))
+            }
+            None if ajuste => Err(anyhow!("tipo_nota 13 needs forma_pago with its cuotas")),
+            _ => Ok(()),
+        }
     }
 }
 

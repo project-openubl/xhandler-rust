@@ -7,6 +7,7 @@ mod common;
 mod catalog_names;
 mod credit_note;
 mod credit_note_atributos;
+mod credit_note_forma_pago;
 mod credit_note_isc;
 mod credit_note_orden_compra;
 mod credit_note_product_codes;
