@@ -5,8 +5,8 @@
     {%- include "ubl/standard/include/ubl_extensions.xml" -%}
     {%- include "ubl/standard/include/general_data.xml" -%}
     {%- if leyendas %}
-    {%- for key,value in leyendas %}
-    <cbc:Note languageLocaleID="{{key}}"><![CDATA[{{value | cdata | safe}}]]></cbc:Note>
+    {%- for key in leyendas | keys | sort %}
+    <cbc:Note languageLocaleID="{{key}}"><![CDATA[{{leyendas[key] | cdata | safe}}]]></cbc:Note>
     {%- endfor %}
     {%- endif %}
     <cbc:DocumentCurrencyCode listID="ISO 4217 Alpha" listAgencyName="United Nations Economic Commission for Europe" listName="Currency">{{moneda}}</cbc:DocumentCurrencyCode>

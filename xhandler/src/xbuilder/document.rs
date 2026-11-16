@@ -135,6 +135,29 @@ mod tests {
         assert!(document.render().unwrap().contains("Contado"));
     }
 
+    /// Leyendas come from a HashMap; they render sorted by code so the same
+    /// document always gives the same XML
+    #[test]
+    fn document_renders_leyendas_sorted_by_code() {
+        let spec = SPEC.replace(
+            r#""detalles""#,
+            r#""leyendas": {"2007": "c", "1000": "a", "2006": "b", "1002": "d"}, "detalles""#,
+        );
+        let json = format!(r#"{{"kind": "Invoice", "spec": {spec}}}"#);
+        let mut document: Document = serde_json::from_str(&json).unwrap();
+        document.enrich(&defaults()).unwrap();
+
+        for _ in 0..10 {
+            let xml = document.render().unwrap();
+            let codes: Vec<&str> = xml
+                .split(r#"<cbc:Note languageLocaleID=""#)
+                .skip(1)
+                .map(|note| &note[..4])
+                .collect();
+            assert_eq!(codes, ["1000", "1002", "2006", "2007"]);
+        }
+    }
+
     #[test]
     fn document_rejects_unknown_kinds() {
         let error = serde_json::from_str::<Document>(r#"{"kind": "Factura", "spec": {}}"#)

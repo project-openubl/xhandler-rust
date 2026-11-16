@@ -57,7 +57,10 @@ pub fn currency(value: &Value, _: Kwargs, _: &State) -> TeraResult<Value> {
 /// the only sequence that needs care is `]]>`, which would close the section.
 /// Use it as `{{ value | cdata | safe }}` so Tera's autoescape doesn't run on it.
 pub fn cdata(value: &Value, _: Kwargs, _: &State) -> TeraResult<Value> {
-    if value.is_none() || value.is_undefined() {
+    if value.is_undefined() {
+        return Err(Error::message("cdata was called on an undefined variable"));
+    }
+    if value.is_none() {
         return Ok("".into());
     }
     match value.as_str() {

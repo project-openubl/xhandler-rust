@@ -9,8 +9,8 @@
     {%- endif %}
     <cbc:InvoiceTypeCode listID="{{tipo_operacion}}" listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">{{tipo_comprobante}}</cbc:InvoiceTypeCode>
     {%- if leyendas %}
-    {%- for key,value in leyendas %}
-    <cbc:Note languageLocaleID="{{key}}"><![CDATA[{{value | cdata | safe}}]]></cbc:Note>
+    {%- for key in leyendas | keys | sort %}
+    <cbc:Note languageLocaleID="{{key}}"><![CDATA[{{leyendas[key] | cdata | safe}}]]></cbc:Note>
     {%- endfor %}
     {%- endif %}
     {%- if observaciones %}
