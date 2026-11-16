@@ -128,6 +128,7 @@ impl SendResult {
                     "status": metadata.status().to_string(),
                     "description": metadata.description,
                     "notes": metadata.notes,
+                    "document_description": metadata.document_description,
                 }),
                 metadata.status(),
             ),
