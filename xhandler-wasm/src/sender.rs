@@ -12,6 +12,7 @@ use xhandler::xsender::prelude::{
     prepare_send_file as prepare_send_file_of, prepare_send_pack as prepare_send_pack_of,
 };
 
+use crate::answer::{Cdr, ConsultResult, NoCdr, SendFileAnswer, TokenAnswer, VerifyResult};
 use crate::bytes::Base64;
 use crate::ops::{parse_input, Error, ErrorKind, OpResult};
 
@@ -313,67 +314,52 @@ impl TryFrom<CallJson> for Call {
 }
 
 fn answer_json(answer: Answer) -> OpResult {
-    Ok(match answer {
+    let value = match answer {
         Answer::SendFile(response) => {
-            match SendFileAggregatedResponse::try_from(response).map_err(cdr_error)? {
-                SendFileAggregatedResponse::Cdr(zip, cdr) => json!({ "cdr": cdr_json(&zip, &cdr) }),
-                SendFileAggregatedResponse::Ticket(ticket) => json!({ "ticket": ticket }),
-                SendFileAggregatedResponse::Fault(fault) => json!({ "fault": fault_json(&fault) }),
-            }
+            let response = SendFileAggregatedResponse::try_from(response).map_err(cdr_error)?;
+            to_json(match response {
+                SendFileAggregatedResponse::Cdr(zip, cdr) => {
+                    SendFileAnswer::Cdr(Cdr::new(zip, cdr))
+                }
+                SendFileAggregatedResponse::Ticket(ticket) => SendFileAnswer::Ticket(ticket),
+                SendFileAggregatedResponse::Fault(fault) => SendFileAnswer::Fault(fault.into()),
+            })
         }
         Answer::VerifyTicket(response) => {
-            match VerifyTicketAggregatedResponse::try_from(response).map_err(cdr_error)? {
-                VerifyTicketAggregatedResponse::Cdr(status, cdr) => {
-                    let mut cdr_value = cdr_json(&status.cdr_base64, &cdr);
-                    cdr_value["status_code"] = status.status_code.into();
-                    json!({ "cdr": cdr_value })
+            let response = VerifyTicketAggregatedResponse::try_from(response).map_err(cdr_error)?;
+            to_json(match response {
+                VerifyTicketAggregatedResponse::Cdr(status, cdr) => VerifyResult::Cdr(Cdr {
+                    status_code: Some(status.status_code),
+                    ..Cdr::new(status.cdr_base64, cdr)
+                }),
+                VerifyTicketAggregatedResponse::NoCdr { status_code } => {
+                    VerifyResult::NoCdr(NoCdr {
+                        status: Status::from_code_str(&status_code).into(),
+                        status_code,
+                    })
                 }
-                VerifyTicketAggregatedResponse::NoCdr { status_code } => json!({ "no_cdr": {
-                    "status_code": status_code,
-                    "status": Status::from_code_str(&status_code).to_string(),
-                }}),
-                VerifyTicketAggregatedResponse::Fault(fault) => {
-                    json!({ "fault": fault_json(&fault) })
-                }
-            }
+                VerifyTicketAggregatedResponse::Fault(fault) => VerifyResult::Fault(fault.into()),
+            })
         }
-        Answer::Consult(ConsultResponse::Status(status)) => json!({ "status": {
-            "status_code": status.status_code,
-            "status_message": status.status_message,
-            "cdr_zip": status.cdr_base64,
-        }}),
-        Answer::Consult(ConsultResponse::Fault(fault)) => json!({ "fault": fault_json(&fault) }),
-        Answer::Token(token) => json!({ "token": {
-            "access_token": token.access_token,
-            "expires_in": token.expires_in,
-        }}),
-    })
+        Answer::Consult(ConsultResponse::Status(status)) => {
+            to_json(ConsultResult::Status(status.into()))
+        }
+        Answer::Consult(ConsultResponse::Fault(fault)) => {
+            to_json(ConsultResult::Fault(fault.into()))
+        }
+        Answer::Token(token) => to_json(TokenAnswer::Token {
+            access_token: token.access_token,
+            expires_in: token.expires_in,
+        }),
+    };
+    Ok(value)
+}
+
+fn to_json(answer: impl Serialize) -> Value {
+    serde_json::to_value(answer).expect("answers are serializable")
 }
 
 /// The CDR zip of the answer can't be read
 fn cdr_error(error: FileSenderError) -> Error {
     Error::new(ErrorKind::Response, error)
-}
-
-fn cdr_json(zip: &str, cdr: &CdrMetadata) -> Value {
-    json!({
-        "zip": zip,
-        "response_code": cdr.response_code,
-        "description": cdr.description,
-        "notes": cdr.notes,
-        "document_description": cdr.document_description,
-        "status": cdr.status().to_string(),
-    })
-}
-
-/// `code` is SUNAT's code as given (e.g. "soap-env:Client.0111" or "1033"),
-/// `sunat_code` its number (111) and `http_status` the status of the answer
-fn fault_json(fault: &SunatFault) -> Value {
-    json!({
-        "code": fault.code,
-        "sunat_code": fault.sunat_code(),
-        "http_status": fault.http_status,
-        "message": fault.message,
-        "status": fault.status().to_string(),
-    })
 }

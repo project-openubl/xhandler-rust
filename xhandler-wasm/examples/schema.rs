@@ -4,15 +4,21 @@
 use schemars::generate::SchemaSettings;
 use schemars::JsonSchema;
 use xhandler::xbuilder::prelude::Document;
-use xhandler_wasm::DefaultsInput;
+use xhandler_wasm::{ConsultResult, DefaultsInput, SendFileAnswer, VerifyResult};
 
-/// Root of the schema: references every type the bindings need.
+/// Root of the schema: references every type the bindings need. codegen.py
+/// generates the types reachable from `document` and `defaults` into the
+/// xbuilder package of each binding, and the answers of `parse` into its
+/// xsender package.
 #[allow(dead_code)]
 #[derive(JsonSchema)]
 #[schemars(title = "Xhandler")]
 struct Root {
     document: Document,
     defaults: DefaultsInput,
+    send_file: SendFileAnswer,
+    verify_ticket: VerifyResult,
+    consult: ConsultResult,
 }
 
 fn main() {
