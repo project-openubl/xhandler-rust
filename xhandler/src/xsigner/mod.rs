@@ -63,7 +63,7 @@ impl XSigner {
     pub fn sign(&self, key_pair: &RsaKeyPair) -> Result<Vec<u8>, SignError> {
         let prepared = self.prepare()?;
         let signature_value = key_pair.sign(prepared.data_to_sign())?;
-        Ok(prepared.finalize(&signature_value, key_pair.certificate_der()))
+        prepared.finalize(&signature_value, key_pair.certificate_der())
     }
 
     /// First step of signing with a key held elsewhere, e.g. in an HSM.
@@ -138,7 +138,16 @@ impl PreparedSignature {
     /// Second step: inserts the signature made over
     /// [`PreparedSignature::data_to_sign`] and the signer's certificate (DER).
     /// Returns the signed document as UTF-8 with a UTF-8 XML declaration.
-    pub fn finalize(mut self, signature_value: &[u8], certificate_der: &[u8]) -> Vec<u8> {
+    ///
+    /// Fails with [`SignError::Invalid`] when the signature doesn't verify
+    /// with the certificate's public key (e.g. the external signer used
+    /// another key), so a document SUNAT would reject is never produced.
+    pub fn finalize(
+        mut self,
+        signature_value: &[u8],
+        certificate_der: &[u8],
+    ) -> Result<Vec<u8>, SignError> {
+        verify_signature(self.data_to_sign(), signature_value, certificate_der)?;
         let signature_value = general_purpose::STANDARD.encode(signature_value);
         let certificate = general_purpose::STANDARD.encode(certificate_der);
         let signature = format!(
@@ -150,12 +159,44 @@ impl PreparedSignature {
             signed_info = self.signed_info
         );
         self.document.insert_str(self.position, &signature);
-        format!(
+        Ok(format!(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n{}",
             self.document
         )
-        .into_bytes()
+        .into_bytes())
     }
+}
+
+/// RSA PKCS#1 v1.5 + SHA-256 verification of `signature_value` over `data`
+/// with the public key of an X.509 certificate (DER).
+fn verify_signature(
+    data: &[u8],
+    signature_value: &[u8],
+    certificate_der: &[u8],
+) -> Result<(), SignError> {
+    use rsa::pkcs1v15::{Signature, VerifyingKey};
+    use rsa::pkcs8::DecodePublicKey;
+    use rsa::signature::Verifier;
+    use x509_cert::der::{Decode, Encode};
+
+    let invalid_certificate =
+        |e: &dyn std::fmt::Display| SignError::Invalid(format!("Invalid certificate: {e}"));
+    let certificate =
+        x509_cert::Certificate::from_der(certificate_der).map_err(|e| invalid_certificate(&e))?;
+    let public_key_info = certificate
+        .tbs_certificate()
+        .subject_public_key_info()
+        .to_der()
+        .map_err(|e| invalid_certificate(&e))?;
+    let public_key = rsa::PublicKey::from_public_key_der(&public_key_info)
+        .map_err(|e| invalid_certificate(&e))?;
+    let signature = Signature::try_from(signature_value)
+        .map_err(|_| SignError::Invalid("Invalid signature value".into()))?;
+    VerifyingKey::<Sha256>::new(public_key)
+        .verify(data, &signature)
+        .map_err(|_| {
+            SignError::Invalid("The signature does not match the certificate's public key".into())
+        })
 }
 
 /// Returns the byte offset where the signature goes: inside the first
@@ -415,9 +456,6 @@ mod tests {
         assert_valid_signature(&signed);
     }
 
-    /// Each `signed/<name>.signed.xml` was produced from `signed/<name>.xml`
-    /// by the previous libxml2/OpenSSL implementation; RSA PKCS#1 v1.5 is
-    /// deterministic, so the output must be byte-for-byte the same.
     /// The two-step flow (external key, e.g. an HSM) gives the same bytes as
     /// signing with the key pair in one step.
     #[test]
@@ -429,9 +467,28 @@ mod tests {
         let prepared = signer.prepare().unwrap();
         // The "external" signer: any RSA PKCS#1 v1.5 SHA-256 implementation
         let signature_value = key_pair.sign(prepared.data_to_sign()).unwrap();
-        let two_step = prepared.finalize(&signature_value, key_pair.certificate_der());
+        let two_step = prepared
+            .finalize(&signature_value, key_pair.certificate_der())
+            .unwrap();
 
         assert_eq!(two_step, signer.sign(&key_pair).unwrap());
+    }
+
+    /// A signature made with another key than the certificate's is refused.
+    #[test]
+    fn finalize_rejects_a_signature_from_another_key() {
+        use rsa::pkcs1v15::SigningKey;
+        use rsa::pkcs8::DecodePrivateKey;
+        use rsa::signature::{SignatureEncoding, Signer};
+
+        let xml = fs::read_to_string(format!("{RESOURCES}/invoice_no_template.xml")).unwrap();
+        let prepared = XSigner { xml_document: xml }.prepare().unwrap();
+        let pem = fs::read_to_string(format!("{RESOURCES}/other_private.key")).unwrap();
+        let other_key = SigningKey::<Sha256>::new(PrivateKey::from_pkcs8_pem(&pem).unwrap());
+        let signature_value = other_key.sign(prepared.data_to_sign()).to_vec();
+
+        let result = prepared.finalize(&signature_value, key_pair().certificate_der());
+        assert!(matches!(result, Err(SignError::Invalid(_))));
     }
 
     /// A stateless service prepares once to get the data to sign, and again
@@ -454,12 +511,18 @@ mod tests {
         let prepared = XSigner { xml_document: xml }.prepare().unwrap();
         let digest_value = prepared.digest_value().to_string();
         let signature_value = key_pair.sign(prepared.data_to_sign()).unwrap();
-        let signed =
-            String::from_utf8(prepared.finalize(&signature_value, key_pair.certificate_der()))
-                .unwrap();
+        let signed = String::from_utf8(
+            prepared
+                .finalize(&signature_value, key_pair.certificate_der())
+                .unwrap(),
+        )
+        .unwrap();
         assert!(signed.contains(&format!("<ds:DigestValue>{digest_value}</ds:DigestValue>")));
     }
 
+    /// Each `signed/<name>.signed.xml` was produced from `signed/<name>.xml`
+    /// by the previous libxml2/OpenSSL implementation; RSA PKCS#1 v1.5 is
+    /// deterministic, so the output must be byte-for-byte the same.
     #[test]
     fn sign_matches_previous_implementation() {
         let mut checked = 0;
