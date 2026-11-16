@@ -59,6 +59,11 @@ fn send_invoice_to_sunat_beta() {
         stdout.contains("description"),
         "output should contain description: {stdout}"
     );
+    // For guías, the URL their printed QR encodes; null for a factura
+    assert!(
+        stdout.contains("\"document_description\""),
+        "output should contain document_description: {stdout}"
+    );
 
     // CDR should be saved to default path (<file>.zip)
     assert!(

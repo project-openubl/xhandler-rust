@@ -110,7 +110,7 @@ Sends a signed XML to SUNAT. Automatically determines the correct endpoint and p
 
 - **CDR (immediate response)** — For Invoice, CreditNote, DebitNote, DespatchAdvice, Perception, Retention:
   - Writes CDR XML to the path specified by `-o` (if provided)
-  - Prints CDR metadata to stdout as JSON: `{ "response_code": "0", "description": "La Factura...", "notes": [...] }`
+  - Prints CDR metadata to stdout as JSON: `{ "response_code": "0", "description": "La Factura...", "notes": [...], "document_description": null }` (for a guía de remisión, `document_description` is the URL its printed QR encodes)
 
 - **Ticket (async response)** — For SummaryDocuments, VoidedDocuments:
   - Prints ticket ID to stdout: `{ "ticket": "1234567890" }`

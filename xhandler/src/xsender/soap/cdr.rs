@@ -11,6 +11,10 @@ pub struct CdrMetadata {
     pub response_code: String,
     pub description: String,
     pub notes: Vec<String>,
+    /// `cac:DocumentReference/cbc:DocumentDescription`. For an accepted guía
+    /// de remisión, the URL its printed copy's QR code must encode; `None`
+    /// for other documents.
+    pub document_description: Option<String>,
 }
 
 impl CdrMetadata {
@@ -34,6 +38,7 @@ impl FromStr for CdrMetadata {
         let mut response_code: Option<String> = None;
         let mut description: Option<String> = None;
         let mut notes: Vec<String> = Vec::new();
+        let mut document_description: Option<String> = None;
 
         walk_xml(s, |path, text| match path {
             // ApplicationResponse/cac:DocumentResponse/cac:Response/cbc:*
@@ -45,6 +50,17 @@ impl FromStr for CdrMetadata {
                     response_code.get_or_insert(text.trim().to_string());
                 } else if element.is(CBC_NS, "Description") {
                     description.get_or_insert(text.trim().to_string());
+                }
+            }
+            // ApplicationResponse/cac:DocumentResponse/cac:DocumentReference/cbc:DocumentDescription
+            [_, document_response, document_reference, element]
+                if document_response.is(CAC_NS, "DocumentResponse")
+                    && document_reference.is(CAC_NS, "DocumentReference")
+                    && element.is(CBC_NS, "DocumentDescription") =>
+            {
+                let text = text.trim();
+                if !text.is_empty() {
+                    document_description.get_or_insert(text.to_string());
                 }
             }
             // ApplicationResponse/cbc:Note
@@ -59,6 +75,7 @@ impl FromStr for CdrMetadata {
                 description: description.unwrap_or_default(),
                 response_code,
                 notes,
+                document_description,
             }),
             None => Err(anyhow!("Could not find the response code inside the CDR")),
         }
@@ -99,6 +116,7 @@ mod tests {
             "La Factura numero F001-00000587, ha sido aceptada"
         );
         assert!(cdr.notes.is_empty());
+        assert_eq!(cdr.document_description, None);
     }
 
     #[test]
@@ -119,6 +137,23 @@ mod tests {
             .last()
             .unwrap()
             .starts_with("4252 - El dato ingresado como atributo @listName es incorrecto."));
+    }
+
+    #[test]
+    fn read_cdr_of_a_guia_with_its_qr_link() {
+        // Shaped as SUNAT's GRE manual describes the CDR of a guía: SUNAT
+        // beta has no guías, so it can't be captured from there
+        let file_content = fs::read_to_string(format!("{RESOURCES}/R-20123456789-09-T001-1.xml"))
+            .expect("Could not read file");
+        let cdr = CdrMetadata::from_str(&file_content).expect("Could not read Cdr");
+
+        assert_eq!(cdr.response_code, "0");
+        assert_eq!(
+            cdr.document_description.as_deref(),
+            Some(
+                "https://e-factura.sunat.gob.pe/v1/contribuyente/gre/comprobantes/descargaqr?hashqr=abc123"
+            )
+        );
     }
 
     #[test]

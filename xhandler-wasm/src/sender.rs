@@ -361,6 +361,7 @@ fn cdr_json(zip: &str, cdr: &CdrMetadata) -> Value {
         "response_code": cdr.response_code,
         "description": cdr.description,
         "notes": cdr.notes,
+        "document_description": cdr.document_description,
         "status": cdr.status().to_string(),
     })
 }

@@ -107,6 +107,7 @@ pub fn verify_ticket_output(
                     "status": cdr_status.to_string(),
                     "description": metadata.description,
                     "notes": metadata.notes,
+                    "document_description": metadata.document_description,
                 }),
                 cdr_status,
             ))
