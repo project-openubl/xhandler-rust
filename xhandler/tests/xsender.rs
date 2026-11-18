@@ -18,11 +18,9 @@ lazy_static::lazy_static! {
 }
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[tokio::test]
 async fn send_invoice() {
-    if skip_sunat() {
-        return;
-    }
     let file_path = format!("{BASE}/12345678912-01-F001-1.xml");
     let xml_file = UblFile::from_path(&file_path).expect("File not found");
 
@@ -50,11 +48,9 @@ async fn send_invoice() {
 }
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[tokio::test]
 async fn send_voided_documents() {
-    if skip_sunat() {
-        return;
-    }
     let file_path = format!("{BASE}/12345678912-RA-20200328-1.xml");
     let xml_file = UblFile::from_path(&file_path).expect("File not found");
 
@@ -102,11 +98,9 @@ async fn send_voided_documents() {
 /// SUNAT only accepts packs in production; beta answers with a fault
 /// (EXCEPCION), like in xhandler-java's billService_sendPack test.
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[tokio::test]
 async fn send_pack() {
-    if skip_sunat() {
-        return;
-    }
     let files = ["12345678912-01-F001-1.xml", "12345678912-RA-20200328-1.xml"]
         .map(|name| UblFile::from_path(format!("{BASE}/{name}")).unwrap());
 
@@ -121,13 +115,6 @@ async fn send_pack() {
         SendFileAggregatedResponse::Fault(fault) => assert_eq!(fault.status(), Status::Exception),
         SendFileAggregatedResponse::Cdr(..) => panic!("A pack is answered with a ticket"),
     }
-}
-
-/// `XBUILDER_SKIP_SUNAT=true` skips these tests: they only talk to SUNAT beta
-fn skip_sunat() -> bool {
-    std::env::var("XBUILDER_SKIP_SUNAT")
-        .map(|value| matches!(value.to_lowercase().as_str(), "1" | "true" | "yes"))
-        .unwrap_or(false)
 }
 
 /// SUNAT beta answers HTTP 401 to requests sent right after another: waits

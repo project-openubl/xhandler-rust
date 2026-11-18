@@ -1,11 +1,19 @@
 name: SUNAT beta
 
-# The full test suite sending the documents to SUNAT beta. Off the PR path:
-# beta is slow (requests 3 s apart) and often down
+# The full test suite, sending to SUNAT beta (the ignored tests included).
+# Off the PR path: beta is slow (requests 3 s apart) and often down. A
+# failure opens (or comments on) an issue labeled sunat-beta
 on:
   schedule:
     - cron: "0 6 * * *"
   workflow_dispatch: { }
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sunat-beta
+  cancel-in-progress: false
 
 env:
   CI: true
@@ -13,9 +21,32 @@ env:
 jobs:
   cargo-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: Swatinem/rust-cache@v2.9.3
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
-      - run: cargo test
+      - run: cargo test -- --include-ignored
+
+  report-failure:
+    needs: cargo-test
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Open or update the tracking issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          issue=$(gh issue list --label sunat-beta --state open --json number --jq '.[0].number')
+          if [ -n "$issue" ]; then
+            gh issue comment "$issue" --body "Failed again: $RUN_URL"
+          else
+            gh label create sunat-beta --color B60205 --description "Nightly SUNAT beta tests" 2>/dev/null || true
+            gh issue create --label sunat-beta --title "Nightly SUNAT beta tests are failing" \
+              --body "The nightly run of sunat-beta.yml failed: $RUN_URL. SUNAT beta may be down (e.g. fault 0135) or a change broke what SUNAT accepts. Close this issue when it passes again."
+          fi

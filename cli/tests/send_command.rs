@@ -17,19 +17,10 @@ fn assert_valid_zip(path: &std::path::Path) {
 
 // --- End-to-end send tests against SUNAT beta ---
 
-/// `XBUILDER_SKIP_SUNAT=true` skips these tests: they only talk to SUNAT beta
-fn skip_sunat() -> bool {
-    std::env::var("XBUILDER_SKIP_SUNAT")
-        .map(|value| matches!(value.to_lowercase().as_str(), "1" | "true" | "yes"))
-        .unwrap_or(false)
-}
-
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[test]
 fn send_invoice_to_sunat_beta() {
-    if skip_sunat() {
-        return;
-    }
     // Copy input XML to temp so the default CDR .zip goes to temp dir
     let temp_dir = std::env::temp_dir();
     let input_path = temp_dir.join("openubl_send_test_invoice.xml");
@@ -87,11 +78,9 @@ fn send_invoice_to_sunat_beta() {
 }
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[test]
 fn send_invoice_to_sunat_beta_saves_cdr() {
-    if skip_sunat() {
-        return;
-    }
     let temp_dir = std::env::temp_dir();
     let cdr_path = temp_dir.join("openubl_send_test_cdr.zip");
 
@@ -124,11 +113,9 @@ fn send_invoice_to_sunat_beta_saves_cdr() {
 }
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[test]
 fn send_voided_documents_to_sunat_beta() {
-    if skip_sunat() {
-        return;
-    }
     let output = Command::new(BINARY)
         .args([
             "send",

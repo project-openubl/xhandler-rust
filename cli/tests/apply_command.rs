@@ -21,13 +21,6 @@ fn assert_valid_zip(path: &std::path::Path) {
     );
 }
 
-/// `XBUILDER_SKIP_SUNAT=true` skips the tests that send to SUNAT beta
-fn skip_sunat() -> bool {
-    std::env::var("XBUILDER_SKIP_SUNAT")
-        .map(|value| matches!(value.to_lowercase().as_str(), "1" | "true" | "yes"))
-        .unwrap_or(false)
-}
-
 /// Copy input YAML to temp dir and return (input_path, base_name) for derived paths.
 fn setup_temp_input(name: &str) -> std::path::PathBuf {
     let temp_dir = std::env::temp_dir();
@@ -42,11 +35,9 @@ fn setup_temp_input(name: &str) -> std::path::PathBuf {
 }
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[test]
 fn apply_without_save_xml_does_not_create_unsigned() {
-    if skip_sunat() {
-        return;
-    }
     let input_path = setup_temp_input("openubl_apply_no_unsigned.yaml");
     let temp_dir = std::env::temp_dir();
     let unsigned_path = temp_dir.join("openubl_apply_no_unsigned.yaml.unsigned.xml");
@@ -104,11 +95,9 @@ fn apply_without_save_xml_does_not_create_unsigned() {
 }
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[test]
 fn apply_with_save_xml_creates_unsigned() {
-    if skip_sunat() {
-        return;
-    }
     let input_path = setup_temp_input("openubl_apply_with_unsigned.yaml");
     let temp_dir = std::env::temp_dir();
     let unsigned_path = temp_dir.join("openubl_apply_with_unsigned.yaml.unsigned.xml");
@@ -184,11 +173,9 @@ fn apply_with_save_xml_creates_unsigned() {
 }
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[test]
 fn apply_with_custom_output_paths() {
-    if skip_sunat() {
-        return;
-    }
     let input_path = setup_temp_input("openubl_apply_custom.yaml");
     let temp_dir = std::env::temp_dir();
     let custom_unsigned = temp_dir.join("openubl_custom_unsigned.xml");
@@ -238,6 +225,58 @@ fn apply_with_custom_output_paths() {
     let _ = std::fs::remove_file(&custom_unsigned);
     let _ = std::fs::remove_file(&custom_signed);
     let _ = std::fs::remove_file(&custom_cdr);
+}
+
+#[test]
+fn apply_dry_run_with_custom_output_paths() {
+    let input_path = setup_temp_input("openubl_apply_dryrun_custom.yaml");
+    let temp_dir = std::env::temp_dir();
+    let custom_unsigned = temp_dir.join("openubl_dryrun_custom_unsigned.xml");
+    let custom_signed = temp_dir.join("openubl_dryrun_custom_signed.xml");
+
+    let _ = std::fs::remove_file(&custom_unsigned);
+    let _ = std::fs::remove_file(&custom_signed);
+
+    let output = Command::new(BINARY)
+        .args([
+            "apply",
+            "-f",
+            input_path.to_str().unwrap(),
+            "--beta",
+            "--dry-run",
+            "--save-xml",
+            custom_unsigned.to_str().unwrap(),
+            "--save-signed-xml",
+            custom_signed.to_str().unwrap(),
+        ])
+        .env_remove("XHANDLER_USERNAME")
+        .env_remove("XHANDLER_PASSWORD")
+        .env_remove("XHANDLER_PRIVATE_KEY")
+        .env_remove("XHANDLER_CERTIFICATE")
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        .output()
+        .expect("failed to execute xhandler apply");
+
+    assert!(
+        output.status.success(),
+        "dry-run should succeed, stderr: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let unsigned_content = std::fs::read_to_string(&custom_unsigned).unwrap();
+    assert!(
+        !unsigned_content.contains("ds:Signature"),
+        "unsigned XML should not contain ds:Signature"
+    );
+    let signed_content = std::fs::read_to_string(&custom_signed).unwrap();
+    assert!(
+        signed_content.contains("ds:Signature"),
+        "signed XML should contain ds:Signature"
+    );
+
+    let _ = std::fs::remove_file(&input_path);
+    let _ = std::fs::remove_file(&custom_unsigned);
+    let _ = std::fs::remove_file(&custom_signed);
 }
 
 #[test]
