@@ -18,6 +18,7 @@ fn assert_valid_zip(path: &std::path::Path) {
 // --- End-to-end send tests against SUNAT beta ---
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[test]
 fn send_invoice_to_sunat_beta() {
     // Copy input XML to temp so the default CDR .zip goes to temp dir
@@ -77,6 +78,7 @@ fn send_invoice_to_sunat_beta() {
 }
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[test]
 fn send_invoice_to_sunat_beta_saves_cdr() {
     let temp_dir = std::env::temp_dir();
@@ -111,6 +113,7 @@ fn send_invoice_to_sunat_beta_saves_cdr() {
 }
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[test]
 fn send_voided_documents_to_sunat_beta() {
     let output = Command::new(BINARY)

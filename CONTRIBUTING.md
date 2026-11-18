@@ -15,7 +15,7 @@ O abre el repositorio en el [devcontainer](.devcontainer/README.md).
 
 ```shell
 cargo build
-XBUILDER_SKIP_SUNAT=true cargo test                 # sin enviar los documentos de xbuilder a la SUNAT beta
+XBUILDER_SKIP_SUNAT=true cargo test                 # sin enviar nada a la SUNAT beta (como el CI)
 cargo test -p xhandler --test xbuilder invoice_     # tests de xbuilder que coinciden con un nombre
 cargo fmt --check
 cargo clippy --all-targets --all-features -- -D warnings

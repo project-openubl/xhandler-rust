@@ -32,7 +32,10 @@ jobs:
       - uses: Swatinem/rust-cache@v2.9.3
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
+      # Offline: sunat-beta.yml sends to SUNAT beta nightly, or run it on the branch
       - run: cargo test
+        env:
+          XBUILDER_SKIP_SUNAT: true
       # What the release publishes to crates.io packages and builds
       - run: cargo publish --workspace --dry-run
 

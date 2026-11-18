@@ -18,6 +18,7 @@ lazy_static::lazy_static! {
 }
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[tokio::test]
 async fn send_invoice() {
     let file_path = format!("{BASE}/12345678912-01-F001-1.xml");
@@ -47,6 +48,7 @@ async fn send_invoice() {
 }
 
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[tokio::test]
 async fn send_voided_documents() {
     let file_path = format!("{BASE}/12345678912-RA-20200328-1.xml");
@@ -96,6 +98,7 @@ async fn send_voided_documents() {
 /// SUNAT only accepts packs in production; beta answers with a fault
 /// (EXCEPCION), like in xhandler-java's billService_sendPack test.
 #[serial_test::serial]
+#[ignore = "sends to SUNAT beta (sunat-beta.yml runs it)"]
 #[tokio::test]
 async fn send_pack() {
     let files = ["12345678912-01-F001-1.xml", "12345678912-RA-20200328-1.xml"]
