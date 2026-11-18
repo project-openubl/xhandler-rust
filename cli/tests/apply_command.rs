@@ -21,6 +21,13 @@ fn assert_valid_zip(path: &std::path::Path) {
     );
 }
 
+/// `XBUILDER_SKIP_SUNAT=true` skips the tests that send to SUNAT beta
+fn skip_sunat() -> bool {
+    std::env::var("XBUILDER_SKIP_SUNAT")
+        .map(|value| matches!(value.to_lowercase().as_str(), "1" | "true" | "yes"))
+        .unwrap_or(false)
+}
+
 /// Copy input YAML to temp dir and return (input_path, base_name) for derived paths.
 fn setup_temp_input(name: &str) -> std::path::PathBuf {
     let temp_dir = std::env::temp_dir();
@@ -37,6 +44,9 @@ fn setup_temp_input(name: &str) -> std::path::PathBuf {
 #[serial_test::serial]
 #[test]
 fn apply_without_save_xml_does_not_create_unsigned() {
+    if skip_sunat() {
+        return;
+    }
     let input_path = setup_temp_input("openubl_apply_no_unsigned.yaml");
     let temp_dir = std::env::temp_dir();
     let unsigned_path = temp_dir.join("openubl_apply_no_unsigned.yaml.unsigned.xml");
@@ -96,6 +106,9 @@ fn apply_without_save_xml_does_not_create_unsigned() {
 #[serial_test::serial]
 #[test]
 fn apply_with_save_xml_creates_unsigned() {
+    if skip_sunat() {
+        return;
+    }
     let input_path = setup_temp_input("openubl_apply_with_unsigned.yaml");
     let temp_dir = std::env::temp_dir();
     let unsigned_path = temp_dir.join("openubl_apply_with_unsigned.yaml.unsigned.xml");
@@ -173,6 +186,9 @@ fn apply_with_save_xml_creates_unsigned() {
 #[serial_test::serial]
 #[test]
 fn apply_with_custom_output_paths() {
+    if skip_sunat() {
+        return;
+    }
     let input_path = setup_temp_input("openubl_apply_custom.yaml");
     let temp_dir = std::env::temp_dir();
     let custom_unsigned = temp_dir.join("openubl_custom_unsigned.xml");

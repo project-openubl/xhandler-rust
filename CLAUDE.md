@@ -47,7 +47,7 @@ IGV=VAT, ISC=excise tax, ICB=bag tax, CDR=SUNAT receipt, detalle=line item, prov
 
 xbuilder integration tests are one test binary, `xhandler/tests/xbuilder/` (`main.rs` declares a module per file), snapshot-compared against `xhandler/tests/resources/xbuilder/`. `xhandler/tests/xsender.rs` sends to SUNAT beta. xsender/xsigner unit tests are inline `#[cfg(test)]`, with fixtures in `xhandler/tests/resources/{xsender,xsigner}/`.
 
-xbuilder test switches: `XBUILDER_SKIP_SUNAT=true` skips sending to SUNAT beta (snapshot + XSD still run); `XBUILDER_SNAPSHOT_UPDATE=true` rewrites snapshots with the rendered XML. If SUNAT beta is down (e.g. fault 0135), tests retry, then skip the SUNAT step.
+xbuilder test switches: `XBUILDER_SKIP_SUNAT=true` skips sending to SUNAT beta (snapshot + XSD still run; also skips `xsender.rs` and the CLI's send and apply tests). CI sets it; `sunat-beta.yml` sends to beta nightly; `XBUILDER_SNAPSHOT_UPDATE=true` rewrites snapshots with the rendered XML.
 
 ## Internal language
 

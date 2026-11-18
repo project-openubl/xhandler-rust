@@ -1,0 +1,21 @@
+name: SUNAT beta
+
+# The full test suite sending the documents to SUNAT beta. Off the PR path:
+# beta is slow (requests 3 s apart) and often down
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch: { }
+
+env:
+  CI: true
+
+jobs:
+  cargo-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: Swatinem/rust-cache@v2.9.3
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+      - run: cargo test

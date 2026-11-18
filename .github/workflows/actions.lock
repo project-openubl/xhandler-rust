@@ -13,6 +13,9 @@ workflows:
         - 'actions/upload-artifact@v7.0.2'
         - 'rust-lang/crates-io-auth-action@v1.0.6'
         - 'swatinem/rust-cache@v2.9.3'
+    '.github/workflows/sunat-beta.yml':
+        - 'actions/checkout@v7.0.1'
+        - 'swatinem/rust-cache@v2.9.3'
     '.github/workflows/verify-pr-title.yaml': []
 dependencies:
     'actions/checkout@v7.0.1':

@@ -32,7 +32,10 @@ jobs:
       - uses: Swatinem/rust-cache@v2.9.3
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
+      # SUNAT beta is slow and often down: sunat-beta.yml sends to it nightly
       - run: cargo test
+        env:
+          XBUILDER_SKIP_SUNAT: true
       # What the release publishes to crates.io packages and builds
       - run: cargo publish --workspace --dry-run
 
