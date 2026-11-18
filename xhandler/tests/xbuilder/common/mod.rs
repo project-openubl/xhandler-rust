@@ -8,7 +8,8 @@ use xhandler::xbuilder::prelude::*;
 use libxml::schemas::SchemaParserContext;
 use libxml::schemas::SchemaValidationContext;
 use xhandler::xsender::prelude::{
-    Credentials, DocumentType, FileSender, SendFileAggregatedResponse, UblFile, Urls,
+    Credentials, DocumentType, FileSender, FileSenderError, SendFileAggregatedResponse,
+    SendFileResponseWrapper, SunatClientError, SunatFault, UblFile, Urls,
 };
 use xhandler::xsigner::{RsaKeyPair, XSigner};
 
@@ -353,11 +354,9 @@ async fn assert_sunat(xml: &[u8]) {
 
     let xml_file = UblFile::from_bytes(xml).expect("Signed XML must be valid");
 
-    wait_for_sunat().await;
-    let result = CLIENT
-        .send_file(&xml_file)
-        .await
-        .expect("Could not get a valid response");
+    let Some(result) = send_to_sunat(&xml_file).await else {
+        return;
+    };
 
     let document_type = xml_file
         .metadata()
@@ -389,6 +388,70 @@ async fn assert_sunat(xml: &[u8]) {
             assert!(result)
         }
     };
+}
+
+/// Pauses before resending a file SUNAT beta could not take; the first try
+/// has no pause
+const SUNAT_RETRY_PAUSES: [u64; 3] = [5, 15, 30];
+
+/// Sends the file to SUNAT beta, resending it while SUNAT beta is down: no
+/// connection, or one of its "El sistema no puede responder su solicitud"
+/// faults (e.g. 0135, its queue is down). `None` when it stays down: the
+/// document was never judged, so the test does not fail on SUNAT's outage
+async fn send_to_sunat(xml_file: &UblFile) -> Option<SendFileResponseWrapper> {
+    let mut outage = String::new();
+    for pause in std::iter::once(0).chain(SUNAT_RETRY_PAUSES) {
+        if pause > 0 {
+            println!("SUNAT beta is down ({outage}); resending in {pause} s");
+            tokio::time::sleep(std::time::Duration::from_secs(pause)).await;
+        }
+
+        wait_for_sunat().await;
+        match CLIENT.send_file(xml_file).await {
+            Ok(result) => match &result.response {
+                SendFileAggregatedResponse::Fault(fault) if is_sunat_unavailable(fault) => {
+                    outage = format!("fault {}: {}", fault.code, fault.message);
+                }
+                _ => return Some(result),
+            },
+            Err(FileSenderError::SunatClient(
+                err @ (SunatClientError::HttpClient(_)
+                | SunatClientError::Response(500..)
+                | SunatClientError::RateLimited),
+            )) => {
+                outage = format!("{err:?}");
+            }
+            Err(err) => panic!("Could not get a valid response: {err:?}"),
+        }
+    }
+
+    eprintln!("WARNING: SUNAT beta stayed down, the document was not sent to SUNAT: {outage}");
+    None
+}
+
+/// SUNAT's "El sistema no puede responder su solicitud" codes: its own
+/// services are down, the document was not looked at
+fn is_sunat_unavailable(fault: &SunatFault) -> bool {
+    let code = fault.code.rsplit('.').next().unwrap_or_default();
+    let code = if code.chars().all(|c| c.is_ascii_digit()) && !code.is_empty() {
+        code
+    } else {
+        fault.message.trim()
+    };
+    matches!(
+        code,
+        "0109"
+            | "0130"
+            | "0131"
+            | "0132"
+            | "0133"
+            | "0134"
+            | "0135"
+            | "0136"
+            | "0137"
+            | "0138"
+            | "0200"
+    )
 }
 
 /// SUNAT beta answers HTTP 401 to requests sent right after another: waits
