@@ -88,8 +88,9 @@ impl RsaKeyPair {
         self.certificate.to_pem(LineEnding::LF).map_err(key_error)
     }
 
-    /// RSA PKCS#1 v1.5 signature with SHA-256
-    pub(crate) fn sign(&self, data: &[u8]) -> Result<Vec<u8>, SignError> {
+    /// RSA PKCS#1 v1.5 signature with SHA-256: what an external signer does
+    /// with [`PreparedSignature::data_to_sign`](crate::xsigner::PreparedSignature::data_to_sign).
+    pub fn sign(&self, data: &[u8]) -> Result<Vec<u8>, SignError> {
         let signature = self.signing_key.try_sign(data).map_err(key_error)?;
         Ok(signature.to_vec())
     }
