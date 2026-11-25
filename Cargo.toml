@@ -19,7 +19,7 @@ xhandler = { path = "xhandler", version = "0.0.0-dev", default-features = false 
 chrono = { version = "0.4", default-features = false, features = ["std", "serde"] }
 regex = "1.11"
 log = "0.4"
-tera = { version = "1.20", default-features = false }
+tera = { version = "2.4", default-features = false }
 static-files = "0.3"
 lazy_static = "1.5"
 serde = { version = "1.0", features = ["derive"] }
