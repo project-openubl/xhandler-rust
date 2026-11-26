@@ -1,4 +1,4 @@
-{%- macro address(direccion) -%}
+{%- component address(direccion) -%}
                     {%- if direccion.ubigeo %}
                     <cbc:ID>{{direccion.ubigeo}}</cbc:ID>
                     {%- endif %}
@@ -27,4 +27,4 @@
                         <cbc:IdentificationCode>{{direccion.codigo_pais}}</cbc:IdentificationCode>
                     </cac:Country>
                     {%- endif %}
-{%- endmacro address -%}
+{%- endcomponent address -%}

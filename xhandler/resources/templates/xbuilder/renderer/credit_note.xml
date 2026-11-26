@@ -1,5 +1,3 @@
-{%- import "ubl/standard/include/document_line.xml" as macros_document_line -%}
-{%- import "ubl/standard/include/address.xml" as macros_address -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <CreditNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2"
     {%- include "ubl/standard/include/namespaces.xml" -%}
@@ -28,7 +26,7 @@
     {%- for it in detalles %}
     <cac:CreditNoteLine>
         <cbc:ID>{{loop.index}}</cbc:ID>
-        <cbc:CreditedQuantity unitCode="{{it.unidad_medida}}" unitCodeListAgencyName="United Nations Economic Commission for Europe" unitCodeListID="UN/ECE rec 20">{{it.cantidad}}</cbc:CreditedQuantity>{{ macros_document_line::line(item=it) }}
+        <cbc:CreditedQuantity unitCode="{{it.unidad_medida}}" unitCodeListAgencyName="United Nations Economic Commission for Europe" unitCodeListID="UN/ECE rec 20">{{it.cantidad}}</cbc:CreditedQuantity>{{ <document_line item={it} moneda={moneda}/> }}
     </cac:CreditNoteLine>
     {%- endfor %}
 </CreditNote>

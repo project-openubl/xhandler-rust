@@ -1,4 +1,4 @@
-{%- macro tax_total(amount, moneda, id, name, code, percent="") -%}
+{%- component tax_total(amount, moneda, id, name, code, percent="") -%}
         <cac:TaxTotal>
             <cbc:TaxAmount currencyID="{{moneda}}">{{amount}}</cbc:TaxAmount>
             <cac:TaxSubtotal>
@@ -15,7 +15,7 @@
                 </cac:TaxCategory>
             </cac:TaxSubtotal>
         </cac:TaxTotal>
-{%- endmacro tax_total -%}
+{%- endcomponent tax_total -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <SummaryDocuments xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:SummaryDocuments-1"
                   xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
@@ -99,18 +99,18 @@
             <cbc:Amount currencyID="{{it.comprobante.moneda}}">{{it.comprobante.valor_venta.otros_cargos}}</cbc:Amount>
         </cac:AllowanceCharge>
         {%- endif %}
-        {{ self::tax_total(amount=it.comprobante.impuestos.igv, percent=it.comprobante.impuestos.igv_tasa, moneda=it.comprobante.moneda, id="1000", name="IGV", code="VAT") }}
+        {{ <tax_total amount={it.comprobante.impuestos.igv} percent={it.comprobante.impuestos.igv_tasa} moneda={it.comprobante.moneda} id="1000" name="IGV" code="VAT"/> }}
         {%- if it.comprobante.impuestos.icb is gt0 %}
-        {{ self::tax_total(amount=it.comprobante.impuestos.icb, moneda=it.comprobante.moneda, id="7152", name="ICBPER", code="OTH") }}
+        {{ <tax_total amount={it.comprobante.impuestos.icb} moneda={it.comprobante.moneda} id="7152" name="ICBPER" code="OTH"/> }}
         {%- endif %}
         {%- if it.comprobante.impuestos.isc is gt0 %}
-        {{ self::tax_total(amount=it.comprobante.impuestos.isc, moneda=it.comprobante.moneda, id="2000", name="ISC", code="EXC") }}
+        {{ <tax_total amount={it.comprobante.impuestos.isc} moneda={it.comprobante.moneda} id="2000" name="ISC" code="EXC"/> }}
         {%- endif %}
         {%- if it.comprobante.impuestos.ivap is gt0 %}
-        {{ self::tax_total(amount=it.comprobante.impuestos.ivap, moneda=it.comprobante.moneda, id="1016", name="IVAP", code="VAT") }}
+        {{ <tax_total amount={it.comprobante.impuestos.ivap} moneda={it.comprobante.moneda} id="1016" name="IVAP" code="VAT"/> }}
         {%- endif %}
         {%- if it.comprobante.impuestos.otros is gt0 %}
-        {{ self::tax_total(amount=it.comprobante.impuestos.otros, moneda=it.comprobante.moneda, id="9999", name="OTROS", code="OTH") }}
+        {{ <tax_total amount={it.comprobante.impuestos.otros} moneda={it.comprobante.moneda} id="9999" name="OTROS" code="OTH"/> }}
         {%- endif %}
     </sac:SummaryDocumentsLine>
     {%- endfor %}

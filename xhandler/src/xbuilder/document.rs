@@ -44,7 +44,7 @@ impl Enrich for Document {
 }
 
 impl Renderer for Document {
-    fn render(&self) -> tera::Result<String> {
+    fn render(&self) -> tera::TeraResult<String> {
         match self {
             Self::Invoice(spec) => spec.render(),
             Self::CreditNote(spec) => spec.render(),

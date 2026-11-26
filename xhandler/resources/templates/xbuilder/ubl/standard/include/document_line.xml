@@ -1,4 +1,4 @@
-{%- macro line(item) -%}
+{%- component document_line(item, moneda) -%}
         {%- if item.isc_base_imponible is gt0 %}
         <cbc:LineExtensionAmount currencyID="{{moneda}}">{{item.isc_base_imponible | round_decimal}}</cbc:LineExtensionAmount>
         {%- else %}
@@ -99,4 +99,4 @@
         <cac:Price>
             <cbc:PriceAmount currencyID="{{moneda}}">{{item.precio | round_decimal}}</cbc:PriceAmount>
         </cac:Price>
-{%- endmacro line -%}
+{%- endcomponent document_line -%}
