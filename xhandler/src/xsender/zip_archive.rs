@@ -34,11 +34,13 @@ pub fn read_cdr_from_base64_zip(base64: &str) -> anyhow::Result<String> {
 pub fn read_cdr_from_zip(zip_buf: &[u8]) -> anyhow::Result<String> {
     let mut archive = ZipArchive::new(Cursor::new(zip_buf))?;
 
-    let file_names: Vec<String> = archive
-        .file_names()
-        .filter(|name| !name.ends_with('/'))
-        .map(String::from)
-        .collect();
+    let mut file_names = Vec::new();
+    for name in archive.file_names() {
+        let name = name?;
+        if !name.ends_with('/') {
+            file_names.push(name.into_owned());
+        }
+    }
     let cdr_name = file_names
         .iter()
         .find(|name| name.to_lowercase().ends_with(".xml"))
@@ -97,7 +99,10 @@ mod tests {
         let zip = super::create_zip(&entries).unwrap();
 
         let mut archive = zip::ZipArchive::new(Cursor::new(zip)).unwrap();
-        assert_eq!(archive.file_names().collect::<Vec<_>>(), ["a.xml", "b.xml"]);
+        assert_eq!(
+            archive.file_names().collect::<Result<Vec<_>, _>>().unwrap(),
+            ["a.xml", "b.xml"]
+        );
         let mut content = String::new();
         archive
             .by_name("b.xml")
