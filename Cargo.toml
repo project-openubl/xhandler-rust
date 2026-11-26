@@ -36,7 +36,7 @@ encoding_rs = "0.8"
 serial_test = "4.0"
 tokio = "1.49"
 libxml = "0.3"
-quick-xml = "0.39"
+quick-xml = "0.42"
 rsa = { version = "0.10", features = ["pkcs1v15"] }
 x509-cert = "0.3"
 p12-keystore = "0.4"
