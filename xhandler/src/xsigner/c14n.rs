@@ -70,7 +70,6 @@ pub(crate) fn canonicalize(xml: &str) -> Result<String, SignError> {
                 }
             }
             Event::Text(content) if position == Root::Inside => {
-                let content = content.decode().map_err(quick_xml::Error::from)?;
                 if content.contains("]]>") {
                     return Err(invalid("Text can't contain ']]>'"));
                 }
@@ -78,18 +77,16 @@ pub(crate) fn canonicalize(xml: &str) -> Result<String, SignError> {
                 text.push_str(&unescape(&content).map_err(quick_xml::Error::from)?);
             }
             Event::CData(content) if position == Root::Inside => {
-                let content = content.decode().map_err(quick_xml::Error::from)?;
                 text.push_str(&normalize_line_breaks(&content));
             }
             Event::GeneralRef(reference) if position == Root::Inside => {
-                let name = reference.decode().map_err(quick_xml::Error::from)?;
-                let reference = format!("&{name};");
+                let reference = format!("&{};", &*reference);
                 text.push_str(&unescape(&reference).map_err(quick_xml::Error::from)?);
             }
             // Outside the root there may only be whitespace, which is dropped
             Event::Text(content)
                 if content
-                    .iter()
+                    .bytes()
                     .all(|byte| matches!(byte, b' ' | b'\t' | b'\r' | b'\n')) => {}
             Event::Text(_) | Event::CData(_) | Event::GeneralRef(_) => {
                 return Err(invalid("The XML has text outside its root element"))
@@ -125,8 +122,8 @@ fn write_start_tag(
     let mut attributes = Vec::new();
     for attribute in element.attributes() {
         let attribute = attribute.map_err(quick_xml::Error::from)?;
-        let name = utf8(attribute.key.as_ref())?.to_string();
-        let value = attribute_value(utf8(&attribute.value)?)?;
+        let name = attribute.key.as_ref().to_string();
+        let value = attribute_value(&attribute.value)?;
         match name.strip_prefix("xmlns") {
             Some("") => {
                 scope.insert(String::new(), value);
@@ -145,7 +142,7 @@ fn write_start_tag(
     }
 
     let qualified_name = element.name();
-    let name = utf8(qualified_name.as_ref())?;
+    let name = qualified_name.as_ref();
     if let Some((prefix, _)) = name.split_once(':') {
         namespace(&scope, prefix)?;
     }
@@ -207,11 +204,11 @@ fn namespace<'a>(scope: &'a Namespaces, prefix: &str) -> Result<&'a str, SignErr
 
 fn write_end_tag(
     output: &mut String,
-    name: &[u8],
+    name: &str,
     scopes: &mut Vec<Namespaces>,
 ) -> Result<(), SignError> {
     output.push_str("</");
-    output.push_str(utf8(name)?);
+    output.push_str(name);
     output.push('>');
     scopes.pop();
     Ok(())
@@ -241,10 +238,10 @@ fn write_processing_instruction(
     output: &mut String,
     instruction: &BytesPI,
 ) -> Result<(), SignError> {
-    let data = normalize_line_breaks(utf8(instruction.content())?);
+    let data = normalize_line_breaks(instruction.content());
     let data = data.trim_start_matches([' ', '\t', '\n']);
     output.push_str("<?");
-    output.push_str(utf8(instruction.target())?);
+    output.push_str(instruction.target());
     if !data.is_empty() {
         output.push(' ');
         output.push_str(data);
@@ -276,10 +273,6 @@ fn attribute_value(raw: &str) -> Result<String, SignError> {
 /// XML 1.0 end-of-line handling: `\r\n` and lone `\r` become `\n`
 fn normalize_line_breaks(text: &str) -> String {
     text.replace("\r\n", "\n").replace('\r', "\n")
-}
-
-fn utf8(bytes: &[u8]) -> Result<&str, SignError> {
-    std::str::from_utf8(bytes).map_err(|error| invalid(error.to_string()))
 }
 
 fn invalid(message: impl Into<String>) -> SignError {

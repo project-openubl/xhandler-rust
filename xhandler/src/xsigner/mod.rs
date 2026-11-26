@@ -136,9 +136,9 @@ enum Slot {
     },
 }
 
-fn is_extension_content(namespace: &ResolveResult, local_name: &[u8]) -> bool {
-    matches!(namespace, ResolveResult::Bound(ns) if ns.as_ref() == EXT_NS.as_bytes())
-        && local_name == b"ExtensionContent"
+fn is_extension_content(namespace: &ResolveResult, local_name: &str) -> bool {
+    matches!(namespace, ResolveResult::Bound(ns) if ns.as_ref() == EXT_NS)
+        && local_name == "ExtensionContent"
 }
 
 /// Finds the first `ext:ExtensionContent` without child elements. Returns
@@ -157,7 +157,7 @@ fn find_empty_extension_content(document: &str) -> Result<Option<Slot>, SignErro
                 return Ok(Some(Slot::SelfClosing {
                     start,
                     end: reader.buffer_position() as usize,
-                    name: String::from_utf8_lossy(e.name().as_ref()).into_owned(),
+                    name: e.name().as_ref().to_string(),
                 }));
             }
             Event::Start(e) if is_extension_content(&namespace, e.local_name().as_ref()) => {
