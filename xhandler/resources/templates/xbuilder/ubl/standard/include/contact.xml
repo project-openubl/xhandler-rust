@@ -1,4 +1,4 @@
-{%- macro contact(contacto) -%}
+{%- component contact(contacto) -%}
             <cac:Contact>
                 {%- if contacto.telefono %}
                 <cbc:Telephone>{{contacto.telefono}}</cbc:Telephone>
@@ -7,4 +7,4 @@
                 <cbc:ElectronicMail>{{contacto.email}}</cbc:ElectronicMail>
                 {%- endif %}
             </cac:Contact>
-{%- endmacro contact -%}
+{%- endcomponent contact -%}

@@ -17,6 +17,7 @@ pub const SAC_NS: &str =
 lazy_static::lazy_static! {
     pub static ref TEMPLATES: Tera = {
         let mut tera = Tera::default();
+        tera.set_escape_fn(crate::xbuilder::renderer::escape_xml);
 
         let resources = generate();
         resources.into_iter().filter(|(name, _content)| name.ends_with(".xml")).for_each(|(name, content)| {

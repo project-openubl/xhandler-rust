@@ -1,5 +1,5 @@
 use serde::Serialize;
-use tera::{Context, Result};
+use tera::{Context, TeraResult as Result};
 
 use crate::xsender::constants::TEMPLATES;
 use crate::xsender::models::{ConsultDocument, ValidateCdp};
